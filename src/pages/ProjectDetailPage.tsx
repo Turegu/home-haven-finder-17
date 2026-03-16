@@ -170,6 +170,9 @@ const ProjectDetailPage = () => {
               </div>
             </div>
 
+            {/* Available Units */}
+            <ProjectUnits projectId={id || ""} />
+
             {/* Loan Calculator */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Loan Calculator</h2>
