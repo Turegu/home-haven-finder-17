@@ -13,8 +13,8 @@ import { mockPropertyDetail } from '@/data/mockDetails';
 import { mockProperties } from '@/data/mockProperties';
 
 const PropertyDetailPage = () => {
-  const { id } = useParams();
-  const property = mockPropertyDetail; // In real app, fetch by id
+  const { id: _id } = useParams();
+  const property = mockPropertyDetail;
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState('photos');
   const [loanValues, setLoanValues] = useState({

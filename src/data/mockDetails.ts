@@ -1,4 +1,4 @@
-import { Property, Project } from './mockProperties';
+// Extended mock data for detail pages
 
 // Extended mock data for detail pages
 export const mockPropertyDetail = {
