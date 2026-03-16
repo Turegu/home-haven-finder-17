@@ -88,44 +88,77 @@ const ProjectsPage = () => {
           </div>
         </div>
 
-        {/* Project Cards - List View */}
-        {viewMode === 'list' ? (
-          <div className="flex flex-col gap-4">
-            {mockProjects.map((project) => (
-              <ProjectListCard key={project.id} project={project} />
-            ))}
-          </div>
-        ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProjects.map((project) => (
-              <Link key={project.id} to={`/projects/${project.id}`}>
-                <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-foreground mb-1">{project.title}</h3>
-                    <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
-                      <MapPin className="h-3.5 w-3.5 text-primary" />
-                      <span>{project.location}</span>
+        {/* Layout with side banner */}
+        <div className="flex gap-6">
+          <div className="flex-1 min-w-0">
+            {viewMode === 'list' ? (
+              <div className="space-y-4">
+                {Array.from({ length: Math.ceil(mockProjects.length / 7) }, (_, chunkIdx) => {
+                  const chunk = mockProjects.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                  return (
+                    <div key={chunkIdx} className="space-y-4">
+                      {chunk.map((project) => (
+                        <ProjectListCard key={project.id} project={project} />
+                      ))}
+                      {chunkIdx < Math.ceil(mockProjects.length / 7) - 1 && (
+                        <BannerDisplay pageName="projects" bannerType="horizontal" position={chunkIdx + 1} className="my-4" />
+                      )}
                     </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-border">
-                      <p className="text-sm font-bold text-foreground">Starting From ${project.priceFrom.toLocaleString()}</p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Building className="h-3.5 w-3.5" />
-                        <span>{project.units} Units</span>
+                  );
+                })}
+              </div>
+            ) : viewMode === 'grid' ? (
+              <div className="space-y-6">
+                {Array.from({ length: Math.ceil(mockProjects.length / 7) }, (_, chunkIdx) => {
+                  const chunk = mockProjects.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                  return (
+                    <div key={chunkIdx}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {chunk.map((project) => (
+                          <Link key={project.id} to={`/projects/${project.id}`}>
+                            <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
+                              <div className="relative aspect-[16/10] overflow-hidden">
+                                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                              </div>
+                              <div className="p-4">
+                                <h3 className="font-semibold text-foreground mb-1">{project.title}</h3>
+                                <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
+                                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                                  <span>{project.location}</span>
+                                </div>
+                                <div className="flex items-center justify-between pt-3 border-t border-border">
+                                  <p className="text-sm font-bold text-foreground">Starting From ${project.priceFrom.toLocaleString()}</p>
+                                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                    <Building className="h-3.5 w-3.5" />
+                                    <span>{project.units} Units</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
                       </div>
+                      {chunkIdx < Math.ceil(mockProjects.length / 7) - 1 && (
+                        <BannerDisplay pageName="projects" bannerType="horizontal" position={chunkIdx + 1} className="my-6" />
+                      )}
                     </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-border bg-muted h-[500px] flex items-center justify-center text-muted-foreground">
+                <Map className="h-8 w-8 mr-2" /> Map view coming soon
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="rounded-xl border border-border bg-muted h-[500px] flex items-center justify-center text-muted-foreground">
-            <Map className="h-8 w-8 mr-2" /> Map view coming soon
+
+          {/* Vertical side banner */}
+          <div className="hidden lg:block w-[225px] shrink-0">
+            <div className="sticky top-[160px]">
+              <BannerDisplay pageName="projects" bannerType="vertical" />
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       <Footer />

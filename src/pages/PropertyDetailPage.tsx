@@ -310,6 +310,9 @@ const PropertyDetailPage = () => {
           </div>
         </div>
 
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="buy-detail" bannerType="horizontal" className="mt-8" />
+
         {/* Similar Properties */}
         <section className="mt-12">
           <h2 className="text-xl font-bold text-foreground mb-6">Similar Properties</h2>
