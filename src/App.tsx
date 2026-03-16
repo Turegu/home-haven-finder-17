@@ -11,6 +11,9 @@ import ProjectDetailPage from "./pages/ProjectDetailPage.tsx";
 import AgentsPage from "./pages/AgentsPage.tsx";
 import AgentDetailPage from "./pages/AgentDetailPage.tsx";
 import CompanyDetailPage from "./pages/CompanyDetailPage.tsx";
+import EventsPage from "./pages/EventsPage.tsx";
+import EventDetailPage from "./pages/EventDetailPage.tsx";
+import PropertyRequestPage from "./pages/PropertyRequestPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
