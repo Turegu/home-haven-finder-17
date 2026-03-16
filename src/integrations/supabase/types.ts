@@ -53,6 +53,51 @@ export type Database = {
         }
         Relationships: []
       }
+      banners: {
+        Row: {
+          banner_type: string
+          created_at: string
+          end_date: string | null
+          id: string
+          image_url: string | null
+          link_url: string | null
+          name: string
+          page_name: string
+          page_position: number
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          banner_type?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          name: string
+          page_name?: string
+          page_position?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          banner_type?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          name?: string
+          page_name?: string
+          page_position?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           about: string | null
