@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
-  MapPin, BedDouble, Bath, Maximize, Building, Car, Share2, Heart, Layers,
-  Printer, ChevronLeft, ChevronRight, Camera, Images, Globe, StreetView,
+  MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
+  ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
