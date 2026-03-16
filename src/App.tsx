@@ -20,6 +20,9 @@ import AdminCompaniesPage from "./pages/admin/AdminCompaniesPage.tsx";
 import AdminCreateCompanyPage from "./pages/admin/AdminCreateCompanyPage.tsx";
 import AdminMembershipsPage from "./pages/admin/AdminMembershipsPage.tsx";
 import AdvertisePage from "./pages/AdvertisePage.tsx";
+import AdminPropertiesPage from "./pages/admin/AdminPropertiesPage.tsx";
+import AdminProjectsPage from "./pages/admin/AdminProjectsPage.tsx";
+import AdminEventsPage from "./pages/admin/AdminEventsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
