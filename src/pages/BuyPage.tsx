@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
+import BannerDisplay from '@/components/BannerDisplay';
 import { mockProperties } from '@/data/mockProperties';
 
 const SearchBar = () => (
