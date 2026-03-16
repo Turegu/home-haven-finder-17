@@ -27,6 +27,59 @@ interface ProjectUnitsProps {
   projectId: string;
 }
 
+const MOCK_UNITS: ProjectUnit[] = [
+  {
+    id: "mock-1",
+    unit_name: "Villa 1",
+    unit_type: "Villa",
+    price: 285000,
+    currency: "$",
+    area: 180,
+    area_unit: "m²",
+    rooms: "3+1",
+    bathrooms: 2,
+    car_parking: 1,
+    images: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
+    ],
+    status: "available",
+  },
+  {
+    id: "mock-2",
+    unit_name: "Apartment A2",
+    unit_type: "Apartment",
+    price: 145000,
+    currency: "$",
+    area: 95,
+    area_unit: "m²",
+    rooms: "2+1",
+    bathrooms: 1,
+    car_parking: 1,
+    images: [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+    ],
+    status: "available",
+  },
+  {
+    id: "mock-3",
+    unit_name: "Penthouse B1",
+    unit_type: "Penthouse",
+    price: 520000,
+    currency: "$",
+    area: 310,
+    area_unit: "m²",
+    rooms: "4+1",
+    bathrooms: 3,
+    car_parking: 2,
+    images: [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
+    ],
+    status: "reserved",
+  },
+];
+
 const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [units, setUnits] = useState<ProjectUnit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +94,9 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
         .select("*")
         .eq("project_id", projectId)
         .order("unit_name");
-      setUnits((data as ProjectUnit[]) || []);
+      const dbUnits = (data as ProjectUnit[]) || [];
+      // Use mock data if no real units exist yet
+      setUnits(dbUnits.length > 0 ? dbUnits : MOCK_UNITS);
       setLoading(false);
     };
     fetchUnits();
