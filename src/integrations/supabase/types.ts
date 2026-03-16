@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      advertising_requests: {
+        Row: {
+          company_name: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string | null
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           about: string | null
@@ -92,6 +131,72 @@ export type Database = {
           updated_at?: string
           verification_token?: string | null
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      membership_packages: {
+        Row: {
+          annual_price: number
+          created_at: string
+          has_company_agent_search: boolean
+          has_company_profile: boolean
+          has_home_logo: boolean
+          has_property_requests: boolean
+          id: string
+          max_agents: number
+          max_events: number
+          max_projects: number
+          max_properties: number
+          monthly_price: number
+          name: string
+          package_type: string
+          quarterly_price: number
+          semiannual_price: number
+          sort_order: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          annual_price?: number
+          created_at?: string
+          has_company_agent_search?: boolean
+          has_company_profile?: boolean
+          has_home_logo?: boolean
+          has_property_requests?: boolean
+          id?: string
+          max_agents?: number
+          max_events?: number
+          max_projects?: number
+          max_properties?: number
+          monthly_price?: number
+          name: string
+          package_type: string
+          quarterly_price?: number
+          semiannual_price?: number
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          annual_price?: number
+          created_at?: string
+          has_company_agent_search?: boolean
+          has_company_profile?: boolean
+          has_home_logo?: boolean
+          has_property_requests?: boolean
+          id?: string
+          max_agents?: number
+          max_events?: number
+          max_projects?: number
+          max_properties?: number
+          monthly_price?: number
+          name?: string
+          package_type?: string
+          quarterly_price?: number
+          semiannual_price?: number
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
