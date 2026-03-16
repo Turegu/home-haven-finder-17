@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
+import ProjectUnits from '@/components/ProjectUnits';
 import { mockProjectDetail } from '@/data/mockDetails';
 
 const ProjectDetailPage = () => {
@@ -168,6 +169,9 @@ const ProjectDetailPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Available Units */}
+            <ProjectUnits projectId={id || ""} />
 
             {/* Loan Calculator */}
             <div className="bg-card rounded-xl border border-border p-6">
