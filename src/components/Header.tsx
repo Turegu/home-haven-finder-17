@@ -49,7 +49,7 @@ const Header = () => {
             <span className="text-border">|</span>
             <Link to="#" className="hover:text-foreground transition-colors">Blogs</Link>
             <span className="text-border">|</span>
-            <Link to="#" className="hover:text-foreground transition-colors">Advertise</Link>
+            <Link to="/advertise" className="hover:text-foreground transition-colors">Advertise With Us</Link>
           </div>
         </div>
       </div>
