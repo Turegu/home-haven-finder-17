@@ -305,12 +305,8 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Bank Loan Banner */}
-            <div className="bg-primary/10 rounded-xl border border-primary/20 p-6 text-center">
-              <h4 className="font-bold text-foreground mb-1">Buy your dream house</h4>
-              <p className="text-sm text-muted-foreground mb-3">housing and real estate</p>
-              <Button variant="outline" size="sm">Click Personal Loan Rates</Button>
-            </div>
+            {/* Vertical Banner */}
+            <BannerDisplay pageName="buy-detail" bannerType="vertical" className="" />
           </div>
         </div>
 
