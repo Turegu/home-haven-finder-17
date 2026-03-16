@@ -23,6 +23,7 @@ import AdvertisePage from "./pages/AdvertisePage.tsx";
 import AdminPropertiesPage from "./pages/admin/AdminPropertiesPage.tsx";
 import AdminProjectsPage from "./pages/admin/AdminProjectsPage.tsx";
 import AdminEventsPage from "./pages/admin/AdminEventsPage.tsx";
+import AdminBannersPage from "./pages/admin/AdminBannersPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/admin/properties" element={<AdminPropertiesPage />} />
           <Route path="/admin/projects" element={<AdminProjectsPage />} />
           <Route path="/admin/events" element={<AdminEventsPage />} />
+          <Route path="/admin/banners" element={<AdminBannersPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

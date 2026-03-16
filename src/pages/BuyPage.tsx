@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
+import BannerDisplay from '@/components/BannerDisplay';
 import { mockProperties } from '@/data/mockProperties';
 
 const SearchBar = () => (
@@ -75,60 +76,98 @@ const BuyPage = () => {
             {title} in <span className="text-primary">{properties.length} Properties</span>
           </h1>
           <div className="flex items-center gap-3">
-            {/* Sort */}
             <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background">
               <span className="text-muted-foreground">Sort By</span>
               <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
             </div>
-            {/* Save Search */}
             <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors">
               <Bookmark className="h-4 w-4" />
               Save Search
             </button>
-            {/* View Toggles */}
             <div className="flex border border-border rounded-md overflow-hidden">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}
-              >
+              <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />
               </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}
-              >
+              <button onClick={() => setViewMode('list')} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <List className="h-4 w-4" />
               </button>
-              <button
-                onClick={() => setViewMode('map')}
-                className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}
-              >
+              <button onClick={() => setViewMode('map')} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <Map className="h-4 w-4" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Results */}
-        {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {properties.map((property) => (
-              <Link key={property.id} to={`/property/${property.id}`}>
-                <PropertyCard property={property} />
-              </Link>
-            ))}
+        {/* Layout with side banner */}
+        <div className="flex gap-6">
+          {/* Main listings */}
+          <div className="flex-1 min-w-0">
+            {viewMode === 'grid' ? (
+              <div className="space-y-6">
+                {/* Split into chunks of 7 with horizontal banners between */}
+                {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
+                  const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                  return (
+                    <div key={chunkIdx}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {chunk.map((property) => (
+                          <Link key={property.id} to={`/property/${property.id}`}>
+                            <PropertyCard property={property} />
+                          </Link>
+                        ))}
+                      </div>
+                      {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
+                        <BannerDisplay
+                          pageName={purpose === 'rent' ? 'rent' : 'buy'}
+                          bannerType="horizontal"
+                          position={chunkIdx + 1}
+                          className="my-6"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : viewMode === 'list' ? (
+              <div className="space-y-4">
+                {/* Split into chunks of 7 with horizontal banners between */}
+                {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
+                  const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                  return (
+                    <div key={chunkIdx} className="space-y-4">
+                      {chunk.map((property) => (
+                        <PropertyListCard key={property.id} property={property} />
+                      ))}
+                      {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
+                        <BannerDisplay
+                          pageName={purpose === 'rent' ? 'rent' : 'buy'}
+                          bannerType="horizontal"
+                          position={chunkIdx + 1}
+                          className="my-4"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-border bg-muted h-[500px] flex items-center justify-center text-muted-foreground">
+                <Map className="h-8 w-8 mr-2" /> Map view coming soon
+              </div>
+            )}
           </div>
-        ) : viewMode === 'list' ? (
-          <div className="flex flex-col gap-4">
-            {properties.map((property) => (
-              <PropertyListCard key={property.id} property={property} />
-            ))}
+
+          {/* Vertical side banner */}
+          <div className="hidden lg:block w-[225px] shrink-0">
+            <div className="sticky top-[160px]">
+              <BannerDisplay
+                pageName={purpose === 'rent' ? 'rent' : 'buy'}
+                bannerType="vertical"
+                className=""
+              />
+            </div>
           </div>
-        ) : (
-          <div className="rounded-xl border border-border bg-muted h-[500px] flex items-center justify-center text-muted-foreground">
-            <Map className="h-8 w-8 mr-2" /> Map view coming soon
-          </div>
-        )}
+        </div>
       </div>
 
       <Footer />

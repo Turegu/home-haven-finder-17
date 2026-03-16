@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
+import BannerDisplay from '@/components/BannerDisplay';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import { mockProperties } from '@/data/mockProperties';
 
@@ -304,14 +305,13 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Bank Loan Banner */}
-            <div className="bg-primary/10 rounded-xl border border-primary/20 p-6 text-center">
-              <h4 className="font-bold text-foreground mb-1">Buy your dream house</h4>
-              <p className="text-sm text-muted-foreground mb-3">housing and real estate</p>
-              <Button variant="outline" size="sm">Click Personal Loan Rates</Button>
-            </div>
+            {/* Vertical Banner */}
+            <BannerDisplay pageName="buy-detail" bannerType="vertical" className="" />
           </div>
         </div>
+
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="buy-detail" bannerType="horizontal" className="mt-8" />
 
         {/* Similar Properties */}
         <section className="mt-12">
