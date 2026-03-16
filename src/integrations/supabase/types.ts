@@ -53,6 +53,57 @@ export type Database = {
         }
         Relationships: []
       }
+      banks: {
+        Row: {
+          bank_info_link: string | null
+          created_at: string
+          description: string | null
+          down_payment: number | null
+          final_payment: number | null
+          finance_amount_percentage: number | null
+          id: string
+          interest_rate: number | null
+          logo_url: string | null
+          maximum_amount: number | null
+          maximum_duration: number | null
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          bank_info_link?: string | null
+          created_at?: string
+          description?: string | null
+          down_payment?: number | null
+          final_payment?: number | null
+          finance_amount_percentage?: number | null
+          id?: string
+          interest_rate?: number | null
+          logo_url?: string | null
+          maximum_amount?: number | null
+          maximum_duration?: number | null
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          bank_info_link?: string | null
+          created_at?: string
+          description?: string | null
+          down_payment?: number | null
+          final_payment?: number | null
+          finance_amount_percentage?: number | null
+          id?: string
+          interest_rate?: number | null
+          logo_url?: string | null
+          maximum_amount?: number | null
+          maximum_duration?: number | null
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       banners: {
         Row: {
           banner_type: string

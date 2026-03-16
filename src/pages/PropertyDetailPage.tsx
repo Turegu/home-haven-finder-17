@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import BannerDisplay from '@/components/BannerDisplay';
+import BankLoanBanner from '@/components/BankLoanBanner';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import { mockProperties } from '@/data/mockProperties';
 
@@ -272,6 +273,9 @@ const PropertyDetailPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Bank Loan CTA Banner */}
+            <BankLoanBanner />
           </div>
 
           {/* Sidebar - Agent Card */}
