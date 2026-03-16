@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
+import ProjectUnits from '@/components/ProjectUnits';
 import { mockProjectDetail } from '@/data/mockDetails';
 
 const ProjectDetailPage = () => {
