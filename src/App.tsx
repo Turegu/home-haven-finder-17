@@ -23,6 +23,7 @@ import AdvertisePage from "./pages/AdvertisePage.tsx";
 import AdminPropertiesPage from "./pages/admin/AdminPropertiesPage.tsx";
 import AdminProjectsPage from "./pages/admin/AdminProjectsPage.tsx";
 import AdminEventsPage from "./pages/admin/AdminEventsPage.tsx";
+import AdminBannersPage from "./pages/admin/AdminBannersPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
