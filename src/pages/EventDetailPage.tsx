@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
-  ChevronRight, ChevronLeft, ChevronDown, Printer, Flag,
+  ChevronRight, ChevronLeft, Printer, Flag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
