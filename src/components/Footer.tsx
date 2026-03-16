@@ -70,6 +70,7 @@ const Footer = () => {
               <li><Link to="#" className="hover:text-background transition-colors">Terms of Service</Link></li>
               <li><Link to="#" className="hover:text-background transition-colors">Privacy Policy</Link></li>
               <li><Link to="#" className="hover:text-background transition-colors">Cookie Policy</Link></li>
+              <li><Link to="/admin/login" className="hover:text-primary transition-colors">Admin Panel</Link></li>
             </ul>
           </div>
         </div>
