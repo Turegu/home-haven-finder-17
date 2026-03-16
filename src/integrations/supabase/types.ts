@@ -382,6 +382,68 @@ export type Database = {
         }
         Relationships: []
       }
+      project_units: {
+        Row: {
+          area: number | null
+          area_unit: string | null
+          bathrooms: number | null
+          car_parking: number | null
+          created_at: string
+          currency: string | null
+          id: string
+          images: string[] | null
+          price: number | null
+          project_id: string
+          rooms: string | null
+          status: string
+          unit_name: string
+          unit_type: string
+          updated_at: string
+        }
+        Insert: {
+          area?: number | null
+          area_unit?: string | null
+          bathrooms?: number | null
+          car_parking?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number | null
+          project_id: string
+          rooms?: string | null
+          status?: string
+          unit_name: string
+          unit_type?: string
+          updated_at?: string
+        }
+        Update: {
+          area?: number | null
+          area_unit?: string | null
+          bathrooms?: number | null
+          car_parking?: number | null
+          created_at?: string
+          currency?: string | null
+          id?: string
+          images?: string[] | null
+          price?: number | null
+          project_id?: string
+          rooms?: string | null
+          status?: string
+          unit_name?: string
+          unit_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_units_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           company_id: string | null
