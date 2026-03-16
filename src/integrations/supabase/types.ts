@@ -134,6 +134,65 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          description: string | null
+          display_on_homepage: boolean
+          event_date: string | null
+          event_type: string
+          id: string
+          images: string[] | null
+          listing_id: string
+          location: string | null
+          organizer: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          display_on_homepage?: boolean
+          event_date?: string | null
+          event_type?: string
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          location?: string | null
+          organizer?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          display_on_homepage?: boolean
+          event_date?: string | null
+          event_type?: string
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          location?: string | null
+          organizer?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       membership_packages: {
         Row: {
           annual_price: number
@@ -226,6 +285,160 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      projects: {
+        Row: {
+          company_id: string | null
+          completion_date: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          developer: string | null
+          display_on_homepage: boolean
+          id: string
+          images: string[] | null
+          listing_id: string
+          location: string | null
+          max_price: number | null
+          max_units: number | null
+          min_price: number | null
+          min_units: number | null
+          project_status: string
+          project_type: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          completion_date?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          developer?: string | null
+          display_on_homepage?: boolean
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          location?: string | null
+          max_price?: number | null
+          max_units?: number | null
+          min_price?: number | null
+          min_units?: number | null
+          project_status?: string
+          project_type?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          completion_date?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          developer?: string | null
+          display_on_homepage?: boolean
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          location?: string | null
+          max_price?: number | null
+          max_units?: number | null
+          min_price?: number | null
+          min_units?: number | null
+          project_status?: string
+          project_type?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      properties: {
+        Row: {
+          area: number | null
+          area_unit: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          company_id: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          display_on_homepage: boolean
+          id: string
+          images: string[] | null
+          listing_id: string
+          location: string | null
+          price: number | null
+          property_purpose: string
+          property_status: string
+          property_type: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          area?: number | null
+          area_unit?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          company_id?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          display_on_homepage?: boolean
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          location?: string | null
+          price?: number | null
+          property_purpose?: string
+          property_status?: string
+          property_type?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          area?: number | null
+          area_unit?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          company_id?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          display_on_homepage?: boolean
+          id?: string
+          images?: string[] | null
+          listing_id?: string
+          location?: string | null
+          price?: number | null
+          property_purpose?: string
+          property_status?: string
+          property_type?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
