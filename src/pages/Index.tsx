@@ -24,9 +24,17 @@ interface FeaturedLocation {
   link_url: string | null;
 }
 
+interface Partner {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  link_url: string | null;
+}
+
 const Index = () => {
   const [cms, setCms] = useState<CmsContent>({});
   const [locations, setLocations] = useState<FeaturedLocation[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
 
   useEffect(() => {
     const fetchCms = async () => {
