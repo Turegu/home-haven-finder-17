@@ -39,6 +39,7 @@ import BlogsPage from "./pages/BlogsPage.tsx";
 import BlogDetailPage from "./pages/BlogDetailPage.tsx";
 import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
 import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
+import AdminCrudsPage from "./pages/admin/AdminCrudsPage.tsx";
 import FaqPage from "./pages/FaqPage.tsx";
 import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
 import CompanyDashboardPage from "./pages/company/CompanyDashboardPage.tsx";
