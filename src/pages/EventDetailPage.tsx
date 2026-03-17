@@ -178,8 +178,14 @@ const EventDetailPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Vertical Banner */}
+            <BannerDisplay pageName="event-detail" bannerType="vertical" />
           </div>
         </div>
+
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="event-detail" bannerType="horizontal" className="mt-8" />
       </div>
 
       <Footer />

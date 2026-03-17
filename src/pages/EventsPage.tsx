@@ -168,6 +168,18 @@ const EventsPage = () => {
             </div>
           ))}
         </div>
+
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="events" bannerType="horizontal" className="mt-6" />
+        </div>
+
+        {/* Vertical Sidebar Banner */}
+        <div className="hidden lg:block w-[225px] shrink-0">
+          <div className="sticky top-[160px]">
+            <BannerDisplay pageName="events" bannerType="vertical" />
+          </div>
+        </div>
+        </div>
       </div>
 
       <Footer />

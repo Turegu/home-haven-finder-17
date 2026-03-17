@@ -181,6 +181,8 @@ const AgentsPage = () => {
             ))}
           </div>
         )}
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="agents" bannerType="horizontal" className="mt-8" />
       </div>
 
       <Footer />

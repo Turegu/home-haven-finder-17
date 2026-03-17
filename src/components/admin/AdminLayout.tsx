@@ -21,6 +21,7 @@ const sidebarItems = [
   { label: "FAQs Management", icon: HelpCircle, path: "/admin/faqs" },
   { label: "Language Management", icon: Languages, path: "/admin/languages" },
   { label: "Reports", icon: BarChart3, path: "/admin/reports" },
+  { label: "CMS", icon: FileText, path: "/admin/cms" },
   { label: "Settings", icon: Settings, path: "/admin/settings", hasSubmenu: true },
 ];
 
