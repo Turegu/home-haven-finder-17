@@ -49,6 +49,8 @@ import CompanyPropertyEditPage from "./pages/company/CompanyPropertyEditPage.tsx
 import CompanyProjectsPage from "./pages/company/CompanyProjectsPage.tsx";
 import CompanyProjectEditPage from "./pages/company/CompanyProjectEditPage.tsx";
 import CompanyProjectUnitsPage from "./pages/company/CompanyProjectUnitsPage.tsx";
+import CompanyEventsPage from "./pages/company/CompanyEventsPage.tsx";
+import CompanyEventEditPage from "./pages/company/CompanyEventEditPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
