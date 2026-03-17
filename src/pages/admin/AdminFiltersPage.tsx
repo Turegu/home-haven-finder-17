@@ -192,6 +192,11 @@ const AdminFiltersPage = () => {
           <p className="text-sm text-muted-foreground mt-1">
             Manage filter categories and options used across listings, search, and forms
           </p>
+          <div className="mt-3">
+            <Button variant="outline" size="sm" onClick={() => setExcelDialogOpen(true)}>
+              <Upload className="h-4 w-4 mr-1" /> Import from Excel
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
