@@ -223,11 +223,25 @@ const Index = () => {
         </div>
         <div className="relative">
           <div className="flex marquee whitespace-nowrap">
-            {[...partnerLogos, ...partnerLogos].map((partner, i) => (
+            {[...partners, ...partners].map((partner, i) => (
               <div key={`${partner.id}-${i}`} className="flex-shrink-0 mx-8">
-                <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
-                  {partner.name}
-                </div>
+                {partner.link_url ? (
+                  <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
+                    {partner.logo_url ? (
+                      <img src={partner.logo_url} alt={partner.name} className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
+                    ) : (
+                      <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
+                        {partner.name}
+                      </div>
+                    )}
+                  </a>
+                ) : partner.logo_url ? (
+                  <img src={partner.logo_url} alt={partner.name} className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
+                ) : (
+                  <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
+                    {partner.name}
+                  </div>
+                )}
               </div>
             ))}
           </div>
