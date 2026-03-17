@@ -844,17 +844,37 @@ export type Database = {
           currency: string | null
           description: string | null
           display_on_homepage: boolean
+          exterior_amenities: string[] | null
+          floor_level: string | null
+          furniture: string | null
           id: string
           images: string[] | null
+          interior_amenities: string[] | null
           listing_id: string
           location: string | null
+          neighbourhood: string | null
+          open_house_end: string | null
+          open_house_start: string | null
+          parking_spaces: number | null
+          pin_location: string | null
+          plans: string[] | null
           price: number | null
+          property_age: string | null
+          property_classification: string | null
+          property_orientation: string | null
           property_purpose: string
           property_status: string
           property_type: string
+          province: string | null
+          rent_duration: string | null
+          rooms: string | null
           status: string
           title: string
+          title_deed: string | null
+          town: string | null
           updated_at: string
+          video_link: string | null
+          view_360_link: string | null
         }
         Insert: {
           area?: number | null
@@ -866,17 +886,37 @@ export type Database = {
           currency?: string | null
           description?: string | null
           display_on_homepage?: boolean
+          exterior_amenities?: string[] | null
+          floor_level?: string | null
+          furniture?: string | null
           id?: string
           images?: string[] | null
+          interior_amenities?: string[] | null
           listing_id?: string
           location?: string | null
+          neighbourhood?: string | null
+          open_house_end?: string | null
+          open_house_start?: string | null
+          parking_spaces?: number | null
+          pin_location?: string | null
+          plans?: string[] | null
           price?: number | null
+          property_age?: string | null
+          property_classification?: string | null
+          property_orientation?: string | null
           property_purpose?: string
           property_status?: string
           property_type?: string
+          province?: string | null
+          rent_duration?: string | null
+          rooms?: string | null
           status?: string
           title: string
+          title_deed?: string | null
+          town?: string | null
           updated_at?: string
+          video_link?: string | null
+          view_360_link?: string | null
         }
         Update: {
           area?: number | null
@@ -888,17 +928,37 @@ export type Database = {
           currency?: string | null
           description?: string | null
           display_on_homepage?: boolean
+          exterior_amenities?: string[] | null
+          floor_level?: string | null
+          furniture?: string | null
           id?: string
           images?: string[] | null
+          interior_amenities?: string[] | null
           listing_id?: string
           location?: string | null
+          neighbourhood?: string | null
+          open_house_end?: string | null
+          open_house_start?: string | null
+          parking_spaces?: number | null
+          pin_location?: string | null
+          plans?: string[] | null
           price?: number | null
+          property_age?: string | null
+          property_classification?: string | null
+          property_orientation?: string | null
           property_purpose?: string
           property_status?: string
           property_type?: string
+          province?: string | null
+          rent_duration?: string | null
+          rooms?: string | null
           status?: string
           title?: string
+          title_deed?: string | null
+          town?: string | null
           updated_at?: string
+          video_link?: string | null
+          view_360_link?: string | null
         }
         Relationships: [
           {
