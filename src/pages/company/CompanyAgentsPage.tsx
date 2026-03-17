@@ -1,0 +1,264 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import CompanyLayout from "@/components/company/CompanyLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from "@/components/ui/select";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Search, Plus, MoreVertical, Pencil, Coins, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { format } from "date-fns";
+
+interface Agent {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  status: string;
+  credit_balance: number;
+  created_at: string;
+}
+
+const CompanyAgentsPage = () => {
+  const navigate = useNavigate();
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyCredits, setCompanyCredits] = useState(0);
+  const [search, setSearch] = useState("");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+
+  // Credit sharing dialog
+  const [creditDialog, setCreditDialog] = useState<{ open: boolean; agent: Agent | null }>({ open: false, agent: null });
+  const [creditAmount, setCreditAmount] = useState("");
+  const [sharingCredits, setSharingCredits] = useState(false);
+
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: company } = await supabase
+        .from("companies").select("id, credit_balance").eq("owner_user_id", user.id).limit(1).maybeSingle();
+      if (company) {
+        setCompanyId(company.id);
+        setCompanyCredits(company.credit_balance);
+      }
+    };
+    init();
+  }, []);
+
+  const fetchAgents = async () => {
+    if (!companyId) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("agents")
+      .select("id, name, email, phone, status, credit_balance, created_at")
+      .eq("company_id", companyId)
+      .order("created_at", { ascending: sortOrder === "oldest" });
+    if (error) toast.error("Failed to fetch agents");
+    else setAgents((data as Agent[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { if (companyId) fetchAgents(); }, [companyId, sortOrder]);
+
+  const filtered = agents.filter(
+    (a) => a.name.toLowerCase().includes(search.toLowerCase()) || a.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleDelete = async (agentId: string) => {
+    if (!confirm("Delete this agent?")) return;
+    const { error } = await supabase.from("agents").delete().eq("id", agentId);
+    if (error) toast.error("Delete failed");
+    else { toast.success("Agent deleted"); fetchAgents(); }
+  };
+
+  const handleShareCredits = async () => {
+    if (!creditDialog.agent || !creditAmount) return;
+    const amount = parseFloat(creditAmount);
+    if (isNaN(amount) || amount <= 0) { toast.error("Enter a valid amount"); return; }
+    if (amount > companyCredits) { toast.error("Insufficient company credits"); return; }
+
+    setSharingCredits(true);
+    try {
+      // Deduct from company
+      const { error: compErr } = await supabase
+        .from("companies")
+        .update({ credit_balance: companyCredits - amount })
+        .eq("id", companyId!);
+      if (compErr) throw compErr;
+
+      // Add to agent
+      const { error: agentErr } = await supabase
+        .from("agents")
+        .update({ credit_balance: creditDialog.agent.credit_balance + amount })
+        .eq("id", creditDialog.agent.id);
+      if (agentErr) throw agentErr;
+
+      setCompanyCredits((prev) => prev - amount);
+      toast.success(`${amount} credits shared with ${creditDialog.agent.name}`);
+      setCreditDialog({ open: false, agent: null });
+      setCreditAmount("");
+      fetchAgents();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to share credits");
+    } finally {
+      setSharingCredits(false);
+    }
+  };
+
+  const statusColor = (s: string) => {
+    switch (s) {
+      case "active": return "bg-emerald-100 text-emerald-800";
+      case "pending": return "bg-amber-100 text-amber-800";
+      case "inactive": return "bg-red-100 text-red-800";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  return (
+    <CompanyLayout>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Agents Management</h1>
+          <p className="text-sm text-muted-foreground mt-1">Company Credits: <span className="font-semibold text-primary">{companyCredits}</span></p>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search By Name Or Email" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+        </div>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="whitespace-nowrap">Sort By Date</span>
+          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
+            <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest to Oldest</SelectItem>
+              <SelectItem value="oldest">Oldest to Newest</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2 ml-auto">
+          <Button onClick={() => navigate("/company/agents/new")}>
+            <Plus className="h-4 w-4 mr-2" /> Create New Agent
+          </Button>
+        </div>
+      </div>
+
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Agents</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-primary/5">
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Agent</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Email</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Phone Number</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Credits</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+              ) : filtered.length === 0 ? (
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">No agents found.</TableCell></TableRow>
+              ) : (
+                filtered.map((agent) => (
+                  <TableRow key={agent.id} className="hover:bg-muted/30">
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                      {format(new Date(agent.created_at), "yyyy.dd.MM")}
+                    </TableCell>
+                    <TableCell className="font-medium text-foreground">{agent.name}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{agent.email}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{agent.phone || "—"}</TableCell>
+                    <TableCell className="text-sm font-semibold text-primary">{agent.credit_balance}</TableCell>
+                    <TableCell>
+                      <Badge className={statusColor(agent.status)} variant="secondary">
+                        {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => navigate(`/company/agents/${agent.id}/edit`)}>
+                            <Pencil className="h-4 w-4 mr-2" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
+                            <Coins className="h-4 w-4 mr-2" /> Add Points
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Credit Sharing Dialog */}
+      <Dialog open={creditDialog.open} onOpenChange={(open) => setCreditDialog({ open, agent: open ? creditDialog.agent : null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Credits with {creditDialog.agent?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Your company balance: <span className="font-semibold text-primary">{companyCredits}</span> credits
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Agent's current balance: <span className="font-semibold">{creditDialog.agent?.credit_balance || 0}</span> credits
+            </p>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium">Amount to share</Label>
+              <Input
+                type="number"
+                value={creditAmount}
+                onChange={(e) => setCreditAmount(e.target.value)}
+                placeholder="Enter amount"
+                min="1"
+                max={companyCredits}
+                className="bg-secondary/50"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreditDialog({ open: false, agent: null })}>Cancel</Button>
+            <Button onClick={handleShareCredits} disabled={sharingCredits}>
+              <Coins className="h-4 w-4 mr-2" /> {sharingCredits ? "Sharing..." : "Share Credits"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </CompanyLayout>
+  );
+};
+
+export default CompanyAgentsPage;
