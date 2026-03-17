@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Save, Upload, X, ImageIcon, FileText } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 
 const projectTypes = [
   { value: "residential", label: "Residential" },
