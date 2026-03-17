@@ -55,6 +55,7 @@ import CompanyAgentsPage from "./pages/company/CompanyAgentsPage.tsx";
 import CompanyAgentEditPage from "./pages/company/CompanyAgentEditPage.tsx";
 import CompanyNotificationsPage from "./pages/company/CompanyNotificationsPage.tsx";
 import CompanyInboxPage from "./pages/company/CompanyInboxPage.tsx";
+import CompanyFollowersPage from "./pages/company/CompanyFollowersPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
