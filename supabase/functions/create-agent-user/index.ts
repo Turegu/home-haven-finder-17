@@ -25,26 +25,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { email, password, agentId } = await req.json();
+    const { email, agentId } = await req.json();
 
-    if (!email || !password || !agentId) {
+    if (!email || !agentId) {
       return new Response(
-        JSON.stringify({ error: "email, password, and agentId are required" }),
+        JSON.stringify({ error: "email and agentId are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Create auth user with temp password (auto-confirm so agent can log in immediately)
-    const { data: userData, error: createError } =
-      await supabaseAdmin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: { is_agent: true, agent_id: agentId },
+    // Generate invite link - this sends an email to the agent to set their password
+    const { data: inviteData, error: inviteError } =
+      await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+        data: { is_agent: true, agent_id: agentId },
+        redirectTo: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/agent/login`,
       });
 
-    if (createError) {
-      return new Response(JSON.stringify({ error: createError.message }), {
+    if (inviteError) {
+      return new Response(JSON.stringify({ error: inviteError.message }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -53,7 +51,7 @@ Deno.serve(async (req) => {
     // Link auth user to agent record
     const { error: updateError } = await supabaseAdmin
       .from("agents")
-      .update({ user_id: userData.user.id, status: "active" })
+      .update({ user_id: inviteData.user.id, status: "pending" })
       .eq("id", agentId);
 
     if (updateError) {
@@ -64,7 +62,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, userId: userData.user.id }),
+      JSON.stringify({ success: true, userId: inviteData.user.id }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {

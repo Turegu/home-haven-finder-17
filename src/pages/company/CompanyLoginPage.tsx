@@ -4,60 +4,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, Lock, ArrowLeft } from "lucide-react";
+import { LogIn, Lock, Eye, EyeOff } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
 
-type LoginStep = "pattern" | "credentials";
+type LoginStep = "credentials" | "pattern";
 
 const CompanyLoginPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<LoginStep>("pattern");
+  const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [patternError, setPatternError] = useState(false);
   const [savedPattern, setSavedPattern] = useState<string>("");
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
+  const [companyId, setCompanyId] = useState<string | null>(null);
 
+  // Load remembered email
   useEffect(() => {
-    // Fetch the company portal pattern from admin_settings
-    const fetchPattern = async () => {
-      const { data } = await supabase
-        .from("admin_settings")
-        .select("setting_value")
-        .eq("setting_key", "company_pattern_code")
-        .limit(1);
-      if (data?.[0]) {
-        setSavedPattern((data[0] as any).setting_value);
-      } else {
-        // Fallback: use admin pattern
-        const { data: adminData } = await supabase
-          .from("admin_settings")
-          .select("setting_value")
-          .eq("setting_key", "admin_pattern_code")
-          .limit(1);
-        if (adminData?.[0]) {
-          setSavedPattern((adminData[0] as any).setting_value);
-        }
-      }
-    };
-    fetchPattern();
-  }, []);
-
-  const handlePatternComplete = (pattern: number[]) => {
-    const patternStr = pattern.join(",");
-    if (patternStr === savedPattern) {
-      setPatternError(false);
-      setStep("credentials");
-      toast.success("Pattern accepted");
-    } else {
-      setPatternError(true);
-      toast.error("Wrong pattern. Try again.");
-      setTimeout(() => setPatternError(false), 800);
+    const remembered = localStorage.getItem("turegu_company_email");
+    if (remembered) {
+      setEmail(remembered);
+      setRememberMe(true);
     }
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,13 +57,68 @@ const CompanyLoginPage = () => {
         return;
       }
 
-      toast.success("Welcome to your Company Dashboard!");
-      navigate("/company");
+      setCompanyId(company.id);
+
+      // Save or remove remembered email
+      if (rememberMe) {
+        localStorage.setItem("turegu_company_email", email);
+      } else {
+        localStorage.removeItem("turegu_company_email");
+      }
+
+      // Fetch company-specific pattern
+      const { data: patternData } = await supabase
+        .from("company_pattern_codes")
+        .select("pattern_code")
+        .eq("company_id", company.id)
+        .limit(1)
+        .maybeSingle();
+
+      if (patternData && patternData.pattern_code) {
+        setSavedPattern(patternData.pattern_code);
+        setStep("pattern");
+        toast.info("Please draw your company pattern to continue.");
+      } else {
+        // No pattern set — check admin_settings fallback
+        const { data: adminData } = await supabase
+          .from("admin_settings")
+          .select("setting_value")
+          .eq("setting_key", "company_pattern_code")
+          .limit(1);
+        if (adminData?.[0]) {
+          setSavedPattern((adminData[0] as any).setting_value);
+          setStep("pattern");
+          toast.info("Please draw the pattern to continue.");
+        } else {
+          // No pattern required
+          toast.success("Welcome to your Company Dashboard!");
+          navigate("/company");
+        }
+      }
     } catch (err: any) {
       toast.error(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePatternComplete = (pattern: number[]) => {
+    const patternStr = pattern.join(",");
+    if (patternStr === savedPattern) {
+      setPatternError(false);
+      toast.success("Welcome to your Company Dashboard!");
+      navigate("/company");
+    } else {
+      setPatternError(true);
+      toast.error("Wrong pattern. Try again.");
+      setTimeout(() => setPatternError(false), 800);
+    }
+  };
+
+  const handlePatternBack = async () => {
+    await supabase.auth.signOut();
+    setStep("credentials");
+    setSavedPattern("");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -116,13 +146,13 @@ const CompanyLoginPage = () => {
           <div className="text-center mb-8">
             <Link to="/" className="text-2xl font-bold text-primary">turegu</Link>
             <h1 className="text-xl font-bold text-foreground mt-4">
-              {showForgot ? "Reset Password" : step === "pattern" ? "Agents Portal" : "Company Login"}
+              {showForgot ? "Reset Password" : step === "pattern" ? "Pattern Unlock" : "Company Login"}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {showForgot
                 ? "Enter your email to receive a reset link"
                 : step === "pattern"
-                ? "Draw the pattern to continue"
+                ? "Draw your company pattern to continue"
                 : "Sign in to your company dashboard"}
             </p>
           </div>
@@ -159,6 +189,13 @@ const CompanyLoginPage = () => {
                 <Lock className="inline h-3 w-3 mr-1" />
                 Connect at least 3 dots to unlock
               </p>
+              <button
+                type="button"
+                onClick={handlePatternBack}
+                className="text-sm text-primary hover:underline w-full text-center block"
+              >
+                ← Back to login
+              </button>
             </div>
           ) : (
             <>
@@ -177,19 +214,38 @@ const CompanyLoginPage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-foreground">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    className="bg-secondary/50"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      className="bg-secondary/50 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="text-right">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="remember"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    />
+                    <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+                      Remember me
+                    </Label>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setShowForgot(true)}
@@ -206,12 +262,9 @@ const CompanyLoginPage = () => {
               </form>
 
               <div className="flex items-center justify-between mt-6">
-                <button
-                  onClick={() => setStep("pattern")}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  ← Back to pattern
-                </button>
+                <Link to="/agent/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  Agent Login →
+                </Link>
                 <Link to="/" className="text-sm text-primary hover:underline">
                   Login as Buyer
                 </Link>
