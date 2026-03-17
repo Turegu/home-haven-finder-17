@@ -37,6 +37,9 @@ import AdminBlogsPage from "./pages/admin/AdminBlogsPage.tsx";
 import AdminBlogEditPage from "./pages/admin/AdminBlogEditPage.tsx";
 import BlogsPage from "./pages/BlogsPage.tsx";
 import BlogDetailPage from "./pages/BlogDetailPage.tsx";
+import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
+import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
+import FaqPage from "./pages/FaqPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
