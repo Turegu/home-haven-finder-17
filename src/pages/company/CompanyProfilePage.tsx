@@ -42,7 +42,11 @@ const CompanyProfilePage = () => {
     town: "",
     neighbourhood: "",
     pin_location: "",
+    logo_url: "",
+    cover_url: "",
   });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   // Password change
   const [newPassword, setNewPassword] = useState("");
