@@ -49,16 +49,26 @@ export default function AdminLocationsPage() {
 
   const loadProvinces = useCallback(async () => {
     setLoading(true);
-    const { data, count } = await supabase
-      .from("locations")
-      .select("province", { count: "exact" })
-      .eq("status", "active");
-
-    if (data) {
-      const unique = [...new Set(data.map((d: any) => d.province))].sort();
-      setProvinces(unique);
-      setTotalCount(count || 0);
+    let allData: any[] = [];
+    let from = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data, count } = await supabase
+        .from("locations")
+        .select("province, province_ar", { count: from === 0 ? "exact" : undefined })
+        .eq("status", "active")
+        .range(from, from + pageSize - 1);
+      if (!data || data.length === 0) break;
+      if (from === 0 && count) setTotalCount(count);
+      allData.push(...data);
+      if (data.length < pageSize) break;
+      from += pageSize;
     }
+    const uniqueMap = new Map<string, string>();
+    allData.forEach((d: any) => { if (!uniqueMap.has(d.province)) uniqueMap.set(d.province, d.province_ar || ""); });
+    const sorted = [...uniqueMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    setProvinces(sorted.map(([p]) => p));
+    setProvinceArMap(Object.fromEntries(sorted));
     setLoading(false);
   }, []);
 
