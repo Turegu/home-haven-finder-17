@@ -20,6 +20,9 @@ interface LocationPickerProps {
 
 interface NamePair { name: string; ar: string }
 
+// Module-level cache for provinces (loaded once, reused across mounts)
+let provincesCache: NamePair[] | null = null;
+
 // Simple RTL detection: check if document dir is rtl
 function useIsRtl() {
   const [rtl, setRtl] = useState(false);
@@ -46,10 +49,18 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
     if (open) setDraft({ ...value });
   }, [open]);
 
+  // Cache provinces globally so they load once across the app
   useEffect(() => {
+    if (provincesCache) {
+      setProvinces(provincesCache);
+      return;
+    }
     async function loadProvinces() {
       const { data } = await supabase.rpc("get_distinct_provinces");
-      if (data) setProvinces(data as NamePair[]);
+      if (data) {
+        provincesCache = data as NamePair[];
+        setProvinces(provincesCache);
+      }
     }
     loadProvinces();
   }, []);
