@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
+import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
 
 const BuyPage = () => {
