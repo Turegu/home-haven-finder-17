@@ -702,8 +702,10 @@ export type Database = {
           car_parking: number | null
           created_at: string
           currency: string | null
+          exterior_amenities: string[] | null
           id: string
           images: string[] | null
+          interior_amenities: string[] | null
           price: number | null
           project_id: string
           rooms: string | null
@@ -719,8 +721,10 @@ export type Database = {
           car_parking?: number | null
           created_at?: string
           currency?: string | null
+          exterior_amenities?: string[] | null
           id?: string
           images?: string[] | null
+          interior_amenities?: string[] | null
           price?: number | null
           project_id: string
           rooms?: string | null
@@ -736,8 +740,10 @@ export type Database = {
           car_parking?: number | null
           created_at?: string
           currency?: string | null
+          exterior_amenities?: string[] | null
           id?: string
           images?: string[] | null
+          interior_amenities?: string[] | null
           price?: number | null
           project_id?: string
           rooms?: string | null
@@ -758,6 +764,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          area_unit: string | null
           company_id: string | null
           completion_date: string | null
           created_at: string
@@ -765,21 +772,36 @@ export type Database = {
           description: string | null
           developer: string | null
           display_on_homepage: boolean
+          exterior_amenities: string[] | null
           id: string
           images: string[] | null
+          interior_amenities: string[] | null
           listing_id: string
           location: string | null
+          logo_url: string | null
+          max_area: number | null
           max_price: number | null
           max_units: number | null
+          min_area: number | null
           min_price: number | null
           min_units: number | null
+          neighbourhood: string | null
+          pdf_catalogue_url: string | null
+          pin_location: string | null
+          plans: string[] | null
           project_status: string
           project_type: string
+          province: string | null
           status: string
+          tagline: string | null
           title: string
+          town: string | null
           updated_at: string
+          video_link: string | null
+          view_360_link: string | null
         }
         Insert: {
+          area_unit?: string | null
           company_id?: string | null
           completion_date?: string | null
           created_at?: string
@@ -787,21 +809,36 @@ export type Database = {
           description?: string | null
           developer?: string | null
           display_on_homepage?: boolean
+          exterior_amenities?: string[] | null
           id?: string
           images?: string[] | null
+          interior_amenities?: string[] | null
           listing_id?: string
           location?: string | null
+          logo_url?: string | null
+          max_area?: number | null
           max_price?: number | null
           max_units?: number | null
+          min_area?: number | null
           min_price?: number | null
           min_units?: number | null
+          neighbourhood?: string | null
+          pdf_catalogue_url?: string | null
+          pin_location?: string | null
+          plans?: string[] | null
           project_status?: string
           project_type?: string
+          province?: string | null
           status?: string
+          tagline?: string | null
           title: string
+          town?: string | null
           updated_at?: string
+          video_link?: string | null
+          view_360_link?: string | null
         }
         Update: {
+          area_unit?: string | null
           company_id?: string | null
           completion_date?: string | null
           created_at?: string
@@ -809,19 +846,33 @@ export type Database = {
           description?: string | null
           developer?: string | null
           display_on_homepage?: boolean
+          exterior_amenities?: string[] | null
           id?: string
           images?: string[] | null
+          interior_amenities?: string[] | null
           listing_id?: string
           location?: string | null
+          logo_url?: string | null
+          max_area?: number | null
           max_price?: number | null
           max_units?: number | null
+          min_area?: number | null
           min_price?: number | null
           min_units?: number | null
+          neighbourhood?: string | null
+          pdf_catalogue_url?: string | null
+          pin_location?: string | null
+          plans?: string[] | null
           project_status?: string
           project_type?: string
+          province?: string | null
           status?: string
+          tagline?: string | null
           title?: string
+          town?: string | null
           updated_at?: string
+          video_link?: string | null
+          view_360_link?: string | null
         }
         Relationships: [
           {
