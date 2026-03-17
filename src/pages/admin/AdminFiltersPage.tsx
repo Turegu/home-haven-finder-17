@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ChevronRight, GripVertical, Globe } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronRight, GripVertical, Globe, Upload } from "lucide-react";
+import FilterExcelUpload from "@/components/admin/FilterExcelUpload";
 
 const LANGUAGES = [
   { code: "tr", label: "Turkish" },
@@ -54,6 +55,7 @@ const AdminFiltersPage = () => {
   const [formTranslations, setFormTranslations] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState("active");
   const [saving, setSaving] = useState(false);
+  const [excelDialogOpen, setExcelDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -190,6 +192,11 @@ const AdminFiltersPage = () => {
           <p className="text-sm text-muted-foreground mt-1">
             Manage filter categories and options used across listings, search, and forms
           </p>
+          <div className="mt-3">
+            <Button variant="outline" size="sm" onClick={() => setExcelDialogOpen(true)}>
+              <Upload className="h-4 w-4 mr-1" /> Import from Excel
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -378,6 +385,12 @@ const AdminFiltersPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <FilterExcelUpload
+        open={excelDialogOpen}
+        onOpenChange={setExcelDialogOpen}
+        onImportComplete={() => { fetchCategories(); }}
+      />
     </AdminLayout>
   );
 };
