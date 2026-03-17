@@ -9,7 +9,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Save, Lock } from "lucide-react";
+import { Save, Lock, Upload, X } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
