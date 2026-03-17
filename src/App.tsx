@@ -40,6 +40,10 @@ import BlogDetailPage from "./pages/BlogDetailPage.tsx";
 import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
 import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
 import FaqPage from "./pages/FaqPage.tsx";
+import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
+import CompanyDashboardPage from "./pages/company/CompanyDashboardPage.tsx";
+import CompanyProfilePage from "./pages/company/CompanyProfilePage.tsx";
+import CompanyResetPasswordPage from "./pages/company/CompanyResetPasswordPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -89,6 +93,10 @@ const App = () => (
           <Route path="/admin/faqs" element={<AdminFaqsPage />} />
           <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
+          <Route path="/company/login" element={<CompanyLoginPage />} />
+          <Route path="/company" element={<CompanyDashboardPage />} />
+          <Route path="/company/profile" element={<CompanyProfilePage />} />
+          <Route path="/company/reset-password" element={<CompanyResetPasswordPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
