@@ -33,7 +33,7 @@ const packageOptions: { value: MembershipType; label: string }[] = [
   { value: "pro", label: "Pro" },
 ];
 const durationOptions = ["1 Month", "3 Months", "6 Months", "1 Year"];
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa"];
+
 
 const AdminCreateCompanyPage = () => {
   const navigate = useNavigate();
