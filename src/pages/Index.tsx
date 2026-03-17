@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
-import { mockProperties, mockProjects, partnerLogos } from '@/data/mockProperties';
+import { mockProperties, mockProjects } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 
 interface CmsContent {
