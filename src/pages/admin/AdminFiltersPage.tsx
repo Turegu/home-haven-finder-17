@@ -393,7 +393,6 @@ const AdminFiltersPage = () => {
       />
     </AdminLayout>
   );
-  );
 };
 
 export default AdminFiltersPage;
