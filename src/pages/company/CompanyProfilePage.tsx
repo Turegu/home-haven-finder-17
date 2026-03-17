@@ -390,13 +390,23 @@ const CompanyProfilePage = () => {
               <Label className="text-foreground font-medium">Neighbourhood</Label>
               <Input value={form.neighbourhood} onChange={(e) => updateField("neighbourhood", e.target.value)} className="bg-secondary/50" />
             </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Pin Location</Label>
-              <Input value={form.pin_location} onChange={(e) => updateField("pin_location", e.target.value)} className="bg-secondary/50" placeholder="e.g. Istanbul, Turkey" />
+            <div className="space-y-2 md:col-span-2">
+              <Label className="text-foreground font-medium">Pin Location (Coordinates or Address)</Label>
+              <Input
+                value={form.pin_location}
+                onChange={(e) => updateField("pin_location", e.target.value)}
+                className="bg-secondary/50"
+                placeholder="e.g. 41.0082,28.9784 or Istanbul, Beyoglu"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter GPS coordinates (lat,lng) or a full address. You can get coordinates from{" "}
+                <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Maps</a>
+                {" "}— right-click any point and copy the coordinates.
+              </p>
             </div>
           </div>
 
-          {/* Map placeholder */}
+          {/* Map preview */}
           <div className="mt-5 rounded-lg border border-border overflow-hidden bg-muted/50 h-[300px] flex items-center justify-center">
             {form.pin_location ? (
               <iframe
@@ -406,7 +416,7 @@ const CompanyProfilePage = () => {
                 style={{ border: 0 }}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(form.pin_location)}&output=embed`}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(form.pin_location)}&z=15&output=embed`}
               />
             ) : (
               <p className="text-muted-foreground text-sm">Enter a pin location to show the map</p>
