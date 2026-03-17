@@ -206,6 +206,35 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Market Trends - Average Housing Prices */}
+            <MarketTrends
+              province={property.city || null}
+              town={property.city || null}
+              neighbourhood={property.location?.split(',')[0]?.trim() || null}
+              currency={property.currency}
+              areaUnit={property.areaUnit}
+            />
+
+            {/* Price Trends Chart */}
+            <PriceTrendsChart
+              province={property.city || null}
+              town={property.city || null}
+              neighbourhood={property.location?.split(',')[0]?.trim() || null}
+              currency={property.currency}
+              areaUnit={property.areaUnit}
+            />
+
+            {/* ROI Calculator */}
+            <ROICalculator
+              propertyPrice={property.price}
+              propertyArea={property.area}
+              province={property.city || null}
+              town={property.city || null}
+              neighbourhood={property.location?.split(',')[0]?.trim() || null}
+              currency={property.currency}
+              areaUnit={property.areaUnit}
+            />
+
             {/* Loan Calculator */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Loan Calculator</h2>
