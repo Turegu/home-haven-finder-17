@@ -46,10 +46,18 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
     if (open) setDraft({ ...value });
   }, [open]);
 
+  // Cache provinces globally so they load once across the app
   useEffect(() => {
+    if (provincesCache) {
+      setProvinces(provincesCache);
+      return;
+    }
     async function loadProvinces() {
       const { data } = await supabase.rpc("get_distinct_provinces");
-      if (data) setProvinces(data as NamePair[]);
+      if (data) {
+        provincesCache = data as NamePair[];
+        setProvinces(provincesCache);
+      }
     }
     loadProvinces();
   }, []);
