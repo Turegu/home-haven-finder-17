@@ -41,6 +41,7 @@ import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
 import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
 import AdminCrudsPage from "./pages/admin/AdminCrudsPage.tsx";
 import AdminFiltersPage from "./pages/admin/AdminFiltersPage.tsx";
+import AdminLocationsPage from "./pages/admin/AdminLocationsPage.tsx";
 import AdminEmailPreviewPage from "./pages/admin/AdminEmailPreviewPage.tsx";
 import FaqPage from "./pages/FaqPage.tsx";
 import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
