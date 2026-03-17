@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImageIcon, RotateCcw, Save } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 import type { Database } from "@/integrations/supabase/types";
 
 type CompanyType = Database["public"]["Enums"]["company_type"];
@@ -32,7 +33,7 @@ const packageOptions: { value: MembershipType; label: string }[] = [
   { value: "pro", label: "Pro" },
 ];
 const durationOptions = ["1 Month", "3 Months", "6 Months", "1 Year"];
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa"];
+
 
 const AdminCreateCompanyPage = () => {
   const navigate = useNavigate();
@@ -284,48 +285,17 @@ const AdminCreateCompanyPage = () => {
         {/* Location */}
         <div>
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">Location</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-primary font-semibold">Province *</Label>
-              <Select value={form.province} onValueChange={(v) => updateField("province", v)}>
-                <SelectTrigger className="bg-secondary/30">
-                  <SelectValue placeholder="Select Province" />
-                </SelectTrigger>
-                <SelectContent>
-                  {provinces.map(p => (
-                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-primary font-semibold">Town *</Label>
-              <Input
-                placeholder="Select Town"
-                value={form.town}
-                onChange={(e) => updateField("town", e.target.value)}
-                className="bg-secondary/30"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-primary font-semibold">Neighbourhood *</Label>
-              <Input
-                placeholder="Select Neighbourhood"
-                value={form.neighbourhood}
-                onChange={(e) => updateField("neighbourhood", e.target.value)}
-                className="bg-secondary/30"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-primary font-semibold">Pin Location</Label>
-              <Input
-                placeholder="Select Pin Location"
-                value={form.pin_location}
-                onChange={(e) => updateField("pin_location", e.target.value)}
-                className="bg-secondary/30"
-              />
-            </div>
-          </div>
+          <LocationFormFields
+            province={form.province}
+            town={form.town}
+            neighbourhood={form.neighbourhood}
+            pinLocation={form.pin_location}
+            onProvinceChange={(v) => updateField("province", v)}
+            onTownChange={(v) => updateField("town", v)}
+            onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
+            onPinLocationChange={(v) => updateField("pin_location", v)}
+            showMap={false}
+          />
         </div>
 
         {/* Actions */}

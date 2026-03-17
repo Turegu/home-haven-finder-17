@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Save, Upload, X, ImageIcon } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 
 const contractTypes = [
   { value: "buy", label: "Buy" },
@@ -34,7 +35,7 @@ const ageOptions = ["0-1 Years", "1-5 Years", "5-10 Years", "10-20 Years", "20+ 
 const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Monthly", "Yearly", "Daily"];
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa", "Adiyaman", "Mersin", "Mugla"];
+
 
 const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Walk-in Closet", "Laundry Room"];
 const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
@@ -451,37 +452,16 @@ const CompanyPropertyEditPage = () => {
         {/* Location */}
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Province</Label>
-              <Select value={form.province} onValueChange={(v) => updateField("province", v)}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select Province" /></SelectTrigger>
-                <SelectContent>{provinces.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">City/Town</Label>
-              <Input value={form.town} onChange={(e) => updateField("town", e.target.value)} className="bg-secondary/50" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Neighbourhood</Label>
-              <Input value={form.neighbourhood} onChange={(e) => updateField("neighbourhood", e.target.value)} className="bg-secondary/50" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Pin Location</Label>
-              <Input value={form.pin_location} onChange={(e) => updateField("pin_location", e.target.value)} className="bg-secondary/50" placeholder="e.g. Istanbul, Turkey" />
-            </div>
-          </div>
-
-          {/* Map */}
-          <div className="mt-5 rounded-lg border border-border overflow-hidden bg-muted/50 h-[250px]">
-            {form.pin_location ? (
-              <iframe title="Map" width="100%" height="100%" style={{ border: 0 }} loading="lazy"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(form.pin_location)}&output=embed`} />
-            ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Enter pin location to show map</div>
-            )}
-          </div>
+          <LocationFormFields
+            province={form.province}
+            town={form.town}
+            neighbourhood={form.neighbourhood}
+            pinLocation={form.pin_location}
+            onProvinceChange={(v) => updateField("province", v)}
+            onTownChange={(v) => updateField("town", v)}
+            onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
+            onPinLocationChange={(v) => updateField("pin_location", v)}
+          />
         </section>
 
         {/* Media */}
