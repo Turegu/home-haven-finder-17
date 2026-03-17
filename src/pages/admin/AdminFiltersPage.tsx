@@ -55,6 +55,7 @@ const AdminFiltersPage = () => {
   const [formTranslations, setFormTranslations] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState("active");
   const [saving, setSaving] = useState(false);
+  const [excelDialogOpen, setExcelDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
