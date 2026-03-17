@@ -29,6 +29,8 @@ import AdminLanguagesPage from "./pages/admin/AdminLanguagesPage.tsx";
 import AdminCmsPage from "./pages/admin/AdminCmsPage.tsx";
 import AdminCmsEditPage from "./pages/admin/AdminCmsEditPage.tsx";
 import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
+import TermsPage from "./pages/TermsPage.tsx";
+import PrivacyPage from "./pages/PrivacyPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -52,6 +54,8 @@ const App = () => (
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
           <Route path="/property-request" element={<PropertyRequestPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
