@@ -93,6 +93,10 @@ const App = () => (
           <Route path="/admin/faqs" element={<AdminFaqsPage />} />
           <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
+          <Route path="/company/login" element={<CompanyLoginPage />} />
+          <Route path="/company" element={<CompanyDashboardPage />} />
+          <Route path="/company/profile" element={<CompanyProfilePage />} />
+          <Route path="/company/reset-password" element={<CompanyResetPasswordPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
