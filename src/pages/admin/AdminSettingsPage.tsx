@@ -22,7 +22,7 @@ const AdminSettingsPage = () => {
   const [currentPattern, setCurrentPattern] = useState("");
   const [newPattern, setNewPattern] = useState<number[] | null>(null);
   const [patternStep, setPatternStep] = useState<'view' | 'draw' | 'confirm'>('view');
-  const [confirmPattern, setConfirmPattern] = useState<number[] | null>(null);
+  const [_confirmPattern, setConfirmPattern] = useState<number[] | null>(null);
 
   useEffect(() => {
     const fetchSettings = async () => {

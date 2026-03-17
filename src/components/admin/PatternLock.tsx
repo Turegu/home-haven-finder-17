@@ -8,7 +8,7 @@ interface PatternLockProps {
 }
 
 const DOT_COUNT = 9;
-const COLS = 3;
+
 
 const PatternLock = ({ onPatternComplete, error = false, disabled = false }: PatternLockProps) => {
   const [selectedDots, setSelectedDots] = useState<number[]>([]);
