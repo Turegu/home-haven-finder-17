@@ -29,6 +29,7 @@ import AdminLanguagesPage from "./pages/admin/AdminLanguagesPage.tsx";
 import AdminCurrenciesPage from "./pages/admin/AdminCurrenciesPage.tsx";
 import AdminCmsPage from "./pages/admin/AdminCmsPage.tsx";
 import AdminCmsEditPage from "./pages/admin/AdminCmsEditPage.tsx";
+import AdminSettingsPage from "./pages/admin/AdminSettingsPage.tsx";
 import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
@@ -73,6 +74,7 @@ const App = () => (
           <Route path="/admin/currencies" element={<AdminCurrenciesPage />} />
           <Route path="/admin/cms" element={<AdminCmsPage />} />
           <Route path="/admin/cms/:slug" element={<AdminCmsEditPage />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
