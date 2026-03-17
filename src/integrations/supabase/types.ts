@@ -149,6 +149,33 @@ export type Database = {
         }
         Relationships: []
       }
+      cms_pages: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          page_slug: string
+          page_title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          page_slug: string
+          page_title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          page_slug?: string
+          page_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           about: string | null
@@ -288,6 +315,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      featured_locations: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          link_url: string | null
+          name: string
+          sort_order: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          name: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          name?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       languages: {
         Row: {
