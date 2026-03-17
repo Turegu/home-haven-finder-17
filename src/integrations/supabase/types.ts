@@ -918,6 +918,86 @@ export type Database = {
         }
         Relationships: []
       }
+      filter_categories: {
+        Row: {
+          applies_to: string[]
+          category_key: string
+          created_at: string
+          description: string | null
+          id: string
+          sort_order: number
+          status: string
+          title: string
+          translations: Json
+          updated_at: string
+        }
+        Insert: {
+          applies_to?: string[]
+          category_key: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          status?: string
+          title: string
+          translations?: Json
+          updated_at?: string
+        }
+        Update: {
+          applies_to?: string[]
+          category_key?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          translations?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      filter_options: {
+        Row: {
+          category_id: string
+          created_at: string
+          id: string
+          sort_order: number
+          status: string
+          title: string
+          translations: Json
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          title: string
+          translations?: Json
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          translations?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "filter_options_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "filter_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interior_amenities: {
         Row: {
           created_at: string
