@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export interface CurrentPropertyData {
+  price: number;
+  area: number;
+  purpose: "buy" | "rent";
+}
+
 interface MarketStats {
   avgSalePricePerM2: number | null;
   avgRentPricePerM2: number | null;
@@ -11,6 +17,7 @@ interface MarketStats {
   saleCount: number;
   rentCount: number;
   rentalPaybackYears: number | null;
+  isCurrentPropertyOnly: boolean;
 }
 
 interface PriceTrendPoint {
@@ -19,12 +26,21 @@ interface PriceTrendPoint {
   count: number;
 }
 
+function calcStats(props: { price: number; area: number }[]) {
+  if (props.length === 0) return { avg: null, min: null, max: null };
+  const totalPrice = props.reduce((s, p) => s + p.price, 0);
+  const totalArea = props.reduce((s, p) => s + p.area, 0);
+  const avg = totalArea > 0 ? totalPrice / totalArea : null;
+  const perM2s = props.map((p) => p.price / p.area);
+  return { avg, min: Math.min(...perM2s), max: Math.max(...perM2s) };
+}
+
 async function fetchMarketStats(
   neighbourhood: string,
   town: string,
-  province: string
+  province: string,
+  currentProperty?: CurrentPropertyData
 ): Promise<MarketStats> {
-  // Fetch sale properties in the neighbourhood
   const { data: saleProps } = await supabase
     .from("properties")
     .select("price, area")
@@ -38,7 +54,6 @@ async function fetchMarketStats(
     .gt("price", 0)
     .gt("area", 0);
 
-  // Fetch rent properties in the neighbourhood
   const { data: rentProps } = await supabase
     .from("properties")
     .select("price, area")
@@ -52,65 +67,47 @@ async function fetchMarketStats(
     .gt("price", 0)
     .gt("area", 0);
 
-  const sale = saleProps ?? [];
-  const rent = rentProps ?? [];
+  let sale = (saleProps ?? []).map((p) => ({ price: Number(p.price), area: Number(p.area) }));
+  let rent = (rentProps ?? []).map((p) => ({ price: Number(p.price), area: Number(p.area) }));
 
-  let avgSale: number | null = null;
-  let minSale: number | null = null;
-  let maxSale: number | null = null;
-
-  if (sale.length > 0) {
-    const totalSalePrice = sale.reduce((s, p) => s + Number(p.price), 0);
-    const totalSaleArea = sale.reduce((s, p) => s + Number(p.area), 0);
-    avgSale = totalSaleArea > 0 ? totalSalePrice / totalSaleArea : null;
-
-    const perM2s = sale.map((p) => Number(p.price) / Number(p.area));
-    minSale = Math.min(...perM2s);
-    maxSale = Math.max(...perM2s);
+  // If no sale properties found and current property is a sale, use it as the sole data point
+  let isCurrentPropertyOnly = false;
+  if (sale.length === 0 && currentProperty && currentProperty.purpose === "buy" && currentProperty.price > 0 && currentProperty.area > 0) {
+    sale = [{ price: currentProperty.price, area: currentProperty.area }];
+    isCurrentPropertyOnly = true;
   }
 
-  let avgRent: number | null = null;
-  let minRent: number | null = null;
-  let maxRent: number | null = null;
+  const saleStats = calcStats(sale);
+  const rentStats = calcStats(rent);
 
-  if (rent.length > 0) {
-    const totalRentPrice = rent.reduce((s, p) => s + Number(p.price), 0);
-    const totalRentArea = rent.reduce((s, p) => s + Number(p.area), 0);
-    avgRent = totalRentArea > 0 ? totalRentPrice / totalRentArea : null;
-
-    const perM2s = rent.map((p) => Number(p.price) / Number(p.area));
-    minRent = Math.min(...perM2s);
-    maxRent = Math.max(...perM2s);
-  }
-
-  // Rental payback = property_value / (avg_rent_per_m2 * area) → in years
-  // Since we show payback for the neighbourhood, we use: avg_sale / (avg_rent * 12)
   let rentalPaybackYears: number | null = null;
-  if (avgSale && avgRent && avgRent > 0) {
-    rentalPaybackYears = avgSale / (avgRent * 12);
+  if (saleStats.avg && rentStats.avg && rentStats.avg > 0) {
+    rentalPaybackYears = saleStats.avg / (rentStats.avg * 12);
   }
 
   return {
-    avgSalePricePerM2: avgSale,
-    avgRentPricePerM2: avgRent,
-    minSalePricePerM2: minSale,
-    maxSalePricePerM2: maxSale,
-    minRentPricePerM2: minRent,
-    maxRentPricePerM2: maxRent,
+    avgSalePricePerM2: saleStats.avg,
+    avgRentPricePerM2: rentStats.avg,
+    minSalePricePerM2: saleStats.min,
+    maxSalePricePerM2: saleStats.max,
+    minRentPricePerM2: rentStats.min,
+    maxRentPricePerM2: rentStats.max,
     saleCount: sale.length,
     rentCount: rent.length,
     rentalPaybackYears,
+    isCurrentPropertyOnly,
   };
 }
 
 export function useMarketStats(
   neighbourhood: string | null,
   town: string | null,
-  province: string | null
+  province: string | null,
+  currentProperty?: CurrentPropertyData
 ) {
   return useQuery({
     queryKey: ["market-stats", province, town, neighbourhood],
-    queryFn: () => fetchMarketStats(neighbourhood!, town!, province!),
+    queryFn: () => fetchMarketStats(neighbourhood!, town!, province!, currentProperty),
     enabled: !!neighbourhood && !!town && !!province,
     staleTime: 5 * 60 * 1000,
   });
@@ -119,7 +116,8 @@ export function useMarketStats(
 async function fetchPriceTrends(
   neighbourhood: string,
   town: string,
-  province: string
+  province: string,
+  currentProperty?: CurrentPropertyData
 ): Promise<PriceTrendPoint[]> {
   const { data } = await supabase
     .from("properties")
@@ -135,11 +133,18 @@ async function fetchPriceTrends(
     .gt("area", 0)
     .order("created_at", { ascending: true });
 
-  if (!data || data.length === 0) return [];
+  const items = data ?? [];
+
+  // If no data but current property is a sale, show single point
+  if (items.length === 0 && currentProperty && currentProperty.purpose === "buy" && currentProperty.price > 0 && currentProperty.area > 0) {
+    const now = new Date();
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    return [{ period: key, avgPricePerM2: currentProperty.price / currentProperty.area, count: 1 }];
+  }
 
   // Group by month
   const grouped: Record<string, { totalPrice: number; totalArea: number; count: number }> = {};
-  for (const p of data) {
+  for (const p of items) {
     const d = new Date(p.created_at);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     if (!grouped[key]) grouped[key] = { totalPrice: 0, totalArea: 0, count: 0 };
@@ -160,17 +165,17 @@ async function fetchPriceTrends(
 export function usePriceTrends(
   neighbourhood: string | null,
   town: string | null,
-  province: string | null
+  province: string | null,
+  currentProperty?: CurrentPropertyData
 ) {
   return useQuery({
     queryKey: ["price-trends", province, town, neighbourhood],
-    queryFn: () => fetchPriceTrends(neighbourhood!, town!, province!),
+    queryFn: () => fetchPriceTrends(neighbourhood!, town!, province!, currentProperty),
     enabled: !!neighbourhood && !!town && !!province,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-// Fetch neighbourhoods in the same town for the selector
 export function useNeighbourhoodsInTown(province: string | null, town: string | null) {
   return useQuery({
     queryKey: ["neighbourhoods-in-town", province, town],

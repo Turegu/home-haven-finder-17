@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { TrendingUp, Home, CalendarClock, AlertCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMarketStats, useNeighbourhoodsInTown } from "@/hooks/useMarketTrends";
+import { useMarketStats, useNeighbourhoodsInTown, CurrentPropertyData } from "@/hooks/useMarketTrends";
 
 interface MarketTrendsProps {
   province: string | null;
@@ -10,17 +10,21 @@ interface MarketTrendsProps {
   neighbourhood: string | null;
   currency?: string;
   areaUnit?: string;
+  currentProperty?: CurrentPropertyData;
 }
 
-const MIN_DATA_THRESHOLD = 2;
-
-const MarketTrends = ({ province, town, neighbourhood, currency = "USD", areaUnit = "m²" }: MarketTrendsProps) => {
+const MarketTrends = ({ province, town, neighbourhood, currency = "USD", areaUnit = "m²", currentProperty }: MarketTrendsProps) => {
   const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(neighbourhood);
   const { data: neighbourhoods } = useNeighbourhoodsInTown(province, town);
-  const { data: stats, isLoading } = useMarketStats(selectedNeighbourhood, town, province);
 
-  const hasEnoughSaleData = stats && stats.saleCount >= MIN_DATA_THRESHOLD;
-  const hasEnoughRentData = stats && stats.rentCount >= MIN_DATA_THRESHOLD;
+  // Only pass currentProperty fallback when viewing the listing's own neighbourhood
+  const isOwnNeighbourhood = selectedNeighbourhood === neighbourhood;
+  const { data: stats, isLoading } = useMarketStats(
+    selectedNeighbourhood, town, province,
+    isOwnNeighbourhood ? currentProperty : undefined
+  );
+
+  const hasData = stats && (stats.saleCount > 0 || stats.rentCount > 0);
 
   const formatPrice = (val: number | null) => {
     if (val === null) return "—";
@@ -54,42 +58,43 @@ const MarketTrends = ({ province, town, neighbourhood, currency = "USD", areaUni
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Average Sale Price */}
           <StatCard
             icon={<Home className="h-8 w-8 text-primary" />}
             title="Average Sale Price"
-            value={hasEnoughSaleData ? formatPrice(stats.avgSalePricePerM2) : null}
-            min={hasEnoughSaleData ? formatPrice(stats.minSalePricePerM2) : null}
-            max={hasEnoughSaleData ? formatPrice(stats.maxSalePricePerM2) : null}
+            value={stats?.avgSalePricePerM2 ? formatPrice(stats.avgSalePricePerM2) : null}
+            min={stats?.saleCount && stats.saleCount > 1 ? formatPrice(stats.minSalePricePerM2) : null}
+            max={stats?.saleCount && stats.saleCount > 1 ? formatPrice(stats.maxSalePricePerM2) : null}
             count={stats?.saleCount ?? 0}
+            isSingleListing={stats?.isCurrentPropertyOnly}
           />
 
-          {/* Average Rent Price */}
           <StatCard
             icon={<Home className="h-8 w-8 text-primary" />}
             title="Average Monthly Rental"
-            value={hasEnoughRentData ? formatPrice(stats.avgRentPricePerM2) : null}
-            min={hasEnoughRentData ? formatPrice(stats.minRentPricePerM2) : null}
-            max={hasEnoughRentData ? formatPrice(stats.maxRentPricePerM2) : null}
+            value={stats?.avgRentPricePerM2 ? formatPrice(stats.avgRentPricePerM2) : null}
+            min={stats?.rentCount && stats.rentCount > 1 ? formatPrice(stats.minRentPricePerM2) : null}
+            max={stats?.rentCount && stats.rentCount > 1 ? formatPrice(stats.maxRentPricePerM2) : null}
             count={stats?.rentCount ?? 0}
           />
 
-          {/* Rental Payback Period */}
           <StatCard
             icon={<CalendarClock className="h-8 w-8 text-primary" />}
             title="Rental Payback Period"
             value={
-              hasEnoughSaleData && hasEnoughRentData && stats.rentalPaybackYears
+              stats?.rentalPaybackYears
                 ? `${stats.rentalPaybackYears.toFixed(1)} Years`
                 : null
             }
-            count={hasEnoughSaleData && hasEnoughRentData ? Math.min(stats.saleCount, stats.rentCount) : 0}
+            count={stats ? Math.min(stats.saleCount, stats.rentCount) : 0}
           />
         </div>
       )}
 
       <p className="text-xs text-muted-foreground mt-4">
-        {selectedNeighbourhood && town ? `Based on residential properties listed in ${selectedNeighbourhood}, ${town}` : "Select a neighbourhood to view market data"}
+        {selectedNeighbourhood && town
+          ? `Based on residential properties listed in ${selectedNeighbourhood}, ${town}`
+          : "Select a neighbourhood to view market data"}
+        {stats?.isCurrentPropertyOnly && " · Using this listing as the only data point"}
       </p>
     </div>
   );
@@ -102,9 +107,10 @@ interface StatCardProps {
   min?: string | null;
   max?: string | null;
   count: number;
+  isSingleListing?: boolean;
 }
 
-const StatCard = ({ icon, title, value, min, max, count }: StatCardProps) => (
+const StatCard = ({ icon, title, value, min, max, count, isSingleListing }: StatCardProps) => (
   <div className="bg-muted/50 rounded-lg p-5 text-center space-y-2">
     <div className="flex justify-center">{icon}</div>
     <h3 className="font-semibold text-sm text-foreground">{title}</h3>
@@ -117,13 +123,17 @@ const StatCard = ({ icon, title, value, min, max, count }: StatCardProps) => (
             <span>Max: {max}</span>
           </div>
         )}
-        <p className="text-xs text-muted-foreground">Based on {count} properties</p>
+        <p className="text-xs text-muted-foreground">
+          {isSingleListing ? "Based on this listing only" : `Based on ${count} properties`}
+        </p>
       </>
     ) : (
       <div className="flex flex-col items-center gap-1 py-2">
         <AlertCircle className="h-5 w-5 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">Not enough data</p>
-        <p className="text-xs text-muted-foreground">{count < MIN_DATA_THRESHOLD ? `Only ${count} listing${count !== 1 ? "s" : ""} found` : "No listings found"}</p>
+        <p className="text-xs text-muted-foreground">
+          {count === 0 ? "No listings found" : `Only ${count} listing${count !== 1 ? "s" : ""} found`}
+        </p>
       </div>
     )}
   </div>
