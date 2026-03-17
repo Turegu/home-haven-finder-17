@@ -6,11 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Save, Upload, X, Eye, EyeOff } from "lucide-react";
+import { Save, Upload, X, Mail } from "lucide-react";
 
 const languageOptions = ["English", "Turkish", "Arabic", "French", "German", "Russian", "Chinese", "Spanish"];
 
@@ -21,7 +18,6 @@ const CompanyAgentEditPage = () => {
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [agentHasUser, setAgentHasUser] = useState(false);
 
   const [form, setForm] = useState({
@@ -34,7 +30,6 @@ const CompanyAgentEditPage = () => {
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
-    temp_password: "",
   });
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -75,7 +70,6 @@ const CompanyAgentEditPage = () => {
         service_areas: (d.service_areas || []).join(", "),
         languages: d.languages || [],
         registration_number: d.registration_number || "",
-        temp_password: "",
       });
       setAvatarUrl(d.avatar_url || "");
       setAgentHasUser(!!d.user_id);
@@ -100,8 +94,6 @@ const CompanyAgentEditPage = () => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.name.trim()) { toast.error("Agent name is required"); return; }
     if (!form.email.trim()) { toast.error("Email is required"); return; }
-    if (!isEdit && !form.temp_password) { toast.error("Temporary password is required for new agents"); return; }
-    if (!isEdit && form.temp_password.length < 6) { toast.error("Password must be at least 6 characters"); return; }
 
     setLoading(true);
 
@@ -134,22 +126,20 @@ const CompanyAgentEditPage = () => {
           .single();
         if (agentErr) throw agentErr;
 
-        // Create auth user via edge function
+        // Send email invite via edge function (no temp password needed)
         const { data: fnData, error: fnErr } = await supabase.functions.invoke("create-agent-user", {
           body: {
             email: form.email.trim(),
-            password: form.temp_password,
             agentId: agentData.id,
           },
         });
 
         if (fnErr || (fnData && fnData.error)) {
-          // If user creation fails, delete the agent record
           await supabase.from("agents").delete().eq("id", agentData.id);
-          throw new Error(fnData?.error || fnErr?.message || "Failed to create agent account");
+          throw new Error(fnData?.error || fnErr?.message || "Failed to send agent invitation");
         }
 
-        toast.success("Agent created! They can log in with the temporary password.");
+        toast.success("Agent created! An invitation email has been sent to set up their account.");
         navigate("/company/agents");
       }
     } catch (err: any) {
@@ -237,15 +227,20 @@ const CompanyAgentEditPage = () => {
           </div>
         </section>
 
-        {/* Contact & Account */}
+        {/* Contact */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Contact & Account</h2>
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Contact Information</h2>
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Email *</Label>
                 <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" required placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
                 {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">Email cannot be changed after account creation</p>}
+                {!isEdit && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Mail className="h-3 w-3" /> An invitation email will be sent to this address
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Phone</Label>
@@ -257,27 +252,6 @@ const CompanyAgentEditPage = () => {
                 <Label className="text-foreground font-medium">WhatsApp Number</Label>
                 <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" />
               </div>
-              {!isEdit && (
-                <div className="space-y-2">
-                  <Label className="text-foreground font-medium">Temporary Password *</Label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      value={form.temp_password}
-                      onChange={(e) => updateField("temp_password", e.target.value)}
-                      className="bg-secondary/50 pr-10"
-                      placeholder="Min 6 characters"
-                      required
-                      minLength={6}
-                    />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Agent can change this after first login</p>
-                </div>
-              )}
             </div>
           </div>
         </section>
@@ -285,7 +259,8 @@ const CompanyAgentEditPage = () => {
         {/* Submit */}
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={loading} className="px-8">
-            <Save className="h-4 w-4 mr-2" /> {loading ? "Saving..." : isEdit ? "Update" : "Create"}
+            {!isEdit && <Mail className="h-4 w-4 mr-2" />}
+            {loading ? "Saving..." : isEdit ? "Update" : "Create & Send Invite"}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate("/company/agents")}>Cancel</Button>
         </div>
