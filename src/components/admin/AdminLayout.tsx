@@ -25,6 +25,7 @@ const sidebarItems = [
   { label: "CMS", icon: FileText, path: "/admin/cms" },
   { label: "CRUDs", icon: ListChecks, path: "/admin/cruds" },
   { label: "Filters", icon: SlidersHorizontal, path: "/admin/filters" },
+  { label: "Locations", icon: MapPin, path: "/admin/locations" },
   { label: "Email Templates", icon: Mail, path: "/admin/email-templates" },
   { label: "Settings", icon: Settings, path: "/admin/settings", hasSubmenu: true },
 ];

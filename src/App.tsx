@@ -119,6 +119,7 @@ const App = () => (
           <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
           <Route path="/admin/cruds" element={<AdminCrudsPage />} />
           <Route path="/admin/filters" element={<AdminFiltersPage />} />
+          <Route path="/admin/locations" element={<AdminLocationsPage />} />
           <Route path="/admin/email-templates" element={<AdminEmailPreviewPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
           <Route path="/company/login" element={<CompanyLoginPage />} />
