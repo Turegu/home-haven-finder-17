@@ -18,6 +18,12 @@ const BuyPage = () => {
   const purpose = searchParams.get('propertyPurpose') || 'buy';
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
+  });
+  const [keyword, setKeyword] = useState(searchParams.get('q') || "");
 
   const properties = mockProperties;
   const title = purpose === 'rent' ? 'Residential Properties for rent' : 'Residential Properties for sale';
