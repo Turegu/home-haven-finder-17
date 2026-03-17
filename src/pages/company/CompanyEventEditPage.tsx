@@ -12,6 +12,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { Save, Upload, X } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 
 const eventTypes = [
   { value: "open_house", label: "Open House" },
