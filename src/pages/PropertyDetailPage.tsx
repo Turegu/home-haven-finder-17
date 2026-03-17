@@ -213,6 +213,7 @@ const PropertyDetailPage = () => {
               neighbourhood={property.location?.split(',')[0]?.trim() || null}
               currency={property.currency}
               areaUnit={property.areaUnit}
+              currentProperty={{ price: property.price, area: property.area, purpose: property.listingType === 'buy' ? 'buy' : 'rent' }}
             />
 
             {/* Price Trends Chart */}
@@ -222,6 +223,7 @@ const PropertyDetailPage = () => {
               neighbourhood={property.location?.split(',')[0]?.trim() || null}
               currency={property.currency}
               areaUnit={property.areaUnit}
+              currentProperty={{ price: property.price, area: property.area, purpose: property.listingType === 'buy' ? 'buy' : 'rent' }}
             />
 
             {/* ROI Calculator */}
