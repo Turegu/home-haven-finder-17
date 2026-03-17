@@ -34,7 +34,7 @@ const ageOptions = ["0-1 Years", "1-5 Years", "5-10 Years", "10-20 Years", "20+ 
 const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Monthly", "Yearly", "Daily"];
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa", "Adiyaman", "Mersin", "Mugla"];
+
 
 const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Walk-in Closet", "Laundry Room"];
 const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
