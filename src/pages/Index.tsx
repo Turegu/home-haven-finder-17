@@ -53,8 +53,17 @@ const Index = () => {
         .order("sort_order");
       if (data) setLocations(data as FeaturedLocation[]);
     };
+    const fetchPartners = async () => {
+      const { data } = await supabase
+        .from("partners")
+        .select("*")
+        .eq("status", "active")
+        .order("sort_order");
+      if (data) setPartners(data as Partner[]);
+    };
     fetchCms();
     fetchLocations();
+    fetchPartners();
   }, []);
 
   const hero = cms.hero || {};
