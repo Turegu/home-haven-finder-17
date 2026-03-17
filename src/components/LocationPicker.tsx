@@ -30,14 +30,22 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
 
   useEffect(() => {
     async function loadProvinces() {
-      const { data } = await supabase
-        .from("locations")
-        .select("province")
-        .eq("status", "active");
-      if (data) {
-        const unique = [...new Set(data.map((d: any) => d.province))].sort();
-        setProvinces(unique);
+      let allProvinces: string[] = [];
+      let from = 0;
+      const pageSize = 1000;
+      while (true) {
+        const { data } = await supabase
+          .from("locations")
+          .select("province")
+          .eq("status", "active")
+          .range(from, from + pageSize - 1);
+        if (!data || data.length === 0) break;
+        allProvinces.push(...data.map((d: any) => d.province));
+        if (data.length < pageSize) break;
+        from += pageSize;
       }
+      const unique = [...new Set(allProvinces)].sort();
+      setProvinces(unique);
     }
     loadProvinces();
   }, []);
