@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Save, Lock, Upload, X } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
