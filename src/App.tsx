@@ -137,12 +137,12 @@ const App = () => (
            <Route path="/agent/login" element={<AgentLoginPage />} />
            <Route path="/agent" element={<AgentDashboardPage />} />
            <Route path="/agent/profile" element={<AgentProfilePage />} />
-           <Route path="/agent/properties" element={<CompanyPropertiesPage />} />
-           <Route path="/agent/projects" element={<CompanyProjectsPage />} />
-           <Route path="/agent/events" element={<CompanyEventsPage />} />
-           <Route path="/agent/followers" element={<CompanyFollowersPage />} />
-           <Route path="/agent/notifications" element={<CompanyNotificationsPage />} />
-           <Route path="/agent/inbox" element={<CompanyInboxPage />} />
+           <Route path="/agent/properties" element={<AgentPropertiesPage />} />
+           <Route path="/agent/projects" element={<AgentProjectsPage />} />
+           <Route path="/agent/events" element={<AgentEventsPage />} />
+           <Route path="/agent/followers" element={<AgentFollowersPage />} />
+           <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
+           <Route path="/agent/inbox" element={<AgentInboxPage />} />
            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
