@@ -40,6 +40,10 @@ import BlogDetailPage from "./pages/BlogDetailPage.tsx";
 import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
 import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
 import FaqPage from "./pages/FaqPage.tsx";
+import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
+import CompanyDashboardPage from "./pages/company/CompanyDashboardPage.tsx";
+import CompanyProfilePage from "./pages/company/CompanyProfilePage.tsx";
+import CompanyResetPasswordPage from "./pages/company/CompanyResetPasswordPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
