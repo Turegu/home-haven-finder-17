@@ -39,6 +39,7 @@ const PAGE_OPTIONS = [
   { value: "project-detail", label: "Project Detail" },
   { value: "events", label: "Events" },
   { value: "event-detail", label: "Event Detail" },
+  { value: "agents", label: "Agents" },
 ];
 
 const POSITION_OPTIONS = [

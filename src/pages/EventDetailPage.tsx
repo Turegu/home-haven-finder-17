@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BannerDisplay from '@/components/BannerDisplay';
 import { mockEvents } from '@/data/mockEvents';
 
 const EventDetailPage = () => {
@@ -177,8 +178,14 @@ const EventDetailPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Vertical Banner */}
+            <BannerDisplay pageName="event-detail" bannerType="vertical" />
           </div>
         </div>
+
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="event-detail" bannerType="horizontal" className="mt-8" />
       </div>
 
       <Footer />

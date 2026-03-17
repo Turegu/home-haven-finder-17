@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BannerDisplay from '@/components/BannerDisplay';
 import { mockEvents } from '@/data/mockEvents';
 
 const EventsPage = () => {
@@ -84,6 +85,9 @@ const EventsPage = () => {
           </div>
         </div>
 
+        {/* Content with sidebar banner */}
+        <div className="flex gap-6">
+        <div className="flex-1">
         {/* Event Cards */}
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
           {mockEvents.map((event) => (
@@ -163,6 +167,18 @@ const EventsPage = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="events" bannerType="horizontal" className="mt-6" />
+        </div>
+
+        {/* Vertical Sidebar Banner */}
+        <div className="hidden lg:block w-[225px] shrink-0">
+          <div className="sticky top-[160px]">
+            <BannerDisplay pageName="events" bannerType="vertical" />
+          </div>
+        </div>
         </div>
       </div>
 

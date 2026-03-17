@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Search, User } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BannerDisplay from '@/components/BannerDisplay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { mockCompanies, mockAgents } from '@/data/mockAgents';
@@ -180,6 +181,8 @@ const AgentsPage = () => {
             ))}
           </div>
         )}
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="agents" bannerType="horizontal" className="mt-8" />
       </div>
 
       <Footer />
