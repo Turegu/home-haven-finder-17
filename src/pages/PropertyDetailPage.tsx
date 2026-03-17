@@ -11,6 +11,9 @@ import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
+import MarketTrends from '@/components/MarketTrends';
+import ROICalculator from '@/components/ROICalculator';
+import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import { mockProperties } from '@/data/mockProperties';
 
@@ -202,6 +205,35 @@ const PropertyDetailPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Market Trends - Average Housing Prices */}
+            <MarketTrends
+              province={property.city || null}
+              town={property.city || null}
+              neighbourhood={property.location?.split(',')[0]?.trim() || null}
+              currency={property.currency}
+              areaUnit={property.areaUnit}
+            />
+
+            {/* Price Trends Chart */}
+            <PriceTrendsChart
+              province={property.city || null}
+              town={property.city || null}
+              neighbourhood={property.location?.split(',')[0]?.trim() || null}
+              currency={property.currency}
+              areaUnit={property.areaUnit}
+            />
+
+            {/* ROI Calculator */}
+            <ROICalculator
+              propertyPrice={property.price}
+              propertyArea={property.area}
+              province={property.city || null}
+              town={property.city || null}
+              neighbourhood={property.location?.split(',')[0]?.trim() || null}
+              currency={property.currency}
+              areaUnit={property.areaUnit}
+            />
 
             {/* Loan Calculator */}
             <div className="bg-card rounded-xl border border-border p-6">
