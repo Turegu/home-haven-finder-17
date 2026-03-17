@@ -275,6 +275,7 @@ export type Database = {
           cover_url: string | null
           created_at: string
           created_by: string | null
+          credit_balance: number
           email: string
           id: string
           is_verified: boolean
@@ -301,6 +302,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
+          credit_balance?: number
           email: string
           id?: string
           is_verified?: boolean
@@ -327,6 +329,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
+          credit_balance?: number
           email?: string
           id?: string
           is_verified?: boolean
@@ -348,6 +351,38 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: []
+      }
+      company_pattern_codes: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          pattern_code: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          pattern_code?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          pattern_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_pattern_codes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       currencies: {
         Row: {
