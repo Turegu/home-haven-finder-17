@@ -33,6 +33,10 @@ import AdminSettingsPage from "./pages/admin/AdminSettingsPage.tsx";
 import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
+import AdminBlogsPage from "./pages/admin/AdminBlogsPage.tsx";
+import AdminBlogEditPage from "./pages/admin/AdminBlogEditPage.tsx";
+import BlogsPage from "./pages/BlogsPage.tsx";
+import BlogDetailPage from "./pages/BlogDetailPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -58,6 +62,8 @@ const App = () => (
           <Route path="/property-request" element={<PropertyRequestPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/blog" element={<BlogsPage />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
@@ -75,6 +81,8 @@ const App = () => (
           <Route path="/admin/cms" element={<AdminCmsPage />} />
           <Route path="/admin/cms/:slug" element={<AdminCmsEditPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
+          <Route path="/admin/blog" element={<AdminBlogsPage />} />
+          <Route path="/admin/blog/:id" element={<AdminBlogEditPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
