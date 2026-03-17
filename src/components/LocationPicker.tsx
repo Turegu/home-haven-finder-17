@@ -20,6 +20,9 @@ interface LocationPickerProps {
 
 interface NamePair { name: string; ar: string }
 
+// Module-level cache for provinces (loaded once, reused across mounts)
+let provincesCache: NamePair[] | null = null;
+
 // Simple RTL detection: check if document dir is rtl
 function useIsRtl() {
   const [rtl, setRtl] = useState(false);
