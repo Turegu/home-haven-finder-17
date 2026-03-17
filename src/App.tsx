@@ -116,6 +116,9 @@ const App = () => (
            <Route path="/company/events" element={<CompanyEventsPage />} />
            <Route path="/company/events/new" element={<CompanyEventEditPage />} />
            <Route path="/company/events/:id/edit" element={<CompanyEventEditPage />} />
+           <Route path="/company/agents" element={<CompanyAgentsPage />} />
+           <Route path="/company/agents/new" element={<CompanyAgentEditPage />} />
+           <Route path="/company/agents/:id/edit" element={<CompanyAgentEditPage />} />
            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
