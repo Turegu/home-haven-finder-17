@@ -1,25 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Globe, ChevronDown, DollarSign, Ruler, Bell, Heart, Layers,
+  Globe, ChevronDown, Ruler, Bell, Heart, Layers,
   Menu, X, User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-
-interface Language {
-  id: string;
-  name: string;
-  code: string;
-}
-
-interface Currency {
-  id: string;
-  name: string;
-  code: string;
-  symbol: string;
-}
+import { useLanguages, useCurrencies } from '@/hooks/useAppData';
 
 const AREA_UNITS = [
   { label: 'Meter Sq. (m²)', value: 'm²' },
@@ -30,43 +17,36 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [compareCount] = useState(0);
 
-  // Data from DB
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
+  const { data: languages = [] } = useLanguages();
+  const { data: currencies = [] } = useCurrencies();
 
-  // Selected values
-  const [selectedLang, setSelectedLang] = useState<Language | null>(null);
-  const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
+  const [selectedLang, setSelectedLang] = useState<{ id: string; name: string; code: string } | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<{ id: string; name: string; code: string; symbol: string } | null>(null);
   const [selectedArea, setSelectedArea] = useState(AREA_UNITS[0]);
-
-  // Dropdown open state
   const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | null>(null);
 
   const langRef = useRef<HTMLDivElement>(null);
   const currRef = useRef<HTMLDivElement>(null);
   const areaRef = useRef<HTMLDivElement>(null);
 
+  // Set defaults once data loads
   useEffect(() => {
-    const fetchData = async () => {
-      const [langRes, currRes] = await Promise.all([
-        supabase.from('languages').select('id, name, code').eq('status', 'active').order('sort_order'),
-        supabase.from('currencies').select('id, name, code, symbol').eq('status', 'active').order('sort_order'),
-      ]);
-      if (langRes.data) {
-        setLanguages(langRes.data);
-        const saved = localStorage.getItem('selectedLangCode');
-        const match = langRes.data.find(l => l.code === saved) || langRes.data.find(l => l.code === 'en') || langRes.data[0];
-        if (match) setSelectedLang(match);
-      }
-      if (currRes.data) {
-        setCurrencies(currRes.data as Currency[]);
-        const saved = localStorage.getItem('selectedCurrencyCode');
-        const match = (currRes.data as Currency[]).find(c => c.code === saved) || (currRes.data as Currency[]).find(c => c.code === 'USD') || (currRes.data as Currency[])[0];
-        if (match) setSelectedCurrency(match);
-      }
-    };
-    fetchData();
+    if (languages.length > 0 && !selectedLang) {
+      const saved = localStorage.getItem('selectedLangCode');
+      const match = languages.find(l => l.code === saved) || languages.find(l => l.code === 'en') || languages[0];
+      if (match) setSelectedLang(match);
+    }
+  }, [languages, selectedLang]);
 
+  useEffect(() => {
+    if (currencies.length > 0 && !selectedCurrency) {
+      const saved = localStorage.getItem('selectedCurrencyCode');
+      const match = currencies.find(c => c.code === saved) || currencies.find(c => c.code === 'USD') || currencies[0];
+      if (match) setSelectedCurrency(match);
+    }
+  }, [currencies, selectedCurrency]);
+
+  useEffect(() => {
     const savedArea = localStorage.getItem('selectedAreaUnit');
     if (savedArea) {
       const match = AREA_UNITS.find(a => a.value === savedArea);
@@ -89,13 +69,13 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [openDropdown]);
 
-  const selectLang = (lang: Language) => {
+  const selectLang = (lang: typeof languages[0]) => {
     setSelectedLang(lang);
     localStorage.setItem('selectedLangCode', lang.code);
     setOpenDropdown(null);
   };
 
-  const selectCurrency = (currency: Currency) => {
+  const selectCurrency = (currency: typeof currencies[0]) => {
     setSelectedCurrency(currency);
     localStorage.setItem('selectedCurrencyCode', currency.code);
     setOpenDropdown(null);

@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,71 +6,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface FilterCategory {
-  id: string;
-  category_key: string;
-  title: string;
-  applies_to: string[];
-}
-
-interface FilterOption {
-  id: string;
-  category_id: string;
-  title: string;
-}
+import { useFilterCategories } from "@/hooks/useAppData";
 
 interface SearchFiltersProps {
-  /** Which context to show filters for: "property", "project", "project_unit", "event" */
   context: string;
   selectedFilters: Record<string, string[]>;
   onFiltersChange: (filters: Record<string, string[]>) => void;
-  /** Category keys to show as quick-access buttons in the toolbar */
   quickFilterKeys?: string[];
 }
 
 export default function SearchFilters({ context, selectedFilters, onFiltersChange, quickFilterKeys }: SearchFiltersProps) {
-  const [categories, setCategories] = useState<FilterCategory[]>([]);
-  const [optionsByCategory, setOptionsByCategory] = useState<Record<string, FilterOption[]>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      const { data: cats } = await supabase
-        .from("filter_categories")
-        .select("id, category_key, title, applies_to")
-        .eq("status", "active")
-        .order("sort_order");
-
-      if (!cats) { setLoading(false); return; }
-
-      const relevantCats = cats.filter((c) =>
-        (c.applies_to as string[]).includes(context) || (c.applies_to as string[]).includes("search")
-      );
-      setCategories(relevantCats);
-
-      const catIds = relevantCats.map((c) => c.id);
-      if (catIds.length > 0) {
-        const { data: opts } = await supabase
-          .from("filter_options")
-          .select("id, category_id, title")
-          .in("category_id", catIds)
-          .eq("status", "active")
-          .order("sort_order");
-
-        if (opts) {
-          const grouped: Record<string, FilterOption[]> = {};
-          for (const opt of opts) {
-            if (!grouped[opt.category_id]) grouped[opt.category_id] = [];
-            grouped[opt.category_id].push(opt);
-          }
-          setOptionsByCategory(grouped);
-        }
-      }
-      setLoading(false);
-    }
-    load();
-  }, [context]);
+  const { data, isLoading } = useFilterCategories(context);
+  const categories = data?.categories ?? [];
+  const optionsByCategory = data?.optionsByCategory ?? {};
 
   function toggleFilter(categoryKey: string, optionTitle: string) {
     const current = selectedFilters[categoryKey] || [];
@@ -93,7 +40,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
 
   const activeCount = Object.values(selectedFilters).reduce((s, v) => s + v.length, 0);
 
-  if (loading) return null;
+  if (isLoading) return null;
 
   const defaultQuickKeys = quickFilterKeys || categories.slice(0, 4).map((c) => c.category_key);
   const quickCategories = categories.filter((c) => defaultQuickKeys.includes(c.category_key));
@@ -101,7 +48,6 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
 
   return (
     <>
-      {/* Quick filter buttons */}
       {quickCategories.map((cat) => (
         <FilterDropdown
           key={cat.id}
@@ -113,7 +59,6 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
         />
       ))}
 
-      {/* "More Filters" sheet for remaining */}
       {remainingCategories.length > 0 && (
         <Sheet>
           <SheetTrigger asChild>
@@ -173,7 +118,6 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
         </Sheet>
       )}
 
-      {/* Active filter badges */}
       {activeCount > 0 && (
         <div className="flex flex-wrap items-center gap-1 ml-1">
           {Object.entries(selectedFilters).map(([key, values]) =>
@@ -202,8 +146,8 @@ function FilterDropdown({
   onToggle,
   onClear,
 }: {
-  category: FilterCategory;
-  options: FilterOption[];
+  category: { id: string; category_key: string; title: string };
+  options: { id: string; title: string }[];
   selected: string[];
   onToggle: (title: string) => void;
   onClear: () => void;

@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { ArrowRight, MapPin, Building, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -6,7 +5,7 @@ import HeroSearch from '@/components/HeroSearch';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
 import { mockProperties, mockProjects } from '@/data/mockProperties';
-import { supabase } from '@/integrations/supabase/client';
+import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
 
 interface CmsContent {
   hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
@@ -17,54 +16,10 @@ interface CmsContent {
   partners?: { title?: string; tagline?: string };
 }
 
-interface FeaturedLocation {
-  id: string;
-  name: string;
-  image_url: string | null;
-  link_url: string | null;
-}
-
-interface Partner {
-  id: string;
-  name: string;
-  logo_url: string | null;
-  link_url: string | null;
-}
-
 const Index = () => {
-  const [cms, setCms] = useState<CmsContent>({});
-  const [locations, setLocations] = useState<FeaturedLocation[]>([]);
-  const [partners, setPartners] = useState<Partner[]>([]);
-
-  useEffect(() => {
-    const fetchCms = async () => {
-      const { data } = await supabase
-        .from("cms_pages")
-        .select("content")
-        .eq("page_slug", "home")
-        .limit(1);
-      if (data?.[0]) setCms((data[0] as any).content as CmsContent);
-    };
-    const fetchLocations = async () => {
-      const { data } = await supabase
-        .from("featured_locations")
-        .select("*")
-        .eq("status", "active")
-        .order("sort_order");
-      if (data) setLocations(data as FeaturedLocation[]);
-    };
-    const fetchPartners = async () => {
-      const { data } = await supabase
-        .from("partners")
-        .select("*")
-        .eq("status", "active")
-        .order("sort_order");
-      if (data) setPartners(data as Partner[]);
-    };
-    fetchCms();
-    fetchLocations();
-    fetchPartners();
-  }, []);
+  const { data: cms = {} } = useCmsPage<CmsContent>("home");
+  const { data: locations = [] } = useFeaturedLocations();
+  const { data: partners = [] } = usePartners();
 
   const hero = cms.hero || {};
   const secondBanner = cms.second_banner || {};
@@ -77,7 +32,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Banner - Full width, clickable */}
+      {/* Hero Banner */}
       <section className="relative w-full">
         {hero.link_url ? (
           <a href={hero.link_url} target="_blank" rel="noopener noreferrer" className="block relative">
@@ -88,26 +43,17 @@ const Index = () => {
         )}
       </section>
 
-      {/* Search Bar - Moved below banners */}
       <HeroSearch />
 
-      {/* Second Banner - Slightly smaller, for advertising */}
+      {/* Second Banner */}
       {secondBanner.image_url && (
         <section className="container mx-auto px-4 py-6">
           {secondBanner.link_url ? (
             <a href={secondBanner.link_url} target="_blank" rel="noopener noreferrer" className="block">
-              <img
-                src={secondBanner.image_url}
-                alt="Advertisement"
-                className="w-full h-auto max-h-[180px] object-cover rounded-xl"
-              />
+              <img src={secondBanner.image_url} alt="Advertisement" loading="lazy" className="w-full h-auto max-h-[180px] object-cover rounded-xl" />
             </a>
           ) : (
-            <img
-              src={secondBanner.image_url}
-              alt="Advertisement"
-              className="w-full h-auto max-h-[180px] object-cover rounded-xl"
-            />
+            <img src={secondBanner.image_url} alt="Advertisement" loading="lazy" className="w-full h-auto max-h-[180px] object-cover rounded-xl" />
           )}
         </section>
       )}
@@ -146,7 +92,7 @@ const Index = () => {
             {mockProjects.map((project) => (
               <div key={project.id} className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img src={project.image} alt={project.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-foreground/80 to-transparent p-4">
                     <span className="text-[10px] font-bold uppercase bg-primary text-primary-foreground px-2 py-0.5 rounded">
                       {project.completionDate}
@@ -176,7 +122,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Locations - 3 square thumbnail cards */}
+      {/* Featured Locations */}
       <section className="bg-muted/50">
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
@@ -195,11 +141,7 @@ const Index = () => {
                 className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
               >
                 {loc.image_url ? (
-                  <img
-                    src={loc.image_url}
-                    alt={loc.name}
-                    className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <img src={loc.image_url} alt={loc.name} loading="lazy" className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105" />
                 ) : (
                   <div className="w-full aspect-square bg-muted flex items-center justify-center">
                     <MapPin className="h-12 w-12 text-muted-foreground" />
@@ -228,7 +170,7 @@ const Index = () => {
                 {partner.link_url ? (
                   <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
                     {partner.logo_url ? (
-                      <img src={partner.logo_url} alt={partner.name} className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
+                      <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
                     ) : (
                       <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
                         {partner.name}
@@ -236,7 +178,7 @@ const Index = () => {
                     )}
                   </a>
                 ) : partner.logo_url ? (
-                  <img src={partner.logo_url} alt={partner.name} className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
+                  <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
                 ) : (
                   <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
                     {partner.name}
@@ -257,13 +199,8 @@ const Index = () => {
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   return (
-    <div
-      className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex items-center justify-center overflow-hidden`}
-    >
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${hero?.image_url || defaultBg})` }}
-      />
+    <div className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex items-center justify-center overflow-hidden`}>
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${hero?.image_url || defaultBg})` }} />
       <div className="absolute inset-0 bg-foreground/50" />
       <div className="relative z-10 text-center px-4 py-12">
         <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
