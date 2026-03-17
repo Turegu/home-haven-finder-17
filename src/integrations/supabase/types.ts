@@ -173,6 +173,74 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_translations: {
+        Row: {
+          blog_id: string
+          created_at: string
+          description: string
+          id: string
+          language_code: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          blog_id: string
+          created_at?: string
+          description?: string
+          id?: string
+          language_code: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          blog_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          language_code?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_translations_blog_id_fkey"
+            columns: ["blog_id"]
+            isOneToOne: false
+            referencedRelation: "blogs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blogs: {
+        Row: {
+          author: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          slug: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cms_pages: {
         Row: {
           content: Json
