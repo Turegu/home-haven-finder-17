@@ -385,7 +385,14 @@ const AdminFiltersPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <FilterExcelUpload
+        open={excelDialogOpen}
+        onOpenChange={setExcelDialogOpen}
+        onImportComplete={() => { fetchCategories(); }}
+      />
     </AdminLayout>
+  );
   );
 };
 
