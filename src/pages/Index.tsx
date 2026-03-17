@@ -1,23 +1,106 @@
-import { ArrowRight, MapPin, Building } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowRight, MapPin, Building, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
-import { mockProperties, mockProjects, mockCities, partnerLogos } from '@/data/mockProperties';
+import { mockProperties, mockProjects, partnerLogos } from '@/data/mockProperties';
+import { supabase } from '@/integrations/supabase/client';
+
+interface CmsContent {
+  hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
+  second_banner?: { image_url?: string; link_url?: string };
+  featured_properties?: { title?: string; tagline?: string };
+  featured_projects?: { title?: string; tagline?: string };
+  featured_locations?: { title?: string; tagline?: string };
+  partners?: { title?: string; tagline?: string };
+}
+
+interface FeaturedLocation {
+  id: string;
+  name: string;
+  image_url: string | null;
+  link_url: string | null;
+}
 
 const Index = () => {
+  const [cms, setCms] = useState<CmsContent>({});
+  const [locations, setLocations] = useState<FeaturedLocation[]>([]);
+
+  useEffect(() => {
+    const fetchCms = async () => {
+      const { data } = await supabase
+        .from("cms_pages")
+        .select("content")
+        .eq("page_slug", "home")
+        .limit(1);
+      if (data?.[0]) setCms((data[0] as any).content as CmsContent);
+    };
+    const fetchLocations = async () => {
+      const { data } = await supabase
+        .from("featured_locations")
+        .select("*")
+        .eq("status", "active")
+        .order("sort_order");
+      if (data) setLocations(data as FeaturedLocation[]);
+    };
+    fetchCms();
+    fetchLocations();
+  }, []);
+
+  const hero = cms.hero || {};
+  const secondBanner = cms.second_banner || {};
+  const fp = cms.featured_properties || {};
+  const fpr = cms.featured_projects || {};
+  const fl = cms.featured_locations || {};
+  const pt = cms.partners || {};
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
+
+      {/* Hero Banner - Full width, clickable */}
+      <section className="relative w-full">
+        {hero.link_url ? (
+          <a href={hero.link_url} target="_blank" rel="noopener noreferrer" className="block relative">
+            <HeroBannerContent hero={hero} isMain />
+          </a>
+        ) : (
+          <HeroBannerContent hero={hero} isMain />
+        )}
+      </section>
+
+      {/* Search Bar - Moved below banners */}
       <HeroSearch />
+
+      {/* Second Banner - Slightly smaller, for advertising */}
+      {secondBanner.image_url && (
+        <section className="container mx-auto px-4 py-6">
+          {secondBanner.link_url ? (
+            <a href={secondBanner.link_url} target="_blank" rel="noopener noreferrer" className="block">
+              <img
+                src={secondBanner.image_url}
+                alt="Advertisement"
+                className="w-full h-auto max-h-[180px] object-cover rounded-xl"
+              />
+            </a>
+          ) : (
+            <img
+              src={secondBanner.image_url}
+              alt="Advertisement"
+              className="w-full h-auto max-h-[180px] object-cover rounded-xl"
+            />
+          )}
+        </section>
+      )}
 
       {/* Featured Properties */}
       <section className="container mx-auto px-4 py-14">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Featured Properties</h2>
-            <p className="text-sm text-muted-foreground mt-1">Handpicked properties for you</p>
+            <h2 className="text-2xl font-bold text-foreground">{fp.title || "Featured Properties"}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{fp.tagline || "Handpicked properties for you"}</p>
           </div>
           <Link to="/buy" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
             View All <ArrowRight className="h-4 w-4" />
@@ -35,8 +118,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Featured Projects</h2>
-              <p className="text-sm text-muted-foreground mt-1">New developments & off-plan projects</p>
+              <h2 className="text-2xl font-bold text-foreground">{fpr.title || "Featured Projects"}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{fpr.tagline || "New developments & off-plan projects"}</p>
             </div>
             <Link to="/projects" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
               View All <ArrowRight className="h-4 w-4" />
@@ -76,36 +159,50 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Locations */}
-      <section className="container mx-auto px-4 py-14">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">Featured Locations</h2>
-            <p className="text-sm text-muted-foreground mt-1">Browse properties by city</p>
+      {/* Featured Locations - 3 square thumbnail cards */}
+      <section className="bg-muted/50">
+        <div className="container mx-auto px-4 py-14">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">{fl.title || "Featured Locations"}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{fl.tagline || "Find Your Neighborhood"}</p>
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {mockCities.map((city) => (
-            <Link
-              key={city.id}
-              to={`/buy?city=${city.name}`}
-              className="group relative aspect-[3/4] rounded-xl overflow-hidden"
-            >
-              <img src={city.image} alt={city.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/20 to-transparent" />
-              <div className="absolute bottom-0 p-3 text-white">
-                <h3 className="font-semibold text-sm">{city.name}</h3>
-                <p className="text-[11px] text-white/70">{city.propertyCount.toLocaleString()} properties</p>
-              </div>
-            </Link>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {locations.map((loc) => (
+              <a
+                key={loc.id}
+                href={loc.link_url || "#"}
+                target={loc.link_url ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+              >
+                {loc.image_url ? (
+                  <img
+                    src={loc.image_url}
+                    alt={loc.name}
+                    className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full aspect-square bg-muted flex items-center justify-center">
+                    <MapPin className="h-12 w-12 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="p-3 flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground text-sm">{loc.name}</h3>
+                  {loc.link_url && <ExternalLink className="h-4 w-4 text-muted-foreground" />}
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Partners */}
       <section className="bg-muted/50 py-12 overflow-hidden">
-        <div className="container mx-auto px-4 mb-6">
-          <h2 className="text-xl font-bold text-foreground text-center">Our Partners</h2>
+        <div className="container mx-auto px-4 mb-6 text-center">
+          <h2 className="text-xl font-bold text-foreground">{pt.title || "Our Partners"}</h2>
+          {pt.tagline && <p className="text-sm text-muted-foreground mt-1">{pt.tagline}</p>}
         </div>
         <div className="relative">
           <div className="flex marquee whitespace-nowrap">
@@ -121,6 +218,35 @@ const Index = () => {
       </section>
 
       <Footer />
+    </div>
+  );
+};
+
+// Hero banner content component
+const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
+  const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
+  return (
+    <div
+      className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex items-center justify-center overflow-hidden`}
+    >
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${hero?.image_url || defaultBg})` }}
+      />
+      <div className="absolute inset-0 bg-foreground/50" />
+      <div className="relative z-10 text-center px-4 py-12">
+        <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+          {hero?.title || "Your Property, Our Priority"}
+        </h1>
+        <p className="text-white/80 text-base md:text-lg mb-4 font-light">
+          {hero?.subtitle || "Find your dream property across the Middle East & Turkey"}
+        </p>
+        {hero?.enable_link && hero?.link_text && (
+          <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2 rounded-full text-sm font-medium border border-white/30">
+            {hero.link_text}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
