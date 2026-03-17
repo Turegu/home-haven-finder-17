@@ -1,77 +1,107 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import BuyPage from "./pages/BuyPage.tsx";
-import ProjectsPage from "./pages/ProjectsPage.tsx";
-import PropertyDetailPage from "./pages/PropertyDetailPage.tsx";
-import ProjectDetailPage from "./pages/ProjectDetailPage.tsx";
-import AgentsPage from "./pages/AgentsPage.tsx";
-import AgentDetailPage from "./pages/AgentDetailPage.tsx";
-import CompanyDetailPage from "./pages/CompanyDetailPage.tsx";
-import EventsPage from "./pages/EventsPage.tsx";
-import EventDetailPage from "./pages/EventDetailPage.tsx";
-import PropertyRequestPage from "./pages/PropertyRequestPage.tsx";
-import AdminLoginPage from "./pages/admin/AdminLoginPage.tsx";
-import AdminDashboardPage from "./pages/admin/AdminDashboardPage.tsx";
-import AdminCompaniesPage from "./pages/admin/AdminCompaniesPage.tsx";
-import AdminCreateCompanyPage from "./pages/admin/AdminCreateCompanyPage.tsx";
-import AdminMembershipsPage from "./pages/admin/AdminMembershipsPage.tsx";
-import AdvertisePage from "./pages/AdvertisePage.tsx";
-import AdminPropertiesPage from "./pages/admin/AdminPropertiesPage.tsx";
-import AdminProjectsPage from "./pages/admin/AdminProjectsPage.tsx";
-import AdminEventsPage from "./pages/admin/AdminEventsPage.tsx";
-import AdminBannersPage from "./pages/admin/AdminBannersPage.tsx";
-import AdminBanksPage from "./pages/admin/AdminBanksPage.tsx";
-import AdminLanguagesPage from "./pages/admin/AdminLanguagesPage.tsx";
-import AdminCurrenciesPage from "./pages/admin/AdminCurrenciesPage.tsx";
-import AdminCmsPage from "./pages/admin/AdminCmsPage.tsx";
-import AdminCmsEditPage from "./pages/admin/AdminCmsEditPage.tsx";
-import AdminSettingsPage from "./pages/admin/AdminSettingsPage.tsx";
-import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
-import TermsPage from "./pages/TermsPage.tsx";
-import PrivacyPage from "./pages/PrivacyPage.tsx";
-import AdminBlogsPage from "./pages/admin/AdminBlogsPage.tsx";
-import AdminBlogEditPage from "./pages/admin/AdminBlogEditPage.tsx";
-import BlogsPage from "./pages/BlogsPage.tsx";
-import BlogDetailPage from "./pages/BlogDetailPage.tsx";
-import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
-import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
-import AdminCrudsPage from "./pages/admin/AdminCrudsPage.tsx";
-import AdminFiltersPage from "./pages/admin/AdminFiltersPage.tsx";
-import AdminLocationsPage from "./pages/admin/AdminLocationsPage.tsx";
-import AdminEmailPreviewPage from "./pages/admin/AdminEmailPreviewPage.tsx";
-import FaqPage from "./pages/FaqPage.tsx";
-import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
-import CompanyDashboardPage from "./pages/company/CompanyDashboardPage.tsx";
-import CompanyProfilePage from "./pages/company/CompanyProfilePage.tsx";
-import CompanyResetPasswordPage from "./pages/company/CompanyResetPasswordPage.tsx";
-import CompanyPropertiesPage from "./pages/company/CompanyPropertiesPage.tsx";
-import CompanyPropertyEditPage from "./pages/company/CompanyPropertyEditPage.tsx";
-import CompanyProjectsPage from "./pages/company/CompanyProjectsPage.tsx";
-import CompanyProjectEditPage from "./pages/company/CompanyProjectEditPage.tsx";
-import CompanyProjectUnitsPage from "./pages/company/CompanyProjectUnitsPage.tsx";
-import CompanyEventsPage from "./pages/company/CompanyEventsPage.tsx";
-import CompanyEventEditPage from "./pages/company/CompanyEventEditPage.tsx";
-import CompanyAgentsPage from "./pages/company/CompanyAgentsPage.tsx";
-import CompanyAgentEditPage from "./pages/company/CompanyAgentEditPage.tsx";
-import CompanyNotificationsPage from "./pages/company/CompanyNotificationsPage.tsx";
-import CompanyInboxPage from "./pages/company/CompanyInboxPage.tsx";
-import CompanyFollowersPage from "./pages/company/CompanyFollowersPage.tsx";
-import AgentLoginPage from "./pages/agent/AgentLoginPage.tsx";
-import AgentDashboardPage from "./pages/agent/AgentDashboardPage.tsx";
-import AgentProfilePage from "./pages/agent/AgentProfilePage.tsx";
-import AgentPropertiesPage from "./pages/agent/AgentPropertiesPage.tsx";
-import AgentProjectsPage from "./pages/agent/AgentProjectsPage.tsx";
-import AgentEventsPage from "./pages/agent/AgentEventsPage.tsx";
-import AgentFollowersPage from "./pages/agent/AgentFollowersPage.tsx";
-import AgentNotificationsPage from "./pages/agent/AgentNotificationsPage.tsx";
-import AgentInboxPage from "./pages/agent/AgentInboxPage.tsx";
-import NotFound from "./pages/NotFound.tsx";
 
-const queryClient = new QueryClient();
+// Eager-load the homepage for instant first paint
+import Index from "./pages/Index.tsx";
+
+// Lazy-load all other pages — they load on demand
+const BuyPage = lazy(() => import("./pages/BuyPage.tsx"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage.tsx"));
+const PropertyDetailPage = lazy(() => import("./pages/PropertyDetailPage.tsx"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage.tsx"));
+const AgentsPage = lazy(() => import("./pages/AgentsPage.tsx"));
+const AgentDetailPage = lazy(() => import("./pages/AgentDetailPage.tsx"));
+const CompanyDetailPage = lazy(() => import("./pages/CompanyDetailPage.tsx"));
+const EventsPage = lazy(() => import("./pages/EventsPage.tsx"));
+const EventDetailPage = lazy(() => import("./pages/EventDetailPage.tsx"));
+const PropertyRequestPage = lazy(() => import("./pages/PropertyRequestPage.tsx"));
+const AdvertisePage = lazy(() => import("./pages/AdvertisePage.tsx"));
+const MortgageBanksPage = lazy(() => import("./pages/MortgageBanksPage.tsx"));
+const TermsPage = lazy(() => import("./pages/TermsPage.tsx"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
+const BlogsPage = lazy(() => import("./pages/BlogsPage.tsx"));
+const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage.tsx"));
+const FaqPage = lazy(() => import("./pages/FaqPage.tsx"));
+
+// Admin pages
+const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage.tsx"));
+const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage.tsx"));
+const AdminCompaniesPage = lazy(() => import("./pages/admin/AdminCompaniesPage.tsx"));
+const AdminCreateCompanyPage = lazy(() => import("./pages/admin/AdminCreateCompanyPage.tsx"));
+const AdminMembershipsPage = lazy(() => import("./pages/admin/AdminMembershipsPage.tsx"));
+const AdminPropertiesPage = lazy(() => import("./pages/admin/AdminPropertiesPage.tsx"));
+const AdminProjectsPage = lazy(() => import("./pages/admin/AdminProjectsPage.tsx"));
+const AdminEventsPage = lazy(() => import("./pages/admin/AdminEventsPage.tsx"));
+const AdminBannersPage = lazy(() => import("./pages/admin/AdminBannersPage.tsx"));
+const AdminBanksPage = lazy(() => import("./pages/admin/AdminBanksPage.tsx"));
+const AdminLanguagesPage = lazy(() => import("./pages/admin/AdminLanguagesPage.tsx"));
+const AdminCurrenciesPage = lazy(() => import("./pages/admin/AdminCurrenciesPage.tsx"));
+const AdminCmsPage = lazy(() => import("./pages/admin/AdminCmsPage.tsx"));
+const AdminCmsEditPage = lazy(() => import("./pages/admin/AdminCmsEditPage.tsx"));
+const AdminSettingsPage = lazy(() => import("./pages/admin/AdminSettingsPage.tsx"));
+const AdminBlogsPage = lazy(() => import("./pages/admin/AdminBlogsPage.tsx"));
+const AdminBlogEditPage = lazy(() => import("./pages/admin/AdminBlogEditPage.tsx"));
+const AdminFaqsPage = lazy(() => import("./pages/admin/AdminFaqsPage.tsx"));
+const AdminFaqEditPage = lazy(() => import("./pages/admin/AdminFaqEditPage.tsx"));
+const AdminCrudsPage = lazy(() => import("./pages/admin/AdminCrudsPage.tsx"));
+const AdminFiltersPage = lazy(() => import("./pages/admin/AdminFiltersPage.tsx"));
+const AdminLocationsPage = lazy(() => import("./pages/admin/AdminLocationsPage.tsx"));
+const AdminEmailPreviewPage = lazy(() => import("./pages/admin/AdminEmailPreviewPage.tsx"));
+
+// Company pages
+const CompanyLoginPage = lazy(() => import("./pages/company/CompanyLoginPage.tsx"));
+const CompanyDashboardPage = lazy(() => import("./pages/company/CompanyDashboardPage.tsx"));
+const CompanyProfilePage = lazy(() => import("./pages/company/CompanyProfilePage.tsx"));
+const CompanyResetPasswordPage = lazy(() => import("./pages/company/CompanyResetPasswordPage.tsx"));
+const CompanyPropertiesPage = lazy(() => import("./pages/company/CompanyPropertiesPage.tsx"));
+const CompanyPropertyEditPage = lazy(() => import("./pages/company/CompanyPropertyEditPage.tsx"));
+const CompanyProjectsPage = lazy(() => import("./pages/company/CompanyProjectsPage.tsx"));
+const CompanyProjectEditPage = lazy(() => import("./pages/company/CompanyProjectEditPage.tsx"));
+const CompanyProjectUnitsPage = lazy(() => import("./pages/company/CompanyProjectUnitsPage.tsx"));
+const CompanyEventsPage = lazy(() => import("./pages/company/CompanyEventsPage.tsx"));
+const CompanyEventEditPage = lazy(() => import("./pages/company/CompanyEventEditPage.tsx"));
+const CompanyAgentsPage = lazy(() => import("./pages/company/CompanyAgentsPage.tsx"));
+const CompanyAgentEditPage = lazy(() => import("./pages/company/CompanyAgentEditPage.tsx"));
+const CompanyNotificationsPage = lazy(() => import("./pages/company/CompanyNotificationsPage.tsx"));
+const CompanyInboxPage = lazy(() => import("./pages/company/CompanyInboxPage.tsx"));
+const CompanyFollowersPage = lazy(() => import("./pages/company/CompanyFollowersPage.tsx"));
+
+// Agent pages
+const AgentLoginPage = lazy(() => import("./pages/agent/AgentLoginPage.tsx"));
+const AgentDashboardPage = lazy(() => import("./pages/agent/AgentDashboardPage.tsx"));
+const AgentProfilePage = lazy(() => import("./pages/agent/AgentProfilePage.tsx"));
+const AgentPropertiesPage = lazy(() => import("./pages/agent/AgentPropertiesPage.tsx"));
+const AgentProjectsPage = lazy(() => import("./pages/agent/AgentProjectsPage.tsx"));
+const AgentEventsPage = lazy(() => import("./pages/agent/AgentEventsPage.tsx"));
+const AgentFollowersPage = lazy(() => import("./pages/agent/AgentFollowersPage.tsx"));
+const AgentNotificationsPage = lazy(() => import("./pages/agent/AgentNotificationsPage.tsx"));
+const AgentInboxPage = lazy(() => import("./pages/agent/AgentInboxPage.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+
+// Global loading fallback
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex flex-col items-center gap-3">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <p className="text-sm text-muted-foreground">Loading...</p>
+    </div>
+  </div>
+);
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 min — avoid unnecessary refetches
+      gcTime: 10 * 60 * 1000,   // 10 min garbage collection
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -79,81 +109,83 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/buy" element={<BuyPage />} />
-          <Route path="/rent" element={<BuyPage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/property/:id" element={<PropertyDetailPage />} />
-          <Route path="/projects/:id" element={<ProjectDetailPage />} />
-          <Route path="/agents" element={<AgentsPage />} />
-          <Route path="/agents/:id" element={<AgentDetailPage />} />
-          <Route path="/company/:id" element={<CompanyDetailPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/events/:id" element={<EventDetailPage />} />
-          <Route path="/property-request" element={<PropertyRequestPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/blog" element={<BlogsPage />} />
-          <Route path="/blog/:slug" element={<BlogDetailPage />} />
-          <Route path="/faq" element={<FaqPage />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin" element={<AdminDashboardPage />} />
-          <Route path="/admin/companies" element={<AdminCompaniesPage />} />
-          <Route path="/admin/companies/new" element={<AdminCreateCompanyPage />} />
-          <Route path="/admin/memberships" element={<AdminMembershipsPage />} />
-          <Route path="/advertise" element={<AdvertisePage />} />
-          <Route path="/admin/properties" element={<AdminPropertiesPage />} />
-          <Route path="/admin/projects" element={<AdminProjectsPage />} />
-          <Route path="/admin/events" element={<AdminEventsPage />} />
-          <Route path="/admin/banners" element={<AdminBannersPage />} />
-          <Route path="/admin/banks" element={<AdminBanksPage />} />
-          <Route path="/admin/languages" element={<AdminLanguagesPage />} />
-          <Route path="/admin/currencies" element={<AdminCurrenciesPage />} />
-          <Route path="/admin/cms" element={<AdminCmsPage />} />
-          <Route path="/admin/cms/:slug" element={<AdminCmsEditPage />} />
-          <Route path="/admin/settings" element={<AdminSettingsPage />} />
-          <Route path="/admin/blog" element={<AdminBlogsPage />} />
-          <Route path="/admin/blog/:id" element={<AdminBlogEditPage />} />
-          <Route path="/admin/faqs" element={<AdminFaqsPage />} />
-          <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
-          <Route path="/admin/cruds" element={<AdminCrudsPage />} />
-          <Route path="/admin/filters" element={<AdminFiltersPage />} />
-          <Route path="/admin/locations" element={<AdminLocationsPage />} />
-          <Route path="/admin/email-templates" element={<AdminEmailPreviewPage />} />
-          <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
-          <Route path="/company/login" element={<CompanyLoginPage />} />
-          <Route path="/company" element={<CompanyDashboardPage />} />
-          <Route path="/company/profile" element={<CompanyProfilePage />} />
-          <Route path="/company/reset-password" element={<CompanyResetPasswordPage />} />
-          <Route path="/company/properties" element={<CompanyPropertiesPage />} />
-          <Route path="/company/properties/new" element={<CompanyPropertyEditPage />} />
-          <Route path="/company/properties/:id/edit" element={<CompanyPropertyEditPage />} />
-          <Route path="/company/projects" element={<CompanyProjectsPage />} />
-          <Route path="/company/projects/new" element={<CompanyProjectEditPage />} />
-          <Route path="/company/projects/:id/edit" element={<CompanyProjectEditPage />} />
-           <Route path="/company/projects/:id/units" element={<CompanyProjectUnitsPage />} />
-           <Route path="/company/events" element={<CompanyEventsPage />} />
-           <Route path="/company/events/new" element={<CompanyEventEditPage />} />
-           <Route path="/company/events/:id/edit" element={<CompanyEventEditPage />} />
-           <Route path="/company/agents" element={<CompanyAgentsPage />} />
-           <Route path="/company/agents/new" element={<CompanyAgentEditPage />} />
-           <Route path="/company/agents/:id/edit" element={<CompanyAgentEditPage />} />
-           <Route path="/company/notifications" element={<CompanyNotificationsPage />} />
-           <Route path="/company/inbox" element={<CompanyInboxPage />} />
-           <Route path="/company/followers" element={<CompanyFollowersPage />} />
-           <Route path="/agent/login" element={<AgentLoginPage />} />
-           <Route path="/agent" element={<AgentDashboardPage />} />
-           <Route path="/agent/profile" element={<AgentProfilePage />} />
-           <Route path="/agent/properties" element={<AgentPropertiesPage />} />
-           <Route path="/agent/projects" element={<AgentProjectsPage />} />
-           <Route path="/agent/events" element={<AgentEventsPage />} />
-           <Route path="/agent/followers" element={<AgentFollowersPage />} />
-           <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
-           <Route path="/agent/inbox" element={<AgentInboxPage />} />
-           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/buy" element={<BuyPage />} />
+            <Route path="/rent" element={<BuyPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/property/:id" element={<PropertyDetailPage />} />
+            <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route path="/agents" element={<AgentsPage />} />
+            <Route path="/agents/:id" element={<AgentDetailPage />} />
+            <Route path="/company/:id" element={<CompanyDetailPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/events/:id" element={<EventDetailPage />} />
+            <Route path="/property-request" element={<PropertyRequestPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/blog" element={<BlogsPage />} />
+            <Route path="/blog/:slug" element={<BlogDetailPage />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/companies" element={<AdminCompaniesPage />} />
+            <Route path="/admin/companies/new" element={<AdminCreateCompanyPage />} />
+            <Route path="/admin/memberships" element={<AdminMembershipsPage />} />
+            <Route path="/advertise" element={<AdvertisePage />} />
+            <Route path="/admin/properties" element={<AdminPropertiesPage />} />
+            <Route path="/admin/projects" element={<AdminProjectsPage />} />
+            <Route path="/admin/events" element={<AdminEventsPage />} />
+            <Route path="/admin/banners" element={<AdminBannersPage />} />
+            <Route path="/admin/banks" element={<AdminBanksPage />} />
+            <Route path="/admin/languages" element={<AdminLanguagesPage />} />
+            <Route path="/admin/currencies" element={<AdminCurrenciesPage />} />
+            <Route path="/admin/cms" element={<AdminCmsPage />} />
+            <Route path="/admin/cms/:slug" element={<AdminCmsEditPage />} />
+            <Route path="/admin/settings" element={<AdminSettingsPage />} />
+            <Route path="/admin/blog" element={<AdminBlogsPage />} />
+            <Route path="/admin/blog/:id" element={<AdminBlogEditPage />} />
+            <Route path="/admin/faqs" element={<AdminFaqsPage />} />
+            <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
+            <Route path="/admin/cruds" element={<AdminCrudsPage />} />
+            <Route path="/admin/filters" element={<AdminFiltersPage />} />
+            <Route path="/admin/locations" element={<AdminLocationsPage />} />
+            <Route path="/admin/email-templates" element={<AdminEmailPreviewPage />} />
+            <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
+            <Route path="/company/login" element={<CompanyLoginPage />} />
+            <Route path="/company" element={<CompanyDashboardPage />} />
+            <Route path="/company/profile" element={<CompanyProfilePage />} />
+            <Route path="/company/reset-password" element={<CompanyResetPasswordPage />} />
+            <Route path="/company/properties" element={<CompanyPropertiesPage />} />
+            <Route path="/company/properties/new" element={<CompanyPropertyEditPage />} />
+            <Route path="/company/properties/:id/edit" element={<CompanyPropertyEditPage />} />
+            <Route path="/company/projects" element={<CompanyProjectsPage />} />
+            <Route path="/company/projects/new" element={<CompanyProjectEditPage />} />
+            <Route path="/company/projects/:id/edit" element={<CompanyProjectEditPage />} />
+            <Route path="/company/projects/:id/units" element={<CompanyProjectUnitsPage />} />
+            <Route path="/company/events" element={<CompanyEventsPage />} />
+            <Route path="/company/events/new" element={<CompanyEventEditPage />} />
+            <Route path="/company/events/:id/edit" element={<CompanyEventEditPage />} />
+            <Route path="/company/agents" element={<CompanyAgentsPage />} />
+            <Route path="/company/agents/new" element={<CompanyAgentEditPage />} />
+            <Route path="/company/agents/:id/edit" element={<CompanyAgentEditPage />} />
+            <Route path="/company/notifications" element={<CompanyNotificationsPage />} />
+            <Route path="/company/inbox" element={<CompanyInboxPage />} />
+            <Route path="/company/followers" element={<CompanyFollowersPage />} />
+            <Route path="/agent/login" element={<AgentLoginPage />} />
+            <Route path="/agent" element={<AgentDashboardPage />} />
+            <Route path="/agent/profile" element={<AgentProfilePage />} />
+            <Route path="/agent/properties" element={<AgentPropertiesPage />} />
+            <Route path="/agent/projects" element={<AgentProjectsPage />} />
+            <Route path="/agent/events" element={<AgentEventsPage />} />
+            <Route path="/agent/followers" element={<AgentFollowersPage />} />
+            <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
+            <Route path="/agent/inbox" element={<AgentInboxPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
