@@ -29,6 +29,8 @@ import AdminLanguagesPage from "./pages/admin/AdminLanguagesPage.tsx";
 import AdminCmsPage from "./pages/admin/AdminCmsPage.tsx";
 import AdminCmsEditPage from "./pages/admin/AdminCmsEditPage.tsx";
 import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
+import TermsPage from "./pages/TermsPage.tsx";
+import PrivacyPage from "./pages/PrivacyPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
