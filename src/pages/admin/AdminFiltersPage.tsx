@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, ChevronRight, GripVertical, Globe } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronRight, GripVertical, Globe, Upload } from "lucide-react";
+import FilterExcelUpload from "@/components/admin/FilterExcelUpload";
 
 const LANGUAGES = [
   { code: "tr", label: "Turkish" },
