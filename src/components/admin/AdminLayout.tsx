@@ -24,6 +24,7 @@ const sidebarItems = [
   { label: "Reports", icon: BarChart3, path: "/admin/reports" },
   { label: "CMS", icon: FileText, path: "/admin/cms" },
   { label: "CRUDs", icon: ListChecks, path: "/admin/cruds" },
+  { label: "Email Templates", icon: Mail, path: "/admin/email-templates" },
   { label: "Settings", icon: Settings, path: "/admin/settings", hasSubmenu: true },
 ];
 
