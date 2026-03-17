@@ -77,6 +77,74 @@ export type Database = {
         }
         Relationships: []
       }
+      agents: {
+        Row: {
+          avatar_url: string | null
+          company_id: string
+          created_at: string
+          credit_balance: number
+          description: string | null
+          designation: string | null
+          email: string
+          id: string
+          languages: string[] | null
+          name: string
+          phone: string | null
+          registration_number: string | null
+          service_areas: string[] | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          company_id: string
+          created_at?: string
+          credit_balance?: number
+          description?: string | null
+          designation?: string | null
+          email: string
+          id?: string
+          languages?: string[] | null
+          name: string
+          phone?: string | null
+          registration_number?: string | null
+          service_areas?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          company_id?: string
+          created_at?: string
+          credit_balance?: number
+          description?: string | null
+          designation?: string | null
+          email?: string
+          id?: string
+          languages?: string[] | null
+          name?: string
+          phone?: string | null
+          registration_number?: string | null
+          service_areas?: string[] | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       banks: {
         Row: {
           bank_info_link: string | null
@@ -419,6 +487,7 @@ export type Database = {
       }
       events: {
         Row: {
+          agent_id: string | null
           company_id: string | null
           created_at: string
           currency: string | null
@@ -444,6 +513,7 @@ export type Database = {
           video_link: string | null
         }
         Insert: {
+          agent_id?: string | null
           company_id?: string | null
           created_at?: string
           currency?: string | null
@@ -469,6 +539,7 @@ export type Database = {
           video_link?: string | null
         }
         Update: {
+          agent_id?: string | null
           company_id?: string | null
           created_at?: string
           currency?: string | null
@@ -494,6 +565,13 @@ export type Database = {
           video_link?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "events_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_company_id_fkey"
             columns: ["company_id"]
@@ -791,6 +869,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          agent_id: string | null
           area_unit: string | null
           company_id: string | null
           completion_date: string | null
@@ -828,6 +907,7 @@ export type Database = {
           view_360_link: string | null
         }
         Insert: {
+          agent_id?: string | null
           area_unit?: string | null
           company_id?: string | null
           completion_date?: string | null
@@ -865,6 +945,7 @@ export type Database = {
           view_360_link?: string | null
         }
         Update: {
+          agent_id?: string | null
           area_unit?: string | null
           company_id?: string | null
           completion_date?: string | null
@@ -903,6 +984,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "projects_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "projects_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -913,6 +1001,7 @@ export type Database = {
       }
       properties: {
         Row: {
+          agent_id: string | null
           area: number | null
           area_unit: string | null
           bathrooms: number | null
@@ -955,6 +1044,7 @@ export type Database = {
           view_360_link: string | null
         }
         Insert: {
+          agent_id?: string | null
           area?: number | null
           area_unit?: string | null
           bathrooms?: number | null
@@ -997,6 +1087,7 @@ export type Database = {
           view_360_link?: string | null
         }
         Update: {
+          agent_id?: string | null
           area?: number | null
           area_unit?: string | null
           bathrooms?: number | null
@@ -1039,6 +1130,13 @@ export type Database = {
           view_360_link?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "properties_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "properties_company_id_fkey"
             columns: ["company_id"]
