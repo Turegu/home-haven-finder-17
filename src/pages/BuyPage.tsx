@@ -35,14 +35,12 @@ const BuyPage = () => {
       {/* Search Bar with dynamic filters */}
       <div className="sticky top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background min-w-[120px]">
-            <Map className="h-4 w-4 text-primary" />
-            <span className="text-foreground/70">Location</span>
-            <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
-          </div>
+          <LocationPicker value={location} onChange={setLocation} compact />
           <div className="relative flex-1 min-w-[200px]">
             <input
               type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
               placeholder="Enter Search Area, City, Address"
               className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
             />
