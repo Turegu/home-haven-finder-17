@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, ChevronDown, X, Search } from "lucide-react";
+import { MapPin, ChevronDown, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,36 +16,39 @@ interface LocationSelection {
 interface LocationPickerProps {
   value: LocationSelection;
   onChange: (value: LocationSelection) => void;
-  /** Compact inline mode for search bars */
   compact?: boolean;
 }
 
-export default function LocationPicker({ value, onChange, compact = false }: LocationPickerProps) {
+interface NamePair { name: string; ar: string }
+
+const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ value, onChange, compact = false }, ref) => {
   const [open, setOpen] = useState(false);
-  const [provinces, setProvinces] = useState<string[]>([]);
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [neighborhoods, setNeighborhoods] = useState<string[]>([]);
+  const [provinces, setProvinces] = useState<NamePair[]>([]);
+  const [districts, setDistricts] = useState<NamePair[]>([]);
+  const [neighborhoods, setNeighborhoods] = useState<NamePair[]>([]);
   const [searchNearby, setSearchNearby] = useState(false);
   const [provinceFilter, setProvinceFilter] = useState("");
 
   useEffect(() => {
     async function loadProvinces() {
-      let allProvinces: string[] = [];
+      let all: any[] = [];
       let from = 0;
-      const pageSize = 1000;
+      const ps = 1000;
       while (true) {
         const { data } = await supabase
           .from("locations")
-          .select("province")
+          .select("province, province_ar")
           .eq("status", "active")
-          .range(from, from + pageSize - 1);
+          .range(from, from + ps - 1);
         if (!data || data.length === 0) break;
-        allProvinces.push(...data.map((d: any) => d.province));
-        if (data.length < pageSize) break;
-        from += pageSize;
+        all.push(...data);
+        if (data.length < ps) break;
+        from += ps;
       }
-      const unique = [...new Set(allProvinces)].sort();
-      setProvinces(unique);
+      const map = new Map<string, string>();
+      all.forEach((d: any) => { if (!map.has(d.province)) map.set(d.province, d.province_ar || ""); });
+      const sorted = [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+      setProvinces(sorted.map(([name, ar]) => ({ name, ar })));
     }
     loadProvinces();
   }, []);
@@ -55,12 +58,14 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
     async function load() {
       const { data } = await supabase
         .from("locations")
-        .select("district")
+        .select("district, district_ar")
         .eq("province", value.province!)
         .eq("status", "active");
       if (data) {
-        const unique = [...new Set(data.map((d: any) => d.district))].sort();
-        setDistricts(unique);
+        const map = new Map<string, string>();
+        data.forEach((d: any) => { if (!map.has(d.district)) map.set(d.district, d.district_ar || ""); });
+        const sorted = [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+        setDistricts(sorted.map(([name, ar]) => ({ name, ar })));
       }
     }
     load();
@@ -71,13 +76,13 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
     async function load() {
       const { data } = await supabase
         .from("locations")
-        .select("neighborhood")
+        .select("neighborhood, neighborhood_ar")
         .eq("province", value.province!)
         .eq("district", value.district!)
         .eq("status", "active")
         .order("neighborhood");
       if (data) {
-        setNeighborhoods(data.map((d: any) => d.neighborhood));
+        setNeighborhoods(data.map((d: any) => ({ name: d.neighborhood, ar: d.neighborhood_ar || "" })));
       }
     }
     load();
@@ -93,13 +98,23 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
   };
 
   const filteredProvinces = provinceFilter
-    ? provinces.filter(p => p.toLowerCase().includes(provinceFilter.toLowerCase()))
+    ? provinces.filter(p =>
+        p.name.toLowerCase().includes(provinceFilter.toLowerCase()) ||
+        p.ar.includes(provinceFilter)
+      )
     : provinces;
+
+  const renderItem = (item: NamePair, isSelected: boolean) => (
+    <div className="flex items-center justify-between w-full">
+      <span className={isSelected ? "text-primary font-medium" : ""}>{item.name}</span>
+      {item.ar && <span className="text-xs text-muted-foreground ml-2" dir="rtl">{item.ar}</span>}
+    </div>
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
+        <button ref={ref} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
           <MapPin className="h-4 w-4 text-primary shrink-0" />
           <span className={hasSelection ? "text-foreground font-medium truncate max-w-[120px]" : "text-muted-foreground"}>
             {label}
@@ -113,7 +128,7 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[280px] p-0" align="start">
+      <PopoverContent className="w-[320px] p-0" align="start">
         <div className="p-3 space-y-3">
           {/* Province */}
           <div>
@@ -127,25 +142,25 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
                   <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[250px] p-2" align="start">
+              <PopoverContent className="w-[290px] p-2" align="start">
                 <Input
                   placeholder="Filter provinces..."
                   value={provinceFilter}
                   onChange={(e) => setProvinceFilter(e.target.value)}
                   className="mb-2 h-8 text-sm"
                 />
-                <ScrollArea className="h-[200px]">
+                <ScrollArea className="h-[240px]">
                   <div className="space-y-0.5">
                     {filteredProvinces.map((p) => (
                       <button
-                        key={p}
+                        key={p.name}
                         onClick={() => {
-                          onChange({ province: p });
+                          onChange({ province: p.name });
                           setProvinceFilter("");
                         }}
-                        className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${value.province === p ? "bg-primary/10 text-primary font-medium" : ""}`}
+                        className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${value.province === p.name ? "bg-primary/10" : ""}`}
                       >
-                        {p}
+                        {renderItem(p, value.province === p.name)}
                       </button>
                     ))}
                   </div>
@@ -169,16 +184,16 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
                   <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[250px] p-2" align="start">
-                <ScrollArea className="h-[200px]">
+              <PopoverContent className="w-[290px] p-2" align="start">
+                <ScrollArea className="h-[240px]">
                   <div className="space-y-0.5">
                     {districts.map((d) => (
                       <button
-                        key={d}
-                        onClick={() => onChange({ province: value.province, district: d })}
-                        className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${value.district === d ? "bg-primary/10 text-primary font-medium" : ""}`}
+                        key={d.name}
+                        onClick={() => onChange({ province: value.province, district: d.name })}
+                        className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${value.district === d.name ? "bg-primary/10" : ""}`}
                       >
-                        {d}
+                        {renderItem(d, value.district === d.name)}
                       </button>
                     ))}
                   </div>
@@ -202,16 +217,16 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
                   <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-[250px] p-2" align="start">
-                <ScrollArea className="h-[200px]">
+              <PopoverContent className="w-[290px] p-2" align="start">
+                <ScrollArea className="h-[240px]">
                   <div className="space-y-0.5">
                     {neighborhoods.map((n) => (
                       <button
-                        key={n}
-                        onClick={() => onChange({ ...value, neighborhood: n })}
-                        className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${value.neighborhood === n ? "bg-primary/10 text-primary font-medium" : ""}`}
+                        key={n.name}
+                        onClick={() => onChange({ ...value, neighborhood: n.name })}
+                        className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${value.neighborhood === n.name ? "bg-primary/10" : ""}`}
                       >
-                        {n}
+                        {renderItem(n, value.neighborhood === n.name)}
                       </button>
                     ))}
                   </div>
@@ -236,4 +251,8 @@ export default function LocationPicker({ value, onChange, compact = false }: Loc
       </PopoverContent>
     </Popover>
   );
-}
+});
+
+LocationPicker.displayName = "LocationPicker";
+
+export default LocationPicker;
