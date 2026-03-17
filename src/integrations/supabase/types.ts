@@ -667,6 +667,39 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          body_fields: Json
+          created_at: string
+          id: string
+          is_active: boolean
+          subject: string
+          template_key: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          body_fields?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          subject?: string
+          template_key: string
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          body_fields?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          subject?: string
+          template_key?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           agent_id: string | null
