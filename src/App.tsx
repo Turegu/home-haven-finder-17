@@ -44,6 +44,8 @@ import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
 import CompanyDashboardPage from "./pages/company/CompanyDashboardPage.tsx";
 import CompanyProfilePage from "./pages/company/CompanyProfilePage.tsx";
 import CompanyResetPasswordPage from "./pages/company/CompanyResetPasswordPage.tsx";
+import CompanyPropertiesPage from "./pages/company/CompanyPropertiesPage.tsx";
+import CompanyPropertyEditPage from "./pages/company/CompanyPropertyEditPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
