@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Save, Upload, X, ImageIcon } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 
 const contractTypes = [
   { value: "buy", label: "Buy" },
