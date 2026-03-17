@@ -102,7 +102,7 @@ const BlogsPage = () => {
           </div>
         )}
 
-        <BannerDisplay pageName="blog" position={1} type="horizontal" className="mt-8" />
+        <BannerDisplay pageName="blog" position={1} className="mt-8" />
       </div>
       <Footer />
     </div>
