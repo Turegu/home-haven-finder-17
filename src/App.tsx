@@ -49,6 +49,8 @@ import CompanyPropertyEditPage from "./pages/company/CompanyPropertyEditPage.tsx
 import CompanyProjectsPage from "./pages/company/CompanyProjectsPage.tsx";
 import CompanyProjectEditPage from "./pages/company/CompanyProjectEditPage.tsx";
 import CompanyProjectUnitsPage from "./pages/company/CompanyProjectUnitsPage.tsx";
+import CompanyEventsPage from "./pages/company/CompanyEventsPage.tsx";
+import CompanyEventEditPage from "./pages/company/CompanyEventEditPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -108,8 +110,11 @@ const App = () => (
           <Route path="/company/projects" element={<CompanyProjectsPage />} />
           <Route path="/company/projects/new" element={<CompanyProjectEditPage />} />
           <Route path="/company/projects/:id/edit" element={<CompanyProjectEditPage />} />
-          <Route path="/company/projects/:id/units" element={<CompanyProjectUnitsPage />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+           <Route path="/company/projects/:id/units" element={<CompanyProjectUnitsPage />} />
+           <Route path="/company/events" element={<CompanyEventsPage />} />
+           <Route path="/company/events/new" element={<CompanyEventEditPage />} />
+           <Route path="/company/events/:id/edit" element={<CompanyEventEditPage />} />
+           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

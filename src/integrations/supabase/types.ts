@@ -421,50 +421,77 @@ export type Database = {
         Row: {
           company_id: string | null
           created_at: string
+          currency: string | null
           description: string | null
           display_on_homepage: boolean
+          entry_type: string
           event_date: string | null
           event_type: string
           id: string
           images: string[] | null
           listing_id: string
           location: string | null
+          neighbourhood: string | null
           organizer: string | null
+          pdf_catalogue_url: string | null
+          pin_location: string | null
+          price: number | null
+          province: string | null
           status: string
           title: string
+          town: string | null
           updated_at: string
+          video_link: string | null
         }
         Insert: {
           company_id?: string | null
           created_at?: string
+          currency?: string | null
           description?: string | null
           display_on_homepage?: boolean
+          entry_type?: string
           event_date?: string | null
           event_type?: string
           id?: string
           images?: string[] | null
           listing_id?: string
           location?: string | null
+          neighbourhood?: string | null
           organizer?: string | null
+          pdf_catalogue_url?: string | null
+          pin_location?: string | null
+          price?: number | null
+          province?: string | null
           status?: string
           title: string
+          town?: string | null
           updated_at?: string
+          video_link?: string | null
         }
         Update: {
           company_id?: string | null
           created_at?: string
+          currency?: string | null
           description?: string | null
           display_on_homepage?: boolean
+          entry_type?: string
           event_date?: string | null
           event_type?: string
           id?: string
           images?: string[] | null
           listing_id?: string
           location?: string | null
+          neighbourhood?: string | null
           organizer?: string | null
+          pdf_catalogue_url?: string | null
+          pin_location?: string | null
+          price?: number | null
+          province?: string | null
           status?: string
           title?: string
+          town?: string | null
           updated_at?: string
+          video_link?: string | null
         }
         Relationships: [
           {
