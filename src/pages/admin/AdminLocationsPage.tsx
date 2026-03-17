@@ -77,13 +77,16 @@ export default function AdminLocationsPage() {
   const loadDistricts = useCallback(async (province: string) => {
     const { data } = await supabase
       .from("locations")
-      .select("district")
+      .select("district, district_ar")
       .eq("province", province)
       .eq("status", "active");
 
     if (data) {
-      const unique = [...new Set(data.map((d: any) => d.district))].sort();
-      setDistricts(unique);
+      const uniqueMap = new Map<string, string>();
+      data.forEach((d: any) => { if (!uniqueMap.has(d.district)) uniqueMap.set(d.district, d.district_ar || ""); });
+      const sorted = [...uniqueMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+      setDistricts(sorted.map(([d]) => d));
+      setDistrictArMap(Object.fromEntries(sorted));
     }
   }, []);
 
