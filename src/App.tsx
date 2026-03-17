@@ -99,6 +99,9 @@ const App = () => (
           <Route path="/company" element={<CompanyDashboardPage />} />
           <Route path="/company/profile" element={<CompanyProfilePage />} />
           <Route path="/company/reset-password" element={<CompanyResetPasswordPage />} />
+          <Route path="/company/properties" element={<CompanyPropertiesPage />} />
+          <Route path="/company/properties/new" element={<CompanyPropertyEditPage />} />
+          <Route path="/company/properties/:id/edit" element={<CompanyPropertyEditPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
