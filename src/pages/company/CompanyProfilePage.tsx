@@ -23,7 +23,7 @@ const companyTypes = [
   { value: "consulting", label: "Consulting" },
 ];
 
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa", "Adiyaman", "Mersin"];
+
 
 const CompanyProfilePage = () => {
   const [company, setCompany] = useState<Company | null>(null);
