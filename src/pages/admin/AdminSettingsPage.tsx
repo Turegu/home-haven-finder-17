@@ -134,7 +134,7 @@ const AdminSettingsPage = () => {
             <Label>Current Admin Email</Label>
             <Input value={adminEmail} disabled className="bg-muted" />
           </div>
-          <div className="flex items-start gap-2 p-3 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
             <span>Changing the admin email requires a secure verification process (OTP). This feature is planned for a future update.</span>
           </div>
