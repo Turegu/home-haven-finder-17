@@ -32,6 +32,8 @@ interface LocationSetting {
 
 export default function AdminLocationsPage() {
   const [provinces, setProvinces] = useState<string[]>([]);
+  const [provinceArMap, setProvinceArMap] = useState<Record<string, string>>({});
+  const [districtArMap, setDistrictArMap] = useState<Record<string, string>>({});
   const [districts, setDistricts] = useState<string[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
