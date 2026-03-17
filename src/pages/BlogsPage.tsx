@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { BannerDisplay } from "@/components/BannerDisplay";
+import BannerDisplay from "@/components/BannerDisplay";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BlogItem {
