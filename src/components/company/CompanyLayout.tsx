@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, FolderKanban, Calendar, Users,
-  UserCircle, Bell, Mail, LogOut, Menu, X
+  UserCircle, Bell, Mail, LogOut, Menu, X, Users2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ const sidebarLinks = [
   { label: "Events Management", path: "/company/events", icon: Calendar },
   { label: "Agents Management", path: "/company/agents", icon: Users },
   { label: "Profile Settings", path: "/company/profile", icon: UserCircle },
+  { label: "Followers", path: "/company/followers", icon: Users2 },
   { label: "Inbox", path: "/company/inbox", icon: Mail },
   { label: "Notifications", path: "/company/notifications", icon: Bell },
 ];

@@ -420,6 +420,80 @@ export type Database = {
         }
         Relationships: []
       }
+      company_announcements: {
+        Row: {
+          announcement_type: string
+          company_id: string
+          created_at: string
+          event_id: string | null
+          id: string
+          message: string
+          title: string
+        }
+        Insert: {
+          announcement_type?: string
+          company_id: string
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          message: string
+          title: string
+        }
+        Update: {
+          announcement_type?: string
+          company_id?: string
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          message?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_announcements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_announcements_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_followers: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_followers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_inbox: {
         Row: {
           budget: string | null
@@ -886,6 +960,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          phone: string | null
+          show_phone: boolean
           updated_at: string
           user_id: string
         }
@@ -894,6 +970,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          phone?: string | null
+          show_phone?: boolean
           updated_at?: string
           user_id: string
         }
@@ -902,6 +980,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          phone?: string | null
+          show_phone?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -1250,6 +1330,38 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_announcements: {
+        Row: {
+          announcement_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_announcements_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "company_announcements"
             referencedColumns: ["id"]
           },
         ]
