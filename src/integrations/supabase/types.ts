@@ -1739,6 +1739,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_distinct_districts: {
+        Args: { p_province: string }
+        Returns: {
+          ar: string
+          name: string
+        }[]
+      }
+      get_distinct_provinces: {
+        Args: never
+        Returns: {
+          ar: string
+          name: string
+        }[]
+      }
+      get_neighborhoods: {
+        Args: { p_district: string; p_province: string }
+        Returns: {
+          ar: string
+          name: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
