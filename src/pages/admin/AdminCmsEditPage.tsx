@@ -5,6 +5,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ImageIcon, ArrowLeft, Plus, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
@@ -30,7 +31,7 @@ const AdminCmsEditPage = () => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Featured locations state
+  // Featured locations state (home page only)
   const [locations, setLocations] = useState<FeaturedLocation[]>([]);
   const [locDialog, setLocDialog] = useState(false);
   const [editingLoc, setEditingLoc] = useState<FeaturedLocation | null>(null);
@@ -73,6 +74,19 @@ const AdminCmsEditPage = () => {
     }));
   };
 
+  const updateNestedField = (path: string[], value: any) => {
+    setContent((prev) => {
+      const updated = JSON.parse(JSON.stringify(prev));
+      let obj = updated;
+      for (let i = 0; i < path.length - 1; i++) {
+        if (!obj[path[i]]) obj[path[i]] = {};
+        obj = obj[path[i]];
+      }
+      obj[path[path.length - 1]] = value;
+      return updated;
+    });
+  };
+
   const uploadImage = async (file: File, folder: string): Promise<string | null> => {
     const ext = file.name.split(".").pop();
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
@@ -80,19 +94,6 @@ const AdminCmsEditPage = () => {
     if (error) { toast.error("Upload failed"); return null; }
     const { data } = supabase.storage.from("cms-images").getPublicUrl(path);
     return data.publicUrl;
-  };
-
-  // Image upload refs for hero/second banner
-  const heroFileRef = useRef<HTMLInputElement>(null);
-  const secondBannerFileRef = useRef<HTMLInputElement>(null);
-
-  const handleImageUpload = async (
-    file: File,
-    section: string,
-    field: string = "image_url"
-  ) => {
-    const url = await uploadImage(file, section);
-    if (url) updateSection(section, field, url);
   };
 
   const handleSave = async () => {
@@ -114,7 +115,6 @@ const AdminCmsEditPage = () => {
     setLocImagePreview(null);
     setLocDialog(true);
   };
-
   const openLocEdit = (loc: FeaturedLocation) => {
     setEditingLoc(loc);
     setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order });
@@ -122,13 +122,10 @@ const AdminCmsEditPage = () => {
     setLocImagePreview(loc.image_url);
     setLocDialog(true);
   };
-
   const handleLocSave = async () => {
     if (!locForm.name) { toast.error("Name is required"); return; }
     let image_url = editingLoc?.image_url || null;
-    if (locImageFile) {
-      image_url = await uploadImage(locImageFile, "locations");
-    }
+    if (locImageFile) image_url = await uploadImage(locImageFile, "locations");
     const payload = { name: locForm.name, link_url: locForm.link_url || null, image_url, sort_order: locForm.sort_order };
     if (editingLoc) {
       await supabase.from("featured_locations").update(payload).eq("id", editingLoc.id);
@@ -140,7 +137,6 @@ const AdminCmsEditPage = () => {
     setLocDialog(false);
     fetchLocations();
   };
-
   const handleLocDelete = async (id: string) => {
     if (!confirm("Delete this location?")) return;
     await supabase.from("featured_locations").delete().eq("id", id);
@@ -152,13 +148,6 @@ const AdminCmsEditPage = () => {
     return <AdminLayout><p className="text-muted-foreground py-8">Loading...</p></AdminLayout>;
   }
 
-  const hero = content.hero || {};
-  const secondBanner = content.second_banner || {};
-  const featProps = content.featured_properties || {};
-  const featProjects = content.featured_projects || {};
-  const featLocs = content.featured_locations || {};
-  const partners = content.partners || {};
-
   return (
     <AdminLayout>
       <div className="flex items-center gap-3 mb-6">
@@ -169,180 +158,14 @@ const AdminCmsEditPage = () => {
       </div>
 
       <div className="space-y-8 max-w-4xl">
-        {/* Hero Section */}
-        {slug === "home" && (
-          <>
-            <SectionCard title="Hero" subtitle="Bg (2000px × 560px)">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <input ref={heroFileRef} type="file" accept="image/*" className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], "hero")} />
-                  <div
-                    onClick={() => heroFileRef.current?.click()}
-                    className="border-2 border-dashed border-border rounded-lg h-40 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
-                  >
-                    {hero.image_url ? (
-                      <img src={hero.image_url} alt="Hero" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="text-center text-muted-foreground text-sm">
-                        <ImageIcon className="h-8 w-8 mx-auto mb-1" />
-                        Click to upload
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <Label>Title</Label>
-                    <Input value={hero.title || ""} onChange={(e) => updateSection("hero", "title", e.target.value)} />
-                  </div>
-                  <div>
-                    <Label>SubTitle</Label>
-                    <Input value={hero.subtitle || ""} onChange={(e) => updateSection("hero", "subtitle", e.target.value)} />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <Label>Link URL</Label>
-                  <Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." />
-                </div>
-                <div>
-                  <Label>Link Text</Label>
-                  <Input value={hero.link_text || ""} onChange={(e) => updateSection("hero", "link_text", e.target.value)} />
-                </div>
-              </div>
-              <div className="flex items-center gap-2 mt-3">
-                <Checkbox
-                  checked={hero.enable_link ?? true}
-                  onCheckedChange={(v) => updateSection("hero", "enable_link", v)}
-                />
-                <Label className="mb-0">Enable Link</Label>
-              </div>
-            </SectionCard>
+        {slug === "home" && <HomePageForm content={content} updateSection={updateSection} uploadImage={uploadImage} locations={locations} openLocCreate={openLocCreate} openLocEdit={openLocEdit} handleLocDelete={handleLocDelete} />}
+        {slug === "agents" && <AgentsPageForm content={content} updateSection={updateSection} uploadImage={uploadImage} />}
+        {slug === "terms" && <RichTextPageForm content={content} updateNestedField={updateNestedField} sectionTitle="For Users" />}
+        {slug === "privacy" && <RichTextPageForm content={content} updateNestedField={updateNestedField} sectionTitle="Data" />}
+        {slug === "contact" && <ContactPageForm content={content} updateSection={updateSection} uploadImage={uploadImage} />}
+        {slug === "advertise" && <ContactPageForm content={content} updateSection={updateSection} uploadImage={uploadImage} />}
+        {slug === "property-request" && <PropertyRequestForm content={content} updateSection={updateSection} updateNestedField={updateNestedField} uploadImage={uploadImage} />}
 
-            {/* Second Banner */}
-            <SectionCard title="Second Banner" subtitle="Advertising banner below hero (slightly smaller)">
-              <input ref={secondBannerFileRef} type="file" accept="image/*" className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], "second_banner")} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div
-                  onClick={() => secondBannerFileRef.current?.click()}
-                  className="border-2 border-dashed border-border rounded-lg h-32 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
-                >
-                  {secondBanner.image_url ? (
-                    <img src={secondBanner.image_url} alt="Banner 2" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="text-center text-muted-foreground text-sm">
-                      <ImageIcon className="h-8 w-8 mx-auto mb-1" />
-                      Click to upload
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <Label>Link URL</Label>
-                  <Input value={secondBanner.link_url || ""} onChange={(e) => updateSection("second_banner", "link_url", e.target.value)} placeholder="https://..." />
-                </div>
-              </div>
-            </SectionCard>
-
-            {/* Featured Properties */}
-            <SectionCard title="Featured Properties">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input value={featProps.title || ""} onChange={(e) => updateSection("featured_properties", "title", e.target.value)} />
-                </div>
-                <div>
-                  <Label>Tagline</Label>
-                  <Input value={featProps.tagline || ""} onChange={(e) => updateSection("featured_properties", "tagline", e.target.value)} />
-                </div>
-              </div>
-            </SectionCard>
-
-            {/* Featured Projects */}
-            <SectionCard title="Featured Projects">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input value={featProjects.title || ""} onChange={(e) => updateSection("featured_projects", "title", e.target.value)} />
-                </div>
-                <div>
-                  <Label>Tagline</Label>
-                  <Input value={featProjects.tagline || ""} onChange={(e) => updateSection("featured_projects", "tagline", e.target.value)} />
-                </div>
-              </div>
-            </SectionCard>
-
-            {/* Featured Locations */}
-            <SectionCard title="Featured Locations">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input value={featLocs.title || ""} onChange={(e) => updateSection("featured_locations", "title", e.target.value)} />
-                </div>
-                <div>
-                  <Label>Tagline</Label>
-                  <Input value={featLocs.tagline || ""} onChange={(e) => updateSection("featured_locations", "tagline", e.target.value)} />
-                </div>
-              </div>
-
-              {/* Location cards management */}
-              <div className="border-t border-border pt-4">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-medium text-foreground">Location Cards</p>
-                  <Button size="sm" onClick={openLocCreate} className="gap-1">
-                    <Plus className="h-3.5 w-3.5" /> Add Location
-                  </Button>
-                </div>
-                {locations.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No featured locations yet.</p>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {locations.map((loc) => (
-                      <div key={loc.id} className="border border-border rounded-lg overflow-hidden bg-background">
-                        {loc.image_url ? (
-                          <img src={loc.image_url} alt={loc.name} className="w-full aspect-square object-cover" />
-                        ) : (
-                          <div className="w-full aspect-square bg-muted flex items-center justify-center">
-                            <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                          </div>
-                        )}
-                        <div className="p-2 flex items-center justify-between">
-                          <span className="text-sm font-medium truncate">{loc.name}</span>
-                          <div className="flex gap-1">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openLocEdit(loc)}>
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleLocDelete(loc.id)}>
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </SectionCard>
-
-            {/* Partners */}
-            <SectionCard title="Our Partners">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Title</Label>
-                  <Input value={partners.title || ""} onChange={(e) => updateSection("partners", "title", e.target.value)} />
-                </div>
-                <div>
-                  <Label>Tagline</Label>
-                  <Input value={partners.tagline || ""} onChange={(e) => updateSection("partners", "tagline", e.target.value)} />
-                </div>
-              </div>
-            </SectionCard>
-          </>
-        )}
-
-        {/* Save Button */}
         <Button onClick={handleSave} disabled={saving} className="w-full" size="lg">
           {saving ? "Saving..." : "Save"}
         </Button>
@@ -360,19 +183,7 @@ const AdminCmsEditPage = () => {
                 const f = e.target.files?.[0];
                 if (f) { setLocImageFile(f); setLocImagePreview(URL.createObjectURL(f)); }
               }} />
-            <div
-              onClick={() => locFileRef.current?.click()}
-              className="border-2 border-dashed border-border rounded-lg h-40 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
-            >
-              {locImagePreview ? (
-                <img src={locImagePreview} alt="Preview" className="w-full h-full object-cover" />
-              ) : (
-                <div className="text-center text-muted-foreground text-sm">
-                  <ImageIcon className="h-8 w-8 mx-auto mb-1" />
-                  Click to upload image
-                </div>
-              )}
-            </div>
+            <ImageUploadBox preview={locImagePreview} onClick={() => locFileRef.current?.click()} height="h-40" />
             <div>
               <Label>Name</Label>
               <Input value={locForm.name} onChange={(e) => setLocForm({ ...locForm, name: e.target.value })} />
@@ -383,9 +194,7 @@ const AdminCmsEditPage = () => {
             </div>
             <div className="flex gap-3 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setLocDialog(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={handleLocSave}>
-                {editingLoc ? "Update" : "Create"}
-              </Button>
+              <Button className="flex-1" onClick={handleLocSave}>{editingLoc ? "Update" : "Create"}</Button>
             </div>
           </div>
         </DialogContent>
@@ -393,6 +202,8 @@ const AdminCmsEditPage = () => {
     </AdminLayout>
   );
 };
+
+/* ============ Shared Components ============ */
 
 const SectionCard = ({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) => (
   <div className="bg-muted/30 border border-border rounded-xl p-6">
@@ -402,5 +213,275 @@ const SectionCard = ({ title, subtitle, children }: { title: string; subtitle?: 
     {children}
   </div>
 );
+
+const ImageUploadBox = ({ preview, onClick, height = "h-40", label }: { preview: string | null; onClick: () => void; height?: string; label?: string }) => (
+  <div>
+    {label && <Label className="mb-1 block">{label}</Label>}
+    <div
+      onClick={onClick}
+      className={`border-2 border-dashed border-border rounded-lg ${height} flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden`}
+    >
+      {preview ? (
+        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+      ) : (
+        <div className="text-center text-muted-foreground text-sm">
+          <ImageIcon className="h-8 w-8 mx-auto mb-1" />
+          Click to upload
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+function useImageUploader(uploadImage: (file: File, folder: string) => Promise<string | null>) {
+  const ref = useRef<HTMLInputElement>(null);
+  const createHandler = (folder: string, onUrl: (url: string) => void) => {
+    return async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const url = await uploadImage(file, folder);
+      if (url) onUrl(url);
+    };
+  };
+  return { ref, createHandler };
+}
+
+/* ============ Home Page Form ============ */
+
+const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocCreate, openLocEdit, handleLocDelete }: any) => {
+  const hero = content.hero || {};
+  const secondBanner = content.second_banner || {};
+  const featProps = content.featured_properties || {};
+  const featProjects = content.featured_projects || {};
+  const featLocs = content.featured_locations || {};
+  const partners = content.partners || {};
+
+  const heroRef = useRef<HTMLInputElement>(null);
+  const bannerRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      <SectionCard title="Hero" subtitle="Bg (2000px × 560px)">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <input ref={heroRef} type="file" accept="image/*" className="hidden"
+              onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "hero"); if (url) updateSection("hero", "image_url", url); } }} />
+            <ImageUploadBox preview={hero.image_url} onClick={() => heroRef.current?.click()} />
+          </div>
+          <div className="space-y-3">
+            <div><Label>Title</Label><Input value={hero.title || ""} onChange={(e) => updateSection("hero", "title", e.target.value)} /></div>
+            <div><Label>SubTitle</Label><Input value={hero.subtitle || ""} onChange={(e) => updateSection("hero", "subtitle", e.target.value)} /></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div><Label>Link URL</Label><Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." /></div>
+          <div><Label>Link Text</Label><Input value={hero.link_text || ""} onChange={(e) => updateSection("hero", "link_text", e.target.value)} /></div>
+        </div>
+        <div className="flex items-center gap-2 mt-3">
+          <Checkbox checked={hero.enable_link ?? true} onCheckedChange={(v) => updateSection("hero", "enable_link", v)} />
+          <Label className="mb-0">Enable Link</Label>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Second Banner" subtitle="Advertising banner below hero">
+        <input ref={bannerRef} type="file" accept="image/*" className="hidden"
+          onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "second_banner"); if (url) updateSection("second_banner", "image_url", url); } }} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ImageUploadBox preview={secondBanner.image_url} onClick={() => bannerRef.current?.click()} height="h-32" />
+          <div><Label>Link URL</Label><Input value={secondBanner.link_url || ""} onChange={(e) => updateSection("second_banner", "link_url", e.target.value)} placeholder="https://..." /></div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Featured Properties">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><Label>Title</Label><Input value={featProps.title || ""} onChange={(e) => updateSection("featured_properties", "title", e.target.value)} /></div>
+          <div><Label>Tagline</Label><Input value={featProps.tagline || ""} onChange={(e) => updateSection("featured_properties", "tagline", e.target.value)} /></div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Featured Projects">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><Label>Title</Label><Input value={featProjects.title || ""} onChange={(e) => updateSection("featured_projects", "title", e.target.value)} /></div>
+          <div><Label>Tagline</Label><Input value={featProjects.tagline || ""} onChange={(e) => updateSection("featured_projects", "tagline", e.target.value)} /></div>
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Featured Locations">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div><Label>Title</Label><Input value={featLocs.title || ""} onChange={(e) => updateSection("featured_locations", "title", e.target.value)} /></div>
+          <div><Label>Tagline</Label><Input value={featLocs.tagline || ""} onChange={(e) => updateSection("featured_locations", "tagline", e.target.value)} /></div>
+        </div>
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-foreground">Location Cards</p>
+            <Button size="sm" onClick={openLocCreate} className="gap-1"><Plus className="h-3.5 w-3.5" /> Add Location</Button>
+          </div>
+          {locations.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No featured locations yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {locations.map((loc: FeaturedLocation) => (
+                <div key={loc.id} className="border border-border rounded-lg overflow-hidden bg-background">
+                  {loc.image_url ? <img src={loc.image_url} alt={loc.name} className="w-full aspect-square object-cover" /> : <div className="w-full aspect-square bg-muted flex items-center justify-center"><ImageIcon className="h-8 w-8 text-muted-foreground" /></div>}
+                  <div className="p-2 flex items-center justify-between">
+                    <span className="text-sm font-medium truncate">{loc.name}</span>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openLocEdit(loc)}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handleLocDelete(loc.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Our Partners">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><Label>Title</Label><Input value={partners.title || ""} onChange={(e) => updateSection("partners", "title", e.target.value)} /></div>
+          <div><Label>Tagline</Label><Input value={partners.tagline || ""} onChange={(e) => updateSection("partners", "tagline", e.target.value)} /></div>
+        </div>
+      </SectionCard>
+    </>
+  );
+};
+
+/* ============ Agents Page Form ============ */
+
+const AgentsPageForm = ({ content, uploadImage, updateSection }: any) => {
+  const hero = content.hero || {};
+  const ref = useRef<HTMLInputElement>(null);
+
+  return (
+    <SectionCard title="Hero" subtitle="Bg (2000px × 560px)">
+      <input ref={ref} type="file" accept="image/*" className="hidden"
+        onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "agents-hero"); if (url) updateSection("hero", "image_url", url); } }} />
+      <ImageUploadBox preview={hero.image_url} onClick={() => ref.current?.click()} />
+    </SectionCard>
+  );
+};
+
+/* ============ Rich Text Page Form (Terms, Privacy) ============ */
+
+const RichTextPageForm = ({ content, updateNestedField, sectionTitle }: any) => {
+  const html = content?.content?.html || "";
+
+  return (
+    <SectionCard title={sectionTitle}>
+      <Label>HTML Description</Label>
+      <Textarea
+        value={html}
+        onChange={(e) => updateNestedField(["content", "html"], e.target.value)}
+        rows={20}
+        className="font-mono text-sm"
+        placeholder="Enter HTML content..."
+      />
+    </SectionCard>
+  );
+};
+
+/* ============ Contact / Advertise Page Form ============ */
+
+const ContactPageForm = ({ content, updateSection, uploadImage }: any) => {
+  const data = content.data || {};
+  const ref = useRef<HTMLInputElement>(null);
+
+  return (
+    <SectionCard title="Data">
+      <div className="space-y-4">
+        <div><Label>Title</Label><Input value={data.title || ""} onChange={(e) => updateSection("data", "title", e.target.value)} /></div>
+        <div><Label>Description</Label><Textarea value={data.description || ""} onChange={(e) => updateSection("data", "description", e.target.value)} rows={4} /></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <input ref={ref} type="file" accept="image/*" className="hidden"
+              onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "contact"); if (url) updateSection("data", "image_url", url); } }} />
+            <ImageUploadBox preview={data.image_url} onClick={() => ref.current?.click()} label="Photo (636px × 500px)" />
+          </div>
+          <div><Label>TagLine</Label><Input value={data.tagline || ""} onChange={(e) => updateSection("data", "tagline", e.target.value)} /></div>
+        </div>
+      </div>
+    </SectionCard>
+  );
+};
+
+/* ============ Property Request Page Form ============ */
+
+const PropertyRequestForm = ({ content, updateSection, updateNestedField, uploadImage }: any) => {
+  const data = content.data || {};
+  const steps = data.steps || [{}, {}, {}];
+  const bgRef = useRef<HTMLInputElement>(null);
+  const mainImgRef = useRef<HTMLInputElement>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
+  const stepRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+
+  return (
+    <>
+      <SectionCard title="Data">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          <div><Label>MainTitle</Label><Input value={data.main_title || ""} onChange={(e) => updateSection("data", "main_title", e.target.value)} /></div>
+          <div>
+            <input ref={bgRef} type="file" accept="image/*" className="hidden"
+              onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "property-request"); if (url) updateSection("data", "bg_image_url", url); } }} />
+            <ImageUploadBox preview={data.bg_image_url} onClick={() => bgRef.current?.click()} label="Bg (2000px × 450px)" height="h-28" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+          <div>
+            <input ref={mainImgRef} type="file" accept="image/*" className="hidden"
+              onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "property-request"); if (url) updateSection("data", "main_image_url", url); } }} />
+            <ImageUploadBox preview={data.main_image_url} onClick={() => mainImgRef.current?.click()} label="Image (1320px × 535px)" height="h-36" />
+          </div>
+          <div>
+            <input ref={logoRef} type="file" accept="image/*" className="hidden"
+              onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "property-request"); if (url) updateSection("data", "logo_image_url", url); } }} />
+            <ImageUploadBox preview={data.logo_image_url} onClick={() => logoRef.current?.click()} label="Photo (146px × 47px)" height="h-20" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div><Label>Title</Label><Input value={data.title || ""} onChange={(e) => updateSection("data", "title", e.target.value)} /></div>
+          <div><Label>Description1</Label><Input value={data.description1 || ""} onChange={(e) => updateSection("data", "description1", e.target.value)} /></div>
+        </div>
+        <div><Label>Description2</Label><Input value={data.description2 || ""} onChange={(e) => updateSection("data", "description2", e.target.value)} /></div>
+      </SectionCard>
+
+      <SectionCard title="Steps">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {steps.map((step: any, i: number) => (
+            <div key={i} className="space-y-3">
+              <input ref={stepRefs[i]} type="file" accept="image/*" className="hidden"
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (f) {
+                    const url = await uploadImage(f, "property-request-steps");
+                    if (url) {
+                      const newSteps = [...steps];
+                      newSteps[i] = { ...newSteps[i], image_url: url };
+                      updateSection("data", "steps", newSteps);
+                    }
+                  }
+                }} />
+              <ImageUploadBox preview={step.image_url} onClick={() => stepRefs[i]?.current?.click()} label={`Image (84px × 84px)`} height="h-24" />
+              <div><Label>Description</Label><Textarea value={step.description || ""} onChange={(e) => {
+                const newSteps = [...steps];
+                newSteps[i] = { ...newSteps[i], description: e.target.value };
+                updateSection("data", "steps", newSteps);
+              }} rows={3} /></div>
+              <div><Label>Title</Label><Input value={step.title || ""} onChange={(e) => {
+                const newSteps = [...steps];
+                newSteps[i] = { ...newSteps[i], title: e.target.value };
+                updateSection("data", "steps", newSteps);
+              }} /></div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="SubTitle">
+        <Input value={data.subtitle || ""} onChange={(e) => updateSection("data", "subtitle", e.target.value)} />
+      </SectionCard>
+    </>
+  );
+};
 
 export default AdminCmsEditPage;
