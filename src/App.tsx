@@ -25,6 +25,7 @@ import AdminProjectsPage from "./pages/admin/AdminProjectsPage.tsx";
 import AdminEventsPage from "./pages/admin/AdminEventsPage.tsx";
 import AdminBannersPage from "./pages/admin/AdminBannersPage.tsx";
 import AdminBanksPage from "./pages/admin/AdminBanksPage.tsx";
+import AdminLanguagesPage from "./pages/admin/AdminLanguagesPage.tsx";
 import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
