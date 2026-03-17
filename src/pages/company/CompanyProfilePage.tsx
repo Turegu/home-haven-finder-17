@@ -371,58 +371,16 @@ const CompanyProfilePage = () => {
         {/* Location */}
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Province *</Label>
-              <Select value={form.province} onValueChange={(v) => updateField("province", v)}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select Province" /></SelectTrigger>
-                <SelectContent>
-                  {provinces.map((p) => (
-                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">City/Town</Label>
-              <Input value={form.town} onChange={(e) => updateField("town", e.target.value)} className="bg-secondary/50" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Neighbourhood</Label>
-              <Input value={form.neighbourhood} onChange={(e) => updateField("neighbourhood", e.target.value)} className="bg-secondary/50" />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label className="text-foreground font-medium">Pin Location (Coordinates or Address)</Label>
-              <Input
-                value={form.pin_location}
-                onChange={(e) => updateField("pin_location", e.target.value)}
-                className="bg-secondary/50"
-                placeholder="e.g. 41.0082,28.9784 or Istanbul, Beyoglu"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter GPS coordinates (lat,lng) or a full address. You can get coordinates from{" "}
-                <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Maps</a>
-                {" "}— right-click any point and copy the coordinates.
-              </p>
-            </div>
-          </div>
-
-          {/* Map preview */}
-          <div className="mt-5 rounded-lg border border-border overflow-hidden bg-muted/50 h-[300px] flex items-center justify-center">
-            {form.pin_location ? (
-              <iframe
-                title="Company Location"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(form.pin_location)}&z=15&output=embed`}
-              />
-            ) : (
-              <p className="text-muted-foreground text-sm">Enter a pin location to show the map</p>
-            )}
-          </div>
+          <LocationFormFields
+            province={form.province}
+            town={form.town}
+            neighbourhood={form.neighbourhood}
+            pinLocation={form.pin_location}
+            onProvinceChange={(v) => updateField("province", v)}
+            onTownChange={(v) => updateField("town", v)}
+            onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
+            onPinLocationChange={(v) => updateField("pin_location", v)}
+          />
         </section>
 
         {/* Save */}
