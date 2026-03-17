@@ -70,6 +70,7 @@ const App = () => (
           <Route path="/admin/banners" element={<AdminBannersPage />} />
           <Route path="/admin/banks" element={<AdminBanksPage />} />
           <Route path="/admin/languages" element={<AdminLanguagesPage />} />
+          <Route path="/admin/currencies" element={<AdminCurrenciesPage />} />
           <Route path="/admin/cms" element={<AdminCmsPage />} />
           <Route path="/admin/cms/:slug" element={<AdminCmsEditPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
