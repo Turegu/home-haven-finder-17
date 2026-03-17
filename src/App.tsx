@@ -56,6 +56,15 @@ import CompanyAgentEditPage from "./pages/company/CompanyAgentEditPage.tsx";
 import CompanyNotificationsPage from "./pages/company/CompanyNotificationsPage.tsx";
 import CompanyInboxPage from "./pages/company/CompanyInboxPage.tsx";
 import CompanyFollowersPage from "./pages/company/CompanyFollowersPage.tsx";
+import AgentLoginPage from "./pages/agent/AgentLoginPage.tsx";
+import AgentDashboardPage from "./pages/agent/AgentDashboardPage.tsx";
+import AgentProfilePage from "./pages/agent/AgentProfilePage.tsx";
+import AgentPropertiesPage from "./pages/agent/AgentPropertiesPage.tsx";
+import AgentProjectsPage from "./pages/agent/AgentProjectsPage.tsx";
+import AgentEventsPage from "./pages/agent/AgentEventsPage.tsx";
+import AgentFollowersPage from "./pages/agent/AgentFollowersPage.tsx";
+import AgentNotificationsPage from "./pages/agent/AgentNotificationsPage.tsx";
+import AgentInboxPage from "./pages/agent/AgentInboxPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -125,6 +134,15 @@ const App = () => (
            <Route path="/company/notifications" element={<CompanyNotificationsPage />} />
            <Route path="/company/inbox" element={<CompanyInboxPage />} />
            <Route path="/company/followers" element={<CompanyFollowersPage />} />
+           <Route path="/agent/login" element={<AgentLoginPage />} />
+           <Route path="/agent" element={<AgentDashboardPage />} />
+           <Route path="/agent/profile" element={<AgentProfilePage />} />
+           <Route path="/agent/properties" element={<AgentPropertiesPage />} />
+           <Route path="/agent/projects" element={<AgentProjectsPage />} />
+           <Route path="/agent/events" element={<AgentEventsPage />} />
+           <Route path="/agent/followers" element={<AgentFollowersPage />} />
+           <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
+           <Route path="/agent/inbox" element={<AgentInboxPage />} />
            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
