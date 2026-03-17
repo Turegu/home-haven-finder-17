@@ -3,7 +3,7 @@ import { BarChart3, AlertCircle } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { usePriceTrends, useNeighbourhoodsInTown } from "@/hooks/useMarketTrends";
+import { usePriceTrends, useNeighbourhoodsInTown, CurrentPropertyData } from "@/hooks/useMarketTrends";
 
 interface PriceTrendsChartProps {
   province: string | null;
@@ -11,12 +11,18 @@ interface PriceTrendsChartProps {
   neighbourhood: string | null;
   currency?: string;
   areaUnit?: string;
+  currentProperty?: CurrentPropertyData;
 }
 
-const PriceTrendsChart = ({ province, town, neighbourhood, currency = "USD", areaUnit = "m²" }: PriceTrendsChartProps) => {
+const PriceTrendsChart = ({ province, town, neighbourhood, currency = "USD", areaUnit = "m²", currentProperty }: PriceTrendsChartProps) => {
   const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(neighbourhood);
   const { data: neighbourhoods } = useNeighbourhoodsInTown(province, town);
-  const { data: trends, isLoading } = usePriceTrends(selectedNeighbourhood, town, province);
+
+  const isOwnNeighbourhood = selectedNeighbourhood === neighbourhood;
+  const { data: trends, isLoading } = usePriceTrends(
+    selectedNeighbourhood, town, province,
+    isOwnNeighbourhood ? currentProperty : undefined
+  );
 
   const chartData = (trends ?? []).map((t) => ({
     period: t.period,
@@ -47,14 +53,23 @@ const PriceTrendsChart = ({ province, town, neighbourhood, currency = "USD", are
 
       {isLoading ? (
         <Skeleton className="h-[300px] rounded-lg" />
-      ) : chartData.length < 2 ? (
+      ) : chartData.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
           <AlertCircle className="h-8 w-8 mb-2" />
           <p className="text-sm font-medium">Not enough data to display trends</p>
-          <p className="text-xs mt-1">
-            {chartData.length === 0
-              ? "No sale properties found in this neighbourhood"
-              : "At least 2 months of data required"}
+          <p className="text-xs mt-1">No sale properties found in this neighbourhood</p>
+        </div>
+      ) : chartData.length === 1 ? (
+        <div className="flex flex-col items-center justify-center py-12">
+          <p className="text-sm text-muted-foreground mb-2">Current average price per {areaUnit}</p>
+          <p className="text-3xl font-bold text-primary">
+            {chartData[0].avgPrice.toLocaleString()} {currency}/{areaUnit}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Based on {chartData[0].count} listing{chartData[0].count !== 1 ? "s" : ""} · {chartData[0].period}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            More data points needed to show a trend chart
           </p>
         </div>
       ) : (
@@ -79,7 +94,6 @@ const PriceTrendsChart = ({ province, town, neighbourhood, currency = "USD", are
                   tick={{ fontSize: 11, fill: "hsl(0, 0%, 45%)" }}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v) => `${v}`}
                 />
                 <Tooltip
                   content={({ active, payload, label }) => {
