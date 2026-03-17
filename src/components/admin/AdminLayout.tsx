@@ -23,6 +23,7 @@ const sidebarItems = [
   { label: "Currency Management", icon: Coins, path: "/admin/currencies" },
   { label: "Reports", icon: BarChart3, path: "/admin/reports" },
   { label: "CMS", icon: FileText, path: "/admin/cms" },
+  { label: "CRUDs", icon: Settings, path: "/admin/cruds" },
   { label: "Settings", icon: Settings, path: "/admin/settings", hasSubmenu: true },
 ];
 
