@@ -46,6 +46,9 @@ import CompanyProfilePage from "./pages/company/CompanyProfilePage.tsx";
 import CompanyResetPasswordPage from "./pages/company/CompanyResetPasswordPage.tsx";
 import CompanyPropertiesPage from "./pages/company/CompanyPropertiesPage.tsx";
 import CompanyPropertyEditPage from "./pages/company/CompanyPropertyEditPage.tsx";
+import CompanyProjectsPage from "./pages/company/CompanyProjectsPage.tsx";
+import CompanyProjectEditPage from "./pages/company/CompanyProjectEditPage.tsx";
+import CompanyProjectUnitsPage from "./pages/company/CompanyProjectUnitsPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -102,6 +105,10 @@ const App = () => (
           <Route path="/company/properties" element={<CompanyPropertiesPage />} />
           <Route path="/company/properties/new" element={<CompanyPropertyEditPage />} />
           <Route path="/company/properties/:id/edit" element={<CompanyPropertyEditPage />} />
+          <Route path="/company/projects" element={<CompanyProjectsPage />} />
+          <Route path="/company/projects/new" element={<CompanyProjectEditPage />} />
+          <Route path="/company/projects/:id/edit" element={<CompanyProjectEditPage />} />
+          <Route path="/company/projects/:id/units" element={<CompanyProjectUnitsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
