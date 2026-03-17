@@ -48,24 +48,8 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 
   useEffect(() => {
     async function loadProvinces() {
-      let all: any[] = [];
-      let from = 0;
-      const ps = 1000;
-      while (true) {
-        const { data } = await supabase
-          .from("locations")
-          .select("province, province_ar")
-          .eq("status", "active")
-          .range(from, from + ps - 1);
-        if (!data || data.length === 0) break;
-        all.push(...data);
-        if (data.length < ps) break;
-        from += ps;
-      }
-      const map = new Map<string, string>();
-      all.forEach((d: any) => { if (!map.has(d.province)) map.set(d.province, d.province_ar || ""); });
-      const sorted = [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-      setProvinces(sorted.map(([name, ar]) => ({ name, ar })));
+      const { data } = await supabase.rpc("get_distinct_provinces");
+      if (data) setProvinces(data as NamePair[]);
     }
     loadProvinces();
   }, []);
@@ -73,17 +57,8 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   useEffect(() => {
     if (!draft.province) { setDistricts([]); return; }
     async function load() {
-      const { data } = await supabase
-        .from("locations")
-        .select("district, district_ar")
-        .eq("province", draft.province!)
-        .eq("status", "active");
-      if (data) {
-        const map = new Map<string, string>();
-        data.forEach((d: any) => { if (!map.has(d.district)) map.set(d.district, d.district_ar || ""); });
-        const sorted = [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-        setDistricts(sorted.map(([name, ar]) => ({ name, ar })));
-      }
+      const { data } = await supabase.rpc("get_distinct_districts", { p_province: draft.province! });
+      if (data) setDistricts(data as NamePair[]);
     }
     load();
   }, [draft.province]);
@@ -91,16 +66,8 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   useEffect(() => {
     if (!draft.province || !draft.district) { setNeighborhoods([]); return; }
     async function load() {
-      const { data } = await supabase
-        .from("locations")
-        .select("neighborhood, neighborhood_ar")
-        .eq("province", draft.province!)
-        .eq("district", draft.district!)
-        .eq("status", "active")
-        .order("neighborhood");
-      if (data) {
-        setNeighborhoods(data.map((d: any) => ({ name: d.neighborhood, ar: d.neighborhood_ar || "" })));
-      }
+      const { data } = await supabase.rpc("get_neighborhoods", { p_province: draft.province!, p_district: draft.district! });
+      if (data) setNeighborhoods(data as NamePair[]);
     }
     load();
   }, [draft.province, draft.district]);
