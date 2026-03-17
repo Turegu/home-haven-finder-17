@@ -357,7 +357,10 @@ export default function AdminLocationsPage() {
                     onClick={() => setSelectedDistrict(district)}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group"
                   >
-                    <span className="text-sm font-medium text-foreground">{district}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground">{district}</span>
+                      {districtArMap[district] && <span className="text-xs text-muted-foreground" dir="rtl">{districtArMap[district]}</span>}
+                    </div>
                     <div className="flex items-center gap-1">
                       <button onClick={(e) => { e.stopPropagation(); handleDeleteDistrict(selectedProvince, district); }} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
                         <Trash2 className="h-3.5 w-3.5" />
