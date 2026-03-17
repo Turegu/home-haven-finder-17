@@ -420,6 +420,114 @@ export type Database = {
         }
         Relationships: []
       }
+      company_inbox: {
+        Row: {
+          budget: string | null
+          company_id: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          inbox_type: string
+          is_seen: boolean
+          message: string | null
+          phone: string | null
+          project_id: string | null
+          property_id: string | null
+        }
+        Insert: {
+          budget?: string | null
+          company_id: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          inbox_type?: string
+          is_seen?: boolean
+          message?: string | null
+          phone?: string | null
+          project_id?: string | null
+          property_id?: string | null
+        }
+        Update: {
+          budget?: string | null
+          company_id?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          inbox_type?: string
+          is_seen?: boolean
+          message?: string | null
+          phone?: string | null
+          project_id?: string | null
+          property_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_inbox_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_inbox_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_inbox_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_notifications: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string | null
+          notification_type: string
+          posted_by: string | null
+          title: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          notification_type?: string
+          posted_by?: string | null
+          title: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          notification_type?: string
+          posted_by?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_notifications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_pattern_codes: {
         Row: {
           company_id: string
