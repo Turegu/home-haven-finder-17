@@ -397,6 +397,12 @@ const AdminFiltersPage = () => {
         onOpenChange={setExcelDialogOpen}
         onImportComplete={() => { fetchCategories(); }}
       />
+      <FilterExcelUpload
+        open={categoryExcelOpen}
+        onOpenChange={setCategoryExcelOpen}
+        onImportComplete={() => { if (selectedCategory) fetchOptions(selectedCategory.id); }}
+        targetCategory={selectedCategory ? { id: selectedCategory.id, title: selectedCategory.title, category_key: selectedCategory.category_key } : null}
+      />
     </AdminLayout>
   );
 };
