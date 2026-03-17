@@ -62,6 +62,8 @@ const App = () => (
           <Route path="/property-request" element={<PropertyRequestPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/blog" element={<BlogsPage />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
