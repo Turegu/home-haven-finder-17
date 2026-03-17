@@ -56,6 +56,7 @@ const AdminFiltersPage = () => {
   const [formStatus, setFormStatus] = useState("active");
   const [saving, setSaving] = useState(false);
   const [excelDialogOpen, setExcelDialogOpen] = useState(false);
+  const [categoryExcelOpen, setCategoryExcelOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
