@@ -33,6 +33,10 @@ import AdminSettingsPage from "./pages/admin/AdminSettingsPage.tsx";
 import MortgageBanksPage from "./pages/MortgageBanksPage.tsx";
 import TermsPage from "./pages/TermsPage.tsx";
 import PrivacyPage from "./pages/PrivacyPage.tsx";
+import AdminBlogsPage from "./pages/admin/AdminBlogsPage.tsx";
+import AdminBlogEditPage from "./pages/admin/AdminBlogEditPage.tsx";
+import BlogsPage from "./pages/BlogsPage.tsx";
+import BlogDetailPage from "./pages/BlogDetailPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
