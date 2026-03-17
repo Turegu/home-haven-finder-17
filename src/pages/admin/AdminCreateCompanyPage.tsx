@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImageIcon, RotateCcw, Save } from "lucide-react";
+import LocationFormFields from "@/components/LocationFormFields";
 import type { Database } from "@/integrations/supabase/types";
 
 type CompanyType = Database["public"]["Enums"]["company_type"];
