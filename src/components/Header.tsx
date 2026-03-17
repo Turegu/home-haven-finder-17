@@ -210,7 +210,7 @@ const Header = () => {
           <div className="hidden md:flex items-center gap-4">
             <Link to="/contact-us" className="hover:opacity-80 transition-opacity">Contact Us</Link>
             <span className="opacity-50">|</span>
-            <Link to="#" className="hover:opacity-80 transition-opacity">Blogs</Link>
+            <Link to="/blog" className="hover:opacity-80 transition-opacity">Blogs</Link>
             <span className="opacity-50">|</span>
             <Link to="/advertise" className="hover:opacity-80 transition-opacity">Advertise With Us</Link>
           </div>
