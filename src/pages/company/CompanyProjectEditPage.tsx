@@ -19,7 +19,7 @@ const projectTypes = [
   { value: "residential_compound", label: "Residential Compound" },
 ];
 const projectStatuses = ["new", "under_construction", "ready", "off_plan", "completed"];
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa", "Adiyaman", "Mersin", "Mugla"];
+
 const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Laundry Room"];
 const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
 
