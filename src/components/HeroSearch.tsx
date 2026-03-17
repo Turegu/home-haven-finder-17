@@ -1,17 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchFilters from '@/components/SearchFilters';
+import LocationPicker from '@/components/LocationPicker';
 
 const HeroSearch = () => {
   const [activeTab, setActiveTab] = useState<'buy' | 'rent'>('buy');
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
 
   function handleSearch() {
     const params = new URLSearchParams();
     params.set('propertyPurpose', activeTab);
+    if (location.province) params.set('province', location.province);
+    if (location.district) params.set('district', location.district);
+    if (location.neighborhood) params.set('neighborhood', location.neighborhood);
+    if (keyword.trim()) params.set('q', keyword.trim());
     for (const [key, values] of Object.entries(selectedFilters)) {
       if (values.length > 0) params.set(key, values.join(','));
     }
@@ -48,15 +55,15 @@ const HeroSearch = () => {
 
           {/* Search Bar */}
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex items-center gap-2 px-3 py-2 border border-border rounded-md bg-background min-w-[140px]">
-              <span className="text-sm text-muted-foreground">Location</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
+            <LocationPicker value={location} onChange={setLocation} compact />
             <div className="relative flex-1">
               <input
                 type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
                 placeholder="Enter Search Area, City, Address"
                 className="w-full h-10 px-4 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
             </div>
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>

@@ -41,6 +41,7 @@ import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
 import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
 import AdminCrudsPage from "./pages/admin/AdminCrudsPage.tsx";
 import AdminFiltersPage from "./pages/admin/AdminFiltersPage.tsx";
+import AdminLocationsPage from "./pages/admin/AdminLocationsPage.tsx";
 import AdminEmailPreviewPage from "./pages/admin/AdminEmailPreviewPage.tsx";
 import FaqPage from "./pages/FaqPage.tsx";
 import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
@@ -118,6 +119,7 @@ const App = () => (
           <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
           <Route path="/admin/cruds" element={<AdminCrudsPage />} />
           <Route path="/admin/filters" element={<AdminFiltersPage />} />
+          <Route path="/admin/locations" element={<AdminLocationsPage />} />
           <Route path="/admin/email-templates" element={<AdminEmailPreviewPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
           <Route path="/company/login" element={<CompanyLoginPage />} />

@@ -1055,6 +1055,72 @@ export type Database = {
         }
         Relationships: []
       }
+      location_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          country: string
+          created_at: string
+          district: string
+          district_ar: string | null
+          id: string
+          neighborhood: string
+          neighborhood_ar: string | null
+          province: string
+          province_ar: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          country?: string
+          created_at?: string
+          district: string
+          district_ar?: string | null
+          id?: string
+          neighborhood: string
+          neighborhood_ar?: string | null
+          province: string
+          province_ar?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          district?: string
+          district_ar?: string | null
+          id?: string
+          neighborhood?: string
+          neighborhood_ar?: string | null
+          province?: string
+          province_ar?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       membership_packages: {
         Row: {
           annual_price: number
