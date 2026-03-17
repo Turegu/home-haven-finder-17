@@ -39,6 +39,7 @@ import BlogsPage from "./pages/BlogsPage.tsx";
 import BlogDetailPage from "./pages/BlogDetailPage.tsx";
 import AdminFaqsPage from "./pages/admin/AdminFaqsPage.tsx";
 import AdminFaqEditPage from "./pages/admin/AdminFaqEditPage.tsx";
+import AdminCrudsPage from "./pages/admin/AdminCrudsPage.tsx";
 import FaqPage from "./pages/FaqPage.tsx";
 import CompanyLoginPage from "./pages/company/CompanyLoginPage.tsx";
 import CompanyDashboardPage from "./pages/company/CompanyDashboardPage.tsx";
@@ -113,6 +114,7 @@ const App = () => (
           <Route path="/admin/blog/:id" element={<AdminBlogEditPage />} />
           <Route path="/admin/faqs" element={<AdminFaqsPage />} />
           <Route path="/admin/faqs/:id" element={<AdminFaqEditPage />} />
+          <Route path="/admin/cruds" element={<AdminCrudsPage />} />
           <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
           <Route path="/company/login" element={<CompanyLoginPage />} />
           <Route path="/company" element={<CompanyDashboardPage />} />

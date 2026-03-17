@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, FolderKanban, Calendar, Users,
-  UserCircle, Bell, Mail, LogOut, Menu, X, Users2
+  UserCircle, Bell, Mail, LogOut, Menu, X, Users2, Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -69,11 +69,16 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
 
       {/* Sidebar */}
       <aside className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-card border-r border-border flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="p-5 border-b border-border">
-          <Link to="/" className="text-xl font-bold text-primary">turegu</Link>
-          {companyName && (
-            <p className="text-xs text-muted-foreground mt-1 truncate">{companyName}</p>
-          )}
+        <div className="p-5 border-b border-border flex items-center justify-between">
+          <div>
+            <Link to="/company" className="text-xl font-bold text-primary">turegu</Link>
+            {companyName && (
+              <p className="text-xs text-muted-foreground mt-1 truncate">{companyName}</p>
+            )}
+          </div>
+          <Link to="/" className="text-muted-foreground hover:text-primary transition-colors" title="Go to Homepage">
+            <Home className="h-4 w-4" />
+          </Link>
         </div>
 
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">

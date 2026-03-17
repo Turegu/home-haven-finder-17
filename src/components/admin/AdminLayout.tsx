@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,7 @@ const sidebarItems = [
   { label: "Currency Management", icon: Coins, path: "/admin/currencies" },
   { label: "Reports", icon: BarChart3, path: "/admin/reports" },
   { label: "CMS", icon: FileText, path: "/admin/cms" },
+  { label: "CRUDs", icon: ListChecks, path: "/admin/cruds" },
   { label: "Settings", icon: Settings, path: "/admin/settings", hasSubmenu: true },
 ];
 
@@ -77,12 +78,15 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         "lg:translate-x-0"
       )}>
         {/* Logo */}
-        <div className="h-16 flex items-center px-5 border-b border-border">
-          <Link to="/" className="flex items-center gap-2">
+        <div className="h-16 flex items-center px-5 border-b border-border justify-between">
+          <Link to="/admin" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">T</span>
             </div>
             <span className="font-bold text-lg text-foreground">Admin Panel</span>
+          </Link>
+          <Link to="/" className="text-xs text-muted-foreground hover:text-primary transition-colors" title="Go to Homepage">
+            <Home className="h-4 w-4" />
           </Link>
         </div>
 
