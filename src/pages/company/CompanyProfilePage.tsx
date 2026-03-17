@@ -81,6 +81,8 @@ const CompanyProfilePage = () => {
           town: data.town || "",
           neighbourhood: data.neighbourhood || "",
           pin_location: data.pin_location || "",
+          logo_url: data.logo_url || "",
+          cover_url: data.cover_url || "",
         });
       }
       setLoading(false);
