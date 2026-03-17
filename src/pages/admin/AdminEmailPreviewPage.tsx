@@ -82,7 +82,7 @@ const AdminEmailPreviewPage = () => {
       .from("email_templates")
       .update({
         subject: editSubject,
-        body_fields: editFields as Record<string, unknown>,
+        body_fields: editFields as unknown as Record<string, never>,
       })
       .eq("id", current.id);
     if (error) {
