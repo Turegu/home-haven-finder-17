@@ -476,16 +476,22 @@ export default function AdminLocationsPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead className="text-xs">Province</TableHead>
+                            <TableHead className="text-xs" dir="rtl">Province (AR)</TableHead>
                             <TableHead className="text-xs">District</TableHead>
+                            <TableHead className="text-xs" dir="rtl">District (AR)</TableHead>
                             <TableHead className="text-xs">Neighborhood</TableHead>
+                            <TableHead className="text-xs" dir="rtl">Neighborhood (AR)</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {uploadPreview.slice(0, 20).map((r, i) => (
                             <TableRow key={i}>
                               <TableCell className="text-xs py-1">{r.province}</TableCell>
+                              <TableCell className="text-xs py-1" dir="rtl">{r.province_ar}</TableCell>
                               <TableCell className="text-xs py-1">{r.district}</TableCell>
+                              <TableCell className="text-xs py-1" dir="rtl">{r.district_ar}</TableCell>
                               <TableCell className="text-xs py-1">{r.neighborhood}</TableCell>
+                              <TableCell className="text-xs py-1" dir="rtl">{r.neighborhood_ar}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
