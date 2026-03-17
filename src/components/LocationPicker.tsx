@@ -1,6 +1,6 @@
-import { useState, useEffect, forwardRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, ChevronDown, X, Check } from "lucide-react";
+import { MapPin, ChevronDown, X, Check, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -20,10 +20,9 @@ interface LocationPickerProps {
 
 interface NamePair { name: string; ar: string }
 
-// Module-level cache for provinces (loaded once, reused across mounts)
+// Module-level cache
 let provincesCache: NamePair[] | null = null;
 
-// Simple RTL detection: check if document dir is rtl
 function useIsRtl() {
   const [rtl, setRtl] = useState(false);
   useEffect(() => {
@@ -32,75 +31,76 @@ function useIsRtl() {
   return rtl;
 }
 
+type Step = "province" | "district" | "neighborhood";
+
 const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ value, onChange, compact = false }, ref) => {
   const [open, setOpen] = useState(false);
   const [provinces, setProvinces] = useState<NamePair[]>([]);
   const [districts, setDistricts] = useState<NamePair[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<NamePair[]>([]);
-  const [provinceFilter, setProvinceFilter] = useState("");
-  const [districtFilter, setDistrictFilter] = useState("");
-  const [neighborhoodFilter, setNeighborhoodFilter] = useState("");
-  // Draft state for "Apply" flow
+  const [filter, setFilter] = useState("");
   const [draft, setDraft] = useState<LocationSelection>({});
+  const [step, setStep] = useState<Step>("province");
   const isRtl = useIsRtl();
+  const filterRef = useRef<HTMLInputElement>(null);
 
-  // Sync draft when popover opens
+  // Sync draft & step when popover opens
   useEffect(() => {
-    if (open) setDraft({ ...value });
+    if (open) {
+      setDraft({ ...value });
+      setFilter("");
+      if (value.district) setStep("neighborhood");
+      else if (value.province) setStep("district");
+      else setStep("province");
+    }
   }, [open]);
 
-  // Cache provinces globally so they load once across the app
+  // Focus filter input on step change
   useEffect(() => {
-    if (provincesCache) {
-      setProvinces(provincesCache);
-      return;
-    }
-    async function loadProvinces() {
-      const { data } = await supabase.rpc("get_distinct_provinces");
-      if (data) {
-        provincesCache = data as NamePair[];
-        setProvinces(provincesCache);
-      }
-    }
-    loadProvinces();
+    if (open) setTimeout(() => filterRef.current?.focus(), 50);
+  }, [step, open]);
+
+  // Load provinces (cached)
+  useEffect(() => {
+    if (provincesCache) { setProvinces(provincesCache); return; }
+    supabase.rpc("get_distinct_provinces").then(({ data }) => {
+      if (data) { provincesCache = data as NamePair[]; setProvinces(provincesCache); }
+    });
   }, []);
 
+  // Load districts when province changes
   useEffect(() => {
     if (!draft.province) { setDistricts([]); return; }
-    async function load() {
-      const { data } = await supabase.rpc("get_distinct_districts", { p_province: draft.province! });
+    supabase.rpc("get_distinct_districts", { p_province: draft.province }).then(({ data }) => {
       if (data) setDistricts(data as NamePair[]);
-    }
-    load();
+    });
   }, [draft.province]);
 
+  // Load neighborhoods when district changes
   useEffect(() => {
     if (!draft.province || !draft.district) { setNeighborhoods([]); return; }
-    async function load() {
-      const { data } = await supabase.rpc("get_neighborhoods", { p_province: draft.province!, p_district: draft.district! });
+    supabase.rpc("get_neighborhoods", { p_province: draft.province, p_district: draft.district }).then(({ data }) => {
       if (data) setNeighborhoods(data as NamePair[]);
-    }
-    load();
+    });
   }, [draft.province, draft.district]);
 
-  const displayName = (item: NamePair) => isRtl && item.ar ? item.ar : item.name;
+  const dn = (item: NamePair) => isRtl && item.ar ? item.ar : item.name;
 
   const summaryText = () => {
     const parts: string[] = [];
     if (value.province) {
       const p = provinces.find(x => x.name === value.province);
-      parts.push(p ? displayName(p) : value.province);
+      parts.push(p ? dn(p) : value.province);
     }
     if (value.district) {
       const d = districts.find(x => x.name === value.district);
-      parts.push(d ? displayName(d) : value.district);
+      parts.push(d ? dn(d) : value.district);
     }
     if (value.neighborhood) parts.push(value.neighborhood);
     return parts.length > 0 ? parts.join(" › ") : "Location";
   };
 
   const hasSelection = !!(value.province || value.district || value.neighborhood);
-  const hasDraft = !!(draft.province);
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,26 +113,54 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
     setOpen(false);
   };
 
-  const filteredProvinces = provinceFilter
-    ? provinces.filter(p =>
-        p.name.toLowerCase().includes(provinceFilter.toLowerCase()) ||
-        p.ar.includes(provinceFilter)
-      )
-    : provinces;
+  // Get current list and step info
+  const stepConfig = {
+    province: {
+      label: "Province",
+      items: provinces,
+      selected: draft.province,
+      onSelect: (name: string) => {
+        setDraft({ province: name });
+        setFilter("");
+        setStep("district");
+      },
+    },
+    district: {
+      label: "Town",
+      items: districts,
+      selected: draft.district,
+      onSelect: (name: string) => {
+        setDraft({ province: draft.province, district: name });
+        setFilter("");
+        setStep("neighborhood");
+      },
+    },
+    neighborhood: {
+      label: "Neighborhood",
+      items: neighborhoods,
+      selected: draft.neighborhood,
+      onSelect: (name: string) => {
+        setDraft({ ...draft, neighborhood: name });
+        setFilter("");
+      },
+    },
+  };
 
-  const filteredDistricts = districtFilter
-    ? districts.filter(d =>
-        d.name.toLowerCase().includes(districtFilter.toLowerCase()) ||
-        d.ar.includes(districtFilter)
-      )
-    : districts;
+  const current = stepConfig[step];
 
-  const filteredNeighborhoods = neighborhoodFilter
-    ? neighborhoods.filter(n =>
-        n.name.toLowerCase().includes(neighborhoodFilter.toLowerCase()) ||
-        n.ar.includes(neighborhoodFilter)
+  const filtered = filter
+    ? current.items.filter(i =>
+        i.name.toLowerCase().includes(filter.toLowerCase()) ||
+        i.ar.includes(filter)
       )
-    : neighborhoods;
+    : current.items;
+
+  // Breadcrumb navigation
+  const breadcrumbs: { label: string; step: Step; value?: string }[] = [
+    { label: "Province", step: "province", value: draft.province },
+  ];
+  if (draft.province) breadcrumbs.push({ label: "Town", step: "district", value: draft.district });
+  if (draft.district) breadcrumbs.push({ label: "Neighborhood", step: "neighborhood", value: draft.neighborhood });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -152,84 +180,63 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-0" align="start">
-        <div className="p-3 space-y-3">
-          {/* Province */}
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Province</label>
-            <InlineSelect
-              items={filteredProvinces}
-              selected={draft.province}
-              displayName={displayName}
-              placeholder="Select Province"
-              filter={provinceFilter}
-              onFilterChange={setProvinceFilter}
-              filterPlaceholder="Filter provinces..."
-              onSelect={(name) => {
-                setDraft({ province: name });
-                setProvinceFilter("");
-                setDistrictFilter("");
-                setNeighborhoodFilter("");
-              }}
-            />
-          </div>
+        {/* Breadcrumb nav */}
+        <div className="flex items-center gap-1 px-3 pt-3 pb-2 text-xs">
+          {breadcrumbs.map((bc, i) => (
+            <span key={bc.step} className="flex items-center gap-1">
+              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+              <button
+                onClick={() => { setStep(bc.step); setFilter(""); }}
+                className={`transition-colors ${step === bc.step ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                {bc.value || bc.label}
+              </button>
+            </span>
+          ))}
+        </div>
 
-          {/* District */}
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Town</label>
-            <InlineSelect
-              items={filteredDistricts}
-              selected={draft.district}
-              displayName={displayName}
-              placeholder="Select Town"
-              disabled={!draft.province}
-              filter={districtFilter}
-              onFilterChange={setDistrictFilter}
-              filterPlaceholder="Filter towns..."
-              onSelect={(name) => {
-                setDraft({ province: draft.province, district: name });
-                setDistrictFilter("");
-                setNeighborhoodFilter("");
-              }}
-            />
-          </div>
+        {/* Search */}
+        <div className="px-3 pb-2">
+          <Input
+            ref={filterRef}
+            placeholder={`Search ${current.label.toLowerCase()}...`}
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="h-8 text-sm"
+          />
+        </div>
 
-          {/* Neighborhood */}
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Neighborhood</label>
-            <InlineSelect
-              items={filteredNeighborhoods}
-              selected={draft.neighborhood}
-              displayName={displayName}
-              placeholder="Select Neighborhood"
-              disabled={!draft.district}
-              filter={neighborhoodFilter}
-              onFilterChange={setNeighborhoodFilter}
-              filterPlaceholder="Filter neighborhoods..."
-              onSelect={(name) => {
-                setDraft({ ...draft, neighborhood: name });
-                setNeighborhoodFilter("");
-              }}
-            />
-          </div>
-
-          {/* Summary */}
-          {hasDraft && (
-            <div className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
-              {[draft.province, draft.district, draft.neighborhood].filter(Boolean).join(" › ")}
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex gap-2">
-            {hasDraft && (
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDraft({}); }}>
-                Clear
-              </Button>
+        {/* List */}
+        <ScrollArea className="h-[240px]">
+          <div className="px-2 pb-2 space-y-0.5">
+            {filtered.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => current.onSelect(item.name)}
+                className={`w-full text-left px-2.5 py-2 text-sm rounded-md hover:bg-muted transition-colors flex items-center justify-between ${
+                  current.selected === item.name ? "bg-primary/10 text-primary font-medium" : ""
+                }`}
+              >
+                {dn(item)}
+                {current.selected === item.name && <Check className="h-3.5 w-3.5" />}
+              </button>
+            ))}
+            {filtered.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-6">No results found</p>
             )}
-            <Button size="sm" className="flex-1" onClick={handleApply} disabled={!hasDraft}>
-              <Check className="h-3.5 w-3.5 mr-1" /> Apply
-            </Button>
           </div>
+        </ScrollArea>
+
+        {/* Footer */}
+        <div className="border-t border-border p-2 flex gap-2">
+          {draft.province && (
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDraft({}); setStep("province"); setFilter(""); }}>
+              Clear
+            </Button>
+          )}
+          <Button size="sm" className="flex-1" onClick={handleApply} disabled={!draft.province}>
+            <Check className="h-3.5 w-3.5 mr-1" /> Apply
+          </Button>
         </div>
       </PopoverContent>
     </Popover>
@@ -237,66 +244,5 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 });
 
 LocationPicker.displayName = "LocationPicker";
-
-/* ── Inline dropdown select sub-component ── */
-interface InlineSelectProps {
-  items: NamePair[];
-  selected?: string;
-  displayName: (item: NamePair) => string;
-  placeholder: string;
-  disabled?: boolean;
-  filter: string;
-  onFilterChange: (v: string) => void;
-  filterPlaceholder: string;
-  onSelect: (name: string) => void;
-}
-
-function InlineSelect({ items, selected, displayName, placeholder, disabled, filter, onFilterChange, filterPlaceholder, onSelect }: InlineSelectProps) {
-  const [innerOpen, setInnerOpen] = useState(false);
-  const selectedItem = items.find(i => i.name === selected);
-
-  return (
-    <Popover open={innerOpen} onOpenChange={setInnerOpen}>
-      <PopoverTrigger asChild>
-        <button
-          disabled={disabled}
-          className="w-full flex items-center justify-between px-3 py-2 text-sm border border-border rounded-md bg-background hover:border-primary/50 disabled:opacity-50"
-        >
-          <span className={selected ? "text-foreground" : "text-muted-foreground"}>
-            {selectedItem ? displayName(selectedItem) : (selected || placeholder)}
-          </span>
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[250px] p-2" align="start">
-        <Input
-          placeholder={filterPlaceholder}
-          value={filter}
-          onChange={(e) => onFilterChange(e.target.value)}
-          className="mb-2 h-8 text-sm"
-        />
-        <ScrollArea className="h-[220px]">
-          <div className="space-y-0.5">
-            {items.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => {
-                  onSelect(item.name);
-                  setInnerOpen(false);
-                }}
-                className={`w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors ${selected === item.name ? "bg-primary/10 text-primary font-medium" : ""}`}
-              >
-                {displayName(item)}
-              </button>
-            ))}
-            {items.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-4">No results</p>
-            )}
-          </div>
-        </ScrollArea>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 export default LocationPicker;
