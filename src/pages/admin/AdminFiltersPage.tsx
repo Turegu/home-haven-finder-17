@@ -247,9 +247,14 @@ const AdminFiltersPage = () => {
                     <h2 className="text-lg font-semibold text-foreground">{selectedCategory.title}</h2>
                     <p className="text-xs text-muted-foreground">{options.length} options</p>
                   </div>
-                  <Button size="sm" onClick={openAddOption}>
-                    <Plus className="h-4 w-4 mr-1" /> Add Option
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={() => setCategoryExcelOpen(true)}>
+                      <Upload className="h-4 w-4 mr-1" /> Import Excel
+                    </Button>
+                    <Button size="sm" onClick={openAddOption}>
+                      <Plus className="h-4 w-4 mr-1" /> Add Option
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="rounded-lg border border-border overflow-hidden">
