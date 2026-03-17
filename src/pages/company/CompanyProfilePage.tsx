@@ -125,6 +125,8 @@ const CompanyProfilePage = () => {
           town: form.town || null,
           neighbourhood: form.neighbourhood || null,
           pin_location: form.pin_location || null,
+          logo_url: form.logo_url || null,
+          cover_url: form.cover_url || null,
         })
         .eq("id", company.id);
 
