@@ -24,7 +24,7 @@ const eventTypes = [
   { value: "webinar", label: "Webinar" },
 ];
 
-const provinces = ["Istanbul", "Ankara", "Antalya", "Izmir", "Bursa", "Adiyaman", "Mersin", "Mugla"];
+
 
 const CompanyEventEditPage = () => {
   const navigate = useNavigate();
