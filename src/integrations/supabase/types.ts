@@ -441,6 +441,68 @@ export type Database = {
           },
         ]
       }
+      faq_translations: {
+        Row: {
+          answer: string
+          created_at: string
+          faq_id: string
+          id: string
+          language_code: string
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: string
+          created_at?: string
+          faq_id: string
+          id?: string
+          language_code: string
+          question?: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          faq_id?: string
+          id?: string
+          language_code?: string
+          question?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faq_translations_faq_id_fkey"
+            columns: ["faq_id"]
+            isOneToOne: false
+            referencedRelation: "faqs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      faqs: {
+        Row: {
+          created_at: string
+          id: string
+          sort_order: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       featured_locations: {
         Row: {
           created_at: string
