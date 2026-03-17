@@ -9,7 +9,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Save, Lock } from "lucide-react";
+import { Save, Lock, Upload, X } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
@@ -42,7 +42,11 @@ const CompanyProfilePage = () => {
     town: "",
     neighbourhood: "",
     pin_location: "",
+    logo_url: "",
+    cover_url: "",
   });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   // Password change
   const [newPassword, setNewPassword] = useState("");
@@ -77,6 +81,8 @@ const CompanyProfilePage = () => {
           town: data.town || "",
           neighbourhood: data.neighbourhood || "",
           pin_location: data.pin_location || "",
+          logo_url: data.logo_url || "",
+          cover_url: data.cover_url || "",
         });
       }
       setLoading(false);
@@ -119,6 +125,8 @@ const CompanyProfilePage = () => {
           town: form.town || null,
           neighbourhood: form.neighbourhood || null,
           pin_location: form.pin_location || null,
+          logo_url: form.logo_url || null,
+          cover_url: form.cover_url || null,
         })
         .eq("id", company.id);
 
@@ -168,6 +176,101 @@ const CompanyProfilePage = () => {
       <h1 className="text-2xl font-bold text-foreground mb-6">Profile Settings</h1>
 
       <div className="max-w-4xl space-y-8">
+        {/* Logo & Cover Upload */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Branding</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Logo */}
+            <div className="space-y-3">
+              <Label className="text-foreground font-medium">Company Logo</Label>
+              <div className="flex items-center gap-4">
+                {form.logo_url ? (
+                  <div className="relative">
+                    <img src={form.logo_url} alt="Logo" className="w-20 h-20 rounded-lg object-cover border border-border" />
+                    <button
+                      onClick={() => updateField("logo_url", "")}
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted/30">
+                    <Upload className="h-6 w-6 text-muted-foreground/50" />
+                  </div>
+                )}
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="logo-upload"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file || !company) return;
+                      setUploadingLogo(true);
+                      const ext = file.name.split(".").pop();
+                      const path = `${company.id}/logo.${ext}`;
+                      const { error } = await supabase.storage.from("company-logos").upload(path, file, { upsert: true });
+                      if (error) { toast.error("Upload failed"); setUploadingLogo(false); return; }
+                      const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(path);
+                      updateField("logo_url", urlData.publicUrl + "?t=" + Date.now());
+                      setUploadingLogo(false);
+                      toast.success("Logo uploaded!");
+                    }}
+                  />
+                  <Button variant="outline" size="sm" disabled={uploadingLogo} onClick={() => document.getElementById("logo-upload")?.click()}>
+                    <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? "Uploading..." : "Upload Logo"}
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">Recommended: 200×200px</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Cover */}
+            <div className="space-y-3">
+              <Label className="text-foreground font-medium">Cover Image</Label>
+              {form.cover_url ? (
+                <div className="relative">
+                  <img src={form.cover_url} alt="Cover" className="w-full h-28 rounded-lg object-cover border border-border" />
+                  <button
+                    onClick={() => updateField("cover_url", "")}
+                    className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-full h-28 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted/30">
+                  <Upload className="h-6 w-6 text-muted-foreground/50" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                id="cover-upload"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !company) return;
+                  setUploadingCover(true);
+                  const ext = file.name.split(".").pop();
+                  const path = `${company.id}/cover.${ext}`;
+                  const { error } = await supabase.storage.from("company-logos").upload(path, file, { upsert: true });
+                  if (error) { toast.error("Upload failed"); setUploadingCover(false); return; }
+                  const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(path);
+                  updateField("cover_url", urlData.publicUrl + "?t=" + Date.now());
+                  setUploadingCover(false);
+                  toast.success("Cover uploaded!");
+                }}
+              />
+              <Button variant="outline" size="sm" disabled={uploadingCover} onClick={() => document.getElementById("cover-upload")?.click()}>
+                <Upload className="h-3 w-3 mr-1" /> {uploadingCover ? "Uploading..." : "Upload Cover"}
+              </Button>
+            </div>
+          </div>
+        </section>
+
         {/* Information */}
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Information</h2>
@@ -287,13 +390,23 @@ const CompanyProfilePage = () => {
               <Label className="text-foreground font-medium">Neighbourhood</Label>
               <Input value={form.neighbourhood} onChange={(e) => updateField("neighbourhood", e.target.value)} className="bg-secondary/50" />
             </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Pin Location</Label>
-              <Input value={form.pin_location} onChange={(e) => updateField("pin_location", e.target.value)} className="bg-secondary/50" placeholder="e.g. Istanbul, Turkey" />
+            <div className="space-y-2 md:col-span-2">
+              <Label className="text-foreground font-medium">Pin Location (Coordinates or Address)</Label>
+              <Input
+                value={form.pin_location}
+                onChange={(e) => updateField("pin_location", e.target.value)}
+                className="bg-secondary/50"
+                placeholder="e.g. 41.0082,28.9784 or Istanbul, Beyoglu"
+              />
+              <p className="text-xs text-muted-foreground">
+                Enter GPS coordinates (lat,lng) or a full address. You can get coordinates from{" "}
+                <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Maps</a>
+                {" "}— right-click any point and copy the coordinates.
+              </p>
             </div>
           </div>
 
-          {/* Map placeholder */}
+          {/* Map preview */}
           <div className="mt-5 rounded-lg border border-border overflow-hidden bg-muted/50 h-[300px] flex items-center justify-center">
             {form.pin_location ? (
               <iframe
@@ -303,7 +416,7 @@ const CompanyProfilePage = () => {
                 style={{ border: 0 }}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(form.pin_location)}&output=embed`}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(form.pin_location)}&z=15&output=embed`}
               />
             ) : (
               <p className="text-muted-foreground text-sm">Enter a pin location to show the map</p>

@@ -18,7 +18,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, MoreVertical, Pencil, Coins, Trash2 } from "lucide-react";
+import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -207,7 +207,12 @@ const CompanyAgentsPage = () => {
                             <Pencil className="h-4 w-4 mr-2" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
-                            <Coins className="h-4 w-4 mr-2" /> Add Points
+                            <Coins className="h-4 w-4 mr-2" /> Share Credits
+                          </DropdownMenuItem>
+                          <DropdownMenuItem disabled className="opacity-60 cursor-not-allowed">
+                            <ArrowUpCircle className="h-4 w-4 mr-2" />
+                            <span>Request Top-Up</span>
+                            <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 bg-amber-50">Pending</Badge>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" /> Delete
