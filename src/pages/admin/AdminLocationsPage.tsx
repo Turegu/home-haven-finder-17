@@ -32,6 +32,8 @@ interface LocationSetting {
 
 export default function AdminLocationsPage() {
   const [provinces, setProvinces] = useState<string[]>([]);
+  const [provinceArMap, setProvinceArMap] = useState<Record<string, string>>({});
+  const [districtArMap, setDistrictArMap] = useState<Record<string, string>>({});
   const [districts, setDistricts] = useState<string[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
@@ -49,29 +51,42 @@ export default function AdminLocationsPage() {
 
   const loadProvinces = useCallback(async () => {
     setLoading(true);
-    const { data, count } = await supabase
-      .from("locations")
-      .select("province", { count: "exact" })
-      .eq("status", "active");
-
-    if (data) {
-      const unique = [...new Set(data.map((d: any) => d.province))].sort();
-      setProvinces(unique);
-      setTotalCount(count || 0);
+    let allData: any[] = [];
+    let from = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data, count } = await supabase
+        .from("locations")
+        .select("province, province_ar", { count: from === 0 ? "exact" : undefined })
+        .eq("status", "active")
+        .range(from, from + pageSize - 1);
+      if (!data || data.length === 0) break;
+      if (from === 0 && count) setTotalCount(count);
+      allData.push(...data);
+      if (data.length < pageSize) break;
+      from += pageSize;
     }
+    const uniqueMap = new Map<string, string>();
+    allData.forEach((d: any) => { if (!uniqueMap.has(d.province)) uniqueMap.set(d.province, d.province_ar || ""); });
+    const sorted = [...uniqueMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    setProvinces(sorted.map(([p]) => p));
+    setProvinceArMap(Object.fromEntries(sorted));
     setLoading(false);
   }, []);
 
   const loadDistricts = useCallback(async (province: string) => {
     const { data } = await supabase
       .from("locations")
-      .select("district")
+      .select("district, district_ar")
       .eq("province", province)
       .eq("status", "active");
 
     if (data) {
-      const unique = [...new Set(data.map((d: any) => d.district))].sort();
-      setDistricts(unique);
+      const uniqueMap = new Map<string, string>();
+      data.forEach((d: any) => { if (!uniqueMap.has(d.district)) uniqueMap.set(d.district, d.district_ar || ""); });
+      const sorted = [...uniqueMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+      setDistricts(sorted.map(([d]) => d));
+      setDistrictArMap(Object.fromEntries(sorted));
     }
   }, []);
 
@@ -318,7 +333,10 @@ export default function AdminLocationsPage() {
                     onClick={() => setSelectedProvince(province)}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group"
                   >
-                    <span className="text-sm font-medium text-foreground">{province}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground">{province}</span>
+                      {provinceArMap[province] && <span className="text-xs text-muted-foreground" dir="rtl">{provinceArMap[province]}</span>}
+                    </div>
                     <div className="flex items-center gap-1">
                       <button onClick={(e) => { e.stopPropagation(); handleDeleteProvince(province); }} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
                         <Trash2 className="h-3.5 w-3.5" />
@@ -339,7 +357,10 @@ export default function AdminLocationsPage() {
                     onClick={() => setSelectedDistrict(district)}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group"
                   >
-                    <span className="text-sm font-medium text-foreground">{district}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground">{district}</span>
+                      {districtArMap[district] && <span className="text-xs text-muted-foreground" dir="rtl">{districtArMap[district]}</span>}
+                    </div>
                     <div className="flex items-center gap-1">
                       <button onClick={(e) => { e.stopPropagation(); handleDeleteDistrict(selectedProvince, district); }} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
                         <Trash2 className="h-3.5 w-3.5" />
@@ -455,16 +476,22 @@ export default function AdminLocationsPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead className="text-xs">Province</TableHead>
+                            <TableHead className="text-xs" dir="rtl">Province (AR)</TableHead>
                             <TableHead className="text-xs">District</TableHead>
+                            <TableHead className="text-xs" dir="rtl">District (AR)</TableHead>
                             <TableHead className="text-xs">Neighborhood</TableHead>
+                            <TableHead className="text-xs" dir="rtl">Neighborhood (AR)</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {uploadPreview.slice(0, 20).map((r, i) => (
                             <TableRow key={i}>
                               <TableCell className="text-xs py-1">{r.province}</TableCell>
+                              <TableCell className="text-xs py-1" dir="rtl">{r.province_ar}</TableCell>
                               <TableCell className="text-xs py-1">{r.district}</TableCell>
+                              <TableCell className="text-xs py-1" dir="rtl">{r.district_ar}</TableCell>
                               <TableCell className="text-xs py-1">{r.neighborhood}</TableCell>
+                              <TableCell className="text-xs py-1" dir="rtl">{r.neighborhood_ar}</TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
