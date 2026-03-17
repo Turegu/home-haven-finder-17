@@ -19,6 +19,7 @@ const sidebarLinks = [
   { label: "Events Management", path: "/company/events", icon: Calendar },
   { label: "Agents Management", path: "/company/agents", icon: Users },
   { label: "Profile Settings", path: "/company/profile", icon: UserCircle },
+  { label: "Followers", path: "/company/followers", icon: Users2 },
   { label: "Inbox", path: "/company/inbox", icon: Mail },
   { label: "Notifications", path: "/company/notifications", icon: Bell },
 ];
