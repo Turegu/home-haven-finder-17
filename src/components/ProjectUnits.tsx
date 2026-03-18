@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ChevronLeft, ChevronRight, Building, Maximize,
-  BedDouble, Bath, Car, Eye, DollarSign, Home
+  BedDouble, Bath, Car, Eye, DollarSign, Home, CheckCircle
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
