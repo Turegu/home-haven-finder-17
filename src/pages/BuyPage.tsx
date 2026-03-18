@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
-  Bookmark, Phone, Mail, MessageCircle
+  Bookmark
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
+import PropertyListCard from '@/components/PropertyListCard';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
 import LocationPicker from '@/components/LocationPicker';
