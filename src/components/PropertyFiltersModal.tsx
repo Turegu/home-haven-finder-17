@@ -153,7 +153,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Interior Amenities"
             icon={Lamp}
-            options={defaultInteriorAmenities}
+            options={fo["interior_amenities"] || []}
             selected={local.interiorAmenities}
             onToggle={(v) => toggleArray('interiorAmenities', v)}
             searchable
