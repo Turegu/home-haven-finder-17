@@ -395,9 +395,9 @@ const PropertyDetailPage = () => {
                   Email
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-green-600 hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
-                  Chat
+                  WhatsApp
                 </button>
               </div>
             </div>
