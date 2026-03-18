@@ -10,6 +10,8 @@ interface BathroomsDropdownProps {
 }
 
 export default function BathroomsDropdown({ value, onChange }: BathroomsDropdownProps) {
+  const { options: fo } = useFilterOptions("search");
+  const bathroomOptions = fo["bathrooms"] || [];
   function toggle(opt: string) {
     if (value.includes(opt)) {
       onChange(value.filter(v => v !== opt));

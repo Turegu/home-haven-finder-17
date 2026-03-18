@@ -14,6 +14,9 @@ interface PropertyTypeDropdownProps {
 export default function PropertyTypeDropdown({ selected, onChange }: PropertyTypeDropdownProps) {
   const [activeTab, setActiveTab] = useState<'residential' | 'commercial'>('residential');
   const [open, setOpen] = useState(false);
+  const { options: fo } = useFilterOptions("search");
+  const residentialTypes = fo["residential_property_types"] || [];
+  const commercialTypes = fo["commercial_property_types"] || [];
 
   const types = activeTab === 'residential' ? residentialTypes : commercialTypes;
 

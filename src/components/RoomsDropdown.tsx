@@ -11,6 +11,8 @@ interface RoomsDropdownProps {
 }
 
 export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: RoomsDropdownProps) {
+  const { options: fo } = useFilterOptions("search");
+  const roomOptions = fo["rooms"] || [];
   function toggle(opt: string) {
     if (value.includes(opt)) {
       onChange(value.filter(v => v !== opt));
