@@ -131,6 +131,7 @@ export const mockProperties: Property[] = [
     ],
     agentLogo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=80&h=80&fit=crop',
     agentName: 'Rental Hub',
+    agentAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop',
     isFeatured: false,
     listingTier: 'standard',
     listingType: 'rent',
