@@ -470,7 +470,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Compass className="h-4 w-4 text-muted-foreground" />}
               value={form.property_orientation}
               onChange={(v) => updateField("property_orientation", v)}
-              options={orientationOptions.map(o => ({ value: o, label: o }))}
+              options={(filterOpts["orientation"] || []).map(o => ({ value: o, label: o }))}
               placeholder="Select"
             />
             <FormSelect
