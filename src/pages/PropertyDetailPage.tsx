@@ -57,21 +57,23 @@ const PropertyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery */}
+      {/* Image Gallery — side by side */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        <img
-          src={property.images[currentImage]}
-          alt={property.title}
-          className="w-full h-full object-cover"
-        />
-        <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full shadow-md">
+        <div className="flex h-full transition-transform duration-300" style={{ transform: `translateX(-${currentImage * (100 / Math.min(property.images.length, 3))}%)` }}>
+          {property.images.map((img, i) => (
+            <div key={i} className="h-full flex-shrink-0 w-full md:w-1/3 px-[1px]">
+              <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+        <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full shadow-md">
+        <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronRight className="h-5 w-5" />
         </button>
         {/* Top actions */}
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-4 left-4 flex gap-2 z-10">
           <button onClick={() => { if (navigator.share) { navigator.share({ title: property.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
             <Share2 className="h-4 w-4" />
           </button>
@@ -79,7 +81,7 @@ const PropertyDetailPage = () => {
             <Heart className="h-4 w-4" />
           </button>
         </div>
-        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1">
+        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
           <Camera className="h-3.5 w-3.5" />
           {currentImage + 1}/{property.images.length}
         </div>
