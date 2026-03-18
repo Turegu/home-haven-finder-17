@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
+import ListingMapView from '@/components/ListingMapView';
 import { mockProjects } from '@/data/mockProperties';
 
 const ProjectsPage = () => {
@@ -134,9 +135,20 @@ const ProjectsPage = () => {
                 })}
               </div>
             ) : (
-              <div className="rounded-xl border border-border bg-muted h-[500px] flex items-center justify-center text-muted-foreground">
-                <Map className="h-8 w-8 mr-2" /> Map view coming soon
-              </div>
+              <ListingMapView
+                listings={mockProjects.map(p => ({
+                  id: p.id,
+                  title: p.title,
+                  location: p.location,
+                  image: p.image,
+                  price: p.priceFrom,
+                  currency: p.currency,
+                  linkTo: `/projects/${p.id}`,
+                  type: 'project' as const,
+                  subtitle: p.developer,
+                  meta: `${p.units} Units`,
+                }))}
+              />
             )}
           </div>
 
