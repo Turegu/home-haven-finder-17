@@ -13,13 +13,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
   Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
-  Bold, Italic, Underline, List, Heading, Activity, Video
+  Bold, Italic, Underline, List, Heading, Activity, Video,
+  Plus, Trash2, Pencil, Package
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import defaultProjectLogo from "@/assets/default-project-logo.png";
 
 const projectTypes = [
   { value: "residential", label: "Residential" },
@@ -155,6 +160,31 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
   );
 }
 
+const unitTypes = ["apartment", "villa", "studio", "duplex", "penthouse", "shop", "office"];
+const unitInteriorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace"];
+const unitExteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Gym"];
+
+interface UnitForm {
+  unit_name: string;
+  unit_type: string;
+  rooms: string;
+  bathrooms: string;
+  car_parking: string;
+  price: string;
+  currency: string;
+  area: string;
+  area_unit: string;
+  interior_amenities: string[];
+  exterior_amenities: string[];
+  images: string[];
+}
+
+const emptyUnit: UnitForm = {
+  unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
+  price: "", currency: "USD", area: "", area_unit: "m²",
+  interior_amenities: [], exterior_amenities: [], images: [],
+};
+
 const CompanyProjectEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -167,6 +197,15 @@ const CompanyProjectEditPage = () => {
   const [pdfUrl, setPdfUrl] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
+
+  // Units state
+  const [units, setUnits] = useState<any[]>([]);
+  const [unitDialogOpen, setUnitDialogOpen] = useState(false);
+  const [editingUnitId, setEditingUnitId] = useState<string | null>(null);
+  const [unitForm, setUnitForm] = useState<UnitForm>({ ...emptyUnit });
+  const [savingUnit, setSavingUnit] = useState(false);
+  const [uploadingUnitImages, setUploadingUnitImages] = useState(false);
+  const [savedProjectId, setSavedProjectId] = useState<string | null>(isEdit ? (id as string) : null);
 
   const [form, setForm] = useState({
     title: "", tagline: "", description: "", developer: "",
@@ -225,6 +264,8 @@ const CompanyProjectEditPage = () => {
       setPlanFiles((data as any).plans || []);
       setLogoUrl((data as any).logo_url || "");
       setPdfUrl((data as any).pdf_catalogue_url || "");
+      // Fetch units for existing project
+      fetchUnits(id as string);
     };
     fetch();
   }, [isEdit, id]);
@@ -271,6 +312,98 @@ const CompanyProjectEditPage = () => {
     if (urls[0]) setPdfUrl(urls[0]);
   };
 
+  // ─── Units Management ───
+  const fetchUnits = async (projId: string) => {
+    const { data } = await supabase
+      .from("project_units")
+      .select("*")
+      .eq("project_id", projId)
+      .order("created_at", { ascending: true });
+    setUnits(data || []);
+  };
+
+  const updateUnitField = (field: string, value: any) => setUnitForm((prev) => ({ ...prev, [field]: value }));
+
+  const toggleUnitAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
+    setUnitForm((prev) => ({
+      ...prev,
+      [type]: prev[type].includes(val) ? prev[type].filter((a) => a !== val) : [...prev[type], val],
+    }));
+  };
+
+  const handleUnitImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    setUploadingUnitImages(true);
+    const urls = await uploadFiles(e.target.files, "project-images");
+    setUnitForm((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
+    setUploadingUnitImages(false);
+  };
+
+  const openNewUnit = () => {
+    setEditingUnitId(null);
+    setUnitForm({ ...emptyUnit });
+    setUnitDialogOpen(true);
+  };
+
+  const openEditUnit = (unit: any) => {
+    setEditingUnitId(unit.id);
+    setUnitForm({
+      unit_name: unit.unit_name || "", unit_type: unit.unit_type || "apartment",
+      rooms: unit.rooms || "", bathrooms: unit.bathrooms?.toString() || "",
+      car_parking: unit.car_parking?.toString() || "", price: unit.price?.toString() || "",
+      currency: unit.currency || "USD", area: unit.area?.toString() || "",
+      area_unit: unit.area_unit || "m²",
+      interior_amenities: unit.interior_amenities || [],
+      exterior_amenities: unit.exterior_amenities || [],
+      images: unit.images || [],
+    });
+    setUnitDialogOpen(true);
+  };
+
+  const handleSubmitUnit = async () => {
+    if (!unitForm.unit_name.trim()) { toast.error("Unit name is required"); return; }
+    const projId = savedProjectId;
+    if (!projId) { toast.error("Please save the project first before adding units"); return; }
+    setSavingUnit(true);
+    const payload: any = {
+      unit_name: unitForm.unit_name.trim(), unit_type: unitForm.unit_type,
+      rooms: unitForm.rooms || null,
+      bathrooms: unitForm.bathrooms ? parseInt(unitForm.bathrooms) : null,
+      car_parking: unitForm.car_parking ? parseInt(unitForm.car_parking) : null,
+      price: unitForm.price ? parseFloat(unitForm.price) : null,
+      currency: unitForm.currency, area: unitForm.area ? parseFloat(unitForm.area) : null,
+      area_unit: unitForm.area_unit,
+      interior_amenities: unitForm.interior_amenities,
+      exterior_amenities: unitForm.exterior_amenities,
+      images: unitForm.images, project_id: projId,
+    };
+    try {
+      if (editingUnitId) {
+        const { error } = await supabase.from("project_units").update(payload).eq("id", editingUnitId);
+        if (error) throw error;
+        toast.success("Unit updated!");
+      } else {
+        const { error } = await supabase.from("project_units").insert(payload);
+        if (error) throw error;
+        toast.success("Unit added!");
+      }
+      setUnitDialogOpen(false);
+      fetchUnits(projId);
+    } catch (err: any) {
+      toast.error(err.message || "Save failed");
+    } finally { setSavingUnit(false); }
+  };
+
+  const handleDeleteUnit = async (unitId: string) => {
+    const { error } = await supabase.from("project_units").delete().eq("id", unitId);
+    if (error) toast.error("Delete failed");
+    else { toast.success("Unit deleted"); if (savedProjectId) fetchUnits(savedProjectId); }
+  };
+
+  const unitStatusColor = (s: string) => {
+    switch (s) { case "available": return "bg-emerald-100 text-emerald-800"; case "reserved": return "bg-orange-100 text-orange-800"; case "sold": return "bg-red-100 text-red-800"; default: return "bg-muted text-muted-foreground"; }
+  };
+
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.title.trim()) { toast.error("Project name is required"); return; }
@@ -306,8 +439,9 @@ const CompanyProjectEditPage = () => {
         if (error) throw error;
         toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
       } else {
-        const { error } = await supabase.from("projects").insert(payload);
+        const { data: inserted, error } = await supabase.from("projects").insert(payload).select("id").single();
         if (error) throw error;
+        if (inserted) setSavedProjectId(inserted.id);
         toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
       }
       navigate("/company/projects");
@@ -347,12 +481,13 @@ const CompanyProjectEditPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
-                <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={20} />
+                <p className="text-xs text-muted-foreground text-right">{form.title.length}/20 characters</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Tagline</Label>
-                <Input value={form.tagline} onChange={(e) => updateField("tagline", e.target.value)} className="bg-secondary/50" />
+                <Input value={form.tagline} onChange={(e) => { if (e.target.value.length <= 60) updateField("tagline", e.target.value); }} className="bg-secondary/50" maxLength={60} />
+                <p className="text-xs text-muted-foreground text-right">{form.tagline.length}/60 characters</p>
               </div>
             </div>
             <div className="space-y-2">
@@ -485,7 +620,7 @@ const CompanyProjectEditPage = () => {
           <div className="space-y-3 mb-6">
             <Label className="text-foreground font-medium">Project Logo</Label>
             <div className="flex items-center gap-4">
-              {logoUrl && <img src={logoUrl} alt="Logo" className="w-16 h-16 rounded-lg object-cover border border-border" />}
+              <img src={logoUrl || defaultProjectLogo} alt="Logo" className="w-16 h-16 rounded-lg object-cover border border-border" />
               <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
                 <Upload className="h-4 w-4 inline mr-2" />Upload Logo
                 <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -566,6 +701,60 @@ const CompanyProjectEditPage = () => {
           </div>
         </section>
 
+        {/* ─── Units Management ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <div className="flex items-center justify-between mb-6 pb-3 border-b border-border/60">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary">
+                <Package className="h-4 w-4" />
+              </span>
+              <h2 className="text-base font-semibold text-foreground tracking-tight">Project Units</h2>
+            </div>
+            <Button type="button" size="sm" onClick={openNewUnit} disabled={!isEdit && !savedProjectId}>
+              <Plus className="h-4 w-4 mr-1" /> Add Unit
+            </Button>
+          </div>
+
+          {!isEdit && !savedProjectId && (
+            <p className="text-sm text-muted-foreground text-center py-4">Save the project first to start adding units.</p>
+          )}
+
+          {(isEdit || savedProjectId) && units.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">No units yet. Click "Add Unit" to create one.</p>
+          )}
+
+          {units.length > 0 && (
+            <div className="space-y-2">
+              {units.map((unit) => (
+                <div key={unit.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center text-primary text-xs font-bold shrink-0">
+                      {unit.unit_type?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{unit.unit_name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {unit.unit_type} {unit.rooms ? `· ${unit.rooms} rooms` : ""} {unit.price ? `· ${unit.currency} ${unit.price.toLocaleString()}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge className={unitStatusColor(unit.status)} variant="secondary">
+                      {unit.status?.charAt(0).toUpperCase() + unit.status?.slice(1)}
+                    </Badge>
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEditUnit(unit)}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDeleteUnit(unit.id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
         {/* Submit */}
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate("/company/projects")}>Cancel</Button>
@@ -578,6 +767,104 @@ const CompanyProjectEditPage = () => {
             {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
           </Button>
         </div>
+
+        {/* Unit Dialog */}
+        <Dialog open={unitDialogOpen} onOpenChange={setUnitDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingUnitId ? "Edit Unit" : "Add Unit"}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-5 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="font-medium">Unit Name *</Label>
+                  <Input value={unitForm.unit_name} onChange={(e) => updateUnitField("unit_name", e.target.value)} className="bg-secondary/50" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Unit Type</Label>
+                  <Select value={unitForm.unit_type} onValueChange={(v) => updateUnitField("unit_type", v)}>
+                    <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+                    <SelectContent>{unitTypes.map((t) => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">No Of Rooms</Label>
+                  <Input value={unitForm.rooms} onChange={(e) => updateUnitField("rooms", e.target.value)} className="bg-secondary/50" placeholder="e.g. 3+1" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">No Of Bathrooms</Label>
+                  <Input type="number" value={unitForm.bathrooms} onChange={(e) => updateUnitField("bathrooms", e.target.value)} className="bg-secondary/50" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Car Parking</Label>
+                  <Input type="number" value={unitForm.car_parking} onChange={(e) => updateUnitField("car_parking", e.target.value)} className="bg-secondary/50" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Unit Price ({unitForm.currency})</Label>
+                  <Input type="number" value={unitForm.price} onChange={(e) => updateUnitField("price", e.target.value)} className="bg-secondary/50" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Area ({unitForm.area_unit})</Label>
+                  <Input type="number" value={unitForm.area} onChange={(e) => updateUnitField("area", e.target.value)} className="bg-secondary/50" />
+                </div>
+              </div>
+
+              {/* Unit Images */}
+              <div className="space-y-2">
+                <Label className="font-medium">Unit Images</Label>
+                <div className="flex flex-wrap gap-3">
+                  {unitForm.images.map((url, i) => (
+                    <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <button type="button" onClick={() => setUnitForm((p) => ({ ...p, images: p.images.filter((u) => u !== url) }))}
+                        className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                    <Upload className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground">{uploadingUnitImages ? "..." : "Browse"}</span>
+                    <input type="file" accept="image/*" multiple onChange={handleUnitImageUpload} className="hidden" disabled={uploadingUnitImages} />
+                  </label>
+                </div>
+              </div>
+
+              {/* Unit Amenities */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="font-medium">Exterior Amenities</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unitExteriorAmenities.map((a) => (
+                      <button key={a} type="button" onClick={() => toggleUnitAmenity("exterior_amenities", a)}
+                        className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${unitForm.exterior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
+                        {a}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Interior Amenities</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {unitInteriorAmenities.map((a) => (
+                      <button key={a} type="button" onClick={() => toggleUnitAmenity("interior_amenities", a)}
+                        className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${unitForm.interior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
+                        {a}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setUnitDialogOpen(false)}>Cancel</Button>
+                <Button type="button" onClick={handleSubmitUnit} disabled={savingUnit}>
+                  {savingUnit ? "Saving..." : editingUnitId ? "Update Unit" : "Add Unit"}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </form>
     </CompanyLayout>
   );
