@@ -815,6 +815,17 @@ const CompanyProjectEditPage = () => {
                   <Label className="font-medium">Area ({unitForm.area_unit})</Label>
                   <Input type="number" value={unitForm.area} onChange={(e) => updateUnitField("area", e.target.value)} className="bg-secondary/50" />
                 </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Status</Label>
+                  <Select value={unitForm.status} onValueChange={(v) => updateUnitField("status", v)}>
+                    <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {unitStatuses.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Unit Images */}
