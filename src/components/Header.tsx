@@ -222,13 +222,13 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Notifications">
+            <button onClick={() => navigate(currentUser ? '/account/notifications' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Notifications">
               <Bell className="h-5 w-5 text-foreground/70" />
             </button>
-            <button className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
+            <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
               <Heart className="h-5 w-5 text-foreground/70" />
             </button>
-            <button className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
+            <button onClick={() => navigate(currentUser ? '/account/compare' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
               <Layers className="h-5 w-5 text-foreground/70" />
               {compareCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">

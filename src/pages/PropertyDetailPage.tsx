@@ -70,10 +70,10 @@ const PropertyDetailPage = () => {
         </button>
         {/* Top actions */}
         <div className="absolute top-4 left-4 flex gap-2">
-          <button className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background">
+          <button onClick={() => { if (navigator.share) { navigator.share({ title: property.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
             <Share2 className="h-4 w-4" />
           </button>
-          <button className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background">
+          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Save to favorites">
             <Heart className="h-4 w-4" />
           </button>
         </div>

@@ -40,7 +40,8 @@ const EventsPage = () => {
               <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
             </div>
             <div className="flex items-center gap-2 border border-border rounded-md px-3 py-2 min-w-[160px]">
-              <span className="text-sm text-muted-foreground">From Undefined</span>
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Date Range</span>
               <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
             </div>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6">

@@ -40,10 +40,9 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-sm mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-background/60">
-              <li><Link to="#" className="hover:text-background transition-colors">About Us</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">Careers</Link></li>
-              <li><Link to="/contact-us" className="hover:text-background transition-colors">Contact</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">Press</Link></li>
+              <li><Link to="/advertise" className="hover:text-background transition-colors">About Us</Link></li>
+              <li><Link to="/advertise" className="hover:text-background transition-colors">Advertise With Us</Link></li>
+              <li><Link to="/advertise" className="hover:text-background transition-colors">Contact</Link></li>
             </ul>
           </div>
           <div>
@@ -53,23 +52,23 @@ const Footer = () => {
               <li><Link to="/rent" className="hover:text-background transition-colors">Rent</Link></li>
               <li><Link to="/projects" className="hover:text-background transition-colors">Projects</Link></li>
               <li><Link to="/agents" className="hover:text-background transition-colors">Agents</Link></li>
+              <li><Link to="/events" className="hover:text-background transition-colors">Events</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold text-sm mb-4">Resources</h4>
             <ul className="space-y-2 text-sm text-background/60">
-              <li><Link to="#" className="hover:text-background transition-colors">Blog</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">Guides</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">FAQ</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">Support</Link></li>
+              <li><Link to="/blog" className="hover:text-background transition-colors">Blog</Link></li>
+              <li><Link to="/faq" className="hover:text-background transition-colors">FAQ</Link></li>
+              <li><Link to="/mortgage-bank-loan" className="hover:text-background transition-colors">Mortgage Banks</Link></li>
+              <li><Link to="/property-request" className="hover:text-background transition-colors">Property Request</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold text-sm mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-background/60">
-              <li><Link to="#" className="hover:text-background transition-colors">Terms of Service</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">Privacy Policy</Link></li>
-              <li><Link to="#" className="hover:text-background transition-colors">Cookie Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-background transition-colors">Terms of Service</Link></li>
+              <li><Link to="/privacy" className="hover:text-background transition-colors">Privacy Policy</Link></li>
               <li><Link to="/admin/login" className="hover:text-primary transition-colors">Admin Panel</Link></li>
               <li><Link to="/company/login" className="hover:text-primary transition-colors">Company Dashboard</Link></li>
               <li><Link to="/agent/login" className="hover:text-primary transition-colors">Agent Portal</Link></li>
