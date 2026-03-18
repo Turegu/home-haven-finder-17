@@ -35,7 +35,7 @@ export default function PriceDropdown({ minPrice, maxPrice, onChange }: PriceDro
           <span className={hasValue ? 'text-foreground' : 'text-muted-foreground'}>
             {hasValue ? `$${minPrice || '0'} - $${maxPrice || '∞'}` : 'Price'}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-3" align="start">
