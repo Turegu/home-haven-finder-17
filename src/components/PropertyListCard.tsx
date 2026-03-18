@@ -100,7 +100,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             </div>
 
             {/* Right image — equal size */}
-            <div className="relative hidden sm:block flex-1 overflow-hidden border-l-[2px] border-background">
+            <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
               <img
                 src={secondaryImages[0] || property.images[currentImage]}
                 alt={`${property.title} 2`}
