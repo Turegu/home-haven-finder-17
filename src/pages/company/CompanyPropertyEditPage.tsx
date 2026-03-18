@@ -148,6 +148,7 @@ const CompanyPropertyEditPage = () => {
         property_status: data.property_status || "new",
         interior_amenities: (data as any).interior_amenities || [],
         exterior_amenities: (data as any).exterior_amenities || [],
+        advertising_tags: (data as any).advertising_tags || [],
         province: (data as any).province || "",
         town: (data as any).town || "",
         neighbourhood: (data as any).neighbourhood || "",
