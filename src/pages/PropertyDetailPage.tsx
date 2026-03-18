@@ -465,11 +465,4 @@ const OverviewRow = ({ label, value }: { label: string; value: string }) => {
   );
 };
 
-const OverviewItem = ({ label, value }: { label: string; value: string }) => (
-  <div>
-    <p className="text-muted-foreground text-xs">{label}</p>
-    <p className="font-medium text-foreground">{value}</p>
-  </div>
-);
-
 export default PropertyDetailPage;
