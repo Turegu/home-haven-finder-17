@@ -152,6 +152,25 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Open House / Viewing Hours — compact strip */}
+            {(property.openHouseStart || property.viewingHours) && (
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm">
+                {property.openHouseStart && (
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Open House:</span> {property.openHouseStart}
+                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— Ends: {property.openHouseEnd}</span>}
+                  </span>
+                )}
+                {property.viewingHours && (
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <Clock className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Viewing:</span> {property.viewingHours}
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
@@ -178,25 +197,6 @@ const PropertyDetailPage = () => {
                 {property.description}
               </div>
             </div>
-
-            {/* Open House / Viewing Hours — compact strip */}
-            {(property.openHouseStart || property.viewingHours) && (
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm">
-                {property.openHouseStart && (
-                  <span className="flex items-center gap-1.5 text-foreground">
-                    <CalendarDays className="h-4 w-4 text-primary" />
-                    <span className="font-medium">Open House:</span> {property.openHouseStart}
-                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— Ends: {property.openHouseEnd}</span>}
-                  </span>
-                )}
-                {property.viewingHours && (
-                  <span className="flex items-center gap-1.5 text-foreground">
-                    <Clock className="h-4 w-4 text-primary" />
-                    <span className="font-medium">Viewing:</span> {property.viewingHours}
-                  </span>
-                )}
-              </div>
-            )}
 
 
 
