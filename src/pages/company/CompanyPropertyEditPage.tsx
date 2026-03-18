@@ -325,7 +325,7 @@ const CompanyPropertyEditPage = () => {
         {isEdit ? "Edit Property" : "New Property"}
       </h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+      <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
 
         {/* ─── Basic Info ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
