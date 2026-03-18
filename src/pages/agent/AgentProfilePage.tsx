@@ -19,7 +19,8 @@ import {
 } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
 
-const languageOptions = ["English", "Arabic", "Turkish", "Russian", "German", "French", "Farsi"];
+import { allLanguages } from "@/data/languages";
+const languageOptions = allLanguages;
 
 function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (

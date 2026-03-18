@@ -164,6 +164,13 @@ const CompanyAgentEditPage = () => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.name.trim()) { toast.error("Agent name is required"); return; }
     if (!form.email.trim()) { toast.error("Email is required"); return; }
+    if (!form.designation.trim()) { toast.error("Designation is required"); return; }
+    if (!form.phone.trim()) { toast.error("Phone is required"); return; }
+    if (!form.whatsapp.trim()) { toast.error("WhatsApp number is required"); return; }
+    if (!form.service_areas.trim()) { toast.error("Service areas are required"); return; }
+    if (form.languages.length === 0) { toast.error("At least one language is required"); return; }
+    if (!form.registration_number.trim()) { toast.error("Registration number is required"); return; }
+    if (!form.description.trim()) { toast.error("Description is required"); return; }
 
     setLoading(true);
 

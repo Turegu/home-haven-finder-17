@@ -34,6 +34,17 @@ const AgentDetailPage = () => {
         </div>
       </div>
 
+      {/* Cover Image */}
+      <div className="container mx-auto px-4 mb-4">
+        <div className="h-48 md:h-56 rounded-xl overflow-hidden bg-muted">
+          {agent.coverImage ? (
+            <img src={agent.coverImage} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-primary/20 to-primary/5" />
+          )}
+        </div>
+      </div>
+
       {/* Title + actions */}
       <div className="container mx-auto px-4 flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-foreground">{agent.name}</h1>
