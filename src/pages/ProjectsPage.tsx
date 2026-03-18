@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
 import ListingMapView from '@/components/ListingMapView';
+import LocationPicker from '@/components/LocationPicker';
 import { mockProjects } from '@/data/mockProperties';
 
 const ProjectsPage = () => {
