@@ -24,6 +24,7 @@ interface Banner {
   page_position: number;
   image_url: string | null;
   link_url: string | null;
+  banner_text: string | null;
   start_date: string | null;
   end_date: string | null;
   status: string;
