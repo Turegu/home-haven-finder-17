@@ -104,6 +104,7 @@ const CompanyPropertiesPage = () => {
     switch (s) {
       case "active": return "bg-emerald-100 text-emerald-800";
       case "inactive": return "bg-red-100 text-red-800";
+      case "draft": return "bg-amber-100 text-amber-800";
       default: return "bg-muted text-muted-foreground";
     }
   };
@@ -203,7 +204,7 @@ const CompanyPropertiesPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(prop.status)} variant="secondary">
-                        {prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
+                        {prop.status === "draft" ? "Unpublished" : prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">

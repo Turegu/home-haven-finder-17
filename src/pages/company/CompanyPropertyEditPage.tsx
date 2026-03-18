@@ -257,8 +257,7 @@ const CompanyPropertyEditPage = () => {
   const removeImage = (url: string) => setImages((prev) => prev.filter((u) => u !== url));
   const removePlan = (url: string) => setPlanFiles((prev) => prev.filter((u) => u !== url));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.title.trim()) { toast.error("Title is required"); return; }
     setLoading(true);
@@ -299,17 +298,18 @@ const CompanyPropertyEditPage = () => {
       images,
       plans: planFiles,
       company_id: companyId,
+      status: publishStatus,
     };
 
     try {
       if (isEdit) {
         const { error } = await supabase.from("properties").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success("Property updated!");
+        toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       } else {
         const { error } = await supabase.from("properties").insert(payload);
         if (error) throw error;
-        toast.success("Property created!");
+        toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       }
       navigate("/company/properties");
     } catch (err: any) {
@@ -325,7 +325,7 @@ const CompanyPropertyEditPage = () => {
         {isEdit ? "Edit Property" : "New Property"}
       </h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+      <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
 
         {/* ─── Basic Info ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
@@ -684,9 +684,13 @@ const CompanyPropertyEditPage = () => {
         {/* Submit */}
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate("/company/properties")}>Cancel</Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="button" variant="secondary" disabled={loading} onClick={() => handleSave("draft")}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Saving..." : isEdit ? "Update Property" : "Create"}
+            {loading ? "Saving..." : "Save as Draft"}
+          </Button>
+          <Button type="button" disabled={loading} onClick={() => handleSave("active")}>
+            <Save className="h-4 w-4 mr-2" />
+            {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
           </Button>
         </div>
       </form>

@@ -84,7 +84,7 @@ const CompanyProjectsPage = () => {
   };
 
   const statusColor = (s: string) => {
-    switch (s) { case "active": return "bg-emerald-100 text-emerald-800"; case "inactive": return "bg-red-100 text-red-800"; default: return "bg-muted text-muted-foreground"; }
+    switch (s) { case "active": return "bg-emerald-100 text-emerald-800"; case "inactive": return "bg-red-100 text-red-800"; case "draft": return "bg-amber-100 text-amber-800"; default: return "bg-muted text-muted-foreground"; }
   };
 
   return (
@@ -156,7 +156,7 @@ const CompanyProjectsPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{proj.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(proj.status)} variant="secondary">
-                        {proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
+                        {proj.status === "draft" ? "Unpublished" : proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">

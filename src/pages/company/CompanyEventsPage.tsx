@@ -87,6 +87,7 @@ const CompanyEventsPage = () => {
     switch (s) {
       case "active": return "bg-emerald-100 text-emerald-800";
       case "inactive": return "bg-red-100 text-red-800";
+      case "draft": return "bg-amber-100 text-amber-800";
       default: return "bg-muted text-muted-foreground";
     }
   };
@@ -162,7 +163,7 @@ const CompanyEventsPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{evt.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(evt.status)} variant="secondary">
-                        {evt.status.charAt(0).toUpperCase() + evt.status.slice(1)}
+                        {evt.status === "draft" ? "Unpublished" : evt.status.charAt(0).toUpperCase() + evt.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
