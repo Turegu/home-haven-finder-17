@@ -13,13 +13,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from "@/components/ui/table";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
   Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
-  Bold, Italic, Underline, List, Heading, Activity, Video
+  Bold, Italic, Underline, List, Heading, Activity, Video,
+  Plus, Trash2, Pencil, Package
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import defaultProjectLogo from "@/assets/default-project-logo.png";
 
 const projectTypes = [
   { value: "residential", label: "Residential" },
