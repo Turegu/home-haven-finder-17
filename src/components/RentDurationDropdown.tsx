@@ -2,8 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-
-const durationOptions = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 interface RentDurationDropdownProps {
   value: string[];
@@ -11,6 +10,9 @@ interface RentDurationDropdownProps {
 }
 
 export default function RentDurationDropdown({ value, onChange }: RentDurationDropdownProps) {
+  const { options: fo } = useFilterOptions("search");
+  const durationOptions = fo["rent_duration"] || [];
+
   function toggle(opt: string) {
     if (value.includes(opt)) {
       onChange(value.filter(v => v !== opt));

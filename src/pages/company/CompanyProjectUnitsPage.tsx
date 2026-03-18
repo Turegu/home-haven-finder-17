@@ -17,10 +17,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, Upload, X, ArrowLeft } from "lucide-react";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
-const unitTypes = ["apartment", "villa", "studio", "duplex", "penthouse", "shop", "office"];
-const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace"];
-const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Gym"];
+// Hardcoded arrays removed — now fetched dynamically
 
 interface UnitForm {
   unit_name: string;
@@ -46,6 +45,10 @@ const emptyUnit: UnitForm = {
 const CompanyProjectUnitsPage = () => {
   const navigate = useNavigate();
   const { id: projectId } = useParams();
+  const { options: filterOpts } = useFilterOptions("project_unit");
+  const unitTypes = filterOpts["project_unit_types"] || [];
+  const interiorAmenities = filterOpts["interior_amenities"] || [];
+  const exteriorAmenities = filterOpts["exterior_amenities"] || [];
   const [units, setUnits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectTitle, setProjectTitle] = useState("");

@@ -13,18 +13,13 @@ import BannerDisplay from '@/components/BannerDisplay';
 import LocationPicker from '@/components/LocationPicker';
 import { mockEvents } from '@/data/mockEvents';
 import ListingMapView from '@/components/ListingMapView';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
-const eventTypes = [
-  'Seminar/Conference',
-  'Exhibition/Trade Show',
-  'Auction',
-  'Viewing Tour',
-  'Project Launch',
-  'Open House',
-  'All',
-];
+// Event types now fetched dynamically
 
 const EventsPage = () => {
+  const { options: fo } = useFilterOptions("search");
+  const eventTypes = [...(fo["event_types"] || []), 'All'];
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedEventType, setSelectedEventType] = useState('All');

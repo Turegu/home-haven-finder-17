@@ -25,17 +25,9 @@ import {
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
-const projectTypes = [
-  { value: "residential", label: "Residential" },
-  { value: "commercial", label: "Commercial" },
-  { value: "mixed_use", label: "Mixed Use" },
-  { value: "residential_compound", label: "Residential Compound" },
-];
-const projectStatuses = ["new", "under_construction", "ready", "off_plan", "completed"];
-
-const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Laundry Room"];
-const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
+/* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
@@ -160,9 +152,7 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
   );
 }
 
-const unitTypes = ["apartment", "villa", "studio", "duplex", "penthouse", "shop", "office"];
-const unitInteriorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace"];
-const unitExteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Gym"];
+// Unit types and amenities now fetched dynamically via filterOpts
 
 interface UnitForm {
   unit_name: string;
@@ -196,6 +186,15 @@ const CompanyProjectEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
+  const { options: filterOpts } = useFilterOptions("project");
+  const projectTypes = (filterOpts["project_types"] || []).map(t => ({ value: t, label: t }));
+  const projectStatuses = filterOpts["project_statuses"] || [];
+  const interiorAmenities = filterOpts["interior_amenities"] || [];
+  const exteriorAmenities = filterOpts["exterior_amenities"] || [];
+  const unitTypes = filterOpts["project_unit_types"] || [];
+  const unitInteriorAmenities = interiorAmenities;
+  const unitExteriorAmenities = exteriorAmenities;
+
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);

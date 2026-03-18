@@ -21,22 +21,15 @@ import RoomsDropdown from '@/components/RoomsDropdown';
 import PriceDropdown from '@/components/PriceDropdown';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
 import { mockProjects } from '@/data/mockProperties';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
-const unitTypes = [
-  'Apartment', 'Penthouse', 'Restaurant/Café', 'Duplex', 'Townhouse',
-  'Store', 'Office', 'Shop', 'Villa', 'Showroom',
-];
-
-const projectStatuses = ['Shell And Core', 'Under Construction', 'Renovated', 'Second-Hand', 'New', 'Any'];
-
-const projectAmenities = [
-  'Close to schools', 'Close to a park', 'Close to public transport',
-  'Earthquake Regulations Compliant', 'Generator', 'Fire Lift',
-  'Metal Detector', 'Security Camera', 'Security', 'Card Access System',
-  'Shower cabin', 'Beach nearby', 'Beachfront', 'Private beach', 'Beach access',
-];
+// Hardcoded arrays removed — now fetched dynamically
 
 const ProjectsPage = () => {
+  const { options: fo } = useFilterOptions("search");
+  const unitTypes = fo["project_unit_types"] || [];
+  const projectStatuses = [...(fo["project_statuses"] || []), 'Any'];
+  const projectAmenities = [...(fo["exterior_amenities"] || []), ...(fo["proximity"] || [])];
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});

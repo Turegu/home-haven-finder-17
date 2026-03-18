@@ -16,7 +16,8 @@ import {
   CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
-import { eventTypes, getEventLogo } from "@/data/eventTypes";
+import { getEventLogo } from "@/data/eventTypes";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
@@ -86,6 +87,8 @@ const CompanyEventEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
+  const { options: filterOpts } = useFilterOptions("event");
+  const eventTypes = (filterOpts["event_types"] || []).map(t => ({ value: t.toLowerCase().replace(/[\s\/]+/g, '_'), label: t }));
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
