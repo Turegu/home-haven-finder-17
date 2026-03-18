@@ -266,8 +266,8 @@ const CompanyAgentEditPage = () => {
                 <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" required placeholder="Enter Agent Name" />
               </div>
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Agent Designation</Label>
-                <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" placeholder="Enter Agent Designation" />
+                <Label className="text-foreground font-medium">Agent Designation *</Label>
+                <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" placeholder="Enter Agent Designation" required />
               </div>
             </div>
 

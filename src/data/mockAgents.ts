@@ -3,6 +3,7 @@ export interface Agent {
   name: string;
   designation: string;
   photo: string;
+  coverImage?: string;
   companyId: string;
   companyName: string;
   companyLogo: string;
