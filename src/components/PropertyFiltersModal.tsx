@@ -138,7 +138,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Property Age"
             icon={Calendar}
-            options={propertyAges}
+            options={fo["property_age"] || []}
             selected={local.propertyAges}
             onToggle={(v) => toggleArray('propertyAges', v)}
           />
