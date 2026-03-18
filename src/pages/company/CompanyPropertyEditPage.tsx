@@ -401,7 +401,7 @@ const CompanyPropertyEditPage = () => {
                 icon={<Clock className="h-4 w-4 text-muted-foreground" />}
                 value={form.rent_duration}
                 onChange={(v) => updateField("rent_duration", v)}
-                options={rentDurations.map(d => ({ value: d, label: d }))}
+                options={(filterOpts["rent_duration"] || []).map(d => ({ value: d, label: d }))}
                 placeholder="Select duration"
               />
             )}
