@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, ArrowLeftRight, Maximize } from 'lucide-react';
+import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 // City coordinate lookup for mock data
