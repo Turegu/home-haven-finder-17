@@ -211,22 +211,30 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
             </div>
 
             {/* Summary stats to fill lower left */}
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-center">
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
                 <p className="text-lg font-bold text-emerald-700">{units.filter(u => u.status === 'available').length}</p>
                 <p className="text-[11px] text-emerald-600">Available</p>
               </div>
-              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-center">
+              <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 text-center">
                 <p className="text-lg font-bold text-amber-700">{units.filter(u => u.status === 'reserved').length}</p>
                 <p className="text-[11px] text-amber-600">Reserved</p>
               </div>
-              <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-center">
+              <div className="rounded-lg bg-red-50 border border-red-200 p-2.5 text-center">
                 <p className="text-lg font-bold text-red-700">{units.filter(u => u.status === 'sold').length}</p>
                 <p className="text-[11px] text-red-600">Sold</p>
               </div>
-              <div className="rounded-lg bg-muted/50 border border-border p-3 text-center">
+              <div className="rounded-lg bg-muted/50 border border-border p-2.5 text-center">
                 <p className="text-lg font-bold text-foreground">{units.length}</p>
-                <p className="text-[11px] text-muted-foreground">Total Units</p>
+                <p className="text-[11px] text-muted-foreground">Total</p>
+              </div>
+              <div className="rounded-lg bg-blue-50 border border-blue-200 p-2.5 text-center">
+                <p className="text-lg font-bold text-blue-700">{units.filter(u => u.price != null).length > 0 ? `${(units.filter(u => u.price != null).reduce((a, u) => Math.min(a, u.price!), Infinity)).toLocaleString()}` : '—'}</p>
+                <p className="text-[11px] text-blue-600">Min Price</p>
+              </div>
+              <div className="rounded-lg bg-purple-50 border border-purple-200 p-2.5 text-center">
+                <p className="text-lg font-bold text-purple-700">{units.filter(u => u.price != null).length > 0 ? `${(units.filter(u => u.price != null).reduce((a, u) => Math.max(a, u.price!), 0)).toLocaleString()}` : '—'}</p>
+                <p className="text-[11px] text-purple-600">Max Price</p>
               </div>
             </div>
           </div>
