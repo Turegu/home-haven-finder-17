@@ -9,7 +9,7 @@ import AreaDropdown from '@/components/AreaDropdown';
 import RoomsDropdown from '@/components/RoomsDropdown';
 import BathroomsDropdown from '@/components/BathroomsDropdown';
 import RentDurationDropdown from '@/components/RentDurationDropdown';
-import PropertyFiltersModal from '@/components/PropertyFiltersModal';
+import PropertyFiltersModal, { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 
 const HeroSearch = () => {
   const [activeTab, setActiveTab] = useState<'buy' | 'rent'>('buy');
