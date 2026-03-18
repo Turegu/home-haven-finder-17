@@ -135,7 +135,12 @@ const ProjectDetailPage = () => {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4 mb-1">
-                    <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
+                    <div>
+                      <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
+                      {project.subtitle && (
+                        <p className="text-sm text-muted-foreground italic mt-0.5">{project.subtitle}</p>
+                      )}
+                    </div>
                     {/* Media tabs */}
                     <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border flex-shrink-0">
                       {mediaTabs.map((tab) => (
@@ -154,7 +159,6 @@ const ProjectDetailPage = () => {
                   <p className="text-2xl font-bold text-primary mb-1">
                     From $ {project.priceFrom.toLocaleString()}
                   </p>
-                  <p className="text-foreground/80 text-sm mb-1.5">{project.subtitle}</p>
                   <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="h-4 w-4 text-primary" />
                     <span>{project.location}</span>
