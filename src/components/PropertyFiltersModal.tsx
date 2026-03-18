@@ -16,29 +16,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 
-const floorLevels = [
-  'Ground', 'Garden floor', '1', '2', '3 - 5', '6 - 10',
-  '10-20', '20+', 'Top floor', 'Basement', 'Mezzanine', 'Penthouse',
-  'High entrance', 'Semi Basement', 'Direct entrance',
-];
-const parkingSpaces = ['1', '2', '3', '4', '5', '6+'];
-const furnitureOptions = ['Fully Furnished', 'Unfurnished', 'Partially Furnished'];
-const propertyAges = ['New', '1-5 Years', '6-10 Years', '11-15 Years', '16-20 Years', '21+'];
-
-const defaultExteriorAmenities = [
-  'Close to gym', 'Close to the city center',
-  'Close to restaurants and cafes', 'Close to the beach',
-  'Close to schools', 'Close to a park', 'Close to public transport',
-  'Beach nearby', 'Beachfront', 'Private beach', 'Beach access',
-  'Swimming pool', 'Garden', 'Playground', 'BBQ area',
-];
-const defaultInteriorAmenities = [
-  'Central heating', 'Air conditioning', 'Fireplace', 'Built-in wardrobe',
-  'Walk-in closet', 'Kitchen appliances', 'Laundry room', 'Smart home system',
-  'Jacuzzi', 'Sauna', 'Shower cabin', 'Bathtub',
-  'Generator', 'Security Camera', 'Security', 'Card Access System',
-  'Elevator', 'Fire Lift', 'Metal Detector',
-];
+// Hardcoded fallbacks removed — all options now fetched dynamically from the database
 
 export interface PropertyMoreFilters {
   floorLevels: string[];
