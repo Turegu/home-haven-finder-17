@@ -57,13 +57,19 @@ const PropertyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery */}
+      {/* Image Gallery — 3 side-by-side on desktop */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        <img
-          src={property.images[currentImage]}
-          alt={property.title}
-          className="w-full h-full object-cover"
-        />
+        <div className="flex h-full">
+          {property.images.slice(currentImage, currentImage + 3).concat(
+            currentImage + 3 > property.images.length
+              ? property.images.slice(0, (currentImage + 3) - property.images.length)
+              : []
+          ).map((img, i) => (
+            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0">
+              <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
         <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -389,9 +395,9 @@ const PropertyDetailPage = () => {
                   Email
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-green-600 hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
-                  Chat
+                  WhatsApp
                 </button>
               </div>
             </div>
