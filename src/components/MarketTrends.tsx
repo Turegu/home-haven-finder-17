@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, Home, CalendarClock, AlertCircle } from "lucide-react";
+import { TrendingUp, Home, CalendarClock, AlertCircle, Banknote } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMarketStats, useNeighbourhoodsInTown, CurrentPropertyData } from "@/hooks/useMarketTrends";
