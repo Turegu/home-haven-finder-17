@@ -104,15 +104,6 @@ const BuyPage = () => {
     }
   }
 
-  function clearAllBadges() {
-    setPropertyTypes([]);
-    setMinPrice(''); setMaxPrice('');
-    setMinArea(''); setMaxArea('');
-    setRooms(''); setBathrooms('');
-    setRentDuration('');
-    setMoreFilters({});
-  }
-
   const hasBadges = Object.keys(selectedBadges).length > 0;
 
   return (
