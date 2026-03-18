@@ -93,20 +93,34 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           </button>
         </div>
 
-        {/* Agent Logo */}
+        {/* Company Logo */}
         <div className="absolute bottom-2 right-2">
           <img
             src={property.agentLogo}
             alt={property.agentName}
-            className="h-9 w-9 rounded-full border-2 border-background object-cover shadow-md"
+            className="h-10 w-14 rounded border border-background object-cover shadow-md bg-background"
           />
         </div>
 
-        {/* Listing Type Badge */}
-        <div className="absolute top-2 left-2">
-          <span className="bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2 py-1 rounded">
-            For {property.listingType === 'buy' ? 'Sale' : 'Rent'}
-          </span>
+        {/* Tier badge + Ad tag — top left */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {property.listingTier === 'premium' && (
+            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md" title="Premium">
+              <Crown className="h-4 w-4 text-white" />
+            </span>
+          )}
+          {property.listingTier === 'featured' && (
+            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+              <Star className="h-4 w-4 text-white" />
+            </span>
+          )}
+          {property.advertisingTags && property.advertisingTags.length > 0 && (
+            <Badge
+              className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+            >
+              <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+            </Badge>
+          )}
         </div>
       </div>
 
