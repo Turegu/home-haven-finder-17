@@ -329,9 +329,9 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Basic Info ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <FileText className="h-4 w-4" /> Description & Information
-          </h2>
+          </div>
           <div className="space-y-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Property Title *</Label>
@@ -366,9 +366,9 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Contract & Type ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <ScrollText className="h-4 w-4" /> Contract & Property Type
-          </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <FormSelect
               label="Contract Type *"
@@ -389,9 +389,9 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Pricing & Size ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <DollarSign className="h-4 w-4" /> Pricing & Size
-          </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -424,9 +424,9 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Rooms & Features ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <BedDouble className="h-4 w-4" /> Rooms & Features
-          </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FormSelect
               label="Property Status"
@@ -499,9 +499,9 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Amenities (multi-select dropdowns) ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <TreePine className="h-4 w-4" /> Amenities
-          </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <MultiSelectDropdown
               label="Interior Amenities"
@@ -524,9 +524,9 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Advertising Tags ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <Tag className="h-4 w-4" /> Advertising Tags
-          </h2>
+          </div>
           <p className="text-xs text-muted-foreground mb-3">Select preset tags or create your own (max 15 characters each)</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {advertisingTagOptions.map((tag) => (
@@ -592,7 +592,7 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Location ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">Location</div>
           <LocationFormFields
             province={form.province} town={form.town} neighbourhood={form.neighbourhood} pinLocation={form.pin_location}
             onProvinceChange={(v) => updateField("province", v)} onTownChange={(v) => updateField("town", v)}
@@ -602,7 +602,7 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Media ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Media</h2>
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">Media</div>
           <div className="space-y-3 mb-6">
             <Label className="text-foreground font-medium">Images</Label>
             <div className="flex flex-wrap gap-3">
@@ -653,7 +653,7 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Open House ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Open House</h2>
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">Open House</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Starting Date And Time</Label>
