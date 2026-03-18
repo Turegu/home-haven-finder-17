@@ -45,6 +45,10 @@ const emptyUnit: UnitForm = {
 const CompanyProjectUnitsPage = () => {
   const navigate = useNavigate();
   const { id: projectId } = useParams();
+  const { options: filterOpts } = useFilterOptions("project_unit");
+  const unitTypes = filterOpts["project_unit_types"] || [];
+  const interiorAmenities = filterOpts["interior_amenities"] || [];
+  const exteriorAmenities = filterOpts["exterior_amenities"] || [];
   const [units, setUnits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectTitle, setProjectTitle] = useState("");
