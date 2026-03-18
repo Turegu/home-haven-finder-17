@@ -83,7 +83,7 @@ const BuyPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            {title} in <span className="text-primary">{properties.length} Properties</span>
+            {title} in <span className="text-primary">{allProperties.length} Properties</span>
           </h1>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background">
