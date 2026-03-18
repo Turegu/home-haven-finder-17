@@ -144,11 +144,8 @@ const PropertyDetailPage = () => {
             {/* Title & Price Block */}
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex items-center gap-3">
-                  <img src={property.agentLogo} alt="" className="h-12 w-12 rounded-lg object-cover border border-border" />
-                  <div>
-                    <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
-                  </div>
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
                 </div>
                 {/* Media tabs */}
                 <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
