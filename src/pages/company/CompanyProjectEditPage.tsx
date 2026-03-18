@@ -186,6 +186,15 @@ const CompanyProjectEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
+  const { options: filterOpts } = useFilterOptions("project");
+  const projectTypes = (filterOpts["project_types"] || []).map(t => ({ value: t, label: t }));
+  const projectStatuses = filterOpts["project_statuses"] || [];
+  const interiorAmenities = filterOpts["interior_amenities"] || [];
+  const exteriorAmenities = filterOpts["exterior_amenities"] || [];
+  const unitTypes = filterOpts["project_unit_types"] || [];
+  const unitInteriorAmenities = interiorAmenities;
+  const unitExteriorAmenities = exteriorAmenities;
+
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
