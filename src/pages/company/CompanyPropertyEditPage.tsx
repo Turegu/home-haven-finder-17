@@ -21,6 +21,7 @@ import {
   ChevronDown, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 /* ─── Options aligned with front-end search filters ─── */
 
