@@ -36,6 +36,9 @@
 
     --radius: 0.5rem;
 
+    --warm-accent: 36 70% 55%;
+    --warm-accent-foreground: 0 0% 100%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 174 100% 29%;
