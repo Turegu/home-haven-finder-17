@@ -20,10 +20,10 @@ const HeroSearch = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [minArea, setMinArea] = useState('');
   const [maxArea, setMaxArea] = useState('');
-  const [rooms, setRooms] = useState('');
-  const [bathrooms, setBathrooms] = useState('');
-  const [rentDuration, setRentDuration] = useState('');
-  const [moreFilters, setMoreFilters] = useState<Record<string, string>>({});
+  const [rooms, setRooms] = useState<string[]>([]);
+  const [bathrooms, setBathrooms] = useState<string[]>([]);
+  const [rentDuration, setRentDuration] = useState<string[]>([]);
+  const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
   const navigate = useNavigate();
 
   function handleSearch() {

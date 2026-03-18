@@ -89,17 +89,15 @@ const BuyPage = () => {
     if (categoryKey === 'Property Type') setPropertyTypes(propertyTypes.filter(t => t !== value));
     else if (categoryKey === 'Price') { setMinPrice(''); setMaxPrice(''); }
     else if (categoryKey === 'Area') { setMinArea(''); setMaxArea(''); }
-    else if (categoryKey === 'Rooms') setRooms('');
-    else if (categoryKey === 'Bathrooms') setBathrooms('');
-    else if (categoryKey === 'Rent Duration') setRentDuration('');
-    else if (categoryKey === 'Amenities') {
-      const current = moreFilters.exteriorAmenities?.split(',') || [];
-      setMoreFilters({ ...moreFilters, exteriorAmenities: current.filter(v => v !== value).join(',') });
-    } else {
-      const updated = { ...moreFilters };
-      delete updated[categoryKey];
-      setMoreFilters(updated);
-    }
+    else if (categoryKey === 'Rooms') setRooms(rooms.filter(v => v !== value));
+    else if (categoryKey === 'Bathrooms') setBathrooms(bathrooms.filter(v => v !== value));
+    else if (categoryKey === 'Rent Duration') setRentDuration(rentDuration.filter(v => v !== value));
+    else if (categoryKey === 'Floor Level') setMoreFilters({ ...moreFilters, floorLevels: moreFilters.floorLevels.filter(v => v !== value) });
+    else if (categoryKey === 'Parking') setMoreFilters({ ...moreFilters, parkingSpaces: moreFilters.parkingSpaces.filter(v => v !== value) });
+    else if (categoryKey === 'Furniture') setMoreFilters({ ...moreFilters, furniture: moreFilters.furniture.filter(v => v !== value) });
+    else if (categoryKey === 'Property Age') setMoreFilters({ ...moreFilters, propertyAges: moreFilters.propertyAges.filter(v => v !== value) });
+    else if (categoryKey === 'Ext. Amenities') setMoreFilters({ ...moreFilters, exteriorAmenities: moreFilters.exteriorAmenities.filter(v => v !== value) });
+    else if (categoryKey === 'Int. Amenities') setMoreFilters({ ...moreFilters, interiorAmenities: moreFilters.interiorAmenities.filter(v => v !== value) });
   }
 
   const hasBadges = Object.keys(selectedBadges).length > 0;
