@@ -17,6 +17,7 @@ const AREA_UNITS = [
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [compareCount] = useState(0);
 
