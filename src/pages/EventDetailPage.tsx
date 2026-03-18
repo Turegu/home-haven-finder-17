@@ -6,7 +6,6 @@ import {
   MessageCircle, PersonStanding, X
 } from 'lucide-react';
 import Header from '@/components/Header';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import { mockEvents } from '@/data/mockEvents';
