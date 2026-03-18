@@ -337,6 +337,12 @@ const AdminBannersPage = () => {
               </div>
             </div>
 
+            {/* Banner Text */}
+            <div>
+              <Label>Banner Text (overlay on image)</Label>
+              <Input value={form.banner_text} onChange={(e) => setForm({ ...form, banner_text: e.target.value })} placeholder="Enter text to display on the banner" />
+            </div>
+
             {/* Image Upload */}
             <div>
               <Label>Banner Image</Label>
