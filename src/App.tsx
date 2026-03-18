@@ -27,6 +27,22 @@ const BlogsPage = lazy(() => import("./pages/BlogsPage.tsx"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage.tsx"));
 const FaqPage = lazy(() => import("./pages/FaqPage.tsx"));
 
+// User auth pages
+const UserLoginPage = lazy(() => import("./pages/user/UserLoginPage.tsx"));
+const UserRegisterPage = lazy(() => import("./pages/user/UserRegisterPage.tsx"));
+const ForgotPasswordPage = lazy(() => import("./pages/user/ForgotPasswordPage.tsx"));
+const ResetPasswordPage = lazy(() => import("./pages/user/ResetPasswordPage.tsx"));
+
+// User dashboard pages
+const AccountSettingsPage = lazy(() => import("./pages/user/AccountSettingsPage.tsx"));
+const FollowedAgentsPage = lazy(() => import("./pages/user/FollowedAgentsPage.tsx"));
+const SavedPropertiesPage = lazy(() => import("./pages/user/SavedPropertiesPage.tsx"));
+const SavedSearchesPage = lazy(() => import("./pages/user/SavedSearchesPage.tsx"));
+const CompareListPage = lazy(() => import("./pages/user/CompareListPage.tsx"));
+const NotificationsPage = lazy(() => import("./pages/user/NotificationsPage.tsx"));
+const ContactedPropertiesPage = lazy(() => import("./pages/user/ContactedPropertiesPage.tsx"));
+const PropertyRequestsUserPage = lazy(() => import("./pages/user/PropertyRequestsPage.tsx"));
+
 // Admin pages
 const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage.tsx"));
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage.tsx"));
@@ -95,8 +111,8 @@ const PageLoader = () => (
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 min — avoid unnecessary refetches
-      gcTime: 10 * 60 * 1000,   // 10 min garbage collection
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -128,12 +144,31 @@ const App = () => (
             <Route path="/blog" element={<BlogsPage />} />
             <Route path="/blog/:slug" element={<BlogDetailPage />} />
             <Route path="/faq" element={<FaqPage />} />
+            <Route path="/advertise" element={<AdvertisePage />} />
+            <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
+
+            {/* User auth */}
+            <Route path="/login" element={<UserLoginPage />} />
+            <Route path="/register" element={<UserRegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+            {/* User dashboard */}
+            <Route path="/account" element={<AccountSettingsPage />} />
+            <Route path="/account/followed-agents" element={<FollowedAgentsPage />} />
+            <Route path="/account/saved-properties" element={<SavedPropertiesPage />} />
+            <Route path="/account/saved-searches" element={<SavedSearchesPage />} />
+            <Route path="/account/compare" element={<CompareListPage />} />
+            <Route path="/account/notifications" element={<NotificationsPage />} />
+            <Route path="/account/contacted" element={<ContactedPropertiesPage />} />
+            <Route path="/account/requests" element={<PropertyRequestsUserPage />} />
+
+            {/* Admin */}
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/companies" element={<AdminCompaniesPage />} />
             <Route path="/admin/companies/new" element={<AdminCreateCompanyPage />} />
             <Route path="/admin/memberships" element={<AdminMembershipsPage />} />
-            <Route path="/advertise" element={<AdvertisePage />} />
             <Route path="/admin/properties" element={<AdminPropertiesPage />} />
             <Route path="/admin/projects" element={<AdminProjectsPage />} />
             <Route path="/admin/events" element={<AdminEventsPage />} />
@@ -152,7 +187,8 @@ const App = () => (
             <Route path="/admin/filters" element={<AdminFiltersPage />} />
             <Route path="/admin/locations" element={<AdminLocationsPage />} />
             <Route path="/admin/email-templates" element={<AdminEmailPreviewPage />} />
-            <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
+
+            {/* Company */}
             <Route path="/company/login" element={<CompanyLoginPage />} />
             <Route path="/company" element={<CompanyDashboardPage />} />
             <Route path="/company/profile" element={<CompanyProfilePage />} />
@@ -173,6 +209,8 @@ const App = () => (
             <Route path="/company/notifications" element={<CompanyNotificationsPage />} />
             <Route path="/company/inbox" element={<CompanyInboxPage />} />
             <Route path="/company/followers" element={<CompanyFollowersPage />} />
+
+            {/* Agent */}
             <Route path="/agent/login" element={<AgentLoginPage />} />
             <Route path="/agent" element={<AgentDashboardPage />} />
             <Route path="/agent/profile" element={<AgentProfilePage />} />
@@ -182,6 +220,7 @@ const App = () => (
             <Route path="/agent/followers" element={<AgentFollowersPage />} />
             <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
             <Route path="/agent/inbox" element={<AgentInboxPage />} />
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
