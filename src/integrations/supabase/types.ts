@@ -1556,6 +1556,7 @@ export type Database = {
       }
       properties: {
         Row: {
+          advertising_tags: string[] | null
           agent_id: string | null
           area: number | null
           area_unit: string | null
@@ -1599,6 +1600,7 @@ export type Database = {
           view_360_link: string | null
         }
         Insert: {
+          advertising_tags?: string[] | null
           agent_id?: string | null
           area?: number | null
           area_unit?: string | null
@@ -1642,6 +1644,7 @@ export type Database = {
           view_360_link?: string | null
         }
         Update: {
+          advertising_tags?: string[] | null
           agent_id?: string | null
           area?: number | null
           area_unit?: string | null
