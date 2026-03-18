@@ -148,15 +148,14 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
           <h2 className="text-lg font-bold text-foreground">Available Units</h2>
           <p className="text-sm text-muted-foreground">{filtered.length} unit{filtered.length !== 1 ? 's' : ''} found</p>
         </div>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-[160px] h-9 text-sm">
-            <SelectValue />
+        <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
+          <SelectTrigger className="w-[200px] h-9 text-sm">
+            <SelectValue placeholder="Select a unit" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Units ({units.length})</SelectItem>
-            <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="reserved">Reserved</SelectItem>
-            <SelectItem value="sold">Sold</SelectItem>
+            {units.map((unit) => (
+              <SelectItem key={unit.id} value={unit.id}>{unit.unit_name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -270,14 +269,14 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
           {/* Fact boxes — full width below */}
           {currentUnit && (
             <div className="grid grid-cols-4 gap-3 mt-6">
-              <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
               <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
+              <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
               <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'} />
               <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
               <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
               <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />
-              <UnitSpecCard icon={Home} label="Unit" value={currentUnit.unit_name} />
-              <UnitSpecCard icon={CheckCircle} label="Available" value={String(units.filter(u => u.status === 'available').length)} />
+              <UnitSpecCard icon={CheckCircle} label="Available" value={`${units.filter(u => u.status === 'available').length} — ${currentUnit.unit_name}`} />
+              <UnitSpecCard icon={Eye} label="Status" value={currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)} />
             </div>
           )}
         </>
