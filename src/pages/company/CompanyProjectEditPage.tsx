@@ -163,6 +163,31 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
   );
 }
 
+const unitTypes = ["apartment", "villa", "studio", "duplex", "penthouse", "shop", "office"];
+const unitInteriorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace"];
+const unitExteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Gym"];
+
+interface UnitForm {
+  unit_name: string;
+  unit_type: string;
+  rooms: string;
+  bathrooms: string;
+  car_parking: string;
+  price: string;
+  currency: string;
+  area: string;
+  area_unit: string;
+  interior_amenities: string[];
+  exterior_amenities: string[];
+  images: string[];
+}
+
+const emptyUnit: UnitForm = {
+  unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
+  price: "", currency: "USD", area: "", area_unit: "m²",
+  interior_amenities: [], exterior_amenities: [], images: [],
+};
+
 const CompanyProjectEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
