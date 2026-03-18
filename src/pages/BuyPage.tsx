@@ -45,6 +45,10 @@ const BuyPage = () => {
   const properties = allProperties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const title = purpose === 'rent' ? 'Residential Properties for rent' : 'Residential Properties for sale';
 
+  useEffect(() => {
+    document.title = `${purpose === 'rent' ? 'Rent' : 'Buy'} Properties | Turegu`;
+  }, [purpose]);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
