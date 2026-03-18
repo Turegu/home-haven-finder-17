@@ -56,6 +56,7 @@ const emptyForm = {
   banner_type: "horizontal",
   page_position: 1,
   link_url: "",
+  banner_text: "",
   start_date: "",
   end_date: "",
 };
