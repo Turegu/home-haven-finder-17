@@ -210,30 +210,40 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
               ))}
             </div>
 
-            {/* Compact availability bar */}
-            {(() => {
-              const available = units.filter(u => u.status === 'available').length;
-              const reserved = units.filter(u => u.status === 'reserved').length;
-              const sold = units.filter(u => u.status === 'sold').length;
-              const total = units.length || 1;
-              return (
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>{units.length} total units</span>
-                    <div className="flex items-center gap-3">
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" /> {available} Available</span>
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-500 inline-block" /> {reserved} Reserved</span>
-                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> {sold} Sold</span>
-                    </div>
+            {/* Selected unit quick facts */}
+            {currentUnit && (
+              <div className="mt-4 rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quick Facts</p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Price</span>
+                    <span className="font-bold text-primary">{currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'}</span>
                   </div>
-                  <div className="flex h-2 rounded-full overflow-hidden bg-muted">
-                    {available > 0 && <div className="bg-emerald-500 transition-all" style={{ width: `${(available / total) * 100}%` }} />}
-                    {reserved > 0 && <div className="bg-amber-500 transition-all" style={{ width: `${(reserved / total) * 100}%` }} />}
-                    {sold > 0 && <div className="bg-red-500 transition-all" style={{ width: `${(sold / total) * 100}%` }} />}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Area</span>
+                    <span className="font-semibold text-foreground">{currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Rooms</span>
+                    <span className="font-semibold text-foreground">{currentUnit.rooms || '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Bathrooms</span>
+                    <span className="font-semibold text-foreground">{currentUnit.bathrooms != null ? currentUnit.bathrooms : '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Parking</span>
+                    <span className="font-semibold text-foreground">{currentUnit.car_parking != null ? currentUnit.car_parking : '—'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Status</span>
+                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[currentUnit.status] || ''}`}>
+                      {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
+                    </Badge>
                   </div>
                 </div>
-              );
-            })()}
+              </div>
+            )}
           </div>
 
           {/* Unit Detail (right) */}
