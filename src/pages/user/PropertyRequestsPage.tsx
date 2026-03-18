@@ -64,7 +64,7 @@ const PropertyRequestsPage = () => {
                     <td className="py-3 px-4 text-foreground">{item.full_name || "—"}</td>
                     <td className="py-3 px-4 text-muted-foreground">{item.email || "—"}</td>
                     <td className="py-3 px-4 text-muted-foreground">{item.phone || "—"}</td>
-                    <td className="py-3 px-4 text-muted-foreground">{item.budget || "—"}</td>
+                    <td className="py-3 px-4 text-muted-foreground">{item.message || "—"}</td>
                     <td className="py-3 px-4 text-muted-foreground">{format(new Date(item.created_at), "MMM dd, yyyy")}</td>
                   </tr>
                 ))}
