@@ -14,8 +14,9 @@ import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
 
 const BuyPage = () => {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const purpose = searchParams.get('propertyPurpose') || 'buy';
+  const purpose = location.pathname === '/rent' ? 'rent' : (searchParams.get('propertyPurpose') || 'buy');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
