@@ -2,17 +2,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-const residentialTypes = [
-  'Apartment', 'Villa', 'Duplex', 'Penthouse', 'Townhouse', 'Studio',
-  'Land', 'Farm House',
-];
-
-const commercialTypes = [
-  'Office', 'Shop', 'Store', 'Showroom', 'Restaurant/Café',
-  'Land', 'Farms', 'Labor Camp', 'Factory', 'Warehouse', 'Co-Working Space',
-  'Whole Building', 'Full Floor',
-];
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 interface PropertyTypeDropdownProps {
   selected: string[];
