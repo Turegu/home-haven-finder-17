@@ -16,16 +16,7 @@ import {
   CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
-
-const eventTypes = [
-  { value: "open_house", label: "Open House" },
-  { value: "seminar_conference", label: "Seminar/Conference" },
-  { value: "exhibition", label: "Exhibition" },
-  { value: "auction", label: "Auction" },
-  { value: "networking", label: "Networking Event" },
-  { value: "workshop", label: "Workshop" },
-  { value: "webinar", label: "Webinar" },
-];
+import { eventTypes, getEventLogo } from "@/data/eventTypes";
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
