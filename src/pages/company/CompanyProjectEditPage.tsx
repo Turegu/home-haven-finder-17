@@ -9,8 +9,16 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Save, Upload, X, ImageIcon, FileText } from "lucide-react";
+import {
+  Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
+  Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
+  Bold, Italic, Underline, List, Heading, Activity, Video
+} from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 
 const projectTypes = [
@@ -23,6 +31,129 @@ const projectStatuses = ["new", "under_construction", "ready", "off_plan", "comp
 
 const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Laundry Room"];
 const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
+
+/* ─── Rich Text Toolbar ─── */
+function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
+  const buttons = [
+    { tag: "bold", icon: Bold, tip: "Bold" },
+    { tag: "italic", icon: Italic, tip: "Italic" },
+    { tag: "underline", icon: Underline, tip: "Underline" },
+    { tag: "bullet", icon: List, tip: "Bullet" },
+    { tag: "heading", icon: Heading, tip: "Heading" },
+  ];
+  return (
+    <div className="flex items-center gap-1 p-1 border border-border rounded-md bg-muted/30 w-fit">
+      {buttons.map((b) => (
+        <button
+          key={b.tag} type="button" title={b.tip}
+          onClick={() => onAction(b.tag)}
+          className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <b.icon className="h-4 w-4" />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Reusable Form Select with Icon ─── */
+function FormSelect({
+  label, icon, value, onChange, options, placeholder,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">
+        {icon} {label}
+      </Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+/* ─── Multi-Select Dropdown with Search ─── */
+function MultiSelectDropdown({
+  label, icon, options, selected, onToggle, searchable = false,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  options: string[];
+  selected: string[];
+  onToggle: (val: string) => void;
+  searchable?: boolean;
+}) {
+  const [search, setSearch] = useState("");
+  const filtered = search ? options.filter(o => o.toLowerCase().includes(search.toLowerCase())) : options;
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">{icon} {label}</Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full justify-between bg-secondary/50 font-normal text-sm">
+            <span className="truncate">{selected.length ? `${selected.length} selected` : "Select..."}</span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[300px] p-0" align="start">
+          {searchable && (
+            <div className="p-2 border-b border-border">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+              </div>
+            </div>
+          )}
+          <ScrollArea className="max-h-[200px]">
+            <div className="p-2 space-y-1">
+              {filtered.map((opt) => (
+                <label key={opt} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
+                  <Checkbox checked={selected.includes(opt)} onCheckedChange={() => onToggle(opt)} />
+                  <span>{opt}</span>
+                </label>
+              ))}
+            </div>
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-1">
+          {selected.map((s) => (
+            <Badge key={s} variant="secondary" className="text-xs gap-1 pr-1">
+              {s}
+              <button type="button" onClick={() => onToggle(s)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Section Header ─── */
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+      <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <h2 className="text-base font-semibold text-foreground tracking-tight">{title}</h2>
+    </div>
+  );
+}
 
 const CompanyProjectEditPage = () => {
   const navigate = useNavigate();
@@ -185,19 +316,39 @@ const CompanyProjectEditPage = () => {
     } finally { setLoading(false); }
   };
 
+  const applyRichText = (tag: string) => {
+    const el = document.getElementById("proj-desc") as HTMLTextAreaElement | null;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = form.description;
+    const selected = text.substring(start, end);
+    let wrapped = selected;
+    if (tag === "bold") wrapped = `**${selected}**`;
+    else if (tag === "italic") wrapped = `*${selected}*`;
+    else if (tag === "underline") wrapped = `__${selected}__`;
+    else if (tag === "bullet") wrapped = `\n- ${selected}`;
+    else if (tag === "heading") wrapped = `\n### ${selected}`;
+    const newText = text.substring(0, start) + wrapped + text.substring(end);
+    updateField("description", newText);
+    setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
+  };
+
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Project" : "New Project"}</h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8 pb-10">
-        {/* Description & Information */}
+      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+
+        {/* ─── Description & Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Description & Information</h2>
+          <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Name *</Label>
-                <Input value={form.title} onChange={(e) => updateField("title", e.target.value)} className="bg-secondary/50" required />
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
+                <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Tagline</Label>
@@ -206,79 +357,114 @@ const CompanyProjectEditPage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Project Description</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Developer Name</Label>
-                <Input value={form.developer} onChange={(e) => updateField("developer", e.target.value)} className="bg-secondary/50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Project Type *</Label>
-                <Select value={form.project_type} onValueChange={(v) => updateField("project_type", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>{projectTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Starting Price ({form.currency})</Label>
-                <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className="bg-secondary/50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">No Of Units</Label>
-                <Input type="number" value={form.min_units} onChange={(e) => updateField("min_units", e.target.value)} className="bg-secondary/50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Min Area ({form.area_unit})</Label>
-                <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className="bg-secondary/50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Max Area ({form.area_unit})</Label>
-                <Input type="number" value={form.max_area} onChange={(e) => updateField("max_area", e.target.value)} className="bg-secondary/50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Project Status</Label>
-                <Select value={form.project_status} onValueChange={(v) => updateField("project_status", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>{projectStatuses.map((s) => <SelectItem key={s} value={s}>{s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
+              <RichTextToolbar onAction={applyRichText} />
+              <Textarea id="proj-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
           </div>
         </section>
 
-        {/* Amenities */}
+        {/* ─── Type & Status ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Amenities</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SectionHeader icon={<Building2 className="h-4 w-4" />} title="Type & Status" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <FormSelect
+              label="Project Type *"
+              icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}
+              value={form.project_type}
+              onChange={(v) => updateField("project_type", v)}
+              options={projectTypes.map((t) => ({ value: t.value, label: t.label }))}
+            />
+            <FormSelect
+              label="Project Status"
+              icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
+              value={form.project_status}
+              onChange={(v) => updateField("project_status", v)}
+              options={projectStatuses.map((s) => ({ value: s, label: s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) }))}
+            />
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Exterior Amenities</Label>
-              <div className="flex flex-wrap gap-2">
-                {exteriorAmenities.map((a) => (
-                  <button key={a} type="button" onClick={() => toggleAmenity("exterior_amenities", a)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${form.exterior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                    {a}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Interior Amenities</Label>
-              <div className="flex flex-wrap gap-2">
-                {interiorAmenities.map((a) => (
-                  <button key={a} type="button" onClick={() => toggleAmenity("interior_amenities", a)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${form.interior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                    {a}
-                  </button>
-                ))}
-              </div>
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> Developer Name
+              </Label>
+              <Input value={form.developer} onChange={(e) => updateField("developer", e.target.value)} className="bg-secondary/50" />
             </div>
           </div>
         </section>
 
-        {/* Location */}
+        {/* ─── Pricing & Size ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
+          <SectionHeader icon={<DollarSign className="h-4 w-4" />} title="Pricing & Size" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Starting Price ({form.currency})
+              </Label>
+              <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Max Price ({form.currency})
+              </Label>
+              <Input type="number" value={form.max_price} onChange={(e) => updateField("max_price", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <FormSelect
+              label="Currency"
+              icon={<DollarSign className="h-3.5 w-3.5 text-muted-foreground" />}
+              value={form.currency}
+              onChange={(v) => updateField("currency", v)}
+              options={[
+                { value: "USD", label: "USD ($)" },
+                { value: "EUR", label: "EUR (€)" },
+                { value: "TRY", label: "TRY (₺)" },
+                { value: "GBP", label: "GBP (£)" },
+              ]}
+            />
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Units
+              </Label>
+              <Input type="number" value={form.min_units} onChange={(e) => updateField("min_units", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Min Area ({form.area_unit})
+              </Label>
+              <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Max Area ({form.area_unit})
+              </Label>
+              <Input type="number" value={form.max_area} onChange={(e) => updateField("max_area", e.target.value)} className="bg-secondary/50" />
+            </div>
+          </div>
+        </section>
+
+        {/* ─── Amenities ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<TreePine className="h-4 w-4" />} title="Amenities" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <MultiSelectDropdown
+              label="Exterior Amenities"
+              icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
+              options={exteriorAmenities}
+              selected={form.exterior_amenities}
+              onToggle={(val) => toggleAmenity("exterior_amenities", val)}
+              searchable
+            />
+            <MultiSelectDropdown
+              label="Interior Amenities"
+              icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
+              options={interiorAmenities}
+              selected={form.interior_amenities}
+              onToggle={(val) => toggleAmenity("interior_amenities", val)}
+              searchable
+            />
+          </div>
+        </section>
+
+        {/* ─── Location ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
           <LocationFormFields
             province={form.province}
             town={form.town}
@@ -291,9 +477,9 @@ const CompanyProjectEditPage = () => {
           />
         </section>
 
-        {/* Media */}
+        {/* ─── Media ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Media</h2>
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Media" />
 
           {/* Project Logo */}
           <div className="space-y-3 mb-6">
@@ -352,11 +538,15 @@ const CompanyProjectEditPage = () => {
           {/* Video, 360, PDF */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Video Link</Label>
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Video className="h-3.5 w-3.5 text-muted-foreground" /> Video Link
+              </Label>
               <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">360 View Link</Label>
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Compass className="h-3.5 w-3.5 text-muted-foreground" /> 360 View Link
+              </Label>
               <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" />
             </div>
           </div>
@@ -376,6 +566,7 @@ const CompanyProjectEditPage = () => {
           </div>
         </section>
 
+        {/* Submit */}
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate("/company/projects")}>Cancel</Button>
           <Button type="submit" disabled={loading}>
