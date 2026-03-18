@@ -129,8 +129,8 @@ const BuyPage = () => {
               </div>
             ) : viewMode === 'list' ? (
               <div className="space-y-6">
-                {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
-                  const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                {Array.from({ length: Math.ceil(properties.length / 4) }, (_, chunkIdx) => {
+                  const chunk = properties.slice(chunkIdx * 4, (chunkIdx + 1) * 4);
                   return (
                     <div key={chunkIdx} className="space-y-6">
                       {chunk.map((property) => (
