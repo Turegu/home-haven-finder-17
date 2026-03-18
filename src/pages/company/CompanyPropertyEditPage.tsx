@@ -45,6 +45,7 @@ const CompanyPropertyEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
+  const { options: filterOpts } = useFilterOptions("property");
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
