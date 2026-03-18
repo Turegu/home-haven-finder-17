@@ -107,9 +107,11 @@ export const mockProperties: Property[] = [
     ],
     agentLogo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop',
     agentName: 'Gulf Realty',
+    agentAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'premium',
     listingType: 'buy',
+    advertisingTags: ['New Launch'],
   },
   {
     id: '4',
