@@ -140,17 +140,14 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               </div>
 
-              {/* Deal tags — lower right of right thumbnail */}
+              {/* Deal tag — lower right of right thumbnail (only first tag) */}
               {property.advertisingTags && property.advertisingTags.length > 0 && (
-                <div className="absolute bottom-2 right-2 flex flex-col gap-1 items-end">
-                  {property.advertisingTags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-                    >
-                      <Tag className="h-3 w-3" /> {tag}
-                    </Badge>
-                  ))}
+                <div className="absolute bottom-2 right-2">
+                  <Badge
+                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+                  >
+                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+                  </Badge>
                 </div>
               )}
             </div>
