@@ -117,7 +117,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Floor Level"
             icon={Building2}
-            options={floorLevels}
+            options={fo["floor_level"] || []}
             selected={local.floorLevels}
             onToggle={(v) => toggleArray('floorLevels', v)}
           />
