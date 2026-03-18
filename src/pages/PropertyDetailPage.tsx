@@ -191,8 +191,8 @@ const PropertyDetailPage = () => {
                     {property.bathrooms} Bathrooms
                   </span>
                 </div>
-                <div className="flex items-center gap-4 text-xs">
-                  <span>Ad ID: <span className="font-mono font-medium text-foreground">{property.listingId}</span></span>
+                <div className="flex items-center gap-4 text-sm">
+                  <span>Ad ID: <span className="font-medium text-foreground">{property.listingId}</span></span>
                   <span>Added: <span className="font-medium text-foreground">01/01/2025</span></span>
                 </div>
               </div>
