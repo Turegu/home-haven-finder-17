@@ -210,28 +210,16 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             </div>
           </div>
 
-          {/* Bottom row: action buttons */}
+          {/* Bottom row: agent avatar + action buttons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            {/* Action buttons: compare + favorite */}
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                className="bg-muted hover:bg-accent text-muted-foreground hover:text-primary p-1.5 rounded-full transition-colors"
-                aria-label="Compare"
-              >
-                <Layers className="h-4 w-4" />
-              </button>
-              <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
-                className={`p-1.5 rounded-full transition-colors ${
-                  isFavorited
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted hover:bg-accent text-muted-foreground hover:text-destructive'
-                }`}
-                aria-label="Favorite"
-              >
-                <Heart className="h-4 w-4" fill={isFavorited ? 'currentColor' : 'none'} />
-              </button>
+            {/* Agent avatar */}
+            <div className="flex items-center gap-2">
+              {property.agentAvatar && (
+                <Avatar className="h-8 w-8 border-2 border-border shadow-sm">
+                  <AvatarImage src={property.agentAvatar} alt="Agent" />
+                  <AvatarFallback className="text-xs">AG</AvatarFallback>
+                </Avatar>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Button
