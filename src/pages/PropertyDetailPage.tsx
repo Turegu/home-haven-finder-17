@@ -455,14 +455,16 @@ const PropertyDetailPage = () => {
   );
 };
 
-const OverviewRow = ({ label, value }: { label: string; value: string }) => {
-  if (!label && !value) return <div className="py-2.5 border-b border-border" />;
-  return (
-    <div className="flex items-center justify-between py-2.5 border-b border-border">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-foreground text-right">{value}</span>
+const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
+  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+    <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <Icon className="h-4 w-4 text-primary" />
     </div>
-  );
-};
+    <div>
+      <p className="text-muted-foreground text-[11px] leading-tight">{label}</p>
+      <p className="font-semibold text-foreground text-sm">{value}</p>
+    </div>
+  </div>
+);
 
 export default PropertyDetailPage;
