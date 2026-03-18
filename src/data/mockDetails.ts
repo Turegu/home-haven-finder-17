@@ -17,6 +17,7 @@ export const mockPropertyDetail = {
   floorLevel: 'High Floor',
   ceilingHeight: '3.2m',
   propertyAge: 'New',
+  titleDeed: 'Condominium',
   propertyStatus: 'Ready',
   furniture: 'Semi-Furnished',
   orientation: ['Sea View', 'City View'],
