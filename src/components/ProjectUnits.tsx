@@ -272,12 +272,14 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                 </p>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-4 gap-3">
+                <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
                 <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
                 <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'} />
                 <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
                 <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
                 <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />
+                <UnitSpecCard icon={Home} label="Unit" value={currentUnit.unit_name} />
                 <UnitSpecCard icon={Eye} label="Status" value={currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)} />
               </div>
             </div>
