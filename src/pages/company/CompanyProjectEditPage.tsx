@@ -382,7 +382,7 @@ const CompanyProjectEditPage = () => {
       area_unit: unitForm.area_unit,
       interior_amenities: unitForm.interior_amenities,
       exterior_amenities: unitForm.exterior_amenities,
-      images: unitForm.images, project_id: projId,
+      images: unitForm.images, project_id: projId, status: unitForm.status,
     };
     try {
       if (editingUnitId) {
