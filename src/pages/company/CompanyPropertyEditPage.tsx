@@ -92,6 +92,8 @@ const CompanyPropertyEditPage = () => {
   const contractInfo = contractTypes.find(c => c.value === form.contract_type);
   const isRent = contractInfo?.purpose === "rent";
   const isCommercial = contractInfo?.classification === "commercial";
+  const residentialPropertyTypes = filterOpts["residential_property_types"] || [];
+  const commercialPropertyTypes = filterOpts["commercial_property_types"] || [];
   const availablePropertyTypes = isCommercial ? commercialPropertyTypes : residentialPropertyTypes;
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
