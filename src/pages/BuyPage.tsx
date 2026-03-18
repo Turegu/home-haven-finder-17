@@ -123,7 +123,7 @@ const BuyPage = () => {
                 {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
                   const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
                   return (
-                    <div key={chunkIdx} className="space-y-8">
+                    <div key={chunkIdx} className="space-y-10">
                       {chunk.map((property) => (
                         <PropertyListCard key={property.id} property={property} />
                       ))}
@@ -158,7 +158,7 @@ const PropertyListCard = ({ property }: { property: typeof mockProperties[0] }) 
   const [currentImage] = useState(0);
 
   return (
-    <Link to={`/property/${property.id}`}>
+    <Link to={`/property/${property.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
         <div className="relative w-full md:w-[360px] aspect-[4/3] md:aspect-auto md:h-auto shrink-0 overflow-hidden">
           <img src={property.images[currentImage]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
