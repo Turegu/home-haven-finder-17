@@ -215,7 +215,7 @@ const Header = () => {
 
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link key={link.label} to={link.to} className="px-3 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-md hover:bg-secondary">
+              <Link key={link.label} to={link.to} className={cn("px-3 py-2 text-sm font-medium rounded-md transition-colors", location.pathname === link.to ? "text-primary bg-primary/10 font-semibold" : "text-foreground/80 hover:text-primary hover:bg-secondary")}>
                 {link.label}
               </Link>
             ))}
