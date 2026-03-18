@@ -14,7 +14,10 @@ import { mockProjects } from '@/data/mockProperties';
 
 const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [sortBy, setSortBy] = useState('newest');
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+
+  useEffect(() => { document.title = 'Projects | Turegu'; }, []);
 
   return (
     <div className="min-h-screen bg-background">
