@@ -44,6 +44,7 @@ interface PropertyFiltersModalProps {
 export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
   const [local, setLocal] = useState<PropertyMoreFilters>(filters);
+  const { options: fo } = useFilterOptions("search");
 
   // Sync local state when dialog opens
   useEffect(() => {
