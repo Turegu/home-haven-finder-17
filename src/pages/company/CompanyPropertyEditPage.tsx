@@ -18,7 +18,7 @@ import {
   Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
   Calendar, Compass, ScrollText, Activity, Tag, TreePine, Lamp,
   DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
-  ChevronDown
+  ChevronDown, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 
