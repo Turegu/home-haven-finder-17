@@ -12,9 +12,11 @@ interface SearchFiltersProps {
   selectedFilters: Record<string, string[]>;
   onFiltersChange: (filters: Record<string, string[]>) => void;
   quickFilterKeys?: string[];
+  /** When true, renders badges inline. When false (default), returns badges separately via renderSelectedBadges. */
+  inline?: boolean;
 }
 
-export default function SearchFilters({ context, selectedFilters, onFiltersChange, quickFilterKeys }: SearchFiltersProps) {
+export default function SearchFilters({ context, selectedFilters, onFiltersChange, quickFilterKeys, inline = false }: SearchFiltersProps) {
   const { data, isLoading } = useFilterCategories(context);
   const categories = data?.categories ?? [];
   const optionsByCategory = data?.optionsByCategory ?? {};
@@ -122,7 +124,8 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
         </Dialog>
       )}
 
-      {activeCount > 0 && (
+      {/* Only render inline badges if inline mode (legacy/hero) */}
+      {inline && activeCount > 0 && (
         <div className="flex flex-wrap items-center gap-1 ml-1">
           {Object.entries(selectedFilters).map(([key, values]) =>
             values.map((v) => (
@@ -140,6 +143,47 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
         </div>
       )}
     </>
+  );
+}
+
+/** Standalone component to render selected filter badges below the search bar */
+export function SelectedFilterBadges({
+  selectedFilters,
+  onFiltersChange,
+}: {
+  selectedFilters: Record<string, string[]>;
+  onFiltersChange: (filters: Record<string, string[]>) => void;
+}) {
+  const activeCount = Object.values(selectedFilters).reduce((s, v) => s + v.length, 0);
+
+  function toggleFilter(categoryKey: string, optionTitle: string) {
+    const current = selectedFilters[categoryKey] || [];
+    const updated = current.filter((v) => v !== optionTitle);
+    onFiltersChange({ ...selectedFilters, [categoryKey]: updated });
+  }
+
+  function clearAll() {
+    onFiltersChange({});
+  }
+
+  if (activeCount === 0) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {Object.entries(selectedFilters).map(([key, values]) =>
+        values.map((v) => (
+          <Badge key={`${key}-${v}`} variant="secondary" className="text-xs gap-1 pr-1">
+            {v}
+            <button onClick={() => toggleFilter(key, v)} className="ml-0.5 hover:text-destructive">
+              <X className="h-3 w-3" />
+            </button>
+          </Badge>
+        ))
+      )}
+      <button onClick={clearAll} className="text-xs text-destructive hover:underline ml-1">
+        Clear all
+      </button>
+    </div>
   );
 }
 
