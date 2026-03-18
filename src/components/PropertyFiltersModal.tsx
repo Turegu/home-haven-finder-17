@@ -145,7 +145,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Exterior Amenities"
             icon={TreePine}
-            options={defaultExteriorAmenities}
+            options={fo["exterior_amenities"] || []}
             selected={local.exteriorAmenities}
             onToggle={(v) => toggleArray('exteriorAmenities', v)}
             searchable
