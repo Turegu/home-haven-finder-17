@@ -63,9 +63,9 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
   return (
     <Link to={`/property/${property.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        {/* Dual thumbnail area — two equal-size images side by side */}
+        {/* Dual thumbnail area — two equal-size landscape images side by side */}
         <div className="relative w-full md:w-[420px] shrink-0">
-          <div className="flex min-h-[220px]">
+          <div className="flex h-[200px]">
             {/* Left image */}
             <div className="relative flex-1 overflow-hidden">
               <img
@@ -74,63 +74,85 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
-              {/* Slider arrows */}
+              {/* Left arrow on left thumbnail */}
               {property.images.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    aria-label="Next image"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
               )}
 
-              {/* Photo count */}
+              {/* Photo count — upper left of left thumbnail */}
               <div className="absolute top-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
                 <Camera className="h-3 w-3" />
                 <span>{currentImage + 1}/{property.images.length}</span>
               </div>
 
-              {/* Tier badge + ad tags */}
-              <div className="absolute top-2 right-2 flex flex-col gap-1">
-                {property.listingTier !== 'standard' && tierBadge()}
-                {property.advertisingTags?.map((tag) => (
-                  <Badge
-                    key={tag}
-                    className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-                  >
-                    <Tag className="h-3 w-3" /> {tag}
-                  </Badge>
-                ))}
-              </div>
-
-              {/* Agent avatar — lower left of thumbnail */}
-              {property.agentAvatar && (
-                <div className="absolute bottom-2 left-2">
-                  <Avatar className="h-9 w-9 border-2 border-background shadow-md">
-                    <AvatarImage src={property.agentAvatar} alt="Agent" />
-                    <AvatarFallback className="text-xs">AG</AvatarFallback>
-                  </Avatar>
+              {/* Tier badge — upper left below photo count */}
+              {property.listingTier !== 'standard' && (
+                <div className="absolute top-10 left-2">
+                  {tierBadge()}
                 </div>
               )}
             </div>
 
             {/* Right image — equal size */}
-            <div className="hidden sm:block flex-1 overflow-hidden border-l-[2px] border-background">
+            <div className="relative hidden sm:block flex-1 overflow-hidden border-l-[2px] border-background">
               <img
                 src={secondaryImages[0] || property.images[currentImage]}
                 alt={`${property.title} 2`}
                 className="w-full h-full object-cover"
               />
+
+              {/* Right arrow on right thumbnail */}
+              {property.images.length > 1 && (
+                <button
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+
+              {/* Save & Compare — upper right of right thumbnail */}
+              <div className="absolute top-2 right-2 flex items-center gap-1">
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  className="bg-foreground/40 hover:bg-foreground/60 text-white p-1.5 rounded-full transition-colors"
+                  aria-label="Compare"
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
+                  className={`p-1.5 rounded-full transition-colors ${
+                    isFavorited
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-foreground/40 hover:bg-foreground/60 text-white'
+                  }`}
+                  aria-label="Favorite"
+                >
+                  <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
+                </button>
+              </div>
+
+              {/* Deal tags — lower right of right thumbnail */}
+              {property.advertisingTags && property.advertisingTags.length > 0 && (
+                <div className="absolute bottom-2 right-2 flex flex-col gap-1 items-end">
+                  {property.advertisingTags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+                    >
+                      <Tag className="h-3 w-3" /> {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
