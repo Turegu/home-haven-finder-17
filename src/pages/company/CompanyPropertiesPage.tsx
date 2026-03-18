@@ -104,6 +104,7 @@ const CompanyPropertiesPage = () => {
     switch (s) {
       case "active": return "bg-emerald-100 text-emerald-800";
       case "inactive": return "bg-red-100 text-red-800";
+      case "draft": return "bg-amber-100 text-amber-800";
       default: return "bg-muted text-muted-foreground";
     }
   };
