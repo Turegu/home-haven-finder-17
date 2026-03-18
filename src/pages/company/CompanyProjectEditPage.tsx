@@ -177,12 +177,19 @@ interface UnitForm {
   interior_amenities: string[];
   exterior_amenities: string[];
   images: string[];
+  status: string;
 }
+
+const unitStatuses = [
+  { value: "available", label: "Available" },
+  { value: "reserved", label: "Reserved" },
+  { value: "sold", label: "Sold" },
+];
 
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
-  interior_amenities: [], exterior_amenities: [], images: [],
+  interior_amenities: [], exterior_amenities: [], images: [], status: "available",
 };
 
 const CompanyProjectEditPage = () => {
@@ -356,6 +363,7 @@ const CompanyProjectEditPage = () => {
       interior_amenities: unit.interior_amenities || [],
       exterior_amenities: unit.exterior_amenities || [],
       images: unit.images || [],
+      status: unit.status || "available",
     });
     setUnitDialogOpen(true);
   };
@@ -375,7 +383,7 @@ const CompanyProjectEditPage = () => {
       area_unit: unitForm.area_unit,
       interior_amenities: unitForm.interior_amenities,
       exterior_amenities: unitForm.exterior_amenities,
-      images: unitForm.images, project_id: projId,
+      images: unitForm.images, project_id: projId, status: unitForm.status,
     };
     try {
       if (editingUnitId) {
@@ -806,6 +814,17 @@ const CompanyProjectEditPage = () => {
                 <div className="space-y-2">
                   <Label className="font-medium">Area ({unitForm.area_unit})</Label>
                   <Input type="number" value={unitForm.area} onChange={(e) => updateUnitField("area", e.target.value)} className="bg-secondary/50" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="font-medium">Status</Label>
+                  <Select value={unitForm.status} onValueChange={(v) => updateUnitField("status", v)}>
+                    <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {unitStatuses.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
