@@ -152,6 +152,25 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Open House / Viewing Hours — compact strip */}
+            {(property.openHouseStart || property.viewingHours) && (
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm">
+                {property.openHouseStart && (
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Open House:</span> {property.openHouseStart}
+                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— Ends: {property.openHouseEnd}</span>}
+                  </span>
+                )}
+                {property.viewingHours && (
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <Clock className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Viewing:</span> {property.viewingHours}
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
@@ -179,38 +198,8 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Open House / Viewing Hours */}
-            {(property.openHouseStart || property.viewingHours) && (
-              <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                  <CalendarDays className="h-5 w-5 text-primary" />
-                  Open House & Viewing Hours
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  {property.openHouseStart && (
-                    <div className="flex items-start gap-3 bg-muted/50 rounded-lg p-4">
-                      <CalendarDays className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-foreground">Open House Date & Time</p>
-                        <p className="text-muted-foreground">{property.openHouseStart}</p>
-                        {property.openHouseEnd && (
-                          <p className="text-muted-foreground">Ends: {property.openHouseEnd}</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {property.viewingHours && (
-                    <div className="flex items-start gap-3 bg-muted/50 rounded-lg p-4">
-                      <Clock className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-foreground">Viewing Hours</p>
-                        <p className="text-muted-foreground">{property.viewingHours}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+
+
 
             {/* Amenities */}
             <div className="bg-card rounded-xl border border-border p-6">
@@ -350,21 +339,6 @@ const PropertyDetailPage = () => {
           {/* Sidebar - Agent Card */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              {/* Company logo */}
-              {property.companyLogo && (
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
-                  <img
-                    src={property.companyLogo}
-                    alt={property.agentCompany}
-                    className="h-12 w-12 rounded-lg object-cover border border-border"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm">{property.agentCompany}</h4>
-                    <p className="text-xs text-muted-foreground">Real Estate Company</p>
-                  </div>
-                </div>
-              )}
-
               {/* Agent info */}
               <div className="text-center mb-4">
                 <img
@@ -376,12 +350,6 @@ const PropertyDetailPage = () => {
                 {property.agentDesignation && (
                   <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
                 )}
-                {property.agentLanguages && property.agentLanguages.length > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    <span className="font-medium text-foreground">I speak:</span>{' '}
-                    {property.agentLanguages.join(', ')}
-                  </p>
-                )}
               </div>
 
               <Button variant="outline" className="w-full mb-3 gap-2">
@@ -389,17 +357,39 @@ const PropertyDetailPage = () => {
                 Follow
               </Button>
 
+              {property.agentLanguages && property.agentLanguages.length > 0 && (
+                <p className="text-xs text-muted-foreground text-center mb-4">
+                  <span className="font-medium text-foreground">Speaks:</span>{' '}
+                  {property.agentLanguages.join(', ')}
+                </p>
+              )}
+
+              {/* Company logo */}
+              {property.companyLogo && (
+                <div className="flex items-center gap-3 py-3 border-t border-border">
+                  <img
+                    src={property.companyLogo}
+                    alt={property.agentCompany}
+                    className="h-12 w-12 rounded-lg object-cover border border-border"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-foreground text-sm">{property.agentCompany}</h4>
+                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
                 <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Phone className="h-4 w-4" />
+                  <Phone className="h-5 w-5" />
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-5 w-5" />
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-5 w-5" />
                 </button>
               </div>
             </div>
