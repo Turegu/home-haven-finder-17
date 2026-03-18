@@ -439,7 +439,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Layers className="h-4 w-4 text-muted-foreground" />}
               value={form.floor_level}
               onChange={(v) => updateField("floor_level", v)}
-              options={floorLevels.map(f => ({ value: f, label: f }))}
+              options={(filterOpts["floor_level"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select floor"
             />
             <FormSelect
