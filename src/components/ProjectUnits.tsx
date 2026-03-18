@@ -148,15 +148,14 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
           <h2 className="text-lg font-bold text-foreground">Available Units</h2>
           <p className="text-sm text-muted-foreground">{filtered.length} unit{filtered.length !== 1 ? 's' : ''} found</p>
         </div>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-[160px] h-9 text-sm">
-            <SelectValue />
+        <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
+          <SelectTrigger className="w-[200px] h-9 text-sm">
+            <SelectValue placeholder="Select a unit" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Units ({units.length})</SelectItem>
-            <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="reserved">Reserved</SelectItem>
-            <SelectItem value="sold">Sold</SelectItem>
+            {units.map((unit) => (
+              <SelectItem key={unit.id} value={unit.id}>{unit.unit_name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
