@@ -16,16 +16,7 @@ import {
   CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
-
-const eventTypes = [
-  { value: "open_house", label: "Open House" },
-  { value: "seminar_conference", label: "Seminar/Conference" },
-  { value: "exhibition", label: "Exhibition" },
-  { value: "auction", label: "Auction" },
-  { value: "networking", label: "Networking Event" },
-  { value: "workshop", label: "Workshop" },
-  { value: "webinar", label: "Webinar" },
-];
+import { eventTypes, getEventLogo } from "@/data/eventTypes";
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
@@ -99,7 +90,9 @@ const CompanyEventEditPage = () => {
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [pdfUrl, setPdfUrl] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -155,6 +148,7 @@ const CompanyEventEditPage = () => {
       });
       setImages(d.images || []);
       setPdfUrl(d.pdf_catalogue_url || "");
+      setLogoUrl(d.logo_url || "");
     };
     fetchEvent();
   }, [isEdit, id]);
@@ -210,6 +204,7 @@ const CompanyEventEditPage = () => {
       video_link: form.video_link || null,
       pdf_catalogue_url: pdfUrl || null,
       organizer: form.organizer || null,
+      logo_url: logoUrl || null,
       images,
       company_id: companyId,
       status: publishStatus,
@@ -352,6 +347,49 @@ const CompanyEventEditPage = () => {
             onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
             onPinLocationChange={(v) => updateField("pin_location", v)}
           />
+        </section>
+
+        {/* ─── Event Logo ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Event Logo" />
+          <p className="text-xs text-muted-foreground mb-4">Upload a custom logo for this event. If none is uploaded, a default logo based on the event type will be used.</p>
+          <div className="flex items-center gap-4">
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
+              <img
+                src={logoUrl || getEventLogo(null, form.event_type)}
+                alt="Event logo"
+                className="w-full h-full object-contain bg-muted/20 p-1"
+              />
+              {logoUrl && (
+                <button type="button" onClick={() => setLogoUrl("")}
+                  className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            <div>
+              <input type="file" accept="image/*" id="event-logo-upload" className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !companyId) return;
+                  setUploadingLogo(true);
+                  const ext = file.name.split(".").pop();
+                  const path = `${companyId}/logo-${Date.now()}.${ext}`;
+                  const { error } = await supabase.storage.from("event-images").upload(path, file);
+                  if (error) { toast.error("Upload failed"); setUploadingLogo(false); return; }
+                  const { data } = supabase.storage.from("event-images").getPublicUrl(path);
+                  setLogoUrl(data.publicUrl);
+                  setUploadingLogo(false);
+                  toast.success("Logo uploaded!");
+                }}
+              />
+              <Button type="button" variant="outline" size="sm" disabled={uploadingLogo}
+                onClick={() => document.getElementById("event-logo-upload")?.click()}>
+                <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? "Uploading..." : "Upload Logo"}
+              </Button>
+              <p className="text-xs text-muted-foreground mt-1">Recommended: 200×200px</p>
+            </div>
+          </div>
         </section>
 
         {/* ─── Media ─── */}

@@ -747,6 +747,7 @@ export type Database = {
           images: string[] | null
           listing_id: string
           location: string | null
+          logo_url: string | null
           neighbourhood: string | null
           organizer: string | null
           pdf_catalogue_url: string | null
@@ -773,6 +774,7 @@ export type Database = {
           images?: string[] | null
           listing_id?: string
           location?: string | null
+          logo_url?: string | null
           neighbourhood?: string | null
           organizer?: string | null
           pdf_catalogue_url?: string | null
@@ -799,6 +801,7 @@ export type Database = {
           images?: string[] | null
           listing_id?: string
           location?: string | null
+          logo_url?: string | null
           neighbourhood?: string | null
           organizer?: string | null
           pdf_catalogue_url?: string | null
