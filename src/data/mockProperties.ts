@@ -83,9 +83,11 @@ export const mockProperties: Property[] = [
     ],
     agentLogo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
     agentName: 'Istanbul Estates',
+    agentAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'featured',
     listingType: 'buy',
+    advertisingTags: ['Exclusive'],
   },
   {
     id: '3',
