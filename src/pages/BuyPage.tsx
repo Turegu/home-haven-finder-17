@@ -13,6 +13,8 @@ import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
 import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
+import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
+import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
 
 const BuyPage = () => {
   const routerLocation = useLocation();
@@ -113,7 +115,10 @@ const BuyPage = () => {
                         ))}
                       </div>
                       {chunkIdx < Math.ceil(properties.length / 3) - 1 && (
-                        <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="my-6" />
+                        <div className="my-6">
+                          <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                        </div>
                       )}
                     </div>
                   );
@@ -129,7 +134,10 @@ const BuyPage = () => {
                         <PropertyListCard key={property.id} property={property} />
                       ))}
                       {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
-                        <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="my-6" />
+                        <div className="my-6">
+                          <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                        </div>
                       )}
                     </div>
                   );
@@ -145,6 +153,7 @@ const BuyPage = () => {
           <div className="hidden lg:block w-[225px] shrink-0">
             <div className="sticky top-[160px]">
               <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="vertical" className="" />
+              <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
             </div>
           </div>
         </div>
