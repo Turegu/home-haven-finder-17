@@ -23,10 +23,10 @@ const ROICalculator = ({
 }: ROICalculatorProps) => {
   const { data: stats } = useMarketStats(neighbourhood, town, province);
 
-  // Estimate monthly rent for this property using neighbourhood avg rent/m²
-  const estimatedMonthlyRent = stats?.avgRentPricePerM2
+  // Estimate monthly rent: use neighbourhood avg rent/m² * area, fallback to 5% of property value / 12
+  const estimatedMonthlyRent = stats?.avgRentPricePerM2 && stats.avgRentPricePerM2 > 0
     ? stats.avgRentPricePerM2 * propertyArea
-    : null;
+    : (propertyPrice * 0.05) / 12;
 
   const [customMonthlyRent, setCustomMonthlyRent] = useState<number | null>(null);
   const [annualAppreciation, setAnnualAppreciation] = useState(3);

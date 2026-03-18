@@ -57,12 +57,14 @@ const PropertyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery — side by side */}
-      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        <div className="flex h-full transition-transform duration-300" style={{ transform: `translateX(-${currentImage * (100 / Math.min(property.images.length, 3))}%)` }}>
+      {/* Image Gallery — side by side, landscape aspect */}
+      <div className="relative w-full bg-muted overflow-hidden">
+        <div className="flex transition-transform duration-300" style={{ transform: `translateX(-${currentImage * (100 / Math.min(property.images.length, 3))}%)` }}>
           {property.images.map((img, i) => (
-            <div key={i} className="h-full flex-shrink-0 w-full md:w-1/3 px-[1px]">
-              <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+            <div key={i} className="flex-shrink-0 w-full md:w-1/3 px-[1px]">
+              <div className="aspect-[16/9]">
+                <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+              </div>
             </div>
           ))}
         </div>
@@ -72,7 +74,6 @@ const PropertyDetailPage = () => {
         <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronRight className="h-5 w-5" />
         </button>
-        {/* Top actions */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
           <button onClick={() => { if (navigator.share) { navigator.share({ title: property.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
             <Share2 className="h-4 w-4" />
