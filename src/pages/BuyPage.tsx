@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
-  Bookmark
+  Bookmark, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -24,6 +24,7 @@ const BuyPage = () => {
   const [searchParams] = useSearchParams();
   const purpose = routerLocation.pathname === '/rent' ? 'rent' : (searchParams.get('propertyPurpose') || 'buy');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
     province: searchParams.get('province') || undefined,
@@ -32,7 +33,13 @@ const BuyPage = () => {
   });
   const [keyword, setKeyword] = useState(searchParams.get('q') || "");
 
-  const properties = mockProperties;
+  const allProperties = mockProperties;
+  const GRID_ROWS_PER_PAGE = 5;
+  const GRID_COLS = 3;
+  const LIST_ROWS_PER_PAGE = 21;
+  const itemsPerPage = viewMode === 'grid' ? GRID_ROWS_PER_PAGE * GRID_COLS : LIST_ROWS_PER_PAGE;
+  const totalPages = Math.ceil(allProperties.length / itemsPerPage);
+  const properties = allProperties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const title = purpose === 'rent' ? 'Residential Properties for rent' : 'Residential Properties for sale';
 
   return (
@@ -76,7 +83,7 @@ const BuyPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            {title} in <span className="text-primary">{properties.length} Properties</span>
+            {title} in <span className="text-primary">{allProperties.length} Properties</span>
           </h1>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background">
@@ -88,13 +95,13 @@ const BuyPage = () => {
               Save Search
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
-              <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('grid'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />
               </button>
-              <button onClick={() => setViewMode('list')} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('list'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <List className="h-4 w-4" />
               </button>
-              <button onClick={() => setViewMode('map')} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('map'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <Map className="h-4 w-4" />
               </button>
             </div>
@@ -160,6 +167,41 @@ const BuyPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8 mb-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={currentPage === 1}
+              onClick={() => { setCurrentPage((p) => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={page === currentPage ? 'default' : 'outline'}
+                size="sm"
+                className="h-9 w-9 p-0"
+                onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={currentPage === totalPages}
+              onClick={() => { setCurrentPage((p) => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <Footer />
