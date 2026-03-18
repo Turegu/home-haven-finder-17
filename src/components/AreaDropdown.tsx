@@ -35,10 +35,10 @@ export default function AreaDropdown({ minArea, maxArea, onChange }: AreaDropdow
           <span className={hasValue ? 'text-foreground' : 'text-muted-foreground'}>
             {hasValue ? `${minArea || '0'} - ${maxArea || '∞'} m²` : 'Area'}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-3" align="start">
+      <PopoverContent className="w-[240px] p-3" align="start">
         <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Area Range (m²)</p>
         <div className="flex gap-2 mb-3">
           <input
@@ -46,14 +46,14 @@ export default function AreaDropdown({ minArea, maxArea, onChange }: AreaDropdow
             placeholder="Min Area"
             value={localMin}
             onChange={(e) => setLocalMin(e.target.value)}
-            className="flex-1 h-9 px-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full h-8 px-2 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <input
             type="number"
             placeholder="Max Area"
             value={localMax}
             onChange={(e) => setLocalMax(e.target.value)}
-            className="flex-1 h-9 px-2 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full h-8 px-2 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-ring [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div className="flex justify-end gap-2">

@@ -42,7 +42,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
           <span className={selected.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
             {selected.length > 0 ? `${selected.length} selected` : 'Property Type'}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-0" align="start">
