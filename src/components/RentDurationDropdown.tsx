@@ -31,7 +31,7 @@ export default function RentDurationDropdown({ value, onChange }: RentDurationDr
               {value.length}
             </Badge>
           )}
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-44 p-1" align="start">

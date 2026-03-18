@@ -239,7 +239,7 @@ function FilterDropdown({
               </Badge>
             )}
           </span>
-          <ChevronRight className="h-4 w-4 text-primary transition-transform group-data-[state=open]:rotate-90" />
+          <ChevronRight className="h-4 w-4 text-amber-500 transition-transform group-data-[state=open]:rotate-90" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-0" align="start" sideOffset={6}>

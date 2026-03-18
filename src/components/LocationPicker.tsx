@@ -175,7 +175,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
               <X className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
             </button>
           ) : (
-            <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground shrink-0" />
+            <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500 shrink-0" />
           )}
         </button>
       </PopoverTrigger>
