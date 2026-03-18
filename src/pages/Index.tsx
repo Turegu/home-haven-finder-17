@@ -31,6 +31,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <title>Turegu – Your Property, Our Priority</title>
       <Header />
 
       {/* Hero Banner */}

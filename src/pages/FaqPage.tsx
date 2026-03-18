@@ -50,6 +50,7 @@ const FaqPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <title>FAQs – Turegu</title>
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
