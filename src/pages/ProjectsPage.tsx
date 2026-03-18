@@ -210,7 +210,7 @@ const ProjectsPage = () => {
                     removed.forEach(v => {
                       if (key === 'Unit Type') setSelectedUnitTypes(prev => prev.filter(t => t !== v));
                       else if (key === 'Area') { setMinArea(''); setMaxArea(''); }
-                      else if (key === 'Rooms') setRooms('');
+                      else if (key === 'Rooms') setRooms(prev => prev.filter(r => r !== v));
                       else if (key === 'Price') { setMinPrice(''); setMaxPrice(''); }
                       else if (key === 'Status') setProjectStatus('');
                       else if (key === 'Amenities') setSelectedAmenities(prev => prev.filter(a => a !== v));

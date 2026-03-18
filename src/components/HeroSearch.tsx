@@ -43,9 +43,9 @@ const HeroSearch = () => {
   function handleTabChange(tab: 'buy' | 'rent') {
     setActiveTab(tab);
     setPropertyTypes([]);
-    setRooms('');
-    setBathrooms('');
-    setRentDuration('');
+    setRooms([]);
+    setBathrooms([]);
+    setRentDuration([]);
   }
 
   return (
