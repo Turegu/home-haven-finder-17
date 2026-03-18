@@ -110,15 +110,15 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
                 {/* Media tabs */}
-                <div className="hidden md:flex items-center gap-1">
+                <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`p-2 rounded-full transition-colors ${activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-secondary'}`}
+                      className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
-                      <tab.icon className="h-4 w-4" />
+                      <tab.icon className="h-5 w-5" />
                     </button>
                   ))}
                 </div>
