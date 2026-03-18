@@ -12,6 +12,7 @@ import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
 import ProjectUnits from '@/components/ProjectUnits';
 import { mockProjectDetail } from '@/data/mockDetails';
+import defaultProjectLogo from '@/assets/default-project-logo.png';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
@@ -47,6 +48,8 @@ const ProjectDetailPage = () => {
     { id: 'street', label: 'Street View', icon: PersonStanding },
     { id: 'video', label: 'Video', icon: Video },
   ];
+
+  const projectLogo = project.logoUrl || defaultProjectLogo;
 
   return (
     <div className="min-h-screen bg-background">
@@ -117,32 +120,46 @@ const ProjectDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Title Block */}
+            {/* Title Block — logo on left, info on right */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
-                {/* Media tabs */}
-                <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
-                  {mediaTabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
-                      title={tab.label}
-                    >
-                      <tab.icon className="h-5 w-5" />
-                    </button>
-                  ))}
+              <div className="flex gap-5">
+                {/* Project Logo */}
+                <div className="flex-shrink-0">
+                  <img
+                    src={projectLogo}
+                    alt={`${project.title} logo`}
+                    className="h-20 w-20 md:h-24 md:w-24 rounded-lg object-contain border border-border bg-muted p-1"
+                  />
                 </div>
-              </div>
 
-              <p className="text-2xl font-bold text-primary mb-2">
-                From $ {project.priceFrom.toLocaleString()}
-              </p>
-              <p className="text-foreground/80 mb-2">{project.subtitle}</p>
-              <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>{project.location}</span>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-4 mb-1">
+                    <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
+                    {/* Media tabs */}
+                    <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border flex-shrink-0">
+                      {mediaTabs.map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
+                          title={tab.label}
+                        >
+                          <tab.icon className="h-5 w-5" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="text-2xl font-bold text-primary mb-1">
+                    From $ {project.priceFrom.toLocaleString()}
+                  </p>
+                  <p className="text-foreground/80 text-sm mb-1.5">{project.subtitle}</p>
+                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    <span>{project.location}</span>
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
@@ -239,10 +256,10 @@ const ProjectDetailPage = () => {
             <BankLoanBanner />
           </div>
 
-          {/* Sidebar - Agent Card */}
+          {/* Sidebar - Agent Card (matching property detail) */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              {/* Agent info */}
+              {/* Agent info — links to agent profile */}
               <Link to={`/agent/${id}`} className="block text-center mb-4 group">
                 <img
                   src={project.agentLogo}
@@ -250,7 +267,9 @@ const ProjectDetailPage = () => {
                   className="h-24 w-24 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
                 />
                 <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentName}</h3>
-                <p className="text-sm text-muted-foreground">{project.agentCompany}</p>
+                {project.agentDesignation && (
+                  <p className="text-sm text-muted-foreground">{project.agentDesignation}</p>
+                )}
               </Link>
 
               <Button variant="outline" className="w-full mb-3 gap-2">
@@ -258,11 +277,18 @@ const ProjectDetailPage = () => {
                 Follow
               </Button>
 
-              {/* Company logo */}
-              {project.agentCompany && (
+              {project.agentLanguages && project.agentLanguages.length > 0 && (
+                <p className="text-xs text-muted-foreground text-center mb-4">
+                  <span className="font-medium text-foreground">Speaks:</span>{' '}
+                  {project.agentLanguages.join(', ')}
+                </p>
+              )}
+
+              {/* Company logo — links to company profile */}
+              {project.companyLogo && (
                 <Link to={`/company/${id}`} className="flex items-center gap-4 py-4 border-t border-border group">
                   <img
-                    src={project.agentLogo}
+                    src={project.companyLogo}
                     alt={project.agentCompany}
                     className="h-14 w-24 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
                   />
