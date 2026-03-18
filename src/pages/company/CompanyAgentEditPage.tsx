@@ -6,10 +6,79 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Save, Upload, X, Mail } from "lucide-react";
+import {
+  Save, Upload, X, Mail, ImageIcon, UserCircle, Phone, FileText,
+  Globe, ChevronDown, Search, Briefcase
+} from "lucide-react";
 
-const languageOptions = ["English", "Turkish", "Arabic", "French", "German", "Russian", "Chinese", "Spanish"];
+const languageOptions = ["English", "Turkish", "Arabic", "French", "German", "Russian", "Farsi"];
+
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+      <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <h2 className="text-base font-semibold text-foreground tracking-tight">{title}</h2>
+    </div>
+  );
+}
+
+function MultiSelectLanguages({
+  selected, onToggle
+}: { selected: string[]; onToggle: (lang: string) => void }) {
+  const [search, setSearch] = useState("");
+  const filtered = search ? languageOptions.filter(l => l.toLowerCase().includes(search.toLowerCase())) : languageOptions;
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">
+        <Globe className="h-3.5 w-3.5 text-muted-foreground" /> Languages Spoken
+      </Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full justify-between bg-secondary/50 font-normal text-sm">
+            <span className="truncate">{selected.length ? `${selected.length} selected` : "Select languages..."}</span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[280px] p-0" align="start">
+          <div className="p-2 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+            </div>
+          </div>
+          <ScrollArea className="max-h-[200px]">
+            <div className="p-2 space-y-1">
+              {filtered.map((lang) => (
+                <label key={lang} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
+                  <Checkbox checked={selected.includes(lang)} onCheckedChange={() => onToggle(lang)} />
+                  <span>{lang}</span>
+                </label>
+              ))}
+            </div>
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-1">
+          {selected.map((s) => (
+            <Badge key={s} variant="secondary" className="text-xs gap-1 pr-1">
+              {s}
+              <button type="button" onClick={() => onToggle(s)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const CompanyAgentEditPage = () => {
   const navigate = useNavigate();
@@ -118,7 +187,6 @@ const CompanyAgentEditPage = () => {
         toast.success("Agent updated!");
         navigate("/company/agents");
       } else {
-        // Create agent record first
         const { data: agentData, error: agentErr } = await supabase
           .from("agents")
           .insert(payload)
@@ -126,7 +194,6 @@ const CompanyAgentEditPage = () => {
           .single();
         if (agentErr) throw agentErr;
 
-        // Send email invite via edge function (no temp password needed)
         const { data: fnData, error: fnErr } = await supabase.functions.invoke("create-agent-user", {
           body: {
             email: form.email.trim(),
@@ -153,13 +220,13 @@ const CompanyAgentEditPage = () => {
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Agent" : "New Agent"}</h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8 pb-10">
-        {/* Profile Photo */}
+      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+        {/* ─── Profile Photo ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Profile Photo</h2>
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Profile Photo" />
           <div className="flex items-center gap-4">
             {avatarUrl ? (
-              <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-border group">
+              <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 <button type="button" onClick={() => setAvatarUrl("")}
                   className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -167,20 +234,23 @@ const CompanyAgentEditPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="w-20 h-20 rounded-full bg-secondary/50 border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs">
-                No Photo
+              <div className="w-20 h-20 rounded-lg bg-secondary/50 border-2 border-dashed border-border flex items-center justify-center">
+                <Upload className="h-6 w-6 text-muted-foreground/50" />
               </div>
             )}
-            <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
-              <Upload className="h-4 w-4 inline mr-2" />Upload Photo
-              <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-            </label>
+            <div>
+              <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground inline-flex items-center">
+                <Upload className="h-4 w-4 mr-2" />Upload Photo
+                <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+              </label>
+              <p className="text-xs text-muted-foreground mt-1">Rectangular photo recommended</p>
+            </div>
           </div>
         </section>
 
-        {/* Description & Information */}
+        {/* ─── Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Description & Information</h2>
+          <SectionHeader icon={<UserCircle className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
@@ -198,21 +268,7 @@ const CompanyAgentEditPage = () => {
                 <Label className="text-foreground font-medium">Service Areas</Label>
                 <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." />
               </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Languages Spoken</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {languageOptions.map((lang) => (
-                    <button key={lang} type="button" onClick={() => toggleLanguage(lang)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                        form.languages.includes(lang)
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
-                      }`}>
-                      {lang}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
             </div>
 
             <div className="space-y-2">
@@ -227,13 +283,15 @@ const CompanyAgentEditPage = () => {
           </div>
         </section>
 
-        {/* Contact */}
+        {/* ─── Contact ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Contact Information</h2>
+          <SectionHeader icon={<Phone className="h-4 w-4" />} title="Contact Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Email *</Label>
+                <Label className="text-foreground font-medium flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email *
+                </Label>
                 <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" required placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
                 {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">Email cannot be changed after account creation</p>}
                 {!isEdit && (
