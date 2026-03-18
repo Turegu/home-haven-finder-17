@@ -5,8 +5,83 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Save, Lock, Upload, X } from "lucide-react";
+import {
+  Save, Lock, Upload, X, ImageIcon, UserCircle, Phone, Mail,
+  FileText, Globe, ChevronDown, Search, Grid3X3, Briefcase
+} from "lucide-react";
+import PatternLock from "@/components/admin/PatternLock";
+
+const languageOptions = ["English", "Arabic", "Turkish", "Russian", "German", "French", "Farsi"];
+
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+      <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <h2 className="text-base font-semibold text-foreground tracking-tight">{title}</h2>
+    </div>
+  );
+}
+
+function MultiSelectLanguages({
+  selected, onToggle
+}: { selected: string[]; onToggle: (lang: string) => void }) {
+  const [search, setSearch] = useState("");
+  const filtered = search ? languageOptions.filter(l => l.toLowerCase().includes(search.toLowerCase())) : languageOptions;
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">
+        <Globe className="h-3.5 w-3.5 text-muted-foreground" /> Languages
+      </Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full justify-between bg-secondary/50 font-normal text-sm">
+            <span className="truncate">{selected.length ? `${selected.length} selected` : "Select languages..."}</span>
+            <ChevronDown className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[280px] p-0" align="start">
+          <div className="p-2 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+            </div>
+          </div>
+          <ScrollArea className="max-h-[200px]">
+            <div className="p-2 space-y-1">
+              {filtered.map((lang) => (
+                <label key={lang} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
+                  <Checkbox checked={selected.includes(lang)} onCheckedChange={() => onToggle(lang)} />
+                  <span>{lang}</span>
+                </label>
+              ))}
+            </div>
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-1">
+          {selected.map((s) => (
+            <Badge key={s} variant="secondary" className="text-xs gap-1 pr-1">
+              {s}
+              <button type="button" onClick={() => onToggle(s)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const AgentProfilePage = () => {
   const [agent, setAgent] = useState<any>(null);
@@ -29,6 +104,14 @@ const AgentProfilePage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPw, setChangingPw] = useState(false);
 
+  // Pattern lock
+  const [patternDialogOpen, setPatternDialogOpen] = useState(false);
+  const [patternStep, setPatternStep] = useState<"current" | "new" | "confirm">("current");
+  const [newPattern, setNewPattern] = useState<number[]>([]);
+  const [patternError, setPatternError] = useState(false);
+  const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
+  const [companyId, setCompanyId] = useState<string | null>(null);
+
   useEffect(() => {
     const fetch = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -41,6 +124,7 @@ const AgentProfilePage = () => {
         .maybeSingle();
       if (data) {
         setAgent(data);
+        setCompanyId(data.company_id);
         setForm({
           name: data.name || "",
           designation: data.designation || "",
@@ -53,6 +137,14 @@ const AgentProfilePage = () => {
           languages: data.languages || [],
           avatar_url: data.avatar_url || "",
         });
+
+        // Fetch pattern
+        const { data: patternData } = await supabase
+          .from("company_pattern_codes")
+          .select("pattern_code")
+          .eq("company_id", data.company_id)
+          .maybeSingle();
+        if (patternData) setCurrentPatternCode(patternData.pattern_code);
       }
       setLoading(false);
     };
@@ -60,7 +152,13 @@ const AgentProfilePage = () => {
   }, []);
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
-  const languageOptions = ["English", "Arabic", "Turkish", "Russian", "German", "French", "Italian"];
+
+  const toggleLanguage = (lang: string) => {
+    setForm((prev) => ({
+      ...prev,
+      languages: prev.languages.includes(lang) ? prev.languages.filter((l) => l !== lang) : [...prev.languages, lang],
+    }));
+  };
 
   const handleSave = async () => {
     if (!agent) return;
@@ -107,6 +205,49 @@ const AgentProfilePage = () => {
     }
   };
 
+  const handlePatternComplete = async (pattern: number[]) => {
+    if (patternStep === "current") {
+      if (pattern.join(",") === currentPatternCode) {
+        setPatternStep("new");
+        setPatternError(false);
+      } else {
+        setPatternError(true);
+        toast.error("Incorrect current pattern");
+        setTimeout(() => setPatternError(false), 500);
+      }
+    } else if (patternStep === "new") {
+      setNewPattern(pattern);
+      setPatternStep("confirm");
+    } else if (patternStep === "confirm") {
+      if (pattern.join(",") === newPattern.join(",")) {
+        try {
+          const { error } = await supabase
+            .from("company_pattern_codes")
+            .update({ pattern_code: newPattern.join(",") })
+            .eq("company_id", companyId!);
+          if (error) throw error;
+          setCurrentPatternCode(newPattern.join(","));
+          toast.success("Pattern lock updated!");
+          setPatternDialogOpen(false);
+        } catch (err: any) {
+          toast.error(err.message || "Failed to update pattern");
+        }
+      } else {
+        setPatternError(true);
+        toast.error("Patterns don't match. Try again.");
+        setPatternStep("new");
+        setTimeout(() => setPatternError(false), 500);
+      }
+    }
+  };
+
+  const openPatternDialog = () => {
+    setPatternStep(currentPatternCode ? "current" : "new");
+    setNewPattern([]);
+    setPatternError(false);
+    setPatternDialogOpen(true);
+  };
+
   if (loading) {
     return <AgentLayout><div className="flex items-center justify-center py-20 text-muted-foreground">Loading...</div></AgentLayout>;
   }
@@ -114,18 +255,19 @@ const AgentProfilePage = () => {
   return (
     <AgentLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">Profile Settings</h1>
-      <div className="max-w-4xl space-y-8">
-        {/* Avatar */}
+      <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
+
+        {/* ─── Photo ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Photo</h2>
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Photo" />
           <div className="flex items-center gap-4">
             {form.avatar_url ? (
               <div className="relative">
-                <img src={form.avatar_url} alt="Avatar" className="w-20 h-20 rounded-full object-cover border border-border" />
+                <img src={form.avatar_url} alt="Avatar" className="w-20 h-20 rounded-lg object-cover border border-border" />
                 <button onClick={() => updateField("avatar_url", "")} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5"><X className="h-3 w-3" /></button>
               </div>
             ) : (
-              <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted/30">
+              <div className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted/30">
                 <Upload className="h-6 w-6 text-muted-foreground/50" />
               </div>
             )}
@@ -148,13 +290,14 @@ const AgentProfilePage = () => {
               <Button variant="outline" size="sm" disabled={uploadingAvatar} onClick={() => document.getElementById("avatar-upload")?.click()}>
                 <Upload className="h-3 w-3 mr-1" /> {uploadingAvatar ? "Uploading..." : "Upload Photo"}
               </Button>
+              <p className="text-xs text-muted-foreground mt-1">Rectangular photo recommended</p>
             </div>
           </div>
         </section>
 
-        {/* Info */}
+        {/* ─── Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Information</h2>
+          <SectionHeader icon={<UserCircle className="h-4 w-4" />} title="Information" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Full Name</Label>
@@ -165,7 +308,9 @@ const AgentProfilePage = () => {
               <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Email</Label>
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email
+              </Label>
               <Input value={form.email} disabled className="bg-muted/50 cursor-not-allowed" />
             </div>
             <div className="space-y-2">
@@ -175,9 +320,9 @@ const AgentProfilePage = () => {
           </div>
         </section>
 
-        {/* Contact */}
+        {/* ─── Contact ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Contact</h2>
+          <SectionHeader icon={<Phone className="h-4 w-4" />} title="Contact" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Phone</Label>
@@ -190,60 +335,79 @@ const AgentProfilePage = () => {
           </div>
         </section>
 
-        {/* About */}
+        {/* ─── About ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">About</h2>
+          <SectionHeader icon={<FileText className="h-4 w-4" />} title="About" />
           <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
         </section>
 
-        {/* Languages & Service Areas */}
+        {/* ─── Skills ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Skills</h2>
+          <SectionHeader icon={<Briefcase className="h-4 w-4" />} title="Skills & Languages" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Service Areas</Label>
               <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
             </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Languages</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {languageOptions.map((lang) => (
-                  <button key={lang} type="button"
-                    onClick={() => setForm((prev) => ({ ...prev, languages: prev.languages.includes(lang) ? prev.languages.filter((l) => l !== lang) : [...prev.languages, lang] }))}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${form.languages.includes(lang) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}
-                  >{lang}</button>
-                ))}
-              </div>
-            </div>
+            <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
           </div>
         </section>
 
-        {/* Change Password */}
+        {/* ─── Security ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
-            <Lock className="h-4 w-4" /> Change Password
-          </h2>
-          <form onSubmit={handleChangePassword} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">New Password</Label>
-              <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="bg-secondary/50" minLength={6} required />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Confirm Password</Label>
-              <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="bg-secondary/50" minLength={6} required />
-            </div>
-            <div>
-              <Button type="submit" variant="outline" disabled={changingPw}>{changingPw ? "Changing..." : "Update Password"}</Button>
-            </div>
-          </form>
+          <SectionHeader icon={<Lock className="h-4 w-4" />} title="Security" />
+
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-foreground mb-3">Change Password</h3>
+            <form onSubmit={handleChangePassword} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">New Password</Label>
+                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="bg-secondary/50" minLength={6} required />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">Confirm Password</Label>
+                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="bg-secondary/50" minLength={6} required />
+              </div>
+              <div>
+                <Button type="submit" variant="outline" disabled={changingPw}>{changingPw ? "Changing..." : "Update Password"}</Button>
+              </div>
+            </form>
+          </div>
+
+          <div className="pt-4 border-t border-border/60">
+            <h3 className="text-sm font-medium text-foreground mb-3">Pattern Lock</h3>
+            <p className="text-xs text-muted-foreground mb-3">Change the pattern used for dashboard login verification.</p>
+            <Button type="button" variant="outline" onClick={openPatternDialog}>
+              <Grid3X3 className="h-4 w-4 mr-2" /> Change Pattern Lock
+            </Button>
+          </div>
         </section>
 
-        <div className="flex justify-end pb-8">
+        <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving} size="lg">
             <Save className="h-4 w-4 mr-2" /> {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
-      </div>
+      </form>
+
+      {/* Pattern Lock Dialog */}
+      <Dialog open={patternDialogOpen} onOpenChange={setPatternDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Grid3X3 className="h-5 w-5" /> Change Pattern Lock
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-4">
+            <p className="text-sm text-muted-foreground text-center">
+              {patternStep === "current" && "Draw your current pattern to verify"}
+              {patternStep === "new" && "Draw your new pattern (minimum 3 dots)"}
+              {patternStep === "confirm" && "Draw the new pattern again to confirm"}
+            </p>
+            <PatternLock onPatternComplete={handlePatternComplete} error={patternError} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </AgentLayout>
   );
 };
