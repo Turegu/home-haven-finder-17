@@ -23,6 +23,7 @@ const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const property = mockPropertyDetail;
   const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [loanValues, setLoanValues] = useState({
     propertyValue: property.price,
