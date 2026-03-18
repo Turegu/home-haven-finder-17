@@ -136,7 +136,7 @@ const CompanyFollowersPage = () => {
 
       if (annError) throw annError;
 
-      // Create user_announcements for all followers
+      // Create user_announcements and user_notifications for all followers
       if (followers.length > 0 && announcement) {
         const userAnnouncements = followers.map((f) => ({
           announcement_id: announcement.id,
@@ -146,6 +146,16 @@ const CompanyFollowersPage = () => {
           .from("user_announcements")
           .insert(userAnnouncements);
         if (uaError) throw uaError;
+
+        // Also create user_notifications so followers see it in their dashboard
+        const notifications = followers.map((f) => ({
+          user_id: f.user_id,
+          title: announcementTitle,
+          message: announcementMessage,
+          notification_type: "announcement",
+          source_company_id: companyId,
+        }));
+        await supabase.from("user_notifications").insert(notifications);
       }
 
       toast.success(`Announcement sent to ${followers.length} followers!`);
