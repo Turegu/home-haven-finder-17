@@ -204,7 +204,7 @@ const CompanyPropertiesPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(prop.status)} variant="secondary">
-                        {prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
+                        {prop.status === "draft" ? "Unpublished" : prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">

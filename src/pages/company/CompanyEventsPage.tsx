@@ -163,7 +163,7 @@ const CompanyEventsPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{evt.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(evt.status)} variant="secondary">
-                        {evt.status.charAt(0).toUpperCase() + evt.status.slice(1)}
+                        {evt.status === "draft" ? "Unpublished" : evt.status.charAt(0).toUpperCase() + evt.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">

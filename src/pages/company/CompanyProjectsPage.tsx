@@ -156,7 +156,7 @@ const CompanyProjectsPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{proj.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(proj.status)} variant="secondary">
-                        {proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
+                        {proj.status === "draft" ? "Unpublished" : proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
