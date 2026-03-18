@@ -66,7 +66,7 @@ const PropertyDetailPage = () => {
               ? property.images.slice(0, (currentImage + 3) - property.images.length)
               : []
           ).map((img, i) => (
-            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0">
+            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
               <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
             </div>
           ))}
