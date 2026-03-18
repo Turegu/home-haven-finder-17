@@ -26,6 +26,10 @@ import { useFilterOptions } from '@/hooks/useFilterOptions';
 // Hardcoded arrays removed — now fetched dynamically
 
 const ProjectsPage = () => {
+  const { options: fo } = useFilterOptions("search");
+  const unitTypes = fo["project_unit_types"] || [];
+  const projectStatuses = [...(fo["project_statuses"] || []), 'Any'];
+  const projectAmenities = [...(fo["exterior_amenities"] || []), ...(fo["proximity"] || [])];
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});

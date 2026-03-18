@@ -18,6 +18,8 @@ import { useFilterOptions } from '@/hooks/useFilterOptions';
 // Event types now fetched dynamically
 
 const EventsPage = () => {
+  const { options: fo } = useFilterOptions("search");
+  const eventTypes = [...(fo["event_types"] || []), 'All'];
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedEventType, setSelectedEventType] = useState('All');
