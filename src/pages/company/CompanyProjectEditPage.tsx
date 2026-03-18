@@ -494,7 +494,7 @@ const CompanyProjectEditPage = () => {
           <div className="space-y-3 mb-6">
             <Label className="text-foreground font-medium">Project Logo</Label>
             <div className="flex items-center gap-4">
-              {logoUrl && <img src={logoUrl} alt="Logo" className="w-16 h-16 rounded-lg object-cover border border-border" />}
+              <img src={logoUrl || defaultProjectLogo} alt="Logo" className="w-16 h-16 rounded-lg object-cover border border-border" />
               <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
                 <Upload className="h-4 w-4 inline mr-2" />Upload Logo
                 <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
