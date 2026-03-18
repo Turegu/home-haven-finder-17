@@ -75,18 +75,15 @@ const BuyPage = () => {
   if (propertyTypes.length > 0) selectedBadges['Property Type'] = propertyTypes;
   if (minPrice || maxPrice) selectedBadges['Price'] = [`$${minPrice || '0'} - $${maxPrice || '∞'}`];
   if (minArea || maxArea) selectedBadges['Area'] = [`${minArea || '0'} - ${maxArea || '∞'} m²`];
-  if (rooms) selectedBadges['Rooms'] = [rooms];
-  if (bathrooms) selectedBadges['Bathrooms'] = [bathrooms];
-  if (rentDuration) selectedBadges['Rent Duration'] = [rentDuration];
-  Object.entries(moreFilters).forEach(([key, val]) => {
-    if (val && val !== 'Any') {
-      if (key === 'exteriorAmenities') {
-        selectedBadges['Amenities'] = val.split(',');
-      } else {
-        selectedBadges[key] = [val];
-      }
-    }
-  });
+  if (rooms.length > 0) selectedBadges['Rooms'] = rooms;
+  if (bathrooms.length > 0) selectedBadges['Bathrooms'] = bathrooms;
+  if (rentDuration.length > 0) selectedBadges['Rent Duration'] = rentDuration;
+  if (moreFilters.floorLevels.length > 0) selectedBadges['Floor Level'] = moreFilters.floorLevels;
+  if (moreFilters.parkingSpaces.length > 0) selectedBadges['Parking'] = moreFilters.parkingSpaces;
+  if (moreFilters.furniture.length > 0) selectedBadges['Furniture'] = moreFilters.furniture;
+  if (moreFilters.propertyAges.length > 0) selectedBadges['Property Age'] = moreFilters.propertyAges;
+  if (moreFilters.exteriorAmenities.length > 0) selectedBadges['Ext. Amenities'] = moreFilters.exteriorAmenities;
+  if (moreFilters.interiorAmenities.length > 0) selectedBadges['Int. Amenities'] = moreFilters.interiorAmenities;
 
   function clearBadge(categoryKey: string, value: string) {
     if (categoryKey === 'Property Type') setPropertyTypes(propertyTypes.filter(t => t !== value));
