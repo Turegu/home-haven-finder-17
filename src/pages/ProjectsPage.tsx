@@ -17,6 +17,7 @@ const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
 
   useEffect(() => { document.title = 'Projects | Turegu'; }, []);
 
