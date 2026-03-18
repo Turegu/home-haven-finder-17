@@ -85,18 +85,18 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               )}
 
-              {/* Photo count — upper left of left thumbnail */}
-              <div className="absolute top-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
-                <Camera className="h-3 w-3" />
-                <span>{currentImage + 1}/{property.images.length}</span>
-              </div>
-
-              {/* Tier badge — upper left below photo count */}
+              {/* Tier badge — top left corner */}
               {property.listingTier !== 'standard' && (
-                <div className="absolute top-10 left-2">
+                <div className="absolute top-2 left-2">
                   {tierBadge()}
                 </div>
               )}
+
+              {/* Photo count — lower left of left thumbnail */}
+              <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+                <Camera className="h-3 w-3" />
+                <span>{currentImage + 1}/{property.images.length}</span>
+              </div>
             </div>
 
             {/* Right image — equal size */}
@@ -140,17 +140,14 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               </div>
 
-              {/* Deal tags — lower right of right thumbnail */}
+              {/* Deal tag — lower right of right thumbnail (only first tag) */}
               {property.advertisingTags && property.advertisingTags.length > 0 && (
-                <div className="absolute bottom-2 right-2 flex flex-col gap-1 items-end">
-                  {property.advertisingTags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-                    >
-                      <Tag className="h-3 w-3" /> {tag}
-                    </Badge>
-                  ))}
+                <div className="absolute bottom-2 right-2">
+                  <Badge
+                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+                  >
+                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+                  </Badge>
                 </div>
               )}
             </div>
