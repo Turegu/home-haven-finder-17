@@ -63,23 +63,71 @@ const BuyPage = () => {
   // Search params that trigger the query (committed on Search click)
   const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
     propertyPurpose: isRent ? 'rent' : 'buy',
-    province: location.province,
-    district: location.district,
-    neighborhood: location.neighborhood,
-    keyword: keyword || undefined,
-    propertyTypes: propertyTypes.length > 0 ? propertyTypes : undefined,
-    minPrice: minPrice || undefined,
-    maxPrice: maxPrice || undefined,
-    minArea: minArea || undefined,
-    maxArea: maxArea || undefined,
-    rooms: rooms.length > 0 ? rooms : undefined,
-    bathrooms: bathrooms.length > 0 ? bathrooms : undefined,
-    rentDuration: rentDuration.length > 0 ? rentDuration : undefined,
-    moreFilters,
-    sortBy,
+    sortBy: 'newest',
     page: 1,
-    pageSize: viewMode === 'grid' ? 15 : 21,
+    pageSize: 21,
   });
+
+  // Reset all filters when navigating to /buy or /rent without search params (clean nav click)
+  useEffect(() => {
+    const hasParams = searchParams.toString().length > 0;
+    if (!hasParams) {
+      setLocation({});
+      setKeyword('');
+      setPropertyTypes([]);
+      setMinPrice('');
+      setMaxPrice('');
+      setMinArea('');
+      setMaxArea('');
+      setRooms([]);
+      setBathrooms([]);
+      setRentDuration([]);
+      setMoreFilters(emptyMoreFilters);
+      setSortBy('newest');
+      setCurrentPage(1);
+      setCommittedParams({
+        propertyPurpose: isRent ? 'rent' : 'buy',
+        sortBy: 'newest',
+        page: 1,
+        pageSize: viewMode === 'grid' ? 15 : 21,
+      });
+    } else {
+      // Sync from URL params (coming from HeroSearch)
+      const p = searchParams.get('province') || undefined;
+      const d = searchParams.get('district') || undefined;
+      const n = searchParams.get('neighborhood') || undefined;
+      const q = searchParams.get('q') || '';
+      const pt = searchParams.get('propertyTypes')?.split(',').filter(Boolean) || [];
+      const mnP = searchParams.get('minPrice') || '';
+      const mxP = searchParams.get('maxPrice') || '';
+      const r = searchParams.get('rooms')?.split(',').filter(Boolean) || [];
+
+      setLocation({ province: p, district: d, neighborhood: n });
+      setKeyword(q);
+      setPropertyTypes(pt);
+      setMinPrice(mnP);
+      setMaxPrice(mxP);
+      setRooms(r);
+      setCurrentPage(1);
+      setCommittedParams({
+        propertyPurpose: isRent ? 'rent' : 'buy',
+        province: p,
+        district: d,
+        neighborhood: n,
+        keyword: q || undefined,
+        propertyTypes: pt.length > 0 ? pt : undefined,
+        minPrice: mnP || undefined,
+        maxPrice: mxP || undefined,
+        rooms: r.length > 0 ? r : undefined,
+        moreFilters: emptyMoreFilters,
+        sortBy: 'newest',
+        page: 1,
+        pageSize: viewMode === 'grid' ? 15 : 21,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routerLocation.pathname, searchParams.toString()]);
+
 
   const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
 
