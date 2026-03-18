@@ -187,8 +187,7 @@ const CompanyEventEditPage = () => {
     if (urls[0]) setPdfUrl(urls[0]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.title.trim()) { toast.error("Event name is required"); return; }
     setLoading(true);
@@ -213,17 +212,18 @@ const CompanyEventEditPage = () => {
       organizer: form.organizer || null,
       images,
       company_id: companyId,
+      status: publishStatus,
     };
 
     try {
       if (isEdit) {
         const { error } = await supabase.from("events").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success("Event updated!");
+        toast.success(publishStatus === "active" ? "Event published!" : "Event saved as draft!");
       } else {
         const { error } = await supabase.from("events").insert(payload);
         if (error) throw error;
-        toast.success("Event created!");
+        toast.success(publishStatus === "active" ? "Event published!" : "Event saved as draft!");
       }
       navigate("/company/events");
     } catch (err: any) {
