@@ -462,7 +462,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
               value={form.property_age}
               onChange={(v) => updateField("property_age", v)}
-              options={ageOptions.map(a => ({ value: a, label: a }))}
+              options={(filterOpts["property_age"] || []).map(a => ({ value: a, label: a }))}
               placeholder="Select"
             />
             <FormSelect
