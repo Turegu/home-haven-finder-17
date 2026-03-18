@@ -274,6 +274,7 @@ const CompanyPropertyEditPage = () => {
     if (!form.town) { toast.error("Town/District is required"); return; }
     if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return; }
     if (isRent && !form.rent_duration) { toast.error("Rent duration is required"); return; }
+    setLoading(true);
 
     const payload: any = {
       title: form.title.trim(),
