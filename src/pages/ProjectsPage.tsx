@@ -28,11 +28,7 @@ const ProjectsPage = () => {
       {/* Search Bar with dynamic filters */}
       <div className="sticky top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background min-w-[120px]">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span className="text-foreground/70">Location</span>
-            <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
-          </div>
+          <LocationPicker value={location} onChange={setLocation} compact />
           <div className="relative flex-1 min-w-[200px]">
             <input
               type="text"
