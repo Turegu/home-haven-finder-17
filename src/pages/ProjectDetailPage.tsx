@@ -259,10 +259,10 @@ const ProjectDetailPage = () => {
               </Button>
 
               {/* Company logo */}
-              {project.companyLogo && (
+              {project.agentCompany && (
                 <Link to={`/company/${id}`} className="flex items-center gap-4 py-4 border-t border-border group">
                   <img
-                    src={project.companyLogo}
+                    src={project.agentLogo}
                     alt={project.agentCompany}
                     className="h-14 w-24 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
                   />

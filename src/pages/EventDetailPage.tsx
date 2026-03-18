@@ -3,9 +3,9 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe, Video,
-  MessageCircle, PersonStanding, CheckCircle2, X
+  MessageCircle, PersonStanding, X
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Header from '@/components/Header';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
