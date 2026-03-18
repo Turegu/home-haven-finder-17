@@ -271,8 +271,7 @@ const CompanyProjectEditPage = () => {
     if (urls[0]) setPdfUrl(urls[0]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.title.trim()) { toast.error("Project name is required"); return; }
     setLoading(true);
@@ -298,17 +297,18 @@ const CompanyProjectEditPage = () => {
       video_link: form.video_link || null, view_360_link: form.view_360_link || null,
       images, plans: planFiles, logo_url: logoUrl || null,
       pdf_catalogue_url: pdfUrl || null, company_id: companyId,
+      status: publishStatus,
     };
 
     try {
       if (isEdit) {
         const { error } = await supabase.from("projects").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success("Project updated!");
+        toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
       } else {
         const { error } = await supabase.from("projects").insert(payload);
         if (error) throw error;
-        toast.success("Project created!");
+        toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
       }
       navigate("/company/projects");
     } catch (err: any) {
