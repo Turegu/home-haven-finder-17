@@ -233,6 +233,7 @@ const CompanyPropertyEditPage = () => {
       property_status: form.property_status,
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
+      advertising_tags: form.advertising_tags,
       province: form.province || null,
       town: form.town || null,
       neighbourhood: form.neighbourhood || null,
