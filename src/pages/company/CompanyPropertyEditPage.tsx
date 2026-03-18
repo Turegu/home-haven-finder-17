@@ -502,7 +502,7 @@ const CompanyPropertyEditPage = () => {
             <MultiSelectDropdown
               label="Exterior Amenities"
               icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
-              options={exteriorAmenities}
+              options={filterOpts["exterior_amenities"] || []}
               selected={form.exterior_amenities}
               onToggle={(val) => toggleArrayField("exterior_amenities", val)}
               searchable
