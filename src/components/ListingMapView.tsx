@@ -57,10 +57,11 @@ function createPriceIcon(price: number | null, currency: string) {
   });
 }
 
-// Enhanced popup card with image slider and action buttons
+// Grid-style popup card with smaller thumbnail
 const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => void }) => {
   const allImages = listing.images?.length ? listing.images : [listing.image];
   const [imgIdx, setImgIdx] = useState(0);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const prevImg = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -73,126 +74,138 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
     setImgIdx(i => (i + 1) % allImages.length);
   };
 
+  const formatPrice = (price: number | null, currency: string) => {
+    if (!price) return 'Contact for Price';
+    const sym = currency === 'USD' ? '$' : currency + ' ';
+    if (price >= 1000000) return `${sym}${(price / 1000000).toFixed(1)}M`;
+    if (price >= 1000) return `${sym}${Math.round(price / 1000)}K`;
+    return `${sym}${price.toLocaleString()}`;
+  };
+
   return (
-    <div className="w-[280px] bg-card rounded-lg overflow-hidden shadow-xl border border-border">
-      {/* Image slider */}
-      <div className="relative group">
+    <div className="w-[240px] bg-card rounded-xl border border-border overflow-hidden shadow-lg">
+      {/* Image — smaller aspect ratio */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted group">
         <img
           src={allImages[imgIdx]}
           alt={listing.title}
-          className="w-full h-[170px] object-cover"
+          className="w-full h-full object-cover"
         />
-        {/* Close button */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onClose(); }}
-          className="absolute top-2 right-2 bg-background/90 hover:bg-background rounded-full p-1 shadow z-10"
-        >
-          <X className="h-4 w-4 text-foreground" />
-        </button>
 
-        {/* Image navigation arrows */}
+        {/* Image nav */}
         {allImages.length > 1 && (
           <>
             <button
               onClick={prevImg}
-              className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-1.5 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <ChevronLeft className="h-4 w-4 text-foreground" />
+              <ChevronLeft className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={nextImg}
-              className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <ChevronRight className="h-4 w-4 text-foreground" />
+              <ChevronRight className="h-3.5 w-3.5" />
             </button>
-            {/* Image counter */}
-            <span className="absolute bottom-2 left-2 bg-foreground/70 text-primary-foreground text-[10px] px-2 py-0.5 rounded-full font-medium">
-              {imgIdx + 1}/{allImages.length}
-            </span>
           </>
         )}
 
-        {/* Action buttons row */}
-        <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+        {/* Photo count */}
+        <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 bg-foreground/60 text-white text-[10px] px-1.5 py-0.5 rounded-md">
+          <Camera className="h-2.5 w-2.5" />
+          <span>{imgIdx + 1}/{allImages.length}</span>
+        </div>
+
+        {/* Action buttons */}
+        <div className="absolute top-1.5 right-1.5 flex gap-1">
           <button
-            onClick={(e) => e.stopPropagation()}
-            className="bg-primary hover:bg-primary/90 rounded-full p-1.5 shadow"
-            title="Compare"
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            className="bg-background/90 hover:bg-background text-foreground/70 hover:text-primary p-1 rounded-full transition-colors shadow-sm"
           >
-            <ArrowLeftRight className="h-3.5 w-3.5 text-primary-foreground" />
+            <X className="h-3.5 w-3.5" />
           </button>
           <button
-            onClick={(e) => e.stopPropagation()}
-            className="bg-primary hover:bg-primary/90 rounded-full p-1.5 shadow"
-            title="Save"
+            onClick={(e) => { e.stopPropagation(); }}
+            className="bg-background/90 hover:bg-background text-foreground/70 hover:text-primary p-1 rounded-full transition-colors shadow-sm"
           >
-            <Heart className="h-3.5 w-3.5 text-primary-foreground" />
+            <Layers className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setIsFavorited(!isFavorited); }}
+            className={`p-1 rounded-full transition-colors shadow-sm ${
+              isFavorited
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-background/90 hover:bg-background text-foreground/70 hover:text-destructive'
+            }`}
+          >
+            <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
           </button>
         </div>
+
+        {/* Company Logo */}
+        {listing.logo && (
+          <div className="absolute bottom-1.5 right-1.5">
+            <img
+              src={listing.logo}
+              alt=""
+              className="h-8 w-11 rounded border border-background object-cover shadow-md bg-background"
+            />
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-3">
+        {/* Price */}
+        <div className="text-sm font-bold text-foreground mb-0.5">
+          {formatPrice(listing.price, listing.currency)}
+        </div>
+
+        {/* Title */}
         <Link to={listing.linkTo}>
-          <h4 className="font-semibold text-sm text-foreground hover:text-primary transition-colors line-clamp-1 mb-0.5">
+          <h4 className="text-xs font-medium text-foreground/90 hover:text-primary transition-colors line-clamp-1 mb-1.5">
             {listing.title}
           </h4>
         </Link>
-        {listing.subtitle && (
-          <p className="text-[11px] text-muted-foreground line-clamp-1 mb-1.5">{listing.subtitle}</p>
-        )}
 
         {/* Location */}
-        <div className="flex items-center gap-1 text-[11px] text-muted-foreground mb-2">
-          <MapPin className="h-3 w-3 text-destructive shrink-0" />
+        <div className="flex items-center gap-1 text-muted-foreground text-[11px] mb-2">
+          <MapPin className="h-3 w-3 shrink-0 text-primary" />
           <span className="line-clamp-1">{listing.location}</span>
         </div>
 
-        {/* Property meta row */}
-        <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-2">
+        {/* Specs Row */}
+        <div className="flex items-center gap-2.5 pt-2 border-t border-border">
           {listing.propertyType && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
               <Building className="h-3 w-3" />
               <span>{listing.propertyType}</span>
             </div>
           )}
-          {listing.units && (
-            <div className="flex items-center gap-1">
-              <Maximize className="h-3 w-3" />
-              <span>{listing.units} Units</span>
-            </div>
-          )}
           {listing.area && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
               <Maximize className="h-3 w-3" />
               <span>{listing.area} {listing.areaUnit || 'sqm'}</span>
             </div>
           )}
-          {listing.meta && !listing.area && !listing.units && (
-            <div className="flex items-center gap-1">
-              <Building className="h-3 w-3" />
-              <span>{listing.meta}</span>
+          {listing.bedrooms != null && listing.bedrooms > 0 && (
+            <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
+              <BedDouble className="h-3 w-3" />
+              <span>{listing.bedrooms}</span>
             </div>
           )}
-        </div>
-
-        {/* Logo + Price footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-border">
-          {listing.logo ? (
-            <img src={listing.logo} alt="" className="h-8 max-w-[80px] object-contain rounded" />
-          ) : (
-            <span />
+          {listing.bathrooms != null && listing.bathrooms > 0 && (
+            <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
+              <Bath className="h-3 w-3" />
+              <span>{listing.bathrooms}</span>
+            </div>
           )}
-          <div className="text-right">
-            {listing.type === 'project' && (
-              <span className="text-[10px] text-muted-foreground block">Starting From</span>
-            )}
-            <span className="text-sm font-bold text-foreground">
-              {listing.price
-                ? `${listing.currency === 'USD' ? '$' : listing.currency} ${listing.price.toLocaleString()}`
-                : 'Contact for Price'}
-            </span>
-          </div>
+          {listing.units && (
+            <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
+              <Building className="h-3 w-3" />
+              <span>{listing.units} Units</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
