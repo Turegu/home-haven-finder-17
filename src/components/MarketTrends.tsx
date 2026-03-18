@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, Home, CalendarClock, AlertCircle } from "lucide-react";
+import { TrendingUp, Home, CalendarClock, AlertCircle, Banknote } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMarketStats, useNeighbourhoodsInTown, CurrentPropertyData } from "@/hooks/useMarketTrends";
@@ -69,7 +69,7 @@ const MarketTrends = ({ province, town, neighbourhood, currency = "USD", areaUni
           />
 
           <StatCard
-            icon={<Home className="h-8 w-8 text-primary" />}
+            icon={<Banknote className="h-8 w-8 text-primary" />}
             title="Average Monthly Rental"
             value={stats?.avgRentPricePerM2 ? formatPrice(stats.avgRentPricePerM2) : null}
             min={stats?.rentCount && stats.rentCount > 1 ? formatPrice(stats.minRentPricePerM2) : null}
