@@ -453,7 +453,32 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
-        {/* Location */}
+        {/* Advertising Tags */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Advertising Tags</h2>
+          <p className="text-xs text-muted-foreground mb-3">Select tags to highlight this listing on search results</p>
+          <div className="flex flex-wrap gap-2">
+            {advertisingTagOptions.map((tag) => (
+              <button
+                key={tag} type="button"
+                onClick={() => {
+                  setForm((prev) => ({
+                    ...prev,
+                    advertising_tags: prev.advertising_tags.includes(tag)
+                      ? prev.advertising_tags.filter((t) => t !== tag)
+                      : [...prev.advertising_tags, tag],
+                  }));
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  form.advertising_tags.includes(tag)
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                }`}
+              >{tag}</button>
+            ))}
+          </div>
+        </section>
+
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
           <LocationFormFields
