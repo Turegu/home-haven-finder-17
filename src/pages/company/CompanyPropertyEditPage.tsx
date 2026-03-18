@@ -9,37 +9,65 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Save, Upload, X, ImageIcon } from "lucide-react";
+import {
+  Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
+  Calendar, Compass, ScrollText, Activity, Tag, TreePine, Lamp,
+  DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
+  ChevronDown
+} from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 
+/* ─── Options aligned with front-end search filters ─── */
+
 const contractTypes = [
-  { value: "buy", label: "Buy" },
-  { value: "rent", label: "Rent" },
+  { value: "residential_sale", label: "Residential for Sale", purpose: "buy", classification: "residential" },
+  { value: "residential_rent", label: "Residential for Rent", purpose: "rent", classification: "residential" },
+  { value: "commercial_sale", label: "Commercial for Sale", purpose: "buy", classification: "commercial" },
+  { value: "commercial_rent", label: "Commercial for Rent", purpose: "rent", classification: "commercial" },
 ];
 
-const propertyTypes = [
-  { value: "apartment", label: "Apartment" },
-  { value: "villa", label: "Villa" },
-  { value: "office", label: "Office" },
-  { value: "land", label: "Land" },
-  { value: "shop", label: "Shop" },
-  { value: "warehouse", label: "Warehouse" },
-  { value: "building", label: "Building" },
+const residentialPropertyTypes = [
+  "Apartment", "Villa", "Duplex", "Penthouse", "Townhouse", "Studio", "Land", "Farm House",
+];
+const commercialPropertyTypes = [
+  "Office", "Shop", "Store", "Showroom", "Restaurant/Café", "Land", "Farms",
+  "Labor Camp", "Factory", "Warehouse", "Co-Working Space", "Whole Building", "Full Floor",
 ];
 
-const classificationOptions = ["Luxury", "Standard", "Economy", "Commercial"];
-const furnitureOptions = ["Furnished", "Semi-Furnished", "Unfurnished"];
+const furnitureOptions = ["Fully Furnished", "Unfurnished", "Partially Furnished"];
 const propertyStatusOptions = ["new", "under_construction", "ready", "resale"];
-const ageOptions = ["0-1 Years", "1-5 Years", "5-10 Years", "10-20 Years", "20+ Years"];
+const ageOptions = ["New", "1-5 Years", "6-10 Years", "11-15 Years", "16-20 Years", "21+"];
 const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
-const rentDurations = ["Monthly", "Yearly", "Daily"];
+const rentDurations = ["Daily", "Weekly", "Monthly", "Yearly"];
 const advertisingTagOptions = ["Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller", "Limited Offer", "Negotiable", "Urgent Sale"];
 
+const floorLevels = [
+  "Ground", "Garden floor", "1", "2", "3 - 5", "6 - 10",
+  "10-20", "20+", "Top floor", "Basement", "Mezzanine", "Penthouse",
+  "High entrance", "Semi Basement", "Direct entrance",
+];
+const parkingSpaces = ["0", "1", "2", "3", "4", "5", "6+"];
 
-const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Walk-in Closet", "Laundry Room"];
-const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
+const interiorAmenities = [
+  "Central heating", "Air conditioning", "Fireplace", "Built-in wardrobe",
+  "Walk-in closet", "Kitchen appliances", "Laundry room", "Smart home system",
+  "Jacuzzi", "Sauna", "Shower cabin", "Bathtub",
+  "Generator", "Security Camera", "Security", "Card Access System",
+  "Elevator", "Fire Lift", "Metal Detector",
+];
+const exteriorAmenities = [
+  "Close to gym", "Close to the city center",
+  "Close to restaurants and cafes", "Close to the beach",
+  "Close to schools", "Close to a park", "Close to public transport",
+  "Beach nearby", "Beachfront", "Private beach", "Beach access",
+  "Swimming pool", "Garden", "Playground", "BBQ area",
+];
 
 const CompanyPropertyEditPage = () => {
   const navigate = useNavigate();
@@ -55,10 +83,11 @@ const CompanyPropertyEditPage = () => {
   const [form, setForm] = useState({
     title: "",
     description: "",
+    contract_type: "residential_sale",
     property_purpose: "buy",
-    property_classification: "",
+    property_classification: "residential",
     rent_duration: "",
-    property_type: "apartment",
+    property_type: "Apartment",
     price: "",
     area: "",
     area_unit: "m²",
@@ -87,12 +116,31 @@ const CompanyPropertyEditPage = () => {
     open_house_end: "",
   });
 
+  const contractInfo = contractTypes.find(c => c.value === form.contract_type);
+  const isRent = contractInfo?.purpose === "rent";
+  const isCommercial = contractInfo?.classification === "commercial";
+  const availablePropertyTypes = isCommercial ? commercialPropertyTypes : residentialPropertyTypes;
+
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
 
-  const toggleAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
+  const handleContractChange = (value: string) => {
+    const info = contractTypes.find(c => c.value === value);
+    if (!info) return;
+    const newTypes = info.classification === "commercial" ? commercialPropertyTypes : residentialPropertyTypes;
+    setForm(prev => ({
+      ...prev,
+      contract_type: value,
+      property_purpose: info.purpose,
+      property_classification: info.classification,
+      property_type: newTypes[0],
+      rent_duration: info.purpose === "rent" ? prev.rent_duration : "",
+    }));
+  };
+
+  const toggleArrayField = (field: "interior_amenities" | "exterior_amenities" | "advertising_tags", val: string) => {
     setForm((prev) => ({
       ...prev,
-      [type]: prev[type].includes(val) ? prev[type].filter((a) => a !== val) : [...prev[type], val],
+      [field]: prev[field].includes(val) ? prev[field].filter((a) => a !== val) : [...prev[field], val],
     }));
   };
 
@@ -102,11 +150,7 @@ const CompanyPropertyEditPage = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: company } = await supabase
-        .from("companies")
-        .select("id")
-        .eq("owner_user_id", user.id)
-        .limit(1)
-        .maybeSingle();
+        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
       if (company) setCompanyId(company.id);
     };
     init();
@@ -116,22 +160,25 @@ const CompanyPropertyEditPage = () => {
   useEffect(() => {
     if (!isEdit) return;
     const fetchProperty = async () => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
-      if (error || !data) {
-        toast.error("Property not found");
-        return;
-      }
+      const { data, error } = await supabase.from("properties").select("*").eq("id", id).maybeSingle();
+      if (error || !data) { toast.error("Property not found"); return; }
+
+      // Derive contract_type from purpose + classification
+      const purpose = data.property_purpose || "buy";
+      const classification = (data as any).property_classification || "residential";
+      let contractType = "residential_sale";
+      if (classification === "commercial" && purpose === "rent") contractType = "commercial_rent";
+      else if (classification === "commercial") contractType = "commercial_sale";
+      else if (purpose === "rent") contractType = "residential_rent";
+
       setForm({
         title: data.title || "",
         description: data.description || "",
-        property_purpose: data.property_purpose || "buy",
-        property_classification: (data as any).property_classification || "",
+        contract_type: contractType,
+        property_purpose: purpose,
+        property_classification: classification,
         rent_duration: (data as any).rent_duration || "",
-        property_type: data.property_type || "apartment",
+        property_type: data.property_type || "Apartment",
         price: data.price?.toString() || "",
         area: data.area?.toString() || "",
         area_unit: data.area_unit || "m²",
@@ -214,8 +261,8 @@ const CompanyPropertyEditPage = () => {
       title: form.title.trim(),
       description: form.description || null,
       property_purpose: form.property_purpose,
-      property_classification: form.property_classification || null,
-      rent_duration: form.rent_duration || null,
+      property_classification: form.property_classification,
+      rent_duration: isRent ? (form.rent_duration || null) : null,
       property_type: form.property_type,
       price: form.price ? parseFloat(form.price) : null,
       area: form.area ? parseFloat(form.area) : null,
@@ -272,11 +319,12 @@ const CompanyPropertyEditPage = () => {
         {isEdit ? "Edit Property" : "New Property"}
       </h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8 pb-10">
-        {/* Description & Information */}
+      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+
+        {/* ─── Basic Info ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">
-            Description & Information
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+            <FileText className="h-4 w-4" /> Description & Information
           </h2>
           <div className="space-y-5">
             <div className="space-y-2">
@@ -287,188 +335,178 @@ const CompanyPropertyEditPage = () => {
               <Label className="text-foreground font-medium">Property Description</Label>
               <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
             </div>
+          </div>
+        </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Contract Type *</Label>
-                <Select value={form.property_purpose} onValueChange={(v) => updateField("property_purpose", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {contractTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* ─── Contract & Type ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+            <ScrollText className="h-4 w-4" /> Contract & Property Type
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <FormSelect
+              label="Contract Type *"
+              icon={<Home className="h-4 w-4 text-muted-foreground" />}
+              value={form.contract_type}
+              onChange={handleContractChange}
+              options={contractTypes.map(c => ({ value: c.value, label: c.label }))}
+            />
+            <FormSelect
+              label="Property Type *"
+              icon={<Building2 className="h-4 w-4 text-muted-foreground" />}
+              value={form.property_type}
+              onChange={(v) => updateField("property_type", v)}
+              options={availablePropertyTypes.map(t => ({ value: t, label: t }))}
+            />
+            <FormSelect
+              label="Property Status"
+              icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+              value={form.property_status}
+              onChange={(v) => updateField("property_status", v)}
+              options={propertyStatusOptions.map(o => ({ value: o, label: o.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) }))}
+            />
+          </div>
+        </section>
 
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Property Classification</Label>
-                <Select value={form.property_classification} onValueChange={(v) => updateField("property_classification", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    {classificationOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* ─── Pricing & Size ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+            <DollarSign className="h-4 w-4" /> Pricing & Size
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                {isRent ? "Rent Price" : "Price"} ({form.currency})
+              </Label>
+              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder={isRent ? "Enter rent price" : "Enter price"} />
+            </div>
 
-              {form.property_purpose === "rent" && (
-                <div className="space-y-2">
-                  <Label className="text-foreground font-medium">Rent Duration</Label>
-                  <Select value={form.rent_duration} onValueChange={(v) => updateField("rent_duration", v)}>
-                    <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent>
-                      {rentDurations.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+            {isRent && (
+              <FormSelect
+                label="Rental Duration"
+                icon={<Clock className="h-4 w-4 text-muted-foreground" />}
+                value={form.rent_duration}
+                onChange={(v) => updateField("rent_duration", v)}
+                options={rentDurations.map(d => ({ value: d, label: d }))}
+                placeholder="Select duration"
+              />
+            )}
 
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Property Type *</Label>
-                <Select value={form.property_type} onValueChange={(v) => updateField("property_type", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {propertyTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Price ({form.currency})</Label>
-                <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Net Area ({form.area_unit})</Label>
-                <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">No. Of Rooms</Label>
-                <Input value={form.rooms} onChange={(e) => updateField("rooms", e.target.value)} className="bg-secondary/50" placeholder="e.g. 3+1" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">No. Of Bathrooms</Label>
-                <Input type="number" value={form.bathrooms} onChange={(e) => updateField("bathrooms", e.target.value)} className="bg-secondary/50" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Floor Level</Label>
-                <Input value={form.floor_level} onChange={(e) => updateField("floor_level", e.target.value)} className="bg-secondary/50" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Furniture</Label>
-                <Select value={form.furniture} onValueChange={(v) => updateField("furniture", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    {furnitureOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Parking Spaces</Label>
-                <Input type="number" value={form.parking_spaces} onChange={(e) => updateField("parking_spaces", e.target.value)} className="bg-secondary/50" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Property Age</Label>
-                <Select value={form.property_age} onValueChange={(v) => updateField("property_age", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    {ageOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Property Orientation</Label>
-                <Select value={form.property_orientation} onValueChange={(v) => updateField("property_orientation", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    {orientationOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Title Deed</Label>
-                <Select value={form.title_deed} onValueChange={(v) => updateField("title_deed", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select" /></SelectTrigger>
-                  <SelectContent>
-                    {titleDeedOptions.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Property Status</Label>
-                <Select value={form.property_status} onValueChange={(v) => updateField("property_status", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {propertyStatusOptions.map((o) => <SelectItem key={o} value={o}>{o.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
+                Net Area ({form.area_unit})
+              </Label>
+              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
             </div>
           </div>
         </section>
 
-        {/* Amenities */}
+        {/* ─── Rooms & Features ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Amenities</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+            <BedDouble className="h-4 w-4" /> Rooms & Features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Interior Amenities</Label>
-              <div className="flex flex-wrap gap-2">
-                {interiorAmenities.map((a) => (
-                  <button
-                    key={a} type="button"
-                    onClick={() => toggleAmenity("interior_amenities", a)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                      form.interior_amenities.includes(a)
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
-                    }`}
-                  >{a}</button>
-                ))}
-              </div>
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <BedDouble className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Rooms
+              </Label>
+              <Input value={form.rooms} onChange={(e) => updateField("rooms", e.target.value)} className="bg-secondary/50" placeholder="e.g. 3+1" />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Exterior Amenities</Label>
-              <div className="flex flex-wrap gap-2">
-                {exteriorAmenities.map((a) => (
-                  <button
-                    key={a} type="button"
-                    onClick={() => toggleAmenity("exterior_amenities", a)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                      form.exterior_amenities.includes(a)
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
-                    }`}
-                  >{a}</button>
-                ))}
-              </div>
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Bath className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Bathrooms
+              </Label>
+              <Input type="number" value={form.bathrooms} onChange={(e) => updateField("bathrooms", e.target.value)} className="bg-secondary/50" />
             </div>
+            <FormSelect
+              label="Floor Level"
+              icon={<Layers className="h-4 w-4 text-muted-foreground" />}
+              value={form.floor_level}
+              onChange={(v) => updateField("floor_level", v)}
+              options={floorLevels.map(f => ({ value: f, label: f }))}
+              placeholder="Select floor"
+            />
+            <FormSelect
+              label="Furniture"
+              icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
+              value={form.furniture}
+              onChange={(v) => updateField("furniture", v)}
+              options={furnitureOptions.map(f => ({ value: f, label: f }))}
+              placeholder="Select"
+            />
+            <FormSelect
+              label="Parking Spaces"
+              icon={<Car className="h-4 w-4 text-muted-foreground" />}
+              value={form.parking_spaces}
+              onChange={(v) => updateField("parking_spaces", v)}
+              options={parkingSpaces.map(p => ({ value: p, label: p }))}
+            />
+            <FormSelect
+              label="Property Age"
+              icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
+              value={form.property_age}
+              onChange={(v) => updateField("property_age", v)}
+              options={ageOptions.map(a => ({ value: a, label: a }))}
+              placeholder="Select"
+            />
+            <FormSelect
+              label="Orientation"
+              icon={<Compass className="h-4 w-4 text-muted-foreground" />}
+              value={form.property_orientation}
+              onChange={(v) => updateField("property_orientation", v)}
+              options={orientationOptions.map(o => ({ value: o, label: o }))}
+              placeholder="Select"
+            />
+            <FormSelect
+              label="Title Deed"
+              icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
+              value={form.title_deed}
+              onChange={(v) => updateField("title_deed", v)}
+              options={titleDeedOptions.map(t => ({ value: t, label: t }))}
+              placeholder="Select"
+            />
           </div>
         </section>
 
-        {/* Advertising Tags */}
+        {/* ─── Amenities (multi-select dropdowns) ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Advertising Tags</h2>
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+            <TreePine className="h-4 w-4" /> Amenities
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <MultiSelectDropdown
+              label="Interior Amenities"
+              icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
+              options={interiorAmenities}
+              selected={form.interior_amenities}
+              onToggle={(val) => toggleArrayField("interior_amenities", val)}
+              searchable
+            />
+            <MultiSelectDropdown
+              label="Exterior Amenities"
+              icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
+              options={exteriorAmenities}
+              selected={form.exterior_amenities}
+              onToggle={(val) => toggleArrayField("exterior_amenities", val)}
+              searchable
+            />
+          </div>
+        </section>
+
+        {/* ─── Advertising Tags ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
+            <Tag className="h-4 w-4" /> Advertising Tags
+          </h2>
           <p className="text-xs text-muted-foreground mb-3">Select tags to highlight this listing on search results</p>
           <div className="flex flex-wrap gap-2">
             {advertisingTagOptions.map((tag) => (
               <button
                 key={tag} type="button"
-                onClick={() => {
-                  setForm((prev) => ({
-                    ...prev,
-                    advertising_tags: prev.advertising_tags.includes(tag)
-                      ? prev.advertising_tags.filter((t) => t !== tag)
-                      : [...prev.advertising_tags, tag],
-                  }));
-                }}
+                onClick={() => toggleArrayField("advertising_tags", tag)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                   form.advertising_tags.includes(tag)
                     ? "bg-primary text-primary-foreground border-primary"
@@ -479,33 +517,26 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
+        {/* ─── Location ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
           <LocationFormFields
-            province={form.province}
-            town={form.town}
-            neighbourhood={form.neighbourhood}
-            pinLocation={form.pin_location}
-            onProvinceChange={(v) => updateField("province", v)}
-            onTownChange={(v) => updateField("town", v)}
-            onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
-            onPinLocationChange={(v) => updateField("pin_location", v)}
+            province={form.province} town={form.town} neighbourhood={form.neighbourhood} pinLocation={form.pin_location}
+            onProvinceChange={(v) => updateField("province", v)} onTownChange={(v) => updateField("town", v)}
+            onNeighbourhoodChange={(v) => updateField("neighbourhood", v)} onPinLocationChange={(v) => updateField("pin_location", v)}
           />
         </section>
 
-        {/* Media */}
+        {/* ─── Media ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Media</h2>
-
-          {/* Images */}
           <div className="space-y-3 mb-6">
             <Label className="text-foreground font-medium">Images</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
                   <img src={url} alt="" className="w-full h-full object-cover" />
-                  <button type="button" onClick={() => removeImage(url)}
-                    className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => removeImage(url)} className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <X className="h-3 w-3" />
                   </button>
                 </div>
@@ -517,16 +548,13 @@ const CompanyPropertyEditPage = () => {
               </label>
             </div>
           </div>
-
-          {/* Plans */}
           <div className="space-y-3 mb-6">
             <Label className="text-foreground font-medium">Plans</Label>
             <div className="flex flex-wrap gap-3">
               {planFiles.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
                   <img src={url} alt="" className="w-full h-full object-cover" />
-                  <button type="button" onClick={() => removePlan(url)}
-                    className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => removePlan(url)} className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <X className="h-3 w-3" />
                   </button>
                 </div>
@@ -538,8 +566,6 @@ const CompanyPropertyEditPage = () => {
               </label>
             </div>
           </div>
-
-          {/* Video & 360 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Video Link</Label>
@@ -552,7 +578,7 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
-        {/* Open House */}
+        {/* ─── Open House ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Open House</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -579,5 +605,113 @@ const CompanyPropertyEditPage = () => {
     </CompanyLayout>
   );
 };
+
+/* ─── Reusable Form Select with Icon ─── */
+function FormSelect({
+  label, icon, value, onChange, options, placeholder,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">
+        {icon} {label}
+      </Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+/* ─── Multi-Select Dropdown with Search ─── */
+function MultiSelectDropdown({
+  label, icon, options, selected, onToggle, searchable = false,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  options: string[];
+  selected: string[];
+  onToggle: (val: string) => void;
+  searchable?: boolean;
+}) {
+  const [search, setSearch] = useState("");
+  const filtered = search ? options.filter(o => o.toLowerCase().includes(search.toLowerCase())) : options;
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">
+        {icon} {label}
+      </Label>
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-md border border-input bg-secondary/50 hover:border-primary/50 transition-colors text-left"
+          >
+            <span className={selected.length > 0 ? "text-foreground" : "text-muted-foreground"}>
+              {selected.length > 0 ? `${selected.length} selected` : `Select ${label.toLowerCase()}`}
+            </span>
+            <div className="flex items-center gap-1.5">
+              {selected.length > 0 && (
+                <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
+                  {selected.length}
+                </Badge>
+              )}
+              <ChevronDown className="h-3.5 w-3.5 text-amber-500" />
+            </div>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-72 p-0" align="start" sideOffset={6}>
+          {searchable && (
+            <div className="p-2.5 border-b border-border">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <input
+                  type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+                  placeholder={`Search...`}
+                  className="w-full h-8 pl-8 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+                />
+              </div>
+            </div>
+          )}
+          <ScrollArea className="max-h-[240px]">
+            <div className="p-1.5 space-y-0.5">
+              {filtered.length === 0 && (
+                <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
+              )}
+              {filtered.map((opt) => {
+                const isChecked = selected.includes(opt);
+                return (
+                  <label key={opt} className={`flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-md transition-colors ${isChecked ? "bg-primary/5" : "hover:bg-muted"}`}>
+                    <Checkbox checked={isChecked} onCheckedChange={() => onToggle(opt)} />
+                    <span className={`text-sm ${isChecked ? "text-foreground font-medium" : "text-foreground"}`}>{opt}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </ScrollArea>
+          {selected.length > 0 && (
+            <div className="px-3 py-2 border-t border-border bg-muted/30">
+              <p className="text-xs text-muted-foreground">
+                <span className="font-medium text-primary">{selected.length}</span> selected
+              </p>
+            </div>
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
 
 export default CompanyPropertyEditPage;
