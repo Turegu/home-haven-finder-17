@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, Building2, Car, Sofa, Calendar, TreePine, Lamp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import type { LucideIcon } from 'lucide-react';
 
 const floorLevels = [
   'Ground', 'Garden floor', '1', '2', '3 - 5', '6 - 10',
@@ -90,7 +90,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           )}
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[520px] max-h-[85vh] flex flex-col p-0">
+      <DialogContent className="sm:max-w-[480px] flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
           <DialogTitle className="flex items-center justify-between">
             <span>Filters</span>
@@ -101,50 +101,50 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
             )}
           </DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 px-6 py-4">
-          <div className="space-y-6">
-            <MultiChipGroup
-              label="Floor Level"
-              options={floorLevels}
-              selected={filters.floorLevels}
-              onToggle={(v) => toggleArray('floorLevels', v)}
-            />
-            <MultiChipGroup
-              label="Parking Space"
-              options={parkingSpaces}
-              selected={filters.parkingSpaces}
-              onToggle={(v) => toggleArray('parkingSpaces', v)}
-            />
-            <MultiChipGroup
-              label="Furniture"
-              options={furnitureOptions}
-              selected={filters.furniture}
-              onToggle={(v) => toggleArray('furniture', v)}
-            />
-            <MultiChipGroup
-              label="Property Age"
-              options={propertyAges}
-              selected={filters.propertyAges}
-              onToggle={(v) => toggleArray('propertyAges', v)}
-            />
-
-            {/* Exterior Amenities - searchable dropdown */}
-            <SearchableAmenityDropdown
-              label="Exterior Amenities"
-              options={defaultExteriorAmenities}
-              selected={filters.exteriorAmenities}
-              onToggle={(v) => toggleArray('exteriorAmenities', v)}
-            />
-
-            {/* Interior Amenities - searchable dropdown */}
-            <SearchableAmenityDropdown
-              label="Interior Amenities"
-              options={defaultInteriorAmenities}
-              selected={filters.interiorAmenities}
-              onToggle={(v) => toggleArray('interiorAmenities', v)}
-            />
-          </div>
-        </ScrollArea>
+        <div className="px-6 py-4 space-y-3">
+          <FilterDropdown
+            label="Floor Level"
+            icon={Building2}
+            options={floorLevels}
+            selected={filters.floorLevels}
+            onToggle={(v) => toggleArray('floorLevels', v)}
+          />
+          <FilterDropdown
+            label="Parking Space"
+            icon={Car}
+            options={parkingSpaces}
+            selected={filters.parkingSpaces}
+            onToggle={(v) => toggleArray('parkingSpaces', v)}
+          />
+          <FilterDropdown
+            label="Furniture"
+            icon={Sofa}
+            options={furnitureOptions}
+            selected={filters.furniture}
+            onToggle={(v) => toggleArray('furniture', v)}
+          />
+          <FilterDropdown
+            label="Property Age"
+            icon={Calendar}
+            options={propertyAges}
+            selected={filters.propertyAges}
+            onToggle={(v) => toggleArray('propertyAges', v)}
+          />
+          <SearchableFilterDropdown
+            label="Exterior Amenities"
+            icon={TreePine}
+            options={defaultExteriorAmenities}
+            selected={filters.exteriorAmenities}
+            onToggle={(v) => toggleArray('exteriorAmenities', v)}
+          />
+          <SearchableFilterDropdown
+            label="Interior Amenities"
+            icon={Lamp}
+            options={defaultInteriorAmenities}
+            selected={filters.interiorAmenities}
+            onToggle={(v) => toggleArray('interiorAmenities', v)}
+          />
+        </div>
         <div className="px-6 py-4 border-t border-border">
           <Button className="w-full" size="lg">
             Apply
@@ -155,46 +155,65 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
   );
 }
 
-function MultiChipGroup({
+function FilterDropdown({
   label,
+  icon: Icon,
   options,
   selected,
   onToggle,
 }: {
   label: string;
+  icon: LucideIcon;
   options: string[];
   selected: string[];
   onToggle: (v: string) => void;
 }) {
   return (
-    <div>
-      <h4 className="text-sm font-semibold text-foreground mb-2">{label}</h4>
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => (
-          <button
-            key={opt}
-            onClick={() => onToggle(opt)}
-            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-              selected.includes(opt)
-                ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border text-foreground hover:border-primary/50'
-            }`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-    </div>
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="flex items-center justify-between w-full px-3 py-2.5 text-sm border border-border rounded-md bg-background hover:border-primary/50 transition-colors">
+          <span className="flex items-center gap-2">
+            <Icon className="h-4 w-4 text-muted-foreground" />
+            <span className={selected.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
+              {label}
+            </span>
+            {selected.length > 0 && (
+              <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
+                {selected.length}
+              </Badge>
+            )}
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-1" align="start">
+        <ScrollArea className="max-h-[220px]">
+          <div className="space-y-0.5">
+            {options.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
+                <Checkbox
+                  checked={selected.includes(opt)}
+                  onCheckedChange={() => onToggle(opt)}
+                />
+                <span className="text-sm text-foreground">{opt}</span>
+              </label>
+            ))}
+          </div>
+        </ScrollArea>
+      </PopoverContent>
+    </Popover>
   );
 }
 
-function SearchableAmenityDropdown({
+function SearchableFilterDropdown({
   label,
+  icon: Icon,
   options,
   selected,
   onToggle,
 }: {
   label: string;
+  icon: LucideIcon;
   options: string[];
   selected: string[];
   onToggle: (v: string) => void;
@@ -206,68 +225,53 @@ function SearchableAmenityDropdown({
     : options;
 
   return (
-    <div>
-      <h4 className="text-sm font-semibold text-foreground mb-2">
-        {label}
-        {selected.length > 0 && (
-          <Badge variant="secondary" className="ml-2 text-[10px]">
-            {selected.length}
-          </Badge>
-        )}
-      </h4>
-      <Popover>
-        <PopoverTrigger asChild>
-          <button className="flex items-center justify-between w-full px-3 py-2 text-sm border border-border rounded-md bg-background hover:border-primary/50 transition-colors">
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="flex items-center justify-between w-full px-3 py-2.5 text-sm border border-border rounded-md bg-background hover:border-primary/50 transition-colors">
+          <span className="flex items-center gap-2">
+            <Icon className="h-4 w-4 text-muted-foreground" />
             <span className={selected.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
-              {selected.length > 0 ? `${selected.length} selected` : `Select ${label}`}
+              {label}
             </span>
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-72 p-0" align="start">
-          <div className="p-2 border-b border-border">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={`Search ${label.toLowerCase()}...`}
-                className="w-full h-8 pl-7 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
-              />
-            </div>
+            {selected.length > 0 && (
+              <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
+                {selected.length}
+              </Badge>
+            )}
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-0" align="start">
+        <div className="p-2 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={`Search ${label.toLowerCase()}...`}
+              className="w-full h-8 pl-7 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+            />
           </div>
-          <ScrollArea className="max-h-[200px]">
-            <div className="p-1 space-y-0.5">
-              {filtered.length === 0 && (
-                <p className="text-xs text-muted-foreground px-2 py-3 text-center">No results found</p>
-              )}
-              {filtered.map((opt) => (
-                <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
-                  <Checkbox
-                    checked={selected.includes(opt)}
-                    onCheckedChange={() => onToggle(opt)}
-                  />
-                  <span className="text-sm text-foreground">{opt}</span>
-                </label>
-              ))}
-            </div>
-          </ScrollArea>
-        </PopoverContent>
-      </Popover>
-      {/* Show selected items as small chips */}
-      {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
-          {selected.map(v => (
-            <Badge key={v} variant="secondary" className="text-xs gap-1 pr-1">
-              {v}
-              <button onClick={() => onToggle(v)} className="ml-0.5 hover:text-destructive">
-                ×
-              </button>
-            </Badge>
-          ))}
         </div>
-      )}
-    </div>
+        <ScrollArea className="max-h-[200px]">
+          <div className="p-1 space-y-0.5">
+            {filtered.length === 0 && (
+              <p className="text-xs text-muted-foreground px-2 py-3 text-center">No results found</p>
+            )}
+            {filtered.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
+                <Checkbox
+                  checked={selected.includes(opt)}
+                  onCheckedChange={() => onToggle(opt)}
+                />
+                <span className="text-sm text-foreground">{opt}</span>
+              </label>
+            ))}
+          </div>
+        </ScrollArea>
+      </PopoverContent>
+    </Popover>
   );
 }
