@@ -116,14 +116,16 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
           <span>{imgIdx + 1}/{allImages.length}</span>
         </div>
 
-        {/* Action buttons */}
+        {/* Close button - top left */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          className="absolute top-1.5 left-1.5 bg-background/90 hover:bg-background text-foreground/70 hover:text-primary p-1 rounded-full transition-colors shadow-sm z-10"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+
+        {/* Action buttons - top right */}
         <div className="absolute top-1.5 right-1.5 flex gap-1">
-          <button
-            onClick={(e) => { e.stopPropagation(); onClose(); }}
-            className="bg-background/90 hover:bg-background text-foreground/70 hover:text-primary p-1 rounded-full transition-colors shadow-sm"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
           <button
             onClick={(e) => { e.stopPropagation(); }}
             className="bg-background/90 hover:bg-background text-foreground/70 hover:text-primary p-1 rounded-full transition-colors shadow-sm"
