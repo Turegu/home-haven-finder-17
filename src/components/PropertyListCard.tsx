@@ -145,16 +145,17 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
         {/* Content area */}
         <div className="flex-1 p-4 flex flex-col justify-between relative">
-          {/* Company logo — upper right corner (PropertyFinder style) */}
-          <div className="absolute top-3 right-3">
+          {/* Company logo + name — upper right corner */}
+          <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
             <img
               src={property.agentLogo}
               alt={property.agentName}
               className="h-10 w-16 rounded object-cover border border-border shadow-sm"
             />
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
           </div>
 
-          <div className="pr-20">
+          <div className="pr-24">
             {/* Title */}
             <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
 
@@ -187,16 +188,28 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             </div>
           </div>
 
-          {/* Bottom row: agent + contact */}
+          {/* Bottom row: action buttons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            <div className="flex items-center gap-2">
-              {property.agentAvatar && (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={property.agentAvatar} alt="Agent" />
-                  <AvatarFallback className="text-xs">AG</AvatarFallback>
-                </Avatar>
-              )}
-              <span className="text-xs text-muted-foreground">{property.agentName}</span>
+            {/* Action buttons: compare + favorite */}
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                className="bg-muted hover:bg-accent text-muted-foreground hover:text-primary p-1.5 rounded-full transition-colors"
+                aria-label="Compare"
+              >
+                <Layers className="h-4 w-4" />
+              </button>
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
+                className={`p-1.5 rounded-full transition-colors ${
+                  isFavorited
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted hover:bg-accent text-muted-foreground hover:text-destructive'
+                }`}
+                aria-label="Favorite"
+              >
+                <Heart className="h-4 w-4" fill={isFavorited ? 'currentColor' : 'none'} />
+              </button>
             </div>
             <div className="flex items-center gap-2">
               <Button
