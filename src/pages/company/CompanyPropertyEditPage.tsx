@@ -740,4 +740,30 @@ function MultiSelectDropdown({
   );
 }
 
+/* ─── Rich Text Toolbar ─── */
+function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
+  const buttons = [
+    { tag: "bold", icon: Bold, label: "Bold" },
+    { tag: "italic", icon: Italic, label: "Italic" },
+    { tag: "underline", icon: Underline, label: "Underline" },
+    { tag: "bullet", icon: List, label: "Bullet" },
+    { tag: "heading", icon: Heading, label: "Heading" },
+  ];
+  return (
+    <div className="flex items-center gap-1 p-1 border border-border rounded-md bg-muted/30 w-fit">
+      {buttons.map((b) => (
+        <button
+          key={b.tag}
+          type="button"
+          onClick={() => onAction(b.tag)}
+          title={b.label}
+          className="p-1.5 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+        >
+          <b.icon className="h-4 w-4" />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default CompanyPropertyEditPage;
