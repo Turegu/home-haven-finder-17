@@ -32,7 +32,7 @@ const contractTypes = [
   { value: "commercial_rent", label: "Commercial for Rent", purpose: "rent", classification: "commercial" },
 ];
 
-const rentDurations = ["Daily", "Weekly", "Monthly", "Yearly"];
+// Rent durations now fetched dynamically via filterOpts["rent_duration"]
 const advertisingTagOptions = [
   "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
   "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
