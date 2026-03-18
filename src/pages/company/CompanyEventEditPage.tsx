@@ -415,8 +415,13 @@ const CompanyEventEditPage = () => {
         {/* Submit */}
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate("/company/events")}>Cancel</Button>
-          <Button type="submit" disabled={loading}>
-            <Save className="h-4 w-4 mr-2" /> {loading ? "Saving..." : isEdit ? "Update Event" : "Create"}
+          <Button type="button" variant="secondary" disabled={loading} onClick={() => handleSave("draft")}>
+            <Save className="h-4 w-4 mr-2" />
+            {loading ? "Saving..." : "Save as Draft"}
+          </Button>
+          <Button type="button" disabled={loading} onClick={() => handleSave("active")}>
+            <Save className="h-4 w-4 mr-2" />
+            {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
           </Button>
         </div>
       </form>
