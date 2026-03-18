@@ -154,6 +154,7 @@ const BuyPage = () => {
           <div className="hidden lg:block w-[225px] shrink-0">
             <div className="sticky top-[160px]">
               <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="vertical" className="" />
+              <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
             </div>
           </div>
         </div>
