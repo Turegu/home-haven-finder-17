@@ -131,7 +131,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Furniture"
             icon={Sofa}
-            options={furnitureOptions}
+            options={fo["furniture"] || []}
             selected={local.furniture}
             onToggle={(v) => toggleArray('furniture', v)}
           />
