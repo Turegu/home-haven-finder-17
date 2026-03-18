@@ -204,22 +204,21 @@ const PropertyDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Over View</h2>
-              <div className="grid grid-cols-2 gap-x-8 text-sm">
-                <OverviewRow label="Listing ID/Number" value={property.listingId} />
-                <OverviewRow label="Type" value={property.type} />
-                <OverviewRow label="" value="" />
-                <OverviewRow label="Price" value={`$ ${property.price.toLocaleString()}`} />
-                <OverviewRow label="Area" value={`${property.area} ${property.areaUnit}`} />
-                <OverviewRow label="Rooms" value={String(property.bedrooms)} />
-                <OverviewRow label="Bathrooms" value={String(property.bathrooms)} />
-                <OverviewRow label="Title Deed" value={property.titleDeed || '—'} />
-                <OverviewRow label="Parking Spaces" value={String(property.parkingSpaces)} />
-                <OverviewRow label="Furniture" value={property.furniture} />
-                <OverviewRow label="Floor Level" value={property.floorLevel} />
-                <OverviewRow label="Property Age" value={property.propertyAge} />
-                <OverviewRow label="Property Status" value={property.propertyStatus} />
-                <OverviewRow label="Property Orientation" value={property.orientation.join(', ')} />
+              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <OverviewItem icon={Hash} label="Listing ID" value={property.listingId} />
+                <OverviewItem icon={Building} label="Type" value={property.type} />
+                <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
+                <OverviewItem icon={Ruler} label="Area" value={`${property.area} ${property.areaUnit}`} />
+                <OverviewItem icon={Home} label="Rooms" value={String(property.bedrooms)} />
+                <OverviewItem icon={Bath} label="Bathrooms" value={String(property.bathrooms)} />
+                <OverviewItem icon={FileText} label="Title Deed" value={property.titleDeed || '—'} />
+                <OverviewItem icon={Car} label="Parking" value={String(property.parkingSpaces)} />
+                <OverviewItem icon={Armchair} label="Furniture" value={property.furniture} />
+                <OverviewItem icon={Layers} label="Floor Level" value={property.floorLevel} />
+                <OverviewItem icon={Hourglass} label="Property Age" value={property.propertyAge} />
+                <OverviewItem icon={Activity} label="Status" value={property.propertyStatus} />
+                <OverviewItem icon={Compass} label="Orientation" value={property.orientation.join(', ')} />
               </div>
             </div>
 
