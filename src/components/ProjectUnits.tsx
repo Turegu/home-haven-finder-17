@@ -210,40 +210,6 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
               ))}
             </div>
 
-            {/* Selected unit quick facts */}
-            {currentUnit && (
-              <div className="mt-4 rounded-lg border border-border bg-muted/30 p-4 space-y-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quick Facts</p>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Price</span>
-                    <span className="font-bold text-primary">{currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Area</span>
-                    <span className="font-semibold text-foreground">{currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Rooms</span>
-                    <span className="font-semibold text-foreground">{currentUnit.rooms || '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Bathrooms</span>
-                    <span className="font-semibold text-foreground">{currentUnit.bathrooms != null ? currentUnit.bathrooms : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Parking</span>
-                    <span className="font-semibold text-foreground">{currentUnit.car_parking != null ? currentUnit.car_parking : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Status</span>
-                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[currentUnit.status] || ''}`}>
-                      {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Unit Detail (right) */}
