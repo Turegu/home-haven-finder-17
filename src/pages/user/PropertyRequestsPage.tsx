@@ -5,12 +5,11 @@ import { format } from "date-fns";
 
 interface InboxItem {
   id: string;
-  full_name: string;
-  email: string;
+  full_name: string | null;
+  email: string | null;
   phone: string | null;
-  budget: string | null;
   message: string | null;
-  inbox_type: string;
+  inquiry_type: string;
   created_at: string;
 }
 
