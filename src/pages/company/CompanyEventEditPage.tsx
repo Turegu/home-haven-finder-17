@@ -204,6 +204,7 @@ const CompanyEventEditPage = () => {
       video_link: form.video_link || null,
       pdf_catalogue_url: pdfUrl || null,
       organizer: form.organizer || null,
+      logo_url: logoUrl || null,
       images,
       company_id: companyId,
       status: publishStatus,
