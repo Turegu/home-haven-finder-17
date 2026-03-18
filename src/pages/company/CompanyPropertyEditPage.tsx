@@ -369,7 +369,7 @@ const CompanyPropertyEditPage = () => {
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
             <ScrollText className="h-4 w-4" /> Contract & Property Type
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <FormSelect
               label="Contract Type *"
               icon={<Home className="h-4 w-4 text-muted-foreground" />}
@@ -383,13 +383,6 @@ const CompanyPropertyEditPage = () => {
               value={form.property_type}
               onChange={(v) => updateField("property_type", v)}
               options={availablePropertyTypes.map(t => ({ value: t, label: t }))}
-            />
-            <FormSelect
-              label="Property Status"
-              icon={<Activity className="h-4 w-4 text-muted-foreground" />}
-              value={form.property_status}
-              onChange={(v) => updateField("property_status", v)}
-              options={propertyStatusOptions.map(o => ({ value: o, label: o.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) }))}
             />
           </div>
         </section>
