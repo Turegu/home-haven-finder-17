@@ -14,7 +14,10 @@ import SearchFilters from '@/components/SearchFilters';
 import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
+import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
+
+const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
 
 const BuyPage = () => {
   const routerLocation = useLocation();
@@ -117,7 +120,7 @@ const BuyPage = () => {
                       {chunkIdx < Math.ceil(properties.length / 3) - 1 && (
                         <div className="my-6">
                           <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
-                          <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
                         </div>
                       )}
                     </div>
@@ -126,17 +129,17 @@ const BuyPage = () => {
               </div>
             ) : viewMode === 'list' ? (
               <div className="space-y-6">
-                {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
-                  const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                {Array.from({ length: Math.ceil(properties.length / 4) }, (_, chunkIdx) => {
+                  const chunk = properties.slice(chunkIdx * 4, (chunkIdx + 1) * 4);
                   return (
                     <div key={chunkIdx} className="space-y-6">
                       {chunk.map((property) => (
                         <PropertyListCard key={property.id} property={property} />
                       ))}
-                      {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
+                      {chunkIdx < Math.ceil(properties.length / 4) - 1 && (
                         <div className="my-6">
                           <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
-                          <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
                         </div>
                       )}
                     </div>
