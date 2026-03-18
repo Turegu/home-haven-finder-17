@@ -32,6 +32,12 @@ export const mockPropertyDetail = {
   agentLogo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
   agentName: 'Knight Frank',
   agentCompany: 'Real Estate Company',
+  companyLogo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=80&h=80&fit=crop',
+  agentDesignation: 'Senior Property Consultant',
+  agentLanguages: ['English', 'Arabic', 'Turkish'],
+  openHouseStart: 'Sat, 22 Mar 2026 — 10:00 AM',
+  openHouseEnd: 'Sat, 22 Mar 2026 — 4:00 PM',
+  viewingHours: 'Mon–Fri: 9:00 AM – 6:00 PM, Sat: 10:00 AM – 4:00 PM',
   isFeatured: true,
   description: `Apartment for sale in Bulgari Resort & Residences, Jumeirah Bay Island
 

@@ -69,7 +69,7 @@ const MarketTrends = ({ province, town, neighbourhood, currency = "USD", areaUni
           />
 
           <StatCard
-            icon={<Home className="h-8 w-8 text-primary" />}
+            icon={<Banknote className="h-8 w-8 text-primary" />}
             title="Average Monthly Rental"
             value={stats?.avgRentPricePerM2 ? formatPrice(stats.avgRentPricePerM2) : null}
             min={stats?.rentCount && stats.rentCount > 1 ? formatPrice(stats.minRentPricePerM2) : null}
