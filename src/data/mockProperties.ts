@@ -154,9 +154,11 @@ export const mockProperties: Property[] = [
     ],
     agentLogo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
     agentName: 'Ankara Properties',
+    agentAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'featured',
     listingType: 'buy',
+    advertisingTags: ['Price Drop'],
   },
   {
     id: '6',
