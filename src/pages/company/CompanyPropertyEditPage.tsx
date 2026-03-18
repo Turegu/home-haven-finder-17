@@ -335,11 +335,31 @@ const CompanyPropertyEditPage = () => {
           <div className="space-y-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Property Title *</Label>
-              <Input value={form.title} onChange={(e) => updateField("title", e.target.value)} className="bg-secondary/50" required />
+              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
+              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Property Description</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
+              <RichTextToolbar
+                onAction={(tag) => {
+                  const el = document.getElementById("prop-desc") as HTMLTextAreaElement | null;
+                  if (!el) return;
+                  const start = el.selectionStart;
+                  const end = el.selectionEnd;
+                  const text = form.description;
+                  const selected = text.substring(start, end);
+                  let wrapped = selected;
+                  if (tag === "bold") wrapped = `**${selected}**`;
+                  else if (tag === "italic") wrapped = `*${selected}*`;
+                  else if (tag === "underline") wrapped = `__${selected}__`;
+                  else if (tag === "bullet") wrapped = `\n- ${selected}`;
+                  else if (tag === "heading") wrapped = `\n### ${selected}`;
+                  const newText = text.substring(0, start) + wrapped + text.substring(end);
+                  updateField("description", newText);
+                  setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
+                }}
+              />
+              <Textarea id="prop-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
           </div>
         </section>
