@@ -13,9 +13,11 @@ export interface Property {
   images: string[];
   agentLogo: string;
   agentName: string;
+  agentAvatar?: string;
   isFeatured: boolean;
   listingTier: 'premium' | 'featured' | 'standard';
   listingType: 'buy' | 'rent';
+  advertisingTags?: string[];
 }
 
 export interface Project {
