@@ -379,16 +379,19 @@ const PropertyDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Phone className="h-5 w-5" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Phone className="h-4 w-4" />
+                  Call
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Mail className="h-5 w-5" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Mail className="h-4 w-4" />
+                  Email
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <MessageCircle className="h-5 w-5" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <MessageCircle className="h-4 w-4" />
+                  Chat
                 </button>
               </div>
             </div>
