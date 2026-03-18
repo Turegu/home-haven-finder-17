@@ -32,19 +32,6 @@ const contractTypes = [
   { value: "commercial_rent", label: "Commercial for Rent", purpose: "rent", classification: "commercial" },
 ];
 
-const residentialPropertyTypes = [
-  "Apartment", "Villa", "Duplex", "Penthouse", "Townhouse", "Studio", "Land", "Farm House",
-];
-const commercialPropertyTypes = [
-  "Office", "Shop", "Store", "Showroom", "Restaurant/Café", "Land", "Farms",
-  "Labor Camp", "Factory", "Warehouse", "Co-Working Space", "Whole Building", "Full Floor",
-];
-
-const furnitureOptions = ["Fully Furnished", "Unfurnished", "Partially Furnished"];
-const propertyStatusOptions = ["new", "under_construction", "ready", "resale"];
-const ageOptions = ["New", "1-5 Years", "6-10 Years", "11-15 Years", "16-20 Years", "21+"];
-const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
-const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Daily", "Weekly", "Monthly", "Yearly"];
 const advertisingTagOptions = [
   "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
@@ -52,28 +39,6 @@ const advertisingTagOptions = [
   "Lower Price", "Below Market", "Reduced", "Cash Only",
   "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
   "Fully Renovated", "Motivated Seller", "Open House",
-];
-
-const floorLevels = [
-  "Ground", "Garden floor", "1", "2", "3 - 5", "6 - 10",
-  "10-20", "20+", "Top floor", "Basement", "Mezzanine", "Penthouse",
-  "High entrance", "Semi Basement", "Direct entrance",
-];
-const parkingSpaces = ["0", "1", "2", "3", "4", "5", "6+"];
-
-const interiorAmenities = [
-  "Central heating", "Air conditioning", "Fireplace", "Built-in wardrobe",
-  "Walk-in closet", "Kitchen appliances", "Laundry room", "Smart home system",
-  "Jacuzzi", "Sauna", "Shower cabin", "Bathtub",
-  "Generator", "Security Camera", "Security", "Card Access System",
-  "Elevator", "Fire Lift", "Metal Detector",
-];
-const exteriorAmenities = [
-  "Close to gym", "Close to the city center",
-  "Close to restaurants and cafes", "Close to the beach",
-  "Close to schools", "Close to a park", "Close to public transport",
-  "Beach nearby", "Beachfront", "Private beach", "Beach access",
-  "Swimming pool", "Garden", "Playground", "BBQ area",
 ];
 
 const CompanyPropertyEditPage = () => {
