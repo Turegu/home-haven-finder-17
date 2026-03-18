@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
-  ChevronRight, ChevronLeft, Printer, Flag,
+  ChevronLeft, ChevronRight, Camera, Images, Globe, Video,
+  MessageCircle, PersonStanding, X
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -12,123 +12,160 @@ import { mockEvents } from '@/data/mockEvents';
 
 const EventDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const event = mockEvents.find((e) => e.id === id) || mockEvents[0];
   const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('photos');
+
+  const nextImage = () => setCurrentImage((prev) => (prev + 1) % event.images.length);
+  const prevImage = () => setCurrentImage((prev) => (prev - 1 + event.images.length) % event.images.length);
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+  const mediaTabs = [
+    { id: 'photos', label: 'Photos', icon: Camera },
+    { id: 'plans', label: 'Plans', icon: Images },
+    { id: '360', label: '360 View', icon: Globe },
+    { id: 'location', label: 'Location', icon: MapPin },
+    { id: 'street', label: 'Street View', icon: PersonStanding },
+    { id: 'video', label: 'Video', icon: Video },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
+      {/* Image Gallery — 3 side-by-side on desktop */}
+      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
+        <div className="flex h-full">
+          {event.images.slice(currentImage, currentImage + 3).concat(
+            currentImage + 3 > event.images.length
+              ? event.images.slice(0, (currentImage + 3) - event.images.length)
+              : []
+          ).map((img, i) => (
+            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % event.images.length); setLightboxOpen(true); }}>
+              <img src={img} alt={`${event.title} ${i + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+        <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
+          <ChevronRight className="h-5 w-5" />
+        </button>
+        <div className="absolute top-4 left-4 flex gap-2 z-10">
+          <button onClick={() => { if (navigator.share) { navigator.share({ title: event.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
+            <Share2 className="h-4 w-4" />
+          </button>
+          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Save to favorites">
+            <Heart className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
+          <Camera className="h-3.5 w-3.5" />
+          {currentImage + 1}/{event.images.length}
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
+          <button className="absolute top-4 right-4 text-white/80 hover:text-white p-2" onClick={() => setLightboxOpen(false)}>
+            <X className="h-6 w-6" />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full">
+            <ChevronLeft className="h-6 w-6 text-white" />
+          </button>
+          <img src={event.images[currentImage]} alt={event.title} className="max-h-[90vh] max-w-[90vw] object-contain" onClick={(e) => e.stopPropagation()} />
+          <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full">
+            <ChevronRight className="h-6 w-6 text-white" />
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+            {currentImage + 1} / {event.images.length}
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
-          <ChevronRight className="h-3 w-3" />
-          <Link to="/events" className="hover:text-primary">Events</Link>
-          <ChevronRight className="h-3 w-3" />
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 flex-wrap">
+          <Link to="/" className="hover:text-foreground">Home</Link>
+          <span>/</span>
+          <Link to="/events" className="hover:text-foreground">Events</Link>
+          <span>/</span>
           <span className="text-foreground">{event.title}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2">
-            {/* Image Gallery */}
-            <div className="relative rounded-lg overflow-hidden mb-6">
-              <img
-                src={event.images[currentImage]}
-                alt={event.title}
-                className="w-full h-[400px] object-cover"
-              />
-              {event.images.length > 1 && (
-                <>
-                  <button
-                    onClick={() => setCurrentImage((p) => (p === 0 ? event.images.length - 1 : p - 1))}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background"
-                  >
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={() => setCurrentImage((p) => (p === event.images.length - 1 ? 0 : p + 1))}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background"
-                  >
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </>
-              )}
-              <div className="absolute bottom-3 right-3 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1 text-xs font-medium">
-                {currentImage + 1} / {event.images.length}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Title Block */}
+            <div className="bg-card rounded-xl border border-border p-6">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <h1 className="text-xl font-bold text-foreground">{event.title}</h1>
+                {/* Media tabs */}
+                <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
+                  {mediaTabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
+                      title={tab.label}
+                    >
+                      <tab.icon className="h-5 w-5" />
+                    </button>
+                  ))}
+                </div>
               </div>
-              {/* Action buttons */}
-              <div className="absolute top-3 right-3 flex gap-2">
-                <button className="p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background">
-                  <Heart className="h-4 w-4 text-foreground/70" />
-                </button>
-                <button className="p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background">
-                  <Share2 className="h-4 w-4 text-foreground/70" />
-                </button>
-                <button className="p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background">
-                  <Printer className="h-4 w-4 text-foreground/70" />
-                </button>
-                <button className="p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-background">
-                  <Flag className="h-4 w-4 text-foreground/70" />
-                </button>
+
+              <p className="text-2xl font-bold text-primary mb-2">
+                {event.price ? `$ ${event.price.toLocaleString()}` : 'Open Invitation'}
+              </p>
+              <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>{event.location}</span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="h-4 w-4" />
+                  {event.eventType}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CalendarDays className="h-4 w-4 text-warm" />
+                  {formatDate(event.date)}
+                </span>
               </div>
             </div>
 
-            {/* Event Title & Info */}
-            <h1 className="text-2xl font-bold text-foreground mb-4">{event.title}</h1>
-
-            <div className="flex items-start gap-2 mb-3">
-              <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <span className="text-muted-foreground">{event.location}</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-6 mb-6">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <span className="text-muted-foreground">{event.eventType}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-muted-foreground" />
-                <span className="text-muted-foreground">{formatDate(event.date)}</span>
-              </div>
-            </div>
-
-            {/* Event Details Table */}
-            <div className="border border-border rounded-lg overflow-hidden mb-6">
-              <div className="bg-primary/5 px-4 py-3 border-b border-border">
-                <h2 className="font-semibold text-foreground">Event Details</h2>
-              </div>
-              <div className="divide-y divide-border">
-                {[
-                  ['Event Type', event.eventType],
-                  ['Date', formatDate(event.date)],
-                  ['Location', event.location],
-                  ['City', event.city],
-                  ['Organizer', event.organizer],
-                  ['Price', event.price ? `$ ${event.price.toLocaleString()}` : 'Free / Open Invitation'],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex px-4 py-3">
-                    <span className="w-1/3 text-sm text-muted-foreground">{label}</span>
-                    <span className="w-2/3 text-sm font-medium text-foreground">{value}</span>
-                  </div>
-                ))}
+            {/* Event Details */}
+            <div className="bg-card rounded-xl border border-border p-6">
+              <h2 className="text-lg font-bold text-foreground mb-4">Event Details</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                <OverviewItem label="Event Type" value={event.eventType} />
+                <OverviewItem label="Date" value={formatDate(event.date)} />
+                <OverviewItem label="Location" value={event.location} />
+                <OverviewItem label="City" value={event.city} />
+                <OverviewItem label="Organizer" value={event.organizer} />
+                <OverviewItem label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free / Open Invitation'} />
               </div>
             </div>
 
             {/* Description */}
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-foreground mb-3">Description</h2>
-              <p className="text-muted-foreground leading-relaxed">{event.description}</p>
+            <div className="bg-card rounded-xl border border-border p-6">
+              <h2 className="text-lg font-bold text-foreground mb-4">Description</h2>
+              <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
+                {event.description}
+              </div>
             </div>
 
             {/* Map placeholder */}
-            <div className="border border-border rounded-lg overflow-hidden mb-6">
-              <div className="bg-primary/5 px-4 py-3 border-b border-border">
-                <h2 className="font-semibold text-foreground">Location on Map</h2>
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
+              <div className="px-6 py-4 border-b border-border">
+                <h2 className="text-lg font-bold text-foreground">Location on Map</h2>
               </div>
               <div className="h-[300px] bg-muted flex items-center justify-center text-muted-foreground">
                 Map View — {event.location}
@@ -137,45 +174,40 @@ const EventDetailPage = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-[120px] space-y-4">
-              {/* Price Card */}
-              <div className="border border-border rounded-lg p-6 bg-card">
-                <div className="text-2xl font-bold text-foreground mb-1">
-                  {event.price ? `$ ${event.price.toLocaleString()}` : 'Open Invitation'}
-                </div>
-                {!event.price && (
-                  <p className="text-sm text-muted-foreground mb-4">This event is free to attend</p>
-                )}
+          <div className="space-y-6">
+            <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
+              {/* Organizer info */}
+              <div className="text-center mb-4">
+                <img
+                  src={event.organizerLogo}
+                  alt={event.organizer}
+                  className="h-24 w-24 rounded-lg object-cover border-2 border-border mx-auto mb-3"
+                />
+                <h3 className="font-bold text-foreground text-lg">{event.organizer}</h3>
+                <p className="text-sm text-muted-foreground">Event Organizer</p>
               </div>
 
-              {/* Organizer Card */}
-              <div className="border border-border rounded-lg p-6 bg-card">
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src={event.organizerLogo}
-                    alt={event.organizer}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-border"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-foreground">{event.organizer}</h3>
-                    <p className="text-sm text-muted-foreground">Event Organizer</p>
-                  </div>
+              {!event.price && (
+                <div className="bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-center mb-4">
+                  <p className="text-sm font-medium text-primary">This event is free to attend</p>
                 </div>
-                <div className="space-y-2">
-                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                    <Phone className="h-4 w-4 mr-2" /> Call
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    <Mail className="h-4 w-4 mr-2" /> Email
-                  </Button>
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
-                    <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                    </svg>
-                    WhatsApp
-                  </Button>
-                </div>
+              )}
+
+              <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Phone className="h-4 w-4" />
+                  Call
+                </button>
+                <div className="w-px h-6 bg-border" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </button>
+                <div className="w-px h-6 bg-border" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </button>
               </div>
             </div>
 
@@ -192,5 +224,12 @@ const EventDetailPage = () => {
     </div>
   );
 };
+
+const OverviewItem = ({ label, value }: { label: string; value: string }) => (
+  <div>
+    <p className="text-muted-foreground text-xs">{label}</p>
+    <p className="font-medium text-foreground">{value}</p>
+  </div>
+);
 
 export default EventDetailPage;

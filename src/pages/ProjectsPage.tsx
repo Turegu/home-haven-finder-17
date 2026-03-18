@@ -257,11 +257,11 @@ const ProjectsPage = () => {
         <div className="flex gap-6">
           <div className="flex-1 min-w-0">
             {viewMode === 'list' ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {Array.from({ length: Math.ceil(mockProjects.length / 7) }, (_, chunkIdx) => {
                   const chunk = mockProjects.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
                   return (
-                    <div key={chunkIdx} className="space-y-4">
+                    <div key={chunkIdx} className="space-y-6">
                       {chunk.map((project) => (
                         <ProjectListCard key={project.id} project={project} />
                       ))}

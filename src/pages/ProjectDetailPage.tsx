@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
-  Globe, Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2, Share2, Heart
+  Globe, Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2, Share2, Heart,
+  PersonStanding, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -17,6 +18,7 @@ const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const project = mockProjectDetail;
   const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [loanValues, setLoanValues] = useState({
     propertyValue: project.priceFrom,
@@ -42,7 +44,7 @@ const ProjectDetailPage = () => {
     { id: 'plans', label: 'Plans', icon: Images },
     { id: '360', label: '360 View', icon: Globe },
     { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'street', label: 'Street View', icon: MapPin },
+    { id: 'street', label: 'Street View', icon: PersonStanding },
     { id: 'video', label: 'Video', icon: Video },
   ];
 
@@ -50,16 +52,26 @@ const ProjectDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery */}
+      {/* Image Gallery — 3 side-by-side on desktop */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        <img src={project.images[currentImage]} alt={project.title} className="w-full h-full object-cover" />
-        <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full shadow-md">
+        <div className="flex h-full">
+          {project.images.slice(currentImage, currentImage + 3).concat(
+            currentImage + 3 > project.images.length
+              ? project.images.slice(0, (currentImage + 3) - project.images.length)
+              : []
+          ).map((img, i) => (
+            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % project.images.length); setLightboxOpen(true); }}>
+              <img src={img} alt={`${project.title} ${i + 1}`} className="w-full h-full object-cover" />
+            </div>
+          ))}
+        </div>
+        <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full shadow-md">
+        <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronRight className="h-5 w-5" />
         </button>
-        <div className="absolute top-4 left-4 flex gap-2">
+        <div className="absolute top-4 left-4 flex gap-2 z-10">
           <button onClick={() => { if (navigator.share) { navigator.share({ title: project.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
             <Share2 className="h-4 w-4" />
           </button>
@@ -67,11 +79,30 @@ const ProjectDetailPage = () => {
             <Heart className="h-4 w-4" />
           </button>
         </div>
-        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1">
+        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
           <Camera className="h-3.5 w-3.5" />
           {currentImage + 1}/{project.images.length}
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
+          <button className="absolute top-4 right-4 text-white/80 hover:text-white p-2" onClick={() => setLightboxOpen(false)}>
+            <X className="h-6 w-6" />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full">
+            <ChevronLeft className="h-6 w-6 text-white" />
+          </button>
+          <img src={project.images[currentImage]} alt={project.title} className="max-h-[90vh] max-w-[90vw] object-contain" onClick={(e) => e.stopPropagation()} />
+          <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full">
+            <ChevronRight className="h-6 w-6 text-white" />
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+            {currentImage + 1} / {project.images.length}
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
@@ -90,15 +121,16 @@ const ProjectDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
-                <div className="hidden md:flex items-center gap-1">
+                {/* Media tabs */}
+                <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`p-2 rounded-full transition-colors ${activeTab === tab.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-secondary'}`}
+                      className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
-                      <tab.icon className="h-4 w-4" />
+                      <tab.icon className="h-5 w-5" />
                     </button>
                   ))}
                 </div>
@@ -210,24 +242,52 @@ const ProjectDetailPage = () => {
           {/* Sidebar - Agent Card */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              <div className="text-center mb-4">
-                <img src={project.agentLogo} alt={project.agentName} className="h-20 w-20 rounded-full object-cover border-2 border-border mx-auto mb-3" />
-                <h3 className="font-bold text-foreground text-lg">{project.agentName}</h3>
+              {/* Agent info */}
+              <Link to={`/agent/${id}`} className="block text-center mb-4 group">
+                <img
+                  src={project.agentLogo}
+                  alt={project.agentName}
+                  className="h-24 w-24 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
+                />
+                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentName}</h3>
                 <p className="text-sm text-muted-foreground">{project.agentCompany}</p>
-              </div>
+              </Link>
+
               <Button variant="outline" className="w-full mb-3 gap-2">
-                <UserPlus className="h-4 w-4" /> Follow
+                <UserPlus className="h-4 w-4" />
+                Follow
               </Button>
-              <div className="flex gap-2">
-                <Button variant="outline" className="flex-1 gap-1 text-xs">
-                  <Phone className="h-3.5 w-3.5" /> Call
-                </Button>
-                <Button variant="outline" className="flex-1 gap-1 text-xs">
-                  <Mail className="h-3.5 w-3.5" /> Email
-                </Button>
-                <Button className="flex-1 gap-1 text-xs">
-                  <MessageCircle className="h-3.5 w-3.5" /> Whatsapp
-                </Button>
+
+              {/* Company logo */}
+              {project.agentCompany && (
+                <Link to={`/company/${id}`} className="flex items-center gap-4 py-4 border-t border-border group">
+                  <img
+                    src={project.agentLogo}
+                    alt={project.agentCompany}
+                    className="h-14 w-24 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{project.agentCompany}</h4>
+                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                  </div>
+                </Link>
+              )}
+
+              <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Phone className="h-4 w-4" />
+                  Call
+                </button>
+                <div className="w-px h-6 bg-border" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </button>
+                <div className="w-px h-6 bg-border" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
+                </button>
               </div>
             </div>
 
