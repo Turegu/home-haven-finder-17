@@ -36,7 +36,7 @@ const HeroSearch = () => {
     if (propertyTypes.length > 0) params.set('propertyTypes', propertyTypes.join(','));
     if (minPrice) params.set('minPrice', minPrice);
     if (maxPrice) params.set('maxPrice', maxPrice);
-    if (rooms) params.set('rooms', rooms);
+    if (rooms.length > 0) params.set('rooms', rooms.join(','));
     navigate(`/${activeTab === 'rent' ? 'rent' : 'buy'}?${params.toString()}`);
   }
 
