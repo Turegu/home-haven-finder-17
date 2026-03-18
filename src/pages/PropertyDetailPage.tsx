@@ -319,21 +319,6 @@ const PropertyDetailPage = () => {
           {/* Sidebar - Agent Card */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              {/* Company logo */}
-              {property.companyLogo && (
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
-                  <img
-                    src={property.companyLogo}
-                    alt={property.agentCompany}
-                    className="h-12 w-12 rounded-lg object-cover border border-border"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-foreground text-sm">{property.agentCompany}</h4>
-                    <p className="text-xs text-muted-foreground">Real Estate Company</p>
-                  </div>
-                </div>
-              )}
-
               {/* Agent info */}
               <div className="text-center mb-4">
                 <img
@@ -345,12 +330,6 @@ const PropertyDetailPage = () => {
                 {property.agentDesignation && (
                   <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
                 )}
-                {property.agentLanguages && property.agentLanguages.length > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    <span className="font-medium text-foreground">I speak:</span>{' '}
-                    {property.agentLanguages.join(', ')}
-                  </p>
-                )}
               </div>
 
               <Button variant="outline" className="w-full mb-3 gap-2">
@@ -358,17 +337,39 @@ const PropertyDetailPage = () => {
                 Follow
               </Button>
 
+              {property.agentLanguages && property.agentLanguages.length > 0 && (
+                <p className="text-xs text-muted-foreground text-center mb-4">
+                  <span className="font-medium text-foreground">Speaks:</span>{' '}
+                  {property.agentLanguages.join(', ')}
+                </p>
+              )}
+
+              {/* Company logo */}
+              {property.companyLogo && (
+                <div className="flex items-center gap-3 py-3 border-t border-border">
+                  <img
+                    src={property.companyLogo}
+                    alt={property.agentCompany}
+                    className="h-12 w-12 rounded-lg object-cover border border-border"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-foreground text-sm">{property.agentCompany}</h4>
+                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
                 <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Phone className="h-4 w-4" />
+                  <Phone className="h-5 w-5" />
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-5 w-5" />
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <MessageCircle className="h-4 w-4" />
+                  <MessageCircle className="h-5 w-5" />
                 </button>
               </div>
             </div>
