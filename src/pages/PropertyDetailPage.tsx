@@ -127,7 +127,7 @@ const PropertyDetailPage = () => {
               </p>
               <p className="text-foreground/80 mb-2">{property.title}</p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-warm" />
                 <span>{property.location}</span>
               </div>
 
