@@ -14,6 +14,7 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
 import type { LucideIcon } from 'lucide-react';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 const floorLevels = [
   'Ground', 'Garden floor', '1', '2', '3 - 5', '6 - 10',
