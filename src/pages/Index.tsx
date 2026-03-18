@@ -1,5 +1,4 @@
 import { ArrowRight, MapPin, Building, ExternalLink } from 'lucide-react';
-import { ArrowRight, MapPin, Building, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
