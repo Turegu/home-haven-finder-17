@@ -216,7 +216,6 @@ const PropertyDetailPage = () => {
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <OverviewItem icon={Hash} label="Listing ID" value={property.listingId} />
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <OverviewItem icon={Building} label="Type" value={property.type} />
                 <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
                 <OverviewItem icon={Ruler} label="Area" value={`${property.area} ${property.areaUnit}`} />
