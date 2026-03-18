@@ -169,7 +169,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Unit List (left) */}
           <div className="lg:col-span-2 flex flex-col">
-            <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1 flex-1">
+            <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1 flex-1">
               {filtered.map((unit) => (
                 <button
                   key={unit.id}
@@ -210,33 +210,30 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
               ))}
             </div>
 
-            {/* Summary stats to fill lower left */}
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
-                <p className="text-lg font-bold text-emerald-700">{units.filter(u => u.status === 'available').length}</p>
-                <p className="text-[11px] text-emerald-600">Available</p>
-              </div>
-              <div className="rounded-lg bg-amber-50 border border-amber-200 p-2.5 text-center">
-                <p className="text-lg font-bold text-amber-700">{units.filter(u => u.status === 'reserved').length}</p>
-                <p className="text-[11px] text-amber-600">Reserved</p>
-              </div>
-              <div className="rounded-lg bg-red-50 border border-red-200 p-2.5 text-center">
-                <p className="text-lg font-bold text-red-700">{units.filter(u => u.status === 'sold').length}</p>
-                <p className="text-[11px] text-red-600">Sold</p>
-              </div>
-              <div className="rounded-lg bg-muted/50 border border-border p-2.5 text-center">
-                <p className="text-lg font-bold text-foreground">{units.length}</p>
-                <p className="text-[11px] text-muted-foreground">Total</p>
-              </div>
-              <div className="rounded-lg bg-blue-50 border border-blue-200 p-2.5 text-center">
-                <p className="text-lg font-bold text-blue-700">{units.filter(u => u.price != null).length > 0 ? `${(units.filter(u => u.price != null).reduce((a, u) => Math.min(a, u.price!), Infinity)).toLocaleString()}` : '—'}</p>
-                <p className="text-[11px] text-blue-600">Min Price</p>
-              </div>
-              <div className="rounded-lg bg-purple-50 border border-purple-200 p-2.5 text-center">
-                <p className="text-lg font-bold text-purple-700">{units.filter(u => u.price != null).length > 0 ? `${(units.filter(u => u.price != null).reduce((a, u) => Math.max(a, u.price!), 0)).toLocaleString()}` : '—'}</p>
-                <p className="text-[11px] text-purple-600">Max Price</p>
-              </div>
-            </div>
+            {/* Compact availability bar */}
+            {(() => {
+              const available = units.filter(u => u.status === 'available').length;
+              const reserved = units.filter(u => u.status === 'reserved').length;
+              const sold = units.filter(u => u.status === 'sold').length;
+              const total = units.length || 1;
+              return (
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                    <span>{units.length} total units</span>
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" /> {available} Available</span>
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-amber-500 inline-block" /> {reserved} Reserved</span>
+                      <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-500 inline-block" /> {sold} Sold</span>
+                    </div>
+                  </div>
+                  <div className="flex h-2 rounded-full overflow-hidden bg-muted">
+                    {available > 0 && <div className="bg-emerald-500 transition-all" style={{ width: `${(available / total) * 100}%` }} />}
+                    {reserved > 0 && <div className="bg-amber-500 transition-all" style={{ width: `${(reserved / total) * 100}%` }} />}
+                    {sold > 0 && <div className="bg-red-500 transition-all" style={{ width: `${(sold / total) * 100}%` }} />}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Unit Detail (right) */}
