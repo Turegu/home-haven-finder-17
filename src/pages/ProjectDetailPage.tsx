@@ -181,15 +181,15 @@ const ProjectDetailPage = () => {
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem label="Listing ID/Number" value={project.listingId} />
-                <OverviewItem label="Type" value={project.projectType} />
-                <OverviewItem label="Starting Price" value={`$ ${project.priceFrom.toLocaleString()}`} />
-                <OverviewItem label="Developer" value={project.developer} />
-                <OverviewItem label="Area Ranges" value={project.areaRange} />
-                <OverviewItem label="No of Units" value={String(project.units)} />
-                <OverviewItem label="Project Status" value={project.status} />
-                <OverviewItem label="Completion" value={project.completionDate} />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <OverviewItem icon={Hash} label="Listing ID" value={project.listingId} />
+                <OverviewItem icon={Building} label="Type" value={project.projectType} />
+                <OverviewItem icon={DollarSign} label="Starting Price" value={`$ ${project.priceFrom.toLocaleString()}`} />
+                <OverviewItem icon={HardHat} label="Developer" value={project.developer} />
+                <OverviewItem icon={Ruler} label="Area Range" value={project.areaRange} />
+                <OverviewItem icon={Layers} label="No of Units" value={String(project.units)} />
+                <OverviewItem icon={Activity} label="Status" value={project.status} />
+                <OverviewItem icon={CalendarCheck} label="Completion" value={project.completionDate} />
               </div>
             </div>
 
