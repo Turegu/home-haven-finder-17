@@ -68,10 +68,11 @@ const EventsPage = () => {
             <p className="text-sm text-muted-foreground">{mockEvents.length} Events</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 border border-border rounded-md px-3 py-2">
-              <span className="text-sm text-muted-foreground">Sort By</span>
-              <ChevronDown className="h-3 w-3 text-muted-foreground" />
-            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring">
+              <option value="newest">Newest First</option>
+              <option value="date_asc">Date: Earliest</option>
+              <option value="date_desc">Date: Latest</option>
+            </select>
             <div className="flex border border-border rounded-md overflow-hidden">
               {[
                 { mode: 'grid' as const, icon: LayoutGrid },

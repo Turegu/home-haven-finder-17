@@ -63,10 +63,11 @@ const ProjectsPage = () => {
             <span className="text-primary">{mockProjects.length}</span> Projects
           </h1>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background">
-              <span className="text-muted-foreground">Sort By</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring">
+              <option value="newest">Newest First</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+            </select>
             <div className="flex border border-border rounded-md overflow-hidden">
               <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />
