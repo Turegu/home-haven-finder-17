@@ -63,119 +63,99 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
   return (
     <Link to={`/property/${property.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        {/* Dual thumbnail area */}
-        <div className="relative w-full md:w-[420px] shrink-0 flex">
-          {/* Main image */}
-          <div className="relative flex-1 min-h-[220px] overflow-hidden">
-            <img
-              src={property.images[currentImage]}
-              alt={property.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+        {/* Dual thumbnail area — two equal-size images side by side */}
+        <div className="relative w-full md:w-[420px] shrink-0">
+          <div className="flex min-h-[220px]">
+            {/* Left image */}
+            <div className="relative flex-1 overflow-hidden">
+              <img
+                src={property.images[currentImage]}
+                alt={property.title}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
 
-            {/* Slider arrows on main image */}
-            {property.images.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Next image"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </>
-            )}
+              {/* Slider arrows */}
+              {property.images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </>
+              )}
 
-            {/* Photo count */}
-            <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
-              <Camera className="h-3 w-3" />
-              <span>{property.images.length}</span>
-            </div>
+              {/* Photo count */}
+              <div className="absolute top-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+                <Camera className="h-3 w-3" />
+                <span>{currentImage + 1}/{property.images.length}</span>
+              </div>
 
-            {/* Price overlay on image (Rightmove style) */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-foreground/70 to-transparent pt-6 pb-2 px-3">
-              <span className="text-lg font-bold text-white">
-                $ {property.price.toLocaleString()}
-                {property.listingType === 'rent' && <span className="text-sm font-normal">/mo</span>}
-              </span>
-            </div>
+              {/* Tier badge + ad tags */}
+              <div className="absolute top-2 right-2 flex flex-col gap-1">
+                {property.listingTier !== 'standard' && tierBadge()}
+                {property.advertisingTags?.map((tag) => (
+                  <Badge
+                    key={tag}
+                    className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+                  >
+                    <Tag className="h-3 w-3" /> {tag}
+                  </Badge>
+                ))}
+              </div>
 
-            {/* Tier badge + ad tags */}
-            <div className="absolute top-2 left-2 flex flex-col gap-1">
-              {property.listingTier !== 'standard' && tierBadge()}
-              {property.advertisingTags?.map((tag) => (
-                <Badge
-                  key={tag}
-                  className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-                >
-                  <Tag className="h-3 w-3" /> {tag}
-                </Badge>
-              ))}
-            </div>
-
-            {/* Action buttons */}
-            <div className="absolute top-2 right-2 flex gap-1.5">
-              <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                className="bg-background/90 hover:bg-background text-foreground/70 hover:text-primary p-1.5 rounded-full transition-colors shadow-sm"
-                aria-label="Compare"
-              >
-                <Layers className="h-4 w-4" />
-              </button>
-              <button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
-                className={`p-1.5 rounded-full transition-colors shadow-sm ${
-                  isFavorited
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-background/90 hover:bg-background text-foreground/70 hover:text-destructive'
-                }`}
-                aria-label="Favorite"
-              >
-                <Heart className="h-4 w-4" fill={isFavorited ? 'currentColor' : 'none'} />
-              </button>
-            </div>
-          </div>
-
-          {/* Secondary images column */}
-          {secondaryImages.length > 0 && (
-            <div className="hidden sm:flex flex-col w-[140px] gap-[2px]">
-              {secondaryImages.map((img, idx) => (
-                <div key={idx} className="flex-1 overflow-hidden">
-                  <img
-                    src={img}
-                    alt={`${property.title} ${idx + 2}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-              {secondaryImages.length === 1 && (
-                <div className="flex-1 bg-muted flex items-center justify-center">
-                  <Camera className="h-5 w-5 text-muted-foreground" />
+              {/* Agent avatar — lower left of thumbnail */}
+              {property.agentAvatar && (
+                <div className="absolute bottom-2 left-2">
+                  <Avatar className="h-9 w-9 border-2 border-background shadow-md">
+                    <AvatarImage src={property.agentAvatar} alt="Agent" />
+                    <AvatarFallback className="text-xs">AG</AvatarFallback>
+                  </Avatar>
                 </div>
               )}
             </div>
-          )}
+
+            {/* Right image — equal size */}
+            <div className="hidden sm:block flex-1 overflow-hidden border-l-[2px] border-background">
+              <img
+                src={secondaryImages[0] || property.images[currentImage]}
+                alt={`${property.title} 2`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Price bar below thumbnails */}
+          <div className="bg-foreground px-3 py-1.5">
+            <span className="text-base font-bold text-background">
+              $ {property.price.toLocaleString()}
+              {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
+            </span>
+          </div>
         </div>
 
         {/* Content area */}
         <div className="flex-1 p-4 flex flex-col justify-between relative">
-          {/* Company logo — upper right corner (PropertyFinder style) */}
-          <div className="absolute top-3 right-3">
+          {/* Company logo + name — upper right corner */}
+          <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
             <img
               src={property.agentLogo}
               alt={property.agentName}
               className="h-10 w-16 rounded object-cover border border-border shadow-sm"
             />
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
           </div>
 
-          <div className="pr-20">
+          <div className="pr-24">
             {/* Title */}
             <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
 
@@ -208,16 +188,28 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             </div>
           </div>
 
-          {/* Bottom row: agent + contact */}
+          {/* Bottom row: action buttons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            <div className="flex items-center gap-2">
-              {property.agentAvatar && (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={property.agentAvatar} alt="Agent" />
-                  <AvatarFallback className="text-xs">AG</AvatarFallback>
-                </Avatar>
-              )}
-              <span className="text-xs text-muted-foreground">{property.agentName}</span>
+            {/* Action buttons: compare + favorite */}
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                className="bg-muted hover:bg-accent text-muted-foreground hover:text-primary p-1.5 rounded-full transition-colors"
+                aria-label="Compare"
+              >
+                <Layers className="h-4 w-4" />
+              </button>
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
+                className={`p-1.5 rounded-full transition-colors ${
+                  isFavorited
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted hover:bg-accent text-muted-foreground hover:text-destructive'
+                }`}
+                aria-label="Favorite"
+              >
+                <Heart className="h-4 w-4" fill={isFavorited ? 'currentColor' : 'none'} />
+              </button>
             </div>
             <div className="flex items-center gap-2">
               <Button
