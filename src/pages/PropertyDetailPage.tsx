@@ -203,20 +203,22 @@ const PropertyDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem label="Listing ID/Number" value={property.listingId} />
-                <OverviewItem label="Type" value={property.type} />
-                <OverviewItem label="Price" value={`$ ${property.price.toLocaleString()}`} />
-                <OverviewItem label="Area" value={`${property.area} ${property.areaUnit}`} />
-                <OverviewItem label="Rooms" value={String(property.bedrooms)} />
-                <OverviewItem label="Bathrooms" value={String(property.bathrooms)} />
-                <OverviewItem label="Parking Spaces" value={String(property.parkingSpaces)} />
-                <OverviewItem label="Floor Level" value={property.floorLevel} />
-                <OverviewItem label="Furniture" value={property.furniture} />
-                <OverviewItem label="Property Age" value={property.propertyAge} />
-                <OverviewItem label="Property Status" value={property.propertyStatus} />
-                <OverviewItem label="Orientation & Views" value={property.orientation.join(', ')} />
+              <h2 className="text-lg font-bold text-foreground mb-4">Over View</h2>
+              <div className="grid grid-cols-2 gap-x-8 text-sm">
+                <OverviewRow label="Listing ID/Number" value={property.listingId} />
+                <OverviewRow label="Type" value={property.type} />
+                <OverviewRow label="" value="" />
+                <OverviewRow label="Price" value={`$ ${property.price.toLocaleString()}`} />
+                <OverviewRow label="Area" value={`${property.area} ${property.areaUnit}`} />
+                <OverviewRow label="Rooms" value={String(property.bedrooms)} />
+                <OverviewRow label="Bathrooms" value={String(property.bathrooms)} />
+                <OverviewRow label="Title Deed" value={property.titleDeed || '—'} />
+                <OverviewRow label="Parking Spaces" value={String(property.parkingSpaces)} />
+                <OverviewRow label="Furniture" value={property.furniture} />
+                <OverviewRow label="Floor Level" value={property.floorLevel} />
+                <OverviewRow label="Property Age" value={property.propertyAge} />
+                <OverviewRow label="Property Status" value={property.propertyStatus} />
+                <OverviewRow label="Property Orientation" value={property.orientation.join(', ')} />
               </div>
             </div>
 
