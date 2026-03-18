@@ -315,6 +315,98 @@ const CompanyProjectEditPage = () => {
     if (urls[0]) setPdfUrl(urls[0]);
   };
 
+  // ─── Units Management ───
+  const fetchUnits = async (projId: string) => {
+    const { data } = await supabase
+      .from("project_units")
+      .select("*")
+      .eq("project_id", projId)
+      .order("created_at", { ascending: true });
+    setUnits(data || []);
+  };
+
+  const updateUnitField = (field: string, value: any) => setUnitForm((prev) => ({ ...prev, [field]: value }));
+
+  const toggleUnitAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
+    setUnitForm((prev) => ({
+      ...prev,
+      [type]: prev[type].includes(val) ? prev[type].filter((a) => a !== val) : [...prev[type], val],
+    }));
+  };
+
+  const handleUnitImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    setUploadingUnitImages(true);
+    const urls = await uploadFiles(e.target.files, "project-images");
+    setUnitForm((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
+    setUploadingUnitImages(false);
+  };
+
+  const openNewUnit = () => {
+    setEditingUnitId(null);
+    setUnitForm({ ...emptyUnit });
+    setUnitDialogOpen(true);
+  };
+
+  const openEditUnit = (unit: any) => {
+    setEditingUnitId(unit.id);
+    setUnitForm({
+      unit_name: unit.unit_name || "", unit_type: unit.unit_type || "apartment",
+      rooms: unit.rooms || "", bathrooms: unit.bathrooms?.toString() || "",
+      car_parking: unit.car_parking?.toString() || "", price: unit.price?.toString() || "",
+      currency: unit.currency || "USD", area: unit.area?.toString() || "",
+      area_unit: unit.area_unit || "m²",
+      interior_amenities: unit.interior_amenities || [],
+      exterior_amenities: unit.exterior_amenities || [],
+      images: unit.images || [],
+    });
+    setUnitDialogOpen(true);
+  };
+
+  const handleSubmitUnit = async () => {
+    if (!unitForm.unit_name.trim()) { toast.error("Unit name is required"); return; }
+    const projId = savedProjectId;
+    if (!projId) { toast.error("Please save the project first before adding units"); return; }
+    setSavingUnit(true);
+    const payload: any = {
+      unit_name: unitForm.unit_name.trim(), unit_type: unitForm.unit_type,
+      rooms: unitForm.rooms || null,
+      bathrooms: unitForm.bathrooms ? parseInt(unitForm.bathrooms) : null,
+      car_parking: unitForm.car_parking ? parseInt(unitForm.car_parking) : null,
+      price: unitForm.price ? parseFloat(unitForm.price) : null,
+      currency: unitForm.currency, area: unitForm.area ? parseFloat(unitForm.area) : null,
+      area_unit: unitForm.area_unit,
+      interior_amenities: unitForm.interior_amenities,
+      exterior_amenities: unitForm.exterior_amenities,
+      images: unitForm.images, project_id: projId,
+    };
+    try {
+      if (editingUnitId) {
+        const { error } = await supabase.from("project_units").update(payload).eq("id", editingUnitId);
+        if (error) throw error;
+        toast.success("Unit updated!");
+      } else {
+        const { error } = await supabase.from("project_units").insert(payload);
+        if (error) throw error;
+        toast.success("Unit added!");
+      }
+      setUnitDialogOpen(false);
+      fetchUnits(projId);
+    } catch (err: any) {
+      toast.error(err.message || "Save failed");
+    } finally { setSavingUnit(false); }
+  };
+
+  const handleDeleteUnit = async (unitId: string) => {
+    const { error } = await supabase.from("project_units").delete().eq("id", unitId);
+    if (error) toast.error("Delete failed");
+    else { toast.success("Unit deleted"); if (savedProjectId) fetchUnits(savedProjectId); }
+  };
+
+  const unitStatusColor = (s: string) => {
+    switch (s) { case "available": return "bg-emerald-100 text-emerald-800"; case "reserved": return "bg-orange-100 text-orange-800"; case "sold": return "bg-red-100 text-red-800"; default: return "bg-muted text-muted-foreground"; }
+  };
+
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.title.trim()) { toast.error("Project name is required"); return; }
@@ -350,8 +442,9 @@ const CompanyProjectEditPage = () => {
         if (error) throw error;
         toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
       } else {
-        const { error } = await supabase.from("projects").insert(payload);
+        const { data: inserted, error } = await supabase.from("projects").insert(payload).select("id").single();
         if (error) throw error;
+        if (inserted) setSavedProjectId(inserted.id);
         toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
       }
       navigate("/company/projects");
