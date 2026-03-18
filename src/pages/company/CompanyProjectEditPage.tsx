@@ -267,6 +267,8 @@ const CompanyProjectEditPage = () => {
       setPlanFiles((data as any).plans || []);
       setLogoUrl((data as any).logo_url || "");
       setPdfUrl((data as any).pdf_catalogue_url || "");
+      // Fetch units for existing project
+      fetchUnits(id as string);
     };
     fetch();
   }, [isEdit, id]);
