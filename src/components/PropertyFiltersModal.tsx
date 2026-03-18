@@ -14,30 +14,9 @@ import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
 import type { LucideIcon } from 'lucide-react';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
-const floorLevels = [
-  'Ground', 'Garden floor', '1', '2', '3 - 5', '6 - 10',
-  '10-20', '20+', 'Top floor', 'Basement', 'Mezzanine', 'Penthouse',
-  'High entrance', 'Semi Basement', 'Direct entrance',
-];
-const parkingSpaces = ['1', '2', '3', '4', '5', '6+'];
-const furnitureOptions = ['Fully Furnished', 'Unfurnished', 'Partially Furnished'];
-const propertyAges = ['New', '1-5 Years', '6-10 Years', '11-15 Years', '16-20 Years', '21+'];
-
-const defaultExteriorAmenities = [
-  'Close to gym', 'Close to the city center',
-  'Close to restaurants and cafes', 'Close to the beach',
-  'Close to schools', 'Close to a park', 'Close to public transport',
-  'Beach nearby', 'Beachfront', 'Private beach', 'Beach access',
-  'Swimming pool', 'Garden', 'Playground', 'BBQ area',
-];
-const defaultInteriorAmenities = [
-  'Central heating', 'Air conditioning', 'Fireplace', 'Built-in wardrobe',
-  'Walk-in closet', 'Kitchen appliances', 'Laundry room', 'Smart home system',
-  'Jacuzzi', 'Sauna', 'Shower cabin', 'Bathtub',
-  'Generator', 'Security Camera', 'Security', 'Card Access System',
-  'Elevator', 'Fire Lift', 'Metal Detector',
-];
+// Hardcoded fallbacks removed — all options now fetched dynamically from the database
 
 export interface PropertyMoreFilters {
   floorLevels: string[];
@@ -65,6 +44,7 @@ interface PropertyFiltersModalProps {
 export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
   const [local, setLocal] = useState<PropertyMoreFilters>(filters);
+  const { options: fo } = useFilterOptions("search");
 
   // Sync local state when dialog opens
   useEffect(() => {
@@ -137,35 +117,35 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Floor Level"
             icon={Building2}
-            options={floorLevels}
+            options={fo["floor_level"] || []}
             selected={local.floorLevels}
             onToggle={(v) => toggleArray('floorLevels', v)}
           />
           <FilterDropdown
             label="Parking Space"
             icon={Car}
-            options={parkingSpaces}
+            options={fo["parking"] || []}
             selected={local.parkingSpaces}
             onToggle={(v) => toggleArray('parkingSpaces', v)}
           />
           <FilterDropdown
             label="Furniture"
             icon={Sofa}
-            options={furnitureOptions}
+            options={fo["furniture"] || []}
             selected={local.furniture}
             onToggle={(v) => toggleArray('furniture', v)}
           />
           <FilterDropdown
             label="Property Age"
             icon={Calendar}
-            options={propertyAges}
+            options={fo["property_age"] || []}
             selected={local.propertyAges}
             onToggle={(v) => toggleArray('propertyAges', v)}
           />
           <FilterDropdown
             label="Exterior Amenities"
             icon={TreePine}
-            options={defaultExteriorAmenities}
+            options={fo["exterior_amenities"] || []}
             selected={local.exteriorAmenities}
             onToggle={(v) => toggleArray('exteriorAmenities', v)}
             searchable
@@ -173,7 +153,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Interior Amenities"
             icon={Lamp}
-            options={defaultInteriorAmenities}
+            options={fo["interior_amenities"] || []}
             selected={local.interiorAmenities}
             onToggle={(v) => toggleArray('interiorAmenities', v)}
             searchable

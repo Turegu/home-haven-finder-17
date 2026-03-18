@@ -21,6 +21,7 @@ import {
   ChevronDown, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 /* ─── Options aligned with front-end search filters ─── */
 
@@ -31,19 +32,6 @@ const contractTypes = [
   { value: "commercial_rent", label: "Commercial for Rent", purpose: "rent", classification: "commercial" },
 ];
 
-const residentialPropertyTypes = [
-  "Apartment", "Villa", "Duplex", "Penthouse", "Townhouse", "Studio", "Land", "Farm House",
-];
-const commercialPropertyTypes = [
-  "Office", "Shop", "Store", "Showroom", "Restaurant/Café", "Land", "Farms",
-  "Labor Camp", "Factory", "Warehouse", "Co-Working Space", "Whole Building", "Full Floor",
-];
-
-const furnitureOptions = ["Fully Furnished", "Unfurnished", "Partially Furnished"];
-const propertyStatusOptions = ["new", "under_construction", "ready", "resale"];
-const ageOptions = ["New", "1-5 Years", "6-10 Years", "11-15 Years", "16-20 Years", "21+"];
-const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
-const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Daily", "Weekly", "Monthly", "Yearly"];
 const advertisingTagOptions = [
   "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
@@ -53,32 +41,11 @@ const advertisingTagOptions = [
   "Fully Renovated", "Motivated Seller", "Open House",
 ];
 
-const floorLevels = [
-  "Ground", "Garden floor", "1", "2", "3 - 5", "6 - 10",
-  "10-20", "20+", "Top floor", "Basement", "Mezzanine", "Penthouse",
-  "High entrance", "Semi Basement", "Direct entrance",
-];
-const parkingSpaces = ["0", "1", "2", "3", "4", "5", "6+"];
-
-const interiorAmenities = [
-  "Central heating", "Air conditioning", "Fireplace", "Built-in wardrobe",
-  "Walk-in closet", "Kitchen appliances", "Laundry room", "Smart home system",
-  "Jacuzzi", "Sauna", "Shower cabin", "Bathtub",
-  "Generator", "Security Camera", "Security", "Card Access System",
-  "Elevator", "Fire Lift", "Metal Detector",
-];
-const exteriorAmenities = [
-  "Close to gym", "Close to the city center",
-  "Close to restaurants and cafes", "Close to the beach",
-  "Close to schools", "Close to a park", "Close to public transport",
-  "Beach nearby", "Beachfront", "Private beach", "Beach access",
-  "Swimming pool", "Garden", "Playground", "BBQ area",
-];
-
 const CompanyPropertyEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
+  const { options: filterOpts } = useFilterOptions("property");
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -125,6 +92,8 @@ const CompanyPropertyEditPage = () => {
   const contractInfo = contractTypes.find(c => c.value === form.contract_type);
   const isRent = contractInfo?.purpose === "rent";
   const isCommercial = contractInfo?.classification === "commercial";
+  const residentialPropertyTypes = filterOpts["residential_property_types"] || [];
+  const commercialPropertyTypes = filterOpts["commercial_property_types"] || [];
   const availablePropertyTypes = isCommercial ? commercialPropertyTypes : residentialPropertyTypes;
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -451,7 +420,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Activity className="h-4 w-4 text-muted-foreground" />}
               value={form.property_status}
               onChange={(v) => updateField("property_status", v)}
-              options={propertyStatusOptions.map(o => ({ value: o, label: o.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) }))}
+              options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -470,7 +439,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Layers className="h-4 w-4 text-muted-foreground" />}
               value={form.floor_level}
               onChange={(v) => updateField("floor_level", v)}
-              options={floorLevels.map(f => ({ value: f, label: f }))}
+              options={(filterOpts["floor_level"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select floor"
             />
             <FormSelect
@@ -478,7 +447,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
               value={form.furniture}
               onChange={(v) => updateField("furniture", v)}
-              options={furnitureOptions.map(f => ({ value: f, label: f }))}
+              options={(filterOpts["furniture"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select"
             />
             <FormSelect
@@ -486,14 +455,14 @@ const CompanyPropertyEditPage = () => {
               icon={<Car className="h-4 w-4 text-muted-foreground" />}
               value={form.parking_spaces}
               onChange={(v) => updateField("parking_spaces", v)}
-              options={parkingSpaces.map(p => ({ value: p, label: p }))}
+              options={(filterOpts["parking"] || []).map(p => ({ value: p, label: p }))}
             />
             <FormSelect
               label="Property Age"
               icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
               value={form.property_age}
               onChange={(v) => updateField("property_age", v)}
-              options={ageOptions.map(a => ({ value: a, label: a }))}
+              options={(filterOpts["property_age"] || []).map(a => ({ value: a, label: a }))}
               placeholder="Select"
             />
             <FormSelect
@@ -501,7 +470,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Compass className="h-4 w-4 text-muted-foreground" />}
               value={form.property_orientation}
               onChange={(v) => updateField("property_orientation", v)}
-              options={orientationOptions.map(o => ({ value: o, label: o }))}
+              options={(filterOpts["orientation"] || []).map(o => ({ value: o, label: o }))}
               placeholder="Select"
             />
             <FormSelect
@@ -509,7 +478,7 @@ const CompanyPropertyEditPage = () => {
               icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
               value={form.title_deed}
               onChange={(v) => updateField("title_deed", v)}
-              options={titleDeedOptions.map(t => ({ value: t, label: t }))}
+              options={(filterOpts["title_deed"] || []).map(t => ({ value: t, label: t }))}
               placeholder="Select"
             />
           </div>
@@ -525,7 +494,7 @@ const CompanyPropertyEditPage = () => {
             <MultiSelectDropdown
               label="Interior Amenities"
               icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
-              options={interiorAmenities}
+              options={filterOpts["interior_amenities"] || []}
               selected={form.interior_amenities}
               onToggle={(val) => toggleArrayField("interior_amenities", val)}
               searchable
@@ -533,7 +502,7 @@ const CompanyPropertyEditPage = () => {
             <MultiSelectDropdown
               label="Exterior Amenities"
               icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
-              options={exteriorAmenities}
+              options={filterOpts["exterior_amenities"] || []}
               selected={form.exterior_amenities}
               onToggle={(val) => toggleArrayField("exterior_amenities", val)}
               searchable

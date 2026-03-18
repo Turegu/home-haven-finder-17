@@ -2,8 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-
-const bathroomOptions = ['1', '2', '3', '4', '5', '6+'];
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 interface BathroomsDropdownProps {
   value: string[];
@@ -11,6 +10,8 @@ interface BathroomsDropdownProps {
 }
 
 export default function BathroomsDropdown({ value, onChange }: BathroomsDropdownProps) {
+  const { options: fo } = useFilterOptions("search");
+  const bathroomOptions = fo["bathrooms"] || [];
   function toggle(opt: string) {
     if (value.includes(opt)) {
       onChange(value.filter(v => v !== opt));
