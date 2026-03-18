@@ -273,8 +273,8 @@ const CompanyAgentEditPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Service Areas</Label>
-                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." />
+                <Label className="text-foreground font-medium">Service Areas *</Label>
+                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." required />
               </div>
               <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
             </div>
