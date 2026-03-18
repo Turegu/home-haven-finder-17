@@ -455,6 +455,16 @@ const PropertyDetailPage = () => {
   );
 };
 
+const OverviewRow = ({ label, value }: { label: string; value: string }) => {
+  if (!label && !value) return <div className="py-2.5 border-b border-border" />;
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-border">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-foreground text-right">{value}</span>
+    </div>
+  );
+};
+
 const OverviewItem = ({ label, value }: { label: string; value: string }) => (
   <div>
     <p className="text-muted-foreground text-xs">{label}</p>
