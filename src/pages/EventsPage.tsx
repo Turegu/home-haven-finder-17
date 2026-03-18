@@ -15,13 +15,13 @@ import { mockEvents } from '@/data/mockEvents';
 import ListingMapView from '@/components/ListingMapView';
 
 const eventTypes = [
-  'All',
   'Seminar/Conference',
   'Exhibition/Trade Show',
   'Auction',
   'Viewing Tour',
   'Project Launch',
   'Open House',
+  'All',
 ];
 
 const EventsPage = () => {
