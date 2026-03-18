@@ -198,7 +198,7 @@ function EventResultsSection({
             />
           ) : (
             <>
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-6'}>
                 {mockEvents.map((event) => (
                   <EventCard key={event.id} event={event} viewMode={viewMode} formatDate={formatDate} />
                 ))}
