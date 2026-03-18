@@ -254,18 +254,16 @@ const ListingMapView = ({ listings, className = '' }: ListingMapViewProps) => {
               click: () => setSelectedId(listing.id === selectedId ? null : listing.id),
             }}
           >
-            {selectedId === listing.id && (
-              <Popup
-                closeButton={false}
-                offset={[0, -10]}
-                className="listing-map-popup"
-              >
-                <ListingPopupCard
-                  listing={listing}
-                  onClose={() => setSelectedId(null)}
-                />
-              </Popup>
-            )}
+            <Popup
+              closeButton={false}
+              offset={[0, -10]}
+              className="listing-map-popup"
+            >
+              <ListingPopupCard
+                listing={listing}
+                onClose={() => setSelectedId(null)}
+              />
+            </Popup>
           </Marker>
         ))}
       </MapContainer>
