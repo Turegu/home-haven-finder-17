@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  ChevronLeft, ChevronRight, Building, DollarSign, Maximize,
+  ChevronLeft, ChevronRight, Building, Maximize,
   BedDouble, Bath, Car, Eye
 } from "lucide-react";
 import {
@@ -168,45 +168,67 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Unit List (left) */}
-          <div className="lg:col-span-2 space-y-2 max-h-[480px] overflow-y-auto pr-1">
-            {filtered.map((unit) => (
-              <button
-                key={unit.id}
-                onClick={() => setSelectedUnit(unit.id)}
-                className={`w-full text-left p-3 rounded-lg border transition-all ${
-                  currentUnit?.id === unit.id
-                    ? 'border-primary bg-primary/5 shadow-sm'
-                    : 'border-border hover:border-primary/40 hover:bg-muted/50'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <h4 className="font-semibold text-foreground text-sm">{unit.unit_name}</h4>
-                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[unit.status] || ''}`}>
-                    {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Building className="h-3 w-3" /> {unit.unit_type}
-                  </span>
-                  {unit.area && (
+          <div className="lg:col-span-2 flex flex-col">
+            <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1 flex-1">
+              {filtered.map((unit) => (
+                <button
+                  key={unit.id}
+                  onClick={() => setSelectedUnit(unit.id)}
+                  className={`w-full text-left p-3 rounded-lg border transition-all ${
+                    currentUnit?.id === unit.id
+                      ? 'border-primary bg-primary/5 shadow-sm'
+                      : 'border-border hover:border-primary/40 hover:bg-muted/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <h4 className="font-semibold text-foreground text-sm">{unit.unit_name}</h4>
+                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[unit.status] || ''}`}>
+                      {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <Maximize className="h-3 w-3" /> {unit.area} {unit.area_unit || 'm²'}
+                      <Building className="h-3 w-3" /> {unit.unit_type}
                     </span>
+                    {unit.area && (
+                      <span className="flex items-center gap-1">
+                        <Maximize className="h-3 w-3" /> {unit.area} {unit.area_unit || 'm²'}
+                      </span>
+                    )}
+                    {unit.rooms && (
+                      <span className="flex items-center gap-1">
+                        <BedDouble className="h-3 w-3" /> {unit.rooms}
+                      </span>
+                    )}
+                  </div>
+                  {unit.price != null && (
+                    <p className="text-primary font-bold text-sm mt-1.5">
+                      {unit.currency || '$'}{unit.price.toLocaleString()}
+                    </p>
                   )}
-                  {unit.rooms && (
-                    <span className="flex items-center gap-1">
-                      <BedDouble className="h-3 w-3" /> {unit.rooms}
-                    </span>
-                  )}
-                </div>
-                {unit.price != null && (
-                  <p className="text-primary font-bold text-sm mt-1.5">
-                    {unit.currency || '$'}{unit.price.toLocaleString()}
-                  </p>
-                )}
-              </button>
-            ))}
+                </button>
+              ))}
+            </div>
+
+            {/* Summary stats to fill lower left */}
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-center">
+                <p className="text-lg font-bold text-emerald-700">{units.filter(u => u.status === 'available').length}</p>
+                <p className="text-[11px] text-emerald-600">Available</p>
+              </div>
+              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-center">
+                <p className="text-lg font-bold text-amber-700">{units.filter(u => u.status === 'reserved').length}</p>
+                <p className="text-[11px] text-amber-600">Reserved</p>
+              </div>
+              <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-center">
+                <p className="text-lg font-bold text-red-700">{units.filter(u => u.status === 'sold').length}</p>
+                <p className="text-[11px] text-red-600">Sold</p>
+              </div>
+              <div className="rounded-lg bg-muted/50 border border-border p-3 text-center">
+                <p className="text-lg font-bold text-foreground">{units.length}</p>
+                <p className="text-[11px] text-muted-foreground">Total Units</p>
+              </div>
+            </div>
           </div>
 
           {/* Unit Detail (right) */}

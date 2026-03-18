@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
   Globe, Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2, Share2, Heart,
-  PersonStanding, X
+  PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -135,7 +135,12 @@ const ProjectDetailPage = () => {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4 mb-1">
-                    <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
+                    <div>
+                      <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
+                      {project.subtitle && (
+                        <p className="text-sm text-muted-foreground italic mt-0.5">{project.subtitle}</p>
+                      )}
+                    </div>
                     {/* Media tabs */}
                     <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border flex-shrink-0">
                       {mediaTabs.map((tab) => (
@@ -154,7 +159,6 @@ const ProjectDetailPage = () => {
                   <p className="text-2xl font-bold text-primary mb-1">
                     From $ {project.priceFrom.toLocaleString()}
                   </p>
-                  <p className="text-foreground/80 text-sm mb-1.5">{project.subtitle}</p>
                   <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="h-4 w-4 text-primary" />
                     <span>{project.location}</span>
@@ -177,15 +181,15 @@ const ProjectDetailPage = () => {
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem label="Listing ID/Number" value={project.listingId} />
-                <OverviewItem label="Type" value={project.projectType} />
-                <OverviewItem label="Starting Price" value={`$ ${project.priceFrom.toLocaleString()}`} />
-                <OverviewItem label="Developer" value={project.developer} />
-                <OverviewItem label="Area Ranges" value={project.areaRange} />
-                <OverviewItem label="No of Units" value={String(project.units)} />
-                <OverviewItem label="Project Status" value={project.status} />
-                <OverviewItem label="Completion" value={project.completionDate} />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <OverviewItem icon={Hash} label="Listing ID" value={project.listingId} />
+                <OverviewItem icon={Building} label="Type" value={project.projectType} />
+                <OverviewItem icon={DollarSign} label="Starting Price" value={`$ ${project.priceFrom.toLocaleString()}`} />
+                <OverviewItem icon={HardHat} label="Developer" value={project.developer} />
+                <OverviewItem icon={Ruler} label="Area Range" value={project.areaRange} />
+                <OverviewItem icon={Layers} label="No of Units" value={String(project.units)} />
+                <OverviewItem icon={Activity} label="Status" value={project.status} />
+                <OverviewItem icon={CalendarCheck} label="Completion" value={project.completionDate} />
               </div>
             </div>
 
@@ -331,10 +335,15 @@ const ProjectDetailPage = () => {
   );
 };
 
-const OverviewItem = ({ label, value }: { label: string; value: string }) => (
-  <div>
-    <p className="text-muted-foreground text-xs">{label}</p>
-    <p className="font-medium text-foreground">{value}</p>
+const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
+  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+    <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <Icon className="h-4 w-4 text-primary" />
+    </div>
+    <div>
+      <p className="text-muted-foreground text-[11px] leading-tight">{label}</p>
+      <p className="font-semibold text-foreground text-sm">{value}</p>
+    </div>
   </div>
 );
 
