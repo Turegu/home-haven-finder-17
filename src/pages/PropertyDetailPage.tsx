@@ -366,11 +366,11 @@ const PropertyDetailPage = () => {
 
               {/* Company logo — links to company profile */}
               {property.companyLogo && (
-                <Link to={`/company/${property.id}`} className="flex items-center gap-3 py-4 border-t border-border group">
+                <Link to={`/company/${property.id}`} className="flex items-center gap-4 py-4 border-t border-border group">
                   <img
                     src={property.companyLogo}
                     alt={property.agentCompany}
-                    className="h-14 w-14 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
+                    className="h-14 w-24 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
                   />
                   <div>
                     <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
