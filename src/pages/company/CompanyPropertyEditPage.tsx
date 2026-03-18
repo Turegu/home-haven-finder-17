@@ -598,7 +598,10 @@ const CompanyPropertyEditPage = () => {
 
         {/* ─── Location ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">Location</div>
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+            <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Compass className="h-4 w-4" /></span>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Location</h2>
+          </div>
           <LocationFormFields
             province={form.province} town={form.town} neighbourhood={form.neighbourhood} pinLocation={form.pin_location}
             onProvinceChange={(v) => updateField("province", v)} onTownChange={(v) => updateField("town", v)}
