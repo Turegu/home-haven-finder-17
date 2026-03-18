@@ -13,6 +13,8 @@ import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
 import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
+import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
+import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
 
 const BuyPage = () => {
   const routerLocation = useLocation();
