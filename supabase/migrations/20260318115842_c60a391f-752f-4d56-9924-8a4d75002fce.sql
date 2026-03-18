@@ -1,0 +1,1 @@
+ALTER TABLE public.properties ADD COLUMN advertising_tags text[] DEFAULT '{}'::text[];

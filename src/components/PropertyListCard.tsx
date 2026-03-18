@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import {
   Heart, Layers, Phone, Mail, MessageCircle,
   ChevronLeft, ChevronRight, Camera, MapPin,
-  Building, Maximize, BedDouble, Bath, Crown, Star
+  Building, Maximize, BedDouble, Bath, Crown, Star, Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 
 interface PropertyListCardProps {
@@ -45,6 +46,13 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
       );
     }
     return null;
+  };
+
+  const tagColorMap: Record<string, string> = {
+    'Hot Deal': 'bg-red-500',
+    'Price Drop': 'bg-green-600',
+    'Exclusive': 'bg-purple-600',
+    'New Launch': 'bg-teal-600',
   };
 
   return (
@@ -118,12 +126,18 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             </button>
           </div>
 
-          {/* Listing tier badge */}
-          {property.listingTier !== 'standard' && (
-            <div className="absolute top-2 left-2">
-              {tierBadge()}
-            </div>
-          )}
+          {/* Listing tier badge + advertising tags */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {property.listingTier !== 'standard' && tierBadge()}
+            {property.advertisingTags?.map((tag) => (
+              <Badge
+                key={tag}
+                className={`${tagColorMap[tag] || 'bg-orange-500'} hover:${tagColorMap[tag] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+              >
+                <Tag className="h-3 w-3" /> {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
 
         {/* Content area */}
@@ -166,18 +180,24 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               )}
             </div>
 
-            {/* Company logo - rectangular, below specs */}
-            <div className="flex items-center gap-2">
+            {/* Company logo + Agent avatar row */}
+            <div className="flex items-center gap-3">
               <img
                 src={property.agentLogo}
                 alt={property.agentName}
                 className="h-8 w-14 rounded object-cover border border-border"
               />
+              {property.agentAvatar && (
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={property.agentAvatar} alt="Agent" />
+                  <AvatarFallback className="text-xs">AG</AvatarFallback>
+                </Avatar>
+              )}
               <span className="text-xs text-muted-foreground">{property.agentName}</span>
             </div>
           </div>
 
-          {/* Bottom row: contact icons on left (swapped with price) */}
+          {/* Bottom row: contact icons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
             <span className="text-xs text-muted-foreground">Listed recently</span>
             <div className="flex items-center gap-2">

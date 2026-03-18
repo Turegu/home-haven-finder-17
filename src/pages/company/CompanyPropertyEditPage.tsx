@@ -35,6 +35,7 @@ const ageOptions = ["0-1 Years", "1-5 Years", "5-10 Years", "10-20 Years", "20+ 
 const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Monthly", "Yearly", "Daily"];
+const advertisingTagOptions = ["Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller", "Limited Offer", "Negotiable", "Urgent Sale"];
 
 
 const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Walk-in Closet", "Laundry Room"];
@@ -74,6 +75,7 @@ const CompanyPropertyEditPage = () => {
     property_status: "new",
     interior_amenities: [] as string[],
     exterior_amenities: [] as string[],
+    advertising_tags: [] as string[],
     province: "",
     town: "",
     neighbourhood: "",
@@ -146,6 +148,7 @@ const CompanyPropertyEditPage = () => {
         property_status: data.property_status || "new",
         interior_amenities: (data as any).interior_amenities || [],
         exterior_amenities: (data as any).exterior_amenities || [],
+        advertising_tags: (data as any).advertising_tags || [],
         province: (data as any).province || "",
         town: (data as any).town || "",
         neighbourhood: (data as any).neighbourhood || "",
@@ -230,6 +233,7 @@ const CompanyPropertyEditPage = () => {
       property_status: form.property_status,
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
+      advertising_tags: form.advertising_tags,
       province: form.province || null,
       town: form.town || null,
       neighbourhood: form.neighbourhood || null,
@@ -449,7 +453,32 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
-        {/* Location */}
+        {/* Advertising Tags */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Advertising Tags</h2>
+          <p className="text-xs text-muted-foreground mb-3">Select tags to highlight this listing on search results</p>
+          <div className="flex flex-wrap gap-2">
+            {advertisingTagOptions.map((tag) => (
+              <button
+                key={tag} type="button"
+                onClick={() => {
+                  setForm((prev) => ({
+                    ...prev,
+                    advertising_tags: prev.advertising_tags.includes(tag)
+                      ? prev.advertising_tags.filter((t) => t !== tag)
+                      : [...prev.advertising_tags, tag],
+                  }));
+                }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  form.advertising_tags.includes(tag)
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                }`}
+              >{tag}</button>
+            ))}
+          </div>
+        </section>
+
         <section className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
           <LocationFormFields
