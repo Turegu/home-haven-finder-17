@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
   Bookmark, Phone, Mail, MessageCircle
