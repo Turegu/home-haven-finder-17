@@ -16,7 +16,8 @@ import {
   Globe, ChevronDown, Search, Briefcase
 } from "lucide-react";
 
-const languageOptions = ["English", "Turkish", "Arabic", "French", "German", "Russian", "Farsi"];
+import { allLanguages } from "@/data/languages";
+const languageOptions = allLanguages;
 
 function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
