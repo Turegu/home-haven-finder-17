@@ -60,6 +60,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        warm: {
+          DEFAULT: "hsl(var(--warm-accent))",
+          foreground: "hsl(var(--warm-accent-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
