@@ -90,7 +90,9 @@ const CompanyEventEditPage = () => {
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [pdfUrl, setPdfUrl] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
