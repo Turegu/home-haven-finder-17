@@ -146,6 +146,7 @@ const AdminBannersPage = () => {
       banner_type: form.banner_type,
       page_position: form.page_position,
       link_url: form.link_url || null,
+      banner_text: form.banner_text || null,
       image_url,
       start_date: form.start_date || null,
       end_date: form.end_date || null,
