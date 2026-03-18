@@ -146,6 +146,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
     agentName: 'Ankara Properties',
     isFeatured: true,
+    listingTier: 'featured',
     listingType: 'buy',
   },
   {
