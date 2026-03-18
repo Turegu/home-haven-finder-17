@@ -285,8 +285,8 @@ const CompanyAgentEditPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Description</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" placeholder="Write Agent Description" />
+              <Label className="text-foreground font-medium">Description *</Label>
+              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" placeholder="Write Agent Description" required />
             </div>
           </div>
         </section>
