@@ -101,6 +101,7 @@ const AdminBannersPage = () => {
       banner_type: banner.banner_type,
       page_position: banner.page_position,
       link_url: banner.link_url || "",
+      banner_text: banner.banner_text || "",
       start_date: banner.start_date ? banner.start_date.slice(0, 10) : "",
       end_date: banner.end_date ? banner.end_date.slice(0, 10) : "",
     });
