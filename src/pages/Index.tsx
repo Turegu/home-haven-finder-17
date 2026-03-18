@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { ArrowRight, MapPin, Building, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -19,7 +18,6 @@ interface CmsContent {
 
 const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
-  useEffect(() => { document.title = 'Turegu – Your Property, Our Priority'; }, []);
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
 
@@ -32,6 +30,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <title>Turegu – Your Property, Our Priority</title>
       <Header />
 
       {/* Hero Banner */}

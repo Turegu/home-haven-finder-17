@@ -17,6 +17,7 @@ const TermsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <title>Terms And Conditions – Turegu</title>
       <Header />
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
