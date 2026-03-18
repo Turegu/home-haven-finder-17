@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
-  Bookmark
+  Bookmark, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
