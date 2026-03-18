@@ -90,6 +90,23 @@ const EventsPage = () => {
         <div className="flex gap-6">
         <div className="flex-1">
         {/* Event Cards */}
+        {viewMode === 'map' ? (
+          <ListingMapView
+            listings={mockEvents.map(e => ({
+              id: e.id,
+              title: e.title,
+              location: e.location,
+              image: e.images[0],
+              price: e.price,
+              currency: e.currency,
+              linkTo: `/events/${e.id}`,
+              type: 'event' as const,
+              subtitle: e.organizer,
+              meta: `${e.eventType} • ${new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+              logo: e.organizerLogo,
+            }))}
+          />
+        ) : (
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
           {mockEvents.map((event) => (
             <div
