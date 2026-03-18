@@ -4,7 +4,8 @@ import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
-  PersonStanding, Clock, CalendarDays, X
+  PersonStanding, Clock, CalendarDays, X,
+  Hash, DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
