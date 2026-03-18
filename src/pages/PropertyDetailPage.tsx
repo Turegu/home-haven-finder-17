@@ -57,17 +57,13 @@ const PropertyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery — side by side, landscape aspect */}
-      <div className="relative w-full bg-muted overflow-hidden">
-        <div className="flex transition-transform duration-300" style={{ transform: `translateX(-${currentImage * (100 / Math.min(property.images.length, 3))}%)` }}>
-          {property.images.map((img, i) => (
-            <div key={i} className="flex-shrink-0 w-full md:w-1/3 px-[1px]">
-              <div className="aspect-[16/9]">
-                <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Image Gallery */}
+      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
+        <img
+          src={property.images[currentImage]}
+          alt={property.title}
+          className="w-full h-full object-cover"
+        />
         <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronLeft className="h-5 w-5" />
         </button>
