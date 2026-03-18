@@ -2,8 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-
-const roomOptions = ['1', '1+1', '2+1', '3+1', '4+1', '5+1', '6+'];
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 interface RoomsDropdownProps {
   value: string[];
