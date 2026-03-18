@@ -527,8 +527,8 @@ const CompanyPropertyEditPage = () => {
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5 flex items-center gap-2">
             <Tag className="h-4 w-4" /> Advertising Tags
           </h2>
-          <p className="text-xs text-muted-foreground mb-3">Select tags to highlight this listing on search results</p>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-xs text-muted-foreground mb-3">Select preset tags or create your own (max 15 characters each)</p>
+          <div className="flex flex-wrap gap-2 mb-4">
             {advertisingTagOptions.map((tag) => (
               <button
                 key={tag} type="button"
@@ -541,6 +541,53 @@ const CompanyPropertyEditPage = () => {
               >{tag}</button>
             ))}
           </div>
+          {/* Custom tag input */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 max-w-xs">
+              <Input
+                id="custom-tag-input"
+                maxLength={15}
+                placeholder="Type custom tag…"
+                className="bg-secondary/50 pr-16 text-sm"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const input = e.currentTarget;
+                    const val = input.value.trim();
+                    if (val && val.length <= 15 && !form.advertising_tags.includes(val)) {
+                      toggleArrayField("advertising_tags", val);
+                      input.value = "";
+                    }
+                  }
+                }}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">max 15</span>
+            </div>
+            <Button
+              type="button" variant="outline" size="sm"
+              onClick={() => {
+                const input = document.getElementById("custom-tag-input") as HTMLInputElement;
+                if (!input) return;
+                const val = input.value.trim();
+                if (val && val.length <= 15 && !form.advertising_tags.includes(val)) {
+                  toggleArrayField("advertising_tags", val);
+                  input.value = "";
+                }
+              }}
+            >Add</Button>
+          </div>
+          {/* Show selected custom tags (not in presets) */}
+          {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="text-xs text-muted-foreground mr-1 self-center">Custom:</span>
+              {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).map((tag) => (
+                <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
+                  {tag}
+                  <button type="button" onClick={() => toggleArrayField("advertising_tags", tag)} className="hover:opacity-70"><X className="h-3 w-3" /></button>
+                </span>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ─── Location ─── */}
