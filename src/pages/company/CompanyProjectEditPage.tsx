@@ -355,12 +355,13 @@ const CompanyProjectEditPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
-                <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={20} />
+                <p className="text-xs text-muted-foreground text-right">{form.title.length}/20 characters</p>
               </div>
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Tagline</Label>
-                <Input value={form.tagline} onChange={(e) => updateField("tagline", e.target.value)} className="bg-secondary/50" />
+                <Input value={form.tagline} onChange={(e) => { if (e.target.value.length <= 60) updateField("tagline", e.target.value); }} className="bg-secondary/50" maxLength={60} />
+                <p className="text-xs text-muted-foreground text-right">{form.tagline.length}/60 characters</p>
               </div>
             </div>
             <div className="space-y-2">
