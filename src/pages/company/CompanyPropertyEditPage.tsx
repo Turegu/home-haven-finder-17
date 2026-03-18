@@ -420,7 +420,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Activity className="h-4 w-4 text-muted-foreground" />}
               value={form.property_status}
               onChange={(v) => updateField("property_status", v)}
-              options={propertyStatusOptions.map(o => ({ value: o, label: o.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) }))}
+              options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
