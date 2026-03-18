@@ -60,6 +60,14 @@ const BuyPage = () => {
   const [rentDuration, setRentDuration] = useState<string[]>([]);
   const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
 
+  // Search params that trigger the query (committed on Search click)
+  const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
+    propertyPurpose: isRent ? 'rent' : 'buy',
+    sortBy: 'newest',
+    page: 1,
+    pageSize: 21,
+  });
+
   // Reset all filters when navigating to /buy or /rent without search params (clean nav click)
   useEffect(() => {
     const hasParams = searchParams.toString().length > 0;
@@ -120,13 +128,6 @@ const BuyPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routerLocation.pathname, searchParams.toString()]);
 
-  // Search params that trigger the query (committed on Search click)
-  const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
-    propertyPurpose: isRent ? 'rent' : 'buy',
-    sortBy: 'newest',
-    page: 1,
-    pageSize: viewMode === 'grid' ? 15 : 21,
-  });
 
   const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
 
