@@ -127,7 +127,7 @@ const PropertyDetailPage = () => {
               </p>
               <p className="text-foreground/80 mb-2">{property.title}</p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-warm" />
                 <span>{property.location}</span>
               </div>
 
@@ -154,17 +154,17 @@ const PropertyDetailPage = () => {
 
             {/* Open House / Viewing Hours — compact strip */}
             {(property.openHouseStart || property.viewingHours) && (
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-sm">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 bg-warm/5 border border-warm/20 rounded-lg px-4 py-3 text-sm">
                 {property.openHouseStart && (
                   <span className="flex items-center gap-1.5 text-foreground">
-                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <CalendarDays className="h-4 w-4 text-warm" />
                     <span className="font-medium">Open House:</span> {property.openHouseStart}
                     {property.openHouseEnd && <span className="text-muted-foreground ml-1">— Ends: {property.openHouseEnd}</span>}
                   </span>
                 )}
                 {property.viewingHours && (
                   <span className="flex items-center gap-1.5 text-foreground">
-                    <Clock className="h-4 w-4 text-primary" />
+                    <Clock className="h-4 w-4 text-warm" />
                     <span className="font-medium">Viewing:</span> {property.viewingHours}
                   </span>
                 )}
@@ -366,11 +366,11 @@ const PropertyDetailPage = () => {
 
               {/* Company logo — links to company profile */}
               {property.companyLogo && (
-                <Link to={`/company/${property.id}`} className="flex items-center gap-3 py-4 border-t border-border group">
+                <Link to={`/company/${property.id}`} className="flex items-center gap-4 py-4 border-t border-border group">
                   <img
                     src={property.companyLogo}
                     alt={property.agentCompany}
-                    className="h-14 w-14 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
+                    className="h-14 w-24 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
                   />
                   <div>
                     <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
