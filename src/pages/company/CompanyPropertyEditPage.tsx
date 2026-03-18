@@ -330,7 +330,8 @@ const CompanyPropertyEditPage = () => {
         {/* ─── Basic Info ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
-            <FileText className="h-4 w-4" /> Description & Information
+            <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><FileText className="h-4 w-4" /></span>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Description & Information</h2>
           </div>
           <div className="space-y-5">
             <div className="space-y-2">
