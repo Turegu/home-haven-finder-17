@@ -99,8 +99,8 @@ const BuyPage = () => {
           <div className="flex-1 min-w-0">
             {viewMode === 'grid' ? (
               <div className="space-y-6">
-                {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
-                  const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
+                {Array.from({ length: Math.ceil(properties.length / 3) }, (_, chunkIdx) => {
+                  const chunk = properties.slice(chunkIdx * 3, (chunkIdx + 1) * 3);
                   return (
                     <div key={chunkIdx}>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,7 +110,7 @@ const BuyPage = () => {
                           </Link>
                         ))}
                       </div>
-                      {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
+                      {chunkIdx < Math.ceil(properties.length / 3) - 1 && (
                         <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="my-6" />
                       )}
                     </div>
@@ -118,16 +118,16 @@ const BuyPage = () => {
                 })}
               </div>
             ) : viewMode === 'list' ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
                   const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
                   return (
-                    <div key={chunkIdx} className="space-y-4">
+                    <div key={chunkIdx} className="space-y-6">
                       {chunk.map((property) => (
                         <PropertyListCard key={property.id} property={property} />
                       ))}
                       {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
-                        <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="my-4" />
+                        <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="my-6" />
                       )}
                     </div>
                   );

@@ -9,6 +9,7 @@ interface Banner {
   page_position: number;
   image_url: string | null;
   link_url: string | null;
+  banner_text: string | null;
   start_date: string | null;
   end_date: string | null;
 }
@@ -25,7 +26,6 @@ const BannerDisplay = ({ pageName, bannerType, position, className = "" }: Banne
 
   useEffect(() => {
     const fetchBanner = async () => {
-      const now = new Date().toISOString();
       let query = supabase
         .from("banners")
         .select("*")
@@ -40,11 +40,10 @@ const BannerDisplay = ({ pageName, bannerType, position, className = "" }: Banne
       const { data } = await query.limit(1);
       if (data && data.length > 0) {
         const b = data[0] as Banner;
-        // Check date range client-side
         const now = new Date();
         if (b.start_date && new Date(b.start_date) > now) return;
         if (b.end_date && new Date(b.end_date) < now) return;
-        if (b.image_url) setBanner(b);
+        if (b.image_url || b.banner_text) setBanner(b);
       }
     };
     fetchBanner();
@@ -53,17 +52,34 @@ const BannerDisplay = ({ pageName, bannerType, position, className = "" }: Banne
   if (!banner) return null;
 
   const content = (
-    <img
-      src={banner.image_url!}
-      alt={banner.name}
-      className={`w-full h-auto rounded-lg object-cover ${
-        bannerType === "horizontal" ? "max-h-[206px]" : "max-h-[513px] max-w-[225px]"
-      }`}
-    />
+    <div className="relative overflow-hidden rounded-lg">
+      {banner.image_url && (
+        <img
+          src={banner.image_url}
+          alt={banner.name}
+          className={`w-full h-auto object-cover ${
+            bannerType === "horizontal"
+              ? "max-h-[120px] sm:max-h-[160px] md:max-h-[206px]"
+              : "max-h-[300px] sm:max-h-[400px] md:max-h-[513px] w-full"
+          }`}
+        />
+      )}
+      {banner.banner_text && (
+        <div className={`${banner.image_url ? "absolute inset-0 flex items-center justify-center bg-foreground/30" : "bg-primary py-6 px-4 flex items-center justify-center"}`}>
+          <p className={`text-white font-bold text-center leading-tight ${
+            bannerType === "horizontal"
+              ? "text-sm sm:text-base md:text-xl lg:text-2xl px-4"
+              : "text-xs sm:text-sm md:text-base px-2"
+          }`}>
+            {banner.banner_text}
+          </p>
+        </div>
+      )}
+    </div>
   );
 
   return (
-    <div className={`${className}`}>
+    <div className={className}>
       {banner.link_url ? (
         <a href={banner.link_url} target="_blank" rel="noopener noreferrer" className="block">
           {content}

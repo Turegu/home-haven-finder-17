@@ -24,6 +24,7 @@ interface Banner {
   page_position: number;
   image_url: string | null;
   link_url: string | null;
+  banner_text: string | null;
   start_date: string | null;
   end_date: string | null;
   status: string;
@@ -55,6 +56,7 @@ const emptyForm = {
   banner_type: "horizontal",
   page_position: 1,
   link_url: "",
+  banner_text: "",
   start_date: "",
   end_date: "",
 };
@@ -99,6 +101,7 @@ const AdminBannersPage = () => {
       banner_type: banner.banner_type,
       page_position: banner.page_position,
       link_url: banner.link_url || "",
+      banner_text: banner.banner_text || "",
       start_date: banner.start_date ? banner.start_date.slice(0, 10) : "",
       end_date: banner.end_date ? banner.end_date.slice(0, 10) : "",
     });
@@ -143,6 +146,7 @@ const AdminBannersPage = () => {
       banner_type: form.banner_type,
       page_position: form.page_position,
       link_url: form.link_url || null,
+      banner_text: form.banner_text || null,
       image_url,
       start_date: form.start_date || null,
       end_date: form.end_date || null,
@@ -331,6 +335,12 @@ const AdminBannersPage = () => {
                 <Label>Link URL</Label>
                 <Input value={form.link_url} onChange={(e) => setForm({ ...form, link_url: e.target.value })} placeholder="https://example.com" />
               </div>
+            </div>
+
+            {/* Banner Text */}
+            <div>
+              <Label>Banner Text (overlay on image)</Label>
+              <Input value={form.banner_text} onChange={(e) => setForm({ ...form, banner_text: e.target.value })} placeholder="Enter text to display on the banner" />
             </div>
 
             {/* Image Upload */}

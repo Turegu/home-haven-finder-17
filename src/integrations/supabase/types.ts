@@ -227,6 +227,7 @@ export type Database = {
       }
       banners: {
         Row: {
+          banner_text: string | null
           banner_type: string
           created_at: string
           end_date: string | null
@@ -241,6 +242,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          banner_text?: string | null
           banner_type?: string
           created_at?: string
           end_date?: string | null
@@ -255,6 +257,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          banner_text?: string | null
           banner_type?: string
           created_at?: string
           end_date?: string | null
