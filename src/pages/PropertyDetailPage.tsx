@@ -172,23 +172,29 @@ const PropertyDetailPage = () => {
               </div>
 
               {/* Specs bar */}
-              <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Building className="h-4 w-4" />
-                  {property.type}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Maximize className="h-4 w-4" />
-                  {property.area} {property.areaUnit}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <BedDouble className="h-4 w-4" />
-                  {property.bedrooms} Bedrooms
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Bath className="h-4 w-4" />
-                  {property.bathrooms} Bathrooms
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-6">
+                  <span className="flex items-center gap-1.5">
+                    <Building className="h-4 w-4" />
+                    {property.type}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Maximize className="h-4 w-4" />
+                    {property.area} {property.areaUnit}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <BedDouble className="h-4 w-4" />
+                    {property.bedrooms} Bedrooms
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Bath className="h-4 w-4" />
+                    {property.bathrooms} Bathrooms
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-xs">
+                  <span>Ad ID: <span className="font-mono font-medium text-foreground">{property.listingId}</span></span>
+                  <span>Added: <span className="font-medium text-foreground">01/01/2025</span></span>
+                </div>
               </div>
             </div>
 
