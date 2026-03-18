@@ -309,8 +309,8 @@ const CompanyAgentEditPage = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Phone</Label>
-                <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" />
+                <Label className="text-foreground font-medium">Phone *</Label>
+                <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
