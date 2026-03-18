@@ -75,6 +75,7 @@ const CompanyPropertyEditPage = () => {
     property_status: "new",
     interior_amenities: [] as string[],
     exterior_amenities: [] as string[],
+    advertising_tags: [] as string[],
     province: "",
     town: "",
     neighbourhood: "",
