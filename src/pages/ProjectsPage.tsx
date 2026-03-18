@@ -43,7 +43,7 @@ const ProjectsPage = () => {
   const [selectedUnitTypes, setSelectedUnitTypes] = useState<string[]>([]);
   const [minArea, setMinArea] = useState('');
   const [maxArea, setMaxArea] = useState('');
-  const [rooms, setRooms] = useState('');
+  const [rooms, setRooms] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [projectStatus, setProjectStatus] = useState('');
