@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  ChevronLeft, ChevronRight, Building, DollarSign, Maximize,
+  ChevronLeft, ChevronRight, Building, Maximize,
   BedDouble, Bath, Car, Eye
 } from "lucide-react";
 import {
