@@ -19,7 +19,6 @@ interface CmsContent {
 
 const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
-  useEffect(() => { document.title = 'Turegu – Your Property, Our Priority'; }, []);
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
 
