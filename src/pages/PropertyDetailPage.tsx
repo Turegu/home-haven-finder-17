@@ -339,18 +339,18 @@ const PropertyDetailPage = () => {
           {/* Sidebar - Agent Card */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              {/* Agent info */}
-              <div className="text-center mb-4">
+              {/* Agent info — links to agent profile */}
+              <Link to={`/agent/${property.id}`} className="block text-center mb-4 group">
                 <img
                   src={property.agentLogo}
                   alt={property.agentName}
-                  className="h-20 w-20 rounded-lg object-cover border-2 border-border mx-auto mb-3"
+                  className="h-24 w-24 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
                 />
-                <h3 className="font-bold text-foreground text-lg">{property.agentName}</h3>
+                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName}</h3>
                 {property.agentDesignation && (
                   <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
                 )}
-              </div>
+              </Link>
 
               <Button variant="outline" className="w-full mb-3 gap-2">
                 <UserPlus className="h-4 w-4" />
@@ -364,19 +364,19 @@ const PropertyDetailPage = () => {
                 </p>
               )}
 
-              {/* Company logo */}
+              {/* Company logo — links to company profile */}
               {property.companyLogo && (
-                <div className="flex items-center gap-3 py-3 border-t border-border">
+                <Link to={`/company/${property.id}`} className="flex items-center gap-3 py-4 border-t border-border group">
                   <img
                     src={property.companyLogo}
                     alt={property.agentCompany}
-                    className="h-12 w-12 rounded-lg object-cover border border-border"
+                    className="h-14 w-14 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
                   />
                   <div>
-                    <h4 className="font-semibold text-foreground text-sm">{property.agentCompany}</h4>
+                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
                     <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
                   </div>
-                </div>
+                </Link>
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
