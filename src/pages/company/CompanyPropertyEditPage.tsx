@@ -18,7 +18,7 @@ import {
   Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
   Calendar, Compass, ScrollText, Activity, Tag, TreePine, Lamp,
   DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
-  ChevronDown
+  ChevronDown, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 
@@ -45,7 +45,13 @@ const ageOptions = ["New", "1-5 Years", "6-10 Years", "11-15 Years", "16-20 Year
 const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Daily", "Weekly", "Monthly", "Yearly"];
-const advertisingTagOptions = ["Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller", "Limited Offer", "Negotiable", "Urgent Sale"];
+const advertisingTagOptions = [
+  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
+  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
+  "Lower Price", "Below Market", "Reduced", "Cash Only",
+  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
+  "Fully Renovated", "Motivated Seller", "Open House",
+];
 
 const floorLevels = [
   "Ground", "Garden floor", "1", "2", "3 - 5", "6 - 10",
@@ -329,11 +335,31 @@ const CompanyPropertyEditPage = () => {
           <div className="space-y-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Property Title *</Label>
-              <Input value={form.title} onChange={(e) => updateField("title", e.target.value)} className="bg-secondary/50" required />
+              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
+              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Property Description</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
+              <RichTextToolbar
+                onAction={(tag) => {
+                  const el = document.getElementById("prop-desc") as HTMLTextAreaElement | null;
+                  if (!el) return;
+                  const start = el.selectionStart;
+                  const end = el.selectionEnd;
+                  const text = form.description;
+                  const selected = text.substring(start, end);
+                  let wrapped = selected;
+                  if (tag === "bold") wrapped = `**${selected}**`;
+                  else if (tag === "italic") wrapped = `*${selected}*`;
+                  else if (tag === "underline") wrapped = `__${selected}__`;
+                  else if (tag === "bullet") wrapped = `\n- ${selected}`;
+                  else if (tag === "heading") wrapped = `\n### ${selected}`;
+                  const newText = text.substring(0, start) + wrapped + text.substring(end);
+                  updateField("description", newText);
+                  setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
+                }}
+              />
+              <Textarea id="prop-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
           </div>
         </section>
@@ -382,6 +408,14 @@ const CompanyPropertyEditPage = () => {
               <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder={isRent ? "Enter rent price" : "Enter price"} />
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
+                Net Area ({form.area_unit})
+              </Label>
+              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
+            </div>
+
             {isRent && (
               <FormSelect
                 label="Rental Duration"
@@ -392,14 +426,6 @@ const CompanyPropertyEditPage = () => {
                 placeholder="Select duration"
               />
             )}
-
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
-                Net Area ({form.area_unit})
-              </Label>
-              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
-            </div>
           </div>
         </section>
 
@@ -710,6 +736,32 @@ function MultiSelectDropdown({
           )}
         </PopoverContent>
       </Popover>
+    </div>
+  );
+}
+
+/* ─── Rich Text Toolbar ─── */
+function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
+  const buttons = [
+    { tag: "bold", icon: Bold, label: "Bold" },
+    { tag: "italic", icon: Italic, label: "Italic" },
+    { tag: "underline", icon: Underline, label: "Underline" },
+    { tag: "bullet", icon: List, label: "Bullet" },
+    { tag: "heading", icon: Heading, label: "Heading" },
+  ];
+  return (
+    <div className="flex items-center gap-1 p-1 border border-border rounded-md bg-muted/30 w-fit">
+      {buttons.map((b) => (
+        <button
+          key={b.tag}
+          type="button"
+          onClick={() => onAction(b.tag)}
+          title={b.label}
+          className="p-1.5 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+        >
+          <b.icon className="h-4 w-4" />
+        </button>
+      ))}
     </div>
   );
 }
