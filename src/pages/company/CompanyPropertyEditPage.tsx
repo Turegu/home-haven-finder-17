@@ -45,7 +45,13 @@ const ageOptions = ["New", "1-5 Years", "6-10 Years", "11-15 Years", "16-20 Year
 const orientationOptions = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 const titleDeedOptions = ["Freehold", "Leasehold", "Cooperative", "Other"];
 const rentDurations = ["Daily", "Weekly", "Monthly", "Yearly"];
-const advertisingTagOptions = ["Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller", "Limited Offer", "Negotiable", "Urgent Sale"];
+const advertisingTagOptions = [
+  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
+  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
+  "Lower Price", "Below Market", "Reduced", "Cash Only",
+  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
+  "Fully Renovated", "Motivated Seller", "Open House",
+];
 
 const floorLevels = [
   "Ground", "Garden floor", "1", "2", "3 - 5", "6 - 10",
