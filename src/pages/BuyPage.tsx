@@ -136,10 +136,10 @@ const BuyPage = () => {
                       {chunk.map((property) => (
                         <PropertyListCard key={property.id} property={property} />
                       ))}
-                      {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
+                      {chunkIdx < Math.ceil(properties.length / 4) - 1 && (
                         <div className="my-6">
                           <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
-                          <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
                         </div>
                       )}
                     </div>
