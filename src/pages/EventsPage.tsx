@@ -13,6 +13,9 @@ import ListingMapView from '@/components/ListingMapView';
 
 const EventsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [sortBy, setSortBy] = useState('newest');
+
+  useEffect(() => { document.title = 'Events | Turegu'; }, []);
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
