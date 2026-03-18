@@ -14,6 +14,7 @@ export interface Property {
   agentLogo: string;
   agentName: string;
   isFeatured: boolean;
+  listingTier: 'premium' | 'featured' | 'standard';
   listingType: 'buy' | 'rent';
 }
 
@@ -57,6 +58,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
     agentName: 'Prime Properties',
     isFeatured: true,
+    listingTier: 'premium',
     listingType: 'buy',
   },
   {
@@ -78,6 +80,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
     agentName: 'Istanbul Estates',
     isFeatured: true,
+    listingTier: 'featured',
     listingType: 'buy',
   },
   {
@@ -99,6 +102,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop',
     agentName: 'Gulf Realty',
     isFeatured: true,
+    listingTier: 'premium',
     listingType: 'buy',
   },
   {
@@ -120,6 +124,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=80&h=80&fit=crop',
     agentName: 'Rental Hub',
     isFeatured: false,
+    listingTier: 'standard',
     listingType: 'rent',
   },
   {
@@ -141,6 +146,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
     agentName: 'Ankara Properties',
     isFeatured: true,
+    listingTier: 'featured',
     listingType: 'buy',
   },
   {
@@ -162,6 +168,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop',
     agentName: 'Sharjah Homes',
     isFeatured: false,
+    listingTier: 'standard',
     listingType: 'buy',
   },
 ];
