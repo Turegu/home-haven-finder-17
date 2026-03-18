@@ -3,7 +3,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
-  Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2
+  Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
+  StreetView, Clock, CalendarDays
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
