@@ -11,6 +11,7 @@ import PropertyCard from '@/components/PropertyCard';
 import PropertyListCard from '@/components/PropertyListCard';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
+import ListingMapView from '@/components/ListingMapView';
 import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';

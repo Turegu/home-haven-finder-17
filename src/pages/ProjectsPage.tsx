@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
+import ListingMapView from '@/components/ListingMapView';
 import { mockProjects } from '@/data/mockProperties';
 
 const ProjectsPage = () => {
