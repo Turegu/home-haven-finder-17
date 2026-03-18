@@ -4,7 +4,7 @@ import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
-  PersonStanding, Clock, CalendarDays
+  PersonStanding, Clock, CalendarDays, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -23,6 +23,7 @@ const PropertyDetailPage = () => {
   const navigate = useNavigate();
   const property = mockPropertyDetail;
   const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [loanValues, setLoanValues] = useState({
     propertyValue: property.price,
@@ -65,7 +66,7 @@ const PropertyDetailPage = () => {
               ? property.images.slice(0, (currentImage + 3) - property.images.length)
               : []
           ).map((img, i) => (
-            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0">
+            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
               <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
             </div>
           ))}
@@ -89,6 +90,30 @@ const PropertyDetailPage = () => {
           {currentImage + 1}/{property.images.length}
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
+          <button className="absolute top-4 right-4 text-white/80 hover:text-white p-2" onClick={() => setLightboxOpen(false)}>
+            <X className="h-6 w-6" />
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full">
+            <ChevronLeft className="h-6 w-6 text-white" />
+          </button>
+          <img
+            src={property.images[currentImage]}
+            alt={property.title}
+            className="max-h-[90vh] max-w-[90vw] object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 p-3 rounded-full">
+            <ChevronRight className="h-6 w-6 text-white" />
+          </button>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+            {currentImage + 1} / {property.images.length}
+          </div>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
@@ -395,7 +420,7 @@ const PropertyDetailPage = () => {
                   Email
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-green-600 hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
                 </button>
