@@ -95,6 +95,7 @@ export const mockProjectDetail = {
   status: 'Under Construction',
   completionDate: 'Q4 2026',
   listingId: '48208342',
+  logoUrl: null as string | null,
   images: [
     'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&h=600&fit=crop',
     'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&h=600&fit=crop',
@@ -104,6 +105,9 @@ export const mockProjectDetail = {
   agentLogo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
   agentName: 'Knight Frank',
   agentCompany: 'Real Estate Company',
+  companyLogo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=80&h=80&fit=crop',
+  agentDesignation: 'Senior Property Consultant',
+  agentLanguages: ['English', 'Arabic', 'Turkish'],
   description: `Apartment for sale in Bulgari Resort & Residences, Jumeirah Bay Island
 
 Brought to you by The Private Collection, this 3 Bedroom Apartment is located in Bulgari Resort & Residences, Jumeirah.
