@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { Save, Upload, X } from "lucide-react";
+import {
+  Save, Upload, X, FileText, ImageIcon, Compass, DollarSign,
+  CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
+} from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 
 const eventTypes = [
@@ -24,7 +27,69 @@ const eventTypes = [
   { value: "webinar", label: "Webinar" },
 ];
 
+/* ─── Rich Text Toolbar ─── */
+function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
+  const buttons = [
+    { tag: "bold", icon: Bold, tip: "Bold" },
+    { tag: "italic", icon: Italic, tip: "Italic" },
+    { tag: "underline", icon: Underline, tip: "Underline" },
+    { tag: "bullet", icon: List, tip: "Bullet" },
+    { tag: "heading", icon: Heading, tip: "Heading" },
+  ];
+  return (
+    <div className="flex items-center gap-1 p-1 border border-border rounded-md bg-muted/30 w-fit">
+      {buttons.map((b) => (
+        <button
+          key={b.tag} type="button" title={b.tip}
+          onClick={() => onAction(b.tag)}
+          className="p-1.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <b.icon className="h-4 w-4" />
+        </button>
+      ))}
+    </div>
+  );
+}
 
+/* ─── Section Header ─── */
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+      <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <h2 className="text-base font-semibold text-foreground tracking-tight">{title}</h2>
+    </div>
+  );
+}
+
+/* ─── Reusable Form Select with Icon ─── */
+function FormSelect({
+  label, icon, value, onChange, options, placeholder,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-foreground font-medium flex items-center gap-1.5">
+        {icon} {label}
+      </Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
 
 const CompanyEventEditPage = () => {
   const navigate = useNavigate();
@@ -166,88 +231,117 @@ const CompanyEventEditPage = () => {
     } finally { setLoading(false); }
   };
 
+  const applyRichText = (tag: string) => {
+    const el = document.getElementById("event-desc") as HTMLTextAreaElement | null;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = form.description;
+    const selected = text.substring(start, end);
+    let wrapped = selected;
+    if (tag === "bold") wrapped = `**${selected}**`;
+    else if (tag === "italic") wrapped = `*${selected}*`;
+    else if (tag === "underline") wrapped = `__${selected}__`;
+    else if (tag === "bullet") wrapped = `\n- ${selected}`;
+    else if (tag === "heading") wrapped = `\n### ${selected}`;
+    const newText = text.substring(0, start) + wrapped + text.substring(end);
+    updateField("description", newText);
+    setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
+  };
+
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Event" : "New Event"}</h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-8 pb-10">
-        {/* Description & Information */}
+      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+
+        {/* ─── Description & Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Description & Information</h2>
+          <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Event Name *</Label>
-                <Input value={form.title} onChange={(e) => updateField("title", e.target.value)} className="bg-secondary/50" required placeholder="Event Title" />
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required placeholder="Event Title" maxLength={60} />
+                <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
               </div>
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Organizer</Label>
+                <Label className="text-foreground font-medium flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-muted-foreground" /> Organizer
+                </Label>
                 <Input value={form.organizer} onChange={(e) => updateField("organizer", e.target.value)} className="bg-secondary/50" placeholder="Organizer name" />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Event Description</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
+              <RichTextToolbar onAction={applyRichText} />
+              <Textarea id="event-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Event Type *</Label>
-                <Select value={form.event_type} onValueChange={(v) => updateField("event_type", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select Event Type" /></SelectTrigger>
-                  <SelectContent>
-                    {eventTypes.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Event Date</Label>
-                <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className="bg-secondary/50" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Currency</Label>
-                <Select value={form.currency} onValueChange={(v) => updateField("currency", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="TRY">TRY (₺)</SelectItem>
-                    <SelectItem value="GBP">GBP (£)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Entry Type */}
-            <div className="space-y-3">
-              <Label className="text-foreground font-medium">Entry Type *</Label>
-              <RadioGroup value={form.entry_type} onValueChange={(v) => updateField("entry_type", v)} className="flex gap-6">
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="open_invitation" id="entry_open" />
-                  <Label htmlFor="entry_open" className="cursor-pointer text-sm">Open Invitation (Free)</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="paid" id="entry_paid" />
-                  <Label htmlFor="entry_paid" className="cursor-pointer text-sm">Paid Entry</Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {form.entry_type === "paid" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <Label className="text-foreground font-medium">Entry Fee ({form.currency})</Label>
-                  <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder="Enter Price" min="0" step="0.01" />
-                </div>
-              </div>
-            )}
           </div>
         </section>
 
-        {/* Location */}
+        {/* ─── Event Details ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Location</h2>
+          <SectionHeader icon={<CalendarDays className="h-4 w-4" />} title="Event Details" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <FormSelect
+              label="Event Type *"
+              icon={<CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />}
+              value={form.event_type}
+              onChange={(v) => updateField("event_type", v)}
+              options={eventTypes.map((t) => ({ value: t.value, label: t.label }))}
+            />
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Event Date
+              </Label>
+              <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <FormSelect
+              label="Currency"
+              icon={<DollarSign className="h-3.5 w-3.5 text-muted-foreground" />}
+              value={form.currency}
+              onChange={(v) => updateField("currency", v)}
+              options={[
+                { value: "USD", label: "USD ($)" },
+                { value: "EUR", label: "EUR (€)" },
+                { value: "TRY", label: "TRY (₺)" },
+                { value: "GBP", label: "GBP (£)" },
+              ]}
+            />
+          </div>
+
+          {/* Entry Type */}
+          <div className="mt-5 space-y-3">
+            <Label className="text-foreground font-medium">Entry Type *</Label>
+            <RadioGroup value={form.entry_type} onValueChange={(v) => updateField("entry_type", v)} className="flex gap-6">
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="open_invitation" id="entry_open" />
+                <Label htmlFor="entry_open" className="cursor-pointer text-sm">Open Invitation (Free)</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="paid" id="entry_paid" />
+                <Label htmlFor="entry_paid" className="cursor-pointer text-sm">Paid Entry</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {form.entry_type === "paid" && (
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium flex items-center gap-1.5">
+                  <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Entry Fee ({form.currency})
+                </Label>
+                <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder="Enter Price" min="0" step="0.01" />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* ─── Location ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
           <LocationFormFields
             province={form.province}
             town={form.town}
@@ -260,9 +354,9 @@ const CompanyEventEditPage = () => {
           />
         </section>
 
-        {/* Media */}
+        {/* ─── Media ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-5">Media</h2>
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Media" />
 
           {/* Images */}
           <div className="space-y-3 mb-6">
@@ -297,8 +391,9 @@ const CompanyEventEditPage = () => {
             <div className="flex items-center gap-4">
               {pdfUrl && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-lg border border-border text-sm">
+                  <FileText className="h-4 w-4 text-primary" />
                   <span className="truncate max-w-[200px]">{pdfUrl.split("/").pop()}</span>
-                  <button type="button" onClick={() => setPdfUrl("")} className="text-destructive"><X className="h-3 w-3" /></button>
+                  <button type="button" onClick={() => setPdfUrl("")} className="text-destructive hover:opacity-70"><X className="h-3 w-3" /></button>
                 </div>
               )}
               <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
@@ -310,17 +405,19 @@ const CompanyEventEditPage = () => {
 
           {/* Video Link */}
           <div className="space-y-2">
-            <Label className="text-foreground font-medium">Video Link</Label>
+            <Label className="text-foreground font-medium flex items-center gap-1.5">
+              <Video className="h-3.5 w-3.5 text-muted-foreground" /> Video Link
+            </Label>
             <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder="YouTube or video URL" />
           </div>
         </section>
 
         {/* Submit */}
-        <div className="flex items-center gap-3">
-          <Button type="submit" disabled={loading} className="px-8">
-            <Save className="h-4 w-4 mr-2" /> {loading ? "Saving..." : isEdit ? "Update" : "Create"}
-          </Button>
+        <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate("/company/events")}>Cancel</Button>
+          <Button type="submit" disabled={loading}>
+            <Save className="h-4 w-4 mr-2" /> {loading ? "Saving..." : isEdit ? "Update Event" : "Create"}
+          </Button>
         </div>
       </form>
     </CompanyLayout>
