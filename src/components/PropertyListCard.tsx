@@ -85,18 +85,18 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               )}
 
-              {/* Photo count — upper left of left thumbnail */}
-              <div className="absolute top-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
-                <Camera className="h-3 w-3" />
-                <span>{currentImage + 1}/{property.images.length}</span>
-              </div>
-
-              {/* Tier badge — upper left below photo count */}
+              {/* Tier badge — top left corner */}
               {property.listingTier !== 'standard' && (
-                <div className="absolute top-10 left-2">
+                <div className="absolute top-2 left-2">
                   {tierBadge()}
                 </div>
               )}
+
+              {/* Photo count — lower left of left thumbnail */}
+              <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+                <Camera className="h-3 w-3" />
+                <span>{currentImage + 1}/{property.images.length}</span>
+              </div>
             </div>
 
             {/* Right image — equal size */}
