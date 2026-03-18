@@ -144,11 +144,8 @@ const PropertyDetailPage = () => {
             {/* Title & Price Block */}
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex items-center gap-3">
-                  <img src={property.agentLogo} alt="" className="h-12 w-12 rounded-lg object-cover border border-border" />
-                  <div>
-                    <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
-                  </div>
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
                 </div>
                 {/* Media tabs */}
                 <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
@@ -216,11 +213,9 @@ const PropertyDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-foreground">Overview</h2>
-                <span className="text-sm text-muted-foreground font-mono">ID: {property.listingId}</span>
-              </div>
+              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <OverviewItem icon={Hash} label="Listing ID" value={property.listingId} />
                 <OverviewItem icon={Building} label="Type" value={property.type} />
                 <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
                 <OverviewItem icon={Ruler} label="Area" value={`${property.area} ${property.areaUnit}`} />
