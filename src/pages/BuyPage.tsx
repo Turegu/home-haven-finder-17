@@ -154,9 +154,21 @@ const BuyPage = () => {
                 })}
               </div>
             ) : (
-              <div className="rounded-xl border border-border bg-muted h-[500px] flex items-center justify-center text-muted-foreground">
-                <Map className="h-8 w-8 mr-2" /> Map view coming soon
-              </div>
+              <ListingMapView
+                listings={allProperties.map(p => ({
+                  id: p.id,
+                  title: p.title,
+                  location: p.location,
+                  image: p.images[0],
+                  price: p.price,
+                  currency: p.currency,
+                  linkTo: `/property/${p.id}`,
+                  type: 'property' as const,
+                  subtitle: `${p.type} • ${p.bedrooms} bed • ${p.bathrooms} bath`,
+                  meta: `${p.area} ${p.areaUnit}`,
+                  logo: p.agentLogo,
+                }))}
+              />
             )}
           </div>
 
