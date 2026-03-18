@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   MapPin, Search, Clock, CalendarDays, Phone, Mail, Heart,
@@ -13,6 +13,9 @@ import ListingMapView from '@/components/ListingMapView';
 
 const EventsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [sortBy, setSortBy] = useState('newest');
+
+  useEffect(() => { document.title = 'Events | Turegu'; }, []);
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -40,7 +43,8 @@ const EventsPage = () => {
               <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
             </div>
             <div className="flex items-center gap-2 border border-border rounded-md px-3 py-2 min-w-[160px]">
-              <span className="text-sm text-muted-foreground">From Undefined</span>
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Date Range</span>
               <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
             </div>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6">
@@ -64,10 +68,11 @@ const EventsPage = () => {
             <p className="text-sm text-muted-foreground">{mockEvents.length} Events</p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 border border-border rounded-md px-3 py-2">
-              <span className="text-sm text-muted-foreground">Sort By</span>
-              <ChevronDown className="h-3 w-3 text-muted-foreground" />
-            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring">
+              <option value="newest">Newest First</option>
+              <option value="date_asc">Date: Earliest</option>
+              <option value="date_desc">Date: Latest</option>
+            </select>
             <div className="flex border border-border rounded-md overflow-hidden">
               {[
                 { mode: 'grid' as const, icon: LayoutGrid },

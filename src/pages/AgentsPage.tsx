@@ -63,7 +63,7 @@ const AgentsPage = () => {
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            Agent
+            Agents
           </button>
         </div>
 

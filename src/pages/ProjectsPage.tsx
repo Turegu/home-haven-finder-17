@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
@@ -10,11 +10,16 @@ import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import SearchFilters from '@/components/SearchFilters';
 import ListingMapView from '@/components/ListingMapView';
+import LocationPicker from '@/components/LocationPicker';
 import { mockProjects } from '@/data/mockProperties';
 
 const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [sortBy, setSortBy] = useState('newest');
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+
+  useEffect(() => { document.title = 'Projects | Turegu'; }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -23,11 +28,7 @@ const ProjectsPage = () => {
       {/* Search Bar with dynamic filters */}
       <div className="sticky top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background min-w-[120px]">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span className="text-foreground/70">Location</span>
-            <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
-          </div>
+          <LocationPicker value={location} onChange={setLocation} compact />
           <div className="relative flex-1 min-w-[200px]">
             <input
               type="text"
@@ -60,10 +61,11 @@ const ProjectsPage = () => {
             <span className="text-primary">{mockProjects.length}</span> Projects
           </h1>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background">
-              <span className="text-muted-foreground">Sort By</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring">
+              <option value="newest">Newest First</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+            </select>
             <div className="flex border border-border rounded-md overflow-hidden">
               <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />

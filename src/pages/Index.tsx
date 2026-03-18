@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ArrowRight, MapPin, Building, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -18,6 +19,7 @@ interface CmsContent {
 
 const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
+  useEffect(() => { document.title = 'Turegu – Your Property, Our Priority'; }, []);
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
 
@@ -71,7 +73,9 @@ const Index = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {mockProperties.filter(p => p.isFeatured).map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <Link key={property.id} to={`/property/${property.id}`}>
+              <PropertyCard property={property} />
+            </Link>
           ))}
         </div>
       </section>

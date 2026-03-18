@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Globe, ChevronDown, Ruler, Bell, Heart, Layers,
   Menu, X, User, LogOut, Settings, Users2, Search,
@@ -17,6 +17,7 @@ const AREA_UNITS = [
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [compareCount] = useState(0);
 
@@ -214,20 +215,20 @@ const Header = () => {
 
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link key={link.label} to={link.to} className="px-3 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-md hover:bg-secondary">
+              <Link key={link.label} to={link.to} className={cn("px-3 py-2 text-sm font-medium rounded-md transition-colors", location.pathname === link.to ? "text-primary bg-primary/10 font-semibold" : "text-foreground/80 hover:text-primary hover:bg-secondary")}>
                 {link.label}
               </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-2">
-            <button className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Notifications">
+            <button onClick={() => navigate(currentUser ? '/account/notifications' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Notifications">
               <Bell className="h-5 w-5 text-foreground/70" />
             </button>
-            <button className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
+            <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
               <Heart className="h-5 w-5 text-foreground/70" />
             </button>
-            <button className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
+            <button onClick={() => navigate(currentUser ? '/account/compare' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
               <Layers className="h-5 w-5 text-foreground/70" />
               {compareCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">

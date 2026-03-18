@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
   Globe, Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2, Share2, Heart
@@ -14,6 +14,7 @@ import { mockProjectDetail } from '@/data/mockDetails';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const project = mockProjectDetail;
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState('photos');
@@ -59,8 +60,12 @@ const ProjectDetailPage = () => {
           <ChevronRight className="h-5 w-5" />
         </button>
         <div className="absolute top-4 left-4 flex gap-2">
-          <button className="bg-background/90 p-2 rounded-full shadow-sm"><Share2 className="h-4 w-4" /></button>
-          <button className="bg-background/90 p-2 rounded-full shadow-sm"><Heart className="h-4 w-4" /></button>
+          <button onClick={() => { if (navigator.share) { navigator.share({ title: project.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
+            <Share2 className="h-4 w-4" />
+          </button>
+          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Save to favorites">
+            <Heart className="h-4 w-4" />
+          </button>
         </div>
         <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1">
           <Camera className="h-3.5 w-3.5" />

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
@@ -25,6 +26,7 @@ const BuyPage = () => {
   const [searchParams] = useSearchParams();
   const purpose = routerLocation.pathname === '/rent' ? 'rent' : (searchParams.get('propertyPurpose') || 'buy');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
@@ -42,6 +44,10 @@ const BuyPage = () => {
   const totalPages = Math.ceil(allProperties.length / itemsPerPage);
   const properties = allProperties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const title = purpose === 'rent' ? 'Residential Properties for rent' : 'Residential Properties for sale';
+
+  useEffect(() => {
+    document.title = `${purpose === 'rent' ? 'Rent' : 'Buy'} Properties | Turegu`;
+  }, [purpose]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,11 +93,20 @@ const BuyPage = () => {
             {title} in <span className="text-primary">{allProperties.length} Properties</span>
           </h1>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background">
-              <span className="text-muted-foreground">Sort By</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </div>
-            <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="newest">Newest First</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="area_desc">Area: Largest First</option>
+            </select>
+            <button
+              onClick={() => toast.success('Search saved! You\'ll be notified of new matches.', { description: 'Visit Saved Searches to manage your alerts.' })}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
+            >
               <Bookmark className="h-4 w-4" />
               Save Search
             </button>
