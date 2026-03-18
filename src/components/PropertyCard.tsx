@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Building, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Building, ChevronLeft, ChevronRight, Camera, Crown, Star, Tag } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import type { Property } from '@/data/mockProperties';
 
 interface PropertyCardProps {
