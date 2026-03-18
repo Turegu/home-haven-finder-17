@@ -124,7 +124,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           <FilterDropdown
             label="Parking Space"
             icon={Car}
-            options={parkingSpaces}
+            options={fo["parking"] || []}
             selected={local.parkingSpaces}
             onToggle={(v) => toggleArray('parkingSpaces', v)}
           />
