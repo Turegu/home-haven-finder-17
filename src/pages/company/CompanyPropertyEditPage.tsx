@@ -447,7 +447,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
               value={form.furniture}
               onChange={(v) => updateField("furniture", v)}
-              options={furnitureOptions.map(f => ({ value: f, label: f }))}
+              options={(filterOpts["furniture"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select"
             />
             <FormSelect
