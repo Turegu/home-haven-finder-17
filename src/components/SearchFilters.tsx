@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useFilterCategories } from "@/hooks/useAppData";
 
@@ -60,8 +59,8 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
       ))}
 
       {remainingCategories.length > 0 && (
-        <Sheet>
-          <SheetTrigger asChild>
+        <Dialog>
+          <DialogTrigger asChild>
             <button className="flex items-center gap-1.5 px-3 py-2 text-sm text-primary font-medium hover:bg-secondary rounded-md transition-colors">
               <SlidersHorizontal className="h-4 w-4" />
               Filters
@@ -71,19 +70,19 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
                 </Badge>
               )}
             </button>
-          </SheetTrigger>
-          <SheetContent className="w-[340px] sm:w-[400px]">
-            <SheetHeader>
-              <SheetTitle className="flex items-center justify-between">
-                All Filters
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[540px] max-h-[85vh] flex flex-col p-0">
+            <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
+              <DialogTitle className="flex items-center justify-between">
+                More Filters
                 {activeCount > 0 && (
                   <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-destructive">
                     Clear All
                   </Button>
                 )}
-              </SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-100px)] mt-4 pr-3">
+              </DialogTitle>
+            </DialogHeader>
+            <ScrollArea className="flex-1 px-6 py-4">
               <div className="space-y-6">
                 {categories.map((cat) => {
                   const opts = optionsByCategory[cat.id] || [];
@@ -98,9 +97,9 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
                           </button>
                         )}
                       </div>
-                      <div className="space-y-1.5">
+                      <div className="flex flex-wrap gap-2">
                         {opts.map((opt) => (
-                          <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1 px-2 rounded hover:bg-muted transition-colors">
+                          <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1.5 px-3 rounded-md border border-border hover:bg-muted transition-colors">
                             <Checkbox
                               checked={selected.includes(opt.title)}
                               onCheckedChange={() => toggleFilter(cat.category_key, opt.title)}
@@ -114,8 +113,13 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
                 })}
               </div>
             </ScrollArea>
-          </SheetContent>
-        </Sheet>
+            <div className="px-6 py-4 border-t border-border">
+              <Button className="w-full" size="lg">
+                Show Results
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {activeCount > 0 && (
