@@ -24,6 +24,7 @@ const BuyPage = () => {
   const [searchParams] = useSearchParams();
   const purpose = routerLocation.pathname === '/rent' ? 'rent' : (searchParams.get('propertyPurpose') || 'buy');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
     province: searchParams.get('province') || undefined,
@@ -32,7 +33,13 @@ const BuyPage = () => {
   });
   const [keyword, setKeyword] = useState(searchParams.get('q') || "");
 
-  const properties = mockProperties;
+  const allProperties = mockProperties;
+  const GRID_ROWS_PER_PAGE = 5;
+  const GRID_COLS = 3;
+  const LIST_ROWS_PER_PAGE = 21;
+  const itemsPerPage = viewMode === 'grid' ? GRID_ROWS_PER_PAGE * GRID_COLS : LIST_ROWS_PER_PAGE;
+  const totalPages = Math.ceil(allProperties.length / itemsPerPage);
+  const properties = allProperties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const title = purpose === 'rent' ? 'Residential Properties for rent' : 'Residential Properties for sale';
 
   return (
