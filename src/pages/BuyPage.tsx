@@ -11,9 +11,16 @@ import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyListCard from '@/components/PropertyListCard';
 import BannerDisplay from '@/components/BannerDisplay';
-import SearchFilters, { SelectedFilterBadges } from '@/components/SearchFilters';
 import ListingMapView from '@/components/ListingMapView';
 import LocationPicker from '@/components/LocationPicker';
+import PropertyTypeDropdown from '@/components/PropertyTypeDropdown';
+import PriceDropdown from '@/components/PriceDropdown';
+import AreaDropdown from '@/components/AreaDropdown';
+import RoomsDropdown from '@/components/RoomsDropdown';
+import BathroomsDropdown from '@/components/BathroomsDropdown';
+import RentDurationDropdown from '@/components/RentDurationDropdown';
+import PropertyFiltersModal from '@/components/PropertyFiltersModal';
+import { SelectedFilterBadges } from '@/components/SearchFilters';
 import { mockProperties } from '@/data/mockProperties';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
@@ -21,51 +28,15 @@ import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placehol
 
 const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
 
-type PropertyCategory = 'residential_sale' | 'residential_rent' | 'commercial_sale' | 'commercial_rent';
-
-const categoryConfig: Record<PropertyCategory, { label: string; purpose: string; classification: string; quickFilterKeys: string[] }> = {
-  residential_sale: {
-    label: 'Residential for Sale',
-    purpose: 'buy',
-    classification: 'residential',
-    quickFilterKeys: ['residential_property_types', 'price_range', 'area_range', 'rooms', 'bathrooms'],
-  },
-  residential_rent: {
-    label: 'Residential for Rent',
-    purpose: 'rent',
-    classification: 'residential',
-    quickFilterKeys: ['residential_property_types', 'price_range', 'area_range', 'rooms', 'rent_duration'],
-  },
-  commercial_sale: {
-    label: 'Commercial for Sale',
-    purpose: 'buy',
-    classification: 'commercial',
-    quickFilterKeys: ['commercial_property_types', 'price_range', 'area_range', 'rooms'],
-  },
-  commercial_rent: {
-    label: 'Commercial for Rent',
-    purpose: 'rent',
-    classification: 'commercial',
-    quickFilterKeys: ['commercial_property_types', 'price_range', 'area_range', 'rooms', 'rent_duration'],
-  },
-};
-
-const categoryOrder: PropertyCategory[] = ['residential_sale', 'residential_rent', 'commercial_sale', 'commercial_rent'];
-
 const BuyPage = () => {
   const routerLocation = useLocation();
   const [searchParams] = useSearchParams();
 
-  const inferCategory = (): PropertyCategory => {
-    const purpose = routerLocation.pathname === '/rent' ? 'rent' : (searchParams.get('propertyPurpose') || 'buy');
-    return purpose === 'rent' ? 'residential_rent' : 'residential_sale';
-  };
+  const isRent = routerLocation.pathname === '/rent' || searchParams.get('propertyPurpose') === 'rent';
 
-  const [activeCategory, setActiveCategory] = useState<PropertyCategory>(inferCategory);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
     province: searchParams.get('province') || undefined,
     district: searchParams.get('district') || undefined,
@@ -73,7 +44,18 @@ const BuyPage = () => {
   });
   const [keyword, setKeyword] = useState(searchParams.get('q') || "");
 
-  const config = categoryConfig[activeCategory];
+  // Filter states
+  const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minArea, setMinArea] = useState('');
+  const [maxArea, setMaxArea] = useState('');
+  const [rooms, setRooms] = useState('');
+  const [bathrooms, setBathrooms] = useState('');
+  const [rentDuration, setRentDuration] = useState('');
+  const [moreFilters, setMoreFilters] = useState<Record<string, string>>({});
+
+  const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
 
   const allProperties = mockProperties;
   const GRID_ROWS_PER_PAGE = 5;
@@ -82,44 +64,57 @@ const BuyPage = () => {
   const itemsPerPage = viewMode === 'grid' ? GRID_ROWS_PER_PAGE * GRID_COLS : LIST_ROWS_PER_PAGE;
   const totalPages = Math.ceil(allProperties.length / itemsPerPage);
   const properties = allProperties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const title = config.label;
 
   useEffect(() => {
-    document.title = `${config.label} | Turegu`;
-  }, [config.label]);
+    document.title = `${isRent ? 'Rent' : 'Buy'} | Turegu`;
+  }, [isRent]);
 
-  function handleCategoryChange(cat: PropertyCategory) {
-    setActiveCategory(cat);
-    setSelectedFilters({});
-    setCurrentPage(1);
+  // Build selected filter badges from all filter states
+  const selectedBadges: Record<string, string[]> = {};
+  if (propertyTypes.length > 0) selectedBadges['Property Type'] = propertyTypes;
+  if (minPrice || maxPrice) selectedBadges['Price'] = [`$${minPrice || '0'} - $${maxPrice || '∞'}`];
+  if (minArea || maxArea) selectedBadges['Area'] = [`${minArea || '0'} - ${maxArea || '∞'} m²`];
+  if (rooms) selectedBadges['Rooms'] = [rooms];
+  if (bathrooms) selectedBadges['Bathrooms'] = [bathrooms];
+  if (rentDuration) selectedBadges['Rent Duration'] = [rentDuration];
+  Object.entries(moreFilters).forEach(([key, val]) => {
+    if (val && val !== 'Any') {
+      if (key === 'exteriorAmenities') {
+        selectedBadges['Amenities'] = val.split(',');
+      } else {
+        selectedBadges[key] = [val];
+      }
+    }
+  });
+
+  function clearBadge(categoryKey: string, value: string) {
+    if (categoryKey === 'Property Type') setPropertyTypes(propertyTypes.filter(t => t !== value));
+    else if (categoryKey === 'Price') { setMinPrice(''); setMaxPrice(''); }
+    else if (categoryKey === 'Area') { setMinArea(''); setMaxArea(''); }
+    else if (categoryKey === 'Rooms') setRooms('');
+    else if (categoryKey === 'Bathrooms') setBathrooms('');
+    else if (categoryKey === 'Rent Duration') setRentDuration('');
+    else if (categoryKey === 'Amenities') {
+      const current = moreFilters.exteriorAmenities?.split(',') || [];
+      setMoreFilters({ ...moreFilters, exteriorAmenities: current.filter(v => v !== value).join(',') });
+    } else {
+      const updated = { ...moreFilters };
+      delete updated[categoryKey];
+      setMoreFilters(updated);
+    }
   }
+
+  const hasBadges = Object.keys(selectedBadges).length > 0;
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Category Tabs + Search Bar + Filters */}
+      {/* Search Bar + Filters */}
       <div className="sticky top-[104px] z-40 bg-background border-b border-border">
-        <div className="container mx-auto px-4">
-          {/* Category tabs */}
-          <div className="flex gap-1 pt-3 pb-2 overflow-x-auto">
-            {categoryOrder.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
-                className={`px-4 py-1.5 text-sm font-medium rounded-md whitespace-nowrap transition-all ${
-                  activeCategory === cat
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                {categoryConfig[cat].label}
-              </button>
-            ))}
-          </div>
-
+        <div className="container mx-auto px-4 py-3">
           {/* Search row */}
-          <div className="flex flex-wrap items-center gap-2 pb-3">
+          <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
             <div className="relative flex-1 min-w-[200px]">
               <input
@@ -130,12 +125,16 @@ const BuyPage = () => {
                 className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
               />
             </div>
-            <SearchFilters
-              context="property"
-              selectedFilters={selectedFilters}
-              onFiltersChange={setSelectedFilters}
-              quickFilterKeys={config.quickFilterKeys}
-            />
+            <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
+            <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
+            <AreaDropdown minArea={minArea} maxArea={maxArea} onChange={(min, max) => { setMinArea(min); setMaxArea(max); }} />
+            <RoomsDropdown value={rooms} onChange={setRooms} />
+            {isRent ? (
+              <RentDurationDropdown value={rentDuration} onChange={setRentDuration} />
+            ) : (
+              <BathroomsDropdown value={bathrooms} onChange={setBathrooms} />
+            )}
+            <PropertyFiltersModal filters={moreFilters} onFiltersChange={setMoreFilters} />
             <Button className="h-10 px-6 font-semibold">
               <Search className="h-4 w-4 mr-1" />
               Search
@@ -143,12 +142,23 @@ const BuyPage = () => {
           </div>
 
           {/* Selected filter badges - separate row below */}
-          <div className="pb-3">
-            <SelectedFilterBadges
-              selectedFilters={selectedFilters}
-              onFiltersChange={setSelectedFilters}
-            />
-          </div>
+          {hasBadges && (
+            <div className="pt-2 pb-1">
+              <SelectedFilterBadges
+                selectedFilters={selectedBadges}
+                onFiltersChange={(updated) => {
+                  // Find which badges were removed
+                  Object.keys(selectedBadges).forEach(key => {
+                    const oldValues = selectedBadges[key];
+                    const newValues = updated[key] || [];
+                    oldValues.forEach(v => {
+                      if (!newValues.includes(v)) clearBadge(key, v);
+                    });
+                  });
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -157,7 +167,7 @@ const BuyPage = () => {
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
           <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
           <span>{'>'}</span>
-          <span className="text-primary font-medium capitalize">{config.purpose === 'rent' ? 'Rent' : 'Buy'}</span>
+          <span className="text-primary font-medium">{isRent ? 'Rent' : 'Buy'}</span>
         </div>
 
         {/* Results Header */}
@@ -215,7 +225,7 @@ const BuyPage = () => {
                       </div>
                       {chunkIdx < Math.ceil(properties.length / 3) - 1 && (
                         <div className="my-6">
-                          <BannerDisplay pageName={config.purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
                           <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
                         </div>
                       )}
@@ -234,7 +244,7 @@ const BuyPage = () => {
                       ))}
                       {chunkIdx < Math.ceil(properties.length / 4) - 1 && (
                         <div className="my-6">
-                          <BannerDisplay pageName={config.purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
                           <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
                         </div>
                       )}
@@ -269,7 +279,7 @@ const BuyPage = () => {
 
           <div className="hidden lg:block w-[225px] shrink-0">
             <div className="sticky top-[160px]">
-              <BannerDisplay pageName={config.purpose === 'rent' ? 'rent' : 'buy'} bannerType="vertical" className="" />
+              <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="vertical" className="" />
               <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
             </div>
           </div>
