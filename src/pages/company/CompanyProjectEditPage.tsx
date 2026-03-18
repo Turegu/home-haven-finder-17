@@ -363,6 +363,7 @@ const CompanyProjectEditPage = () => {
       interior_amenities: unit.interior_amenities || [],
       exterior_amenities: unit.exterior_amenities || [],
       images: unit.images || [],
+      status: unit.status || "available",
     });
     setUnitDialogOpen(true);
   };
