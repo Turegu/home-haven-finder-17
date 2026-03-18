@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { MapPin, Building, X } from 'lucide-react';
+import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, ArrowLeftRight, Maximize } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 // City coordinate lookup for mock data
@@ -22,7 +22,6 @@ function getCityFromLocation(location: string): [number, number] {
   for (const [city, coords] of Object.entries(cityCoords)) {
     if (lower.includes(city)) return coords;
   }
-  // Default: Turkey center with slight random offset
   return [39.0 + Math.random() * 2, 32.0 + Math.random() * 4];
 }
 
@@ -31,6 +30,7 @@ export interface MapListing {
   title: string;
   location: string;
   image: string;
+  images?: string[];
   price: number | null;
   currency: string;
   linkTo: string;
@@ -38,6 +38,12 @@ export interface MapListing {
   subtitle?: string;
   meta?: string;
   logo?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  area?: number;
+  areaUnit?: string;
+  propertyType?: string;
+  units?: number;
 }
 
 // Create price badge marker
@@ -51,50 +57,147 @@ function createPriceIcon(price: number | null, currency: string) {
   });
 }
 
-// Popup card component
-const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => void }) => (
-  <div className="w-[280px] bg-card rounded-lg overflow-hidden shadow-xl border border-border">
-    <div className="relative">
-      <img src={listing.image} alt={listing.title} className="w-full h-[160px] object-cover" />
-      <button
-        onClick={(e) => { e.stopPropagation(); onClose(); }}
-        className="absolute top-2 right-2 bg-background/90 hover:bg-background rounded-full p-1 shadow"
-      >
-        <X className="h-4 w-4 text-foreground" />
-      </button>
-    </div>
-    <div className="p-3">
-      <Link to={listing.linkTo}>
-        <h4 className="font-semibold text-sm text-foreground hover:text-primary transition-colors line-clamp-2 mb-1">
-          {listing.title}
-        </h4>
-      </Link>
-      {listing.subtitle && (
-        <p className="text-xs text-muted-foreground mb-1">{listing.subtitle}</p>
-      )}
-      <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-        <MapPin className="h-3 w-3 text-primary shrink-0" />
-        <span className="line-clamp-1">{listing.location}</span>
-      </div>
-      {listing.meta && (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-          <Building className="h-3 w-3" />
-          <span>{listing.meta}</span>
-        </div>
-      )}
-      <div className="flex items-center justify-between pt-2 border-t border-border">
-        {listing.logo && (
-          <img src={listing.logo} alt="" className="h-8 w-12 object-contain rounded border border-border" />
+// Enhanced popup card with image slider and action buttons
+const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => void }) => {
+  const allImages = listing.images?.length ? listing.images : [listing.image];
+  const [imgIdx, setImgIdx] = useState(0);
+
+  const prevImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setImgIdx(i => (i - 1 + allImages.length) % allImages.length);
+  };
+  const nextImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setImgIdx(i => (i + 1) % allImages.length);
+  };
+
+  return (
+    <div className="w-[280px] bg-card rounded-lg overflow-hidden shadow-xl border border-border">
+      {/* Image slider */}
+      <div className="relative group">
+        <img
+          src={allImages[imgIdx]}
+          alt={listing.title}
+          className="w-full h-[170px] object-cover"
+        />
+        {/* Close button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          className="absolute top-2 right-2 bg-background/90 hover:bg-background rounded-full p-1 shadow z-10"
+        >
+          <X className="h-4 w-4 text-foreground" />
+        </button>
+
+        {/* Image navigation arrows */}
+        {allImages.length > 1 && (
+          <>
+            <button
+              onClick={prevImg}
+              className="absolute left-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronLeft className="h-4 w-4 text-foreground" />
+            </button>
+            <button
+              onClick={nextImg}
+              className="absolute right-1 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background rounded-full p-1 shadow opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <ChevronRight className="h-4 w-4 text-foreground" />
+            </button>
+            {/* Image counter */}
+            <span className="absolute bottom-2 left-2 bg-foreground/70 text-primary-foreground text-[10px] px-2 py-0.5 rounded-full font-medium">
+              {imgIdx + 1}/{allImages.length}
+            </span>
+          </>
         )}
-        <span className="text-sm font-bold text-foreground ml-auto">
-          {listing.price
-            ? `${listing.type === 'project' ? 'Starting From ' : ''}${listing.currency === 'USD' ? '$' : listing.currency} ${listing.price.toLocaleString()}`
-            : 'Open Invitation'}
-        </span>
+
+        {/* Action buttons row */}
+        <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="bg-primary hover:bg-primary/90 rounded-full p-1.5 shadow"
+            title="Compare"
+          >
+            <ArrowLeftRight className="h-3.5 w-3.5 text-primary-foreground" />
+          </button>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="bg-primary hover:bg-primary/90 rounded-full p-1.5 shadow"
+            title="Save"
+          >
+            <Heart className="h-3.5 w-3.5 text-primary-foreground" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-3">
+        <Link to={listing.linkTo}>
+          <h4 className="font-semibold text-sm text-foreground hover:text-primary transition-colors line-clamp-1 mb-0.5">
+            {listing.title}
+          </h4>
+        </Link>
+        {listing.subtitle && (
+          <p className="text-[11px] text-muted-foreground line-clamp-1 mb-1.5">{listing.subtitle}</p>
+        )}
+
+        {/* Location */}
+        <div className="flex items-center gap-1 text-[11px] text-muted-foreground mb-2">
+          <MapPin className="h-3 w-3 text-destructive shrink-0" />
+          <span className="line-clamp-1">{listing.location}</span>
+        </div>
+
+        {/* Property meta row */}
+        <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-2">
+          {listing.propertyType && (
+            <div className="flex items-center gap-1">
+              <Building className="h-3 w-3" />
+              <span>{listing.propertyType}</span>
+            </div>
+          )}
+          {listing.units && (
+            <div className="flex items-center gap-1">
+              <Maximize className="h-3 w-3" />
+              <span>{listing.units} Units</span>
+            </div>
+          )}
+          {listing.area && (
+            <div className="flex items-center gap-1">
+              <Maximize className="h-3 w-3" />
+              <span>{listing.area} {listing.areaUnit || 'sqm'}</span>
+            </div>
+          )}
+          {listing.meta && !listing.area && !listing.units && (
+            <div className="flex items-center gap-1">
+              <Building className="h-3 w-3" />
+              <span>{listing.meta}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Logo + Price footer */}
+        <div className="flex items-center justify-between pt-2 border-t border-border">
+          {listing.logo ? (
+            <img src={listing.logo} alt="" className="h-8 max-w-[80px] object-contain rounded" />
+          ) : (
+            <span />
+          )}
+          <div className="text-right">
+            {listing.type === 'project' && (
+              <span className="text-[10px] text-muted-foreground block">Starting From</span>
+            )}
+            <span className="text-sm font-bold text-foreground">
+              {listing.price
+                ? `${listing.currency === 'USD' ? '$' : listing.currency} ${listing.price.toLocaleString()}`
+                : 'Contact for Price'}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Auto-fit map bounds
 function FitBounds({ positions }: { positions: [number, number][] }) {
