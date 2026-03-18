@@ -14,7 +14,10 @@ import SearchFilters from '@/components/SearchFilters';
 import LocationPicker from '@/components/LocationPicker';
 import { mockProperties } from '@/data/mockProperties';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
+import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
+
+const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
 
 const BuyPage = () => {
   const routerLocation = useLocation();
