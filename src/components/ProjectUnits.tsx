@@ -264,13 +264,8 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                 )}
               </div>
 
-              {/* Unit Info */}
-              <h3 className="font-bold text-foreground text-lg mb-1">{currentUnit.unit_name}</h3>
-              {currentUnit.price != null && (
-                <p className="text-xl font-bold text-primary mb-4">
-                  {currentUnit.currency || '$'}{currentUnit.price.toLocaleString()}
-                </p>
-              )}
+
+
 
               <div className="grid grid-cols-4 gap-3">
                 <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
