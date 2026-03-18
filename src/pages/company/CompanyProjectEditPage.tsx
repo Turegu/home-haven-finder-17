@@ -201,6 +201,15 @@ const CompanyProjectEditPage = () => {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
 
+  // Units state
+  const [units, setUnits] = useState<any[]>([]);
+  const [unitDialogOpen, setUnitDialogOpen] = useState(false);
+  const [editingUnitId, setEditingUnitId] = useState<string | null>(null);
+  const [unitForm, setUnitForm] = useState<UnitForm>({ ...emptyUnit });
+  const [savingUnit, setSavingUnit] = useState(false);
+  const [uploadingUnitImages, setUploadingUnitImages] = useState(false);
+  const [savedProjectId, setSavedProjectId] = useState<string | null>(isEdit ? (id as string) : null);
+
   const [form, setForm] = useState({
     title: "", tagline: "", description: "", developer: "",
     project_type: "residential", min_price: "", max_price: "",
