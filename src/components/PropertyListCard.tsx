@@ -199,7 +199,15 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
           {/* Bottom row: contact icons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            <span className="text-xs text-muted-foreground">Listed recently</span>
+            <div className="flex items-center gap-2">
+              {property.agentAvatar && (
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={property.agentAvatar} alt="Agent" />
+                  <AvatarFallback className="text-xs">AG</AvatarFallback>
+                </Avatar>
+              )}
+              <span className="text-xs text-muted-foreground">{property.agentName}</span>
+            </div>
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
