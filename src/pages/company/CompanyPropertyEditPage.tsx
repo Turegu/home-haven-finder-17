@@ -478,7 +478,7 @@ const CompanyPropertyEditPage = () => {
               icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
               value={form.title_deed}
               onChange={(v) => updateField("title_deed", v)}
-              options={titleDeedOptions.map(t => ({ value: t, label: t }))}
+              options={(filterOpts["title_deed"] || []).map(t => ({ value: t, label: t }))}
               placeholder="Select"
             />
           </div>
