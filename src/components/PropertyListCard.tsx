@@ -187,13 +187,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 alt={property.agentName}
                 className="h-8 w-14 rounded object-cover border border-border"
               />
-              {property.agentAvatar && (
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={property.agentAvatar} alt="Agent" />
-                  <AvatarFallback className="text-xs">AG</AvatarFallback>
-                </Avatar>
-              )}
-              <span className="text-xs text-muted-foreground">{property.agentName}</span>
             </div>
           </div>
 
