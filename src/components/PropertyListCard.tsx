@@ -64,7 +64,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
     <Link to={`/property/${property.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
         {/* Dual thumbnail area — two equal-size landscape images side by side */}
-        <div className="relative w-full md:w-[320px] lg:w-[380px] shrink-0">
+        <div className="relative w-full md:w-[320px] lg:w-[440px] xl:w-[500px] shrink-0">
           <div className="flex h-[190px]">
             {/* Left image */}
             <div className="relative flex-1 overflow-hidden">
