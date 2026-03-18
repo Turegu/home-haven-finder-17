@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, ChevronDown, LayoutGrid, List, Map,
