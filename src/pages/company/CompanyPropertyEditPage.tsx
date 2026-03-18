@@ -455,7 +455,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Car className="h-4 w-4 text-muted-foreground" />}
               value={form.parking_spaces}
               onChange={(v) => updateField("parking_spaces", v)}
-              options={parkingSpaces.map(p => ({ value: p, label: p }))}
+              options={(filterOpts["parking"] || []).map(p => ({ value: p, label: p }))}
             />
             <FormSelect
               label="Property Age"
