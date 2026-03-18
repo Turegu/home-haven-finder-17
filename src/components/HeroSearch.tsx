@@ -9,7 +9,7 @@ import AreaDropdown from '@/components/AreaDropdown';
 import RoomsDropdown from '@/components/RoomsDropdown';
 import BathroomsDropdown from '@/components/BathroomsDropdown';
 import RentDurationDropdown from '@/components/RentDurationDropdown';
-import PropertyFiltersModal from '@/components/PropertyFiltersModal';
+import PropertyFiltersModal, { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 
 const HeroSearch = () => {
   const [activeTab, setActiveTab] = useState<'buy' | 'rent'>('buy');
@@ -20,10 +20,10 @@ const HeroSearch = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [minArea, setMinArea] = useState('');
   const [maxArea, setMaxArea] = useState('');
-  const [rooms, setRooms] = useState('');
-  const [bathrooms, setBathrooms] = useState('');
-  const [rentDuration, setRentDuration] = useState('');
-  const [moreFilters, setMoreFilters] = useState<Record<string, string>>({});
+  const [rooms, setRooms] = useState<string[]>([]);
+  const [bathrooms, setBathrooms] = useState<string[]>([]);
+  const [rentDuration, setRentDuration] = useState<string[]>([]);
+  const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
   const navigate = useNavigate();
 
   function handleSearch() {
@@ -36,16 +36,16 @@ const HeroSearch = () => {
     if (propertyTypes.length > 0) params.set('propertyTypes', propertyTypes.join(','));
     if (minPrice) params.set('minPrice', minPrice);
     if (maxPrice) params.set('maxPrice', maxPrice);
-    if (rooms) params.set('rooms', rooms);
+    if (rooms.length > 0) params.set('rooms', rooms.join(','));
     navigate(`/${activeTab === 'rent' ? 'rent' : 'buy'}?${params.toString()}`);
   }
 
   function handleTabChange(tab: 'buy' | 'rent') {
     setActiveTab(tab);
     setPropertyTypes([]);
-    setRooms('');
-    setBathrooms('');
-    setRentDuration('');
+    setRooms([]);
+    setBathrooms([]);
+    setRentDuration([]);
   }
 
   return (

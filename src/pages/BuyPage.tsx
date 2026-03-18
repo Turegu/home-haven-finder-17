@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
@@ -50,10 +51,10 @@ const BuyPage = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [minArea, setMinArea] = useState('');
   const [maxArea, setMaxArea] = useState('');
-  const [rooms, setRooms] = useState('');
-  const [bathrooms, setBathrooms] = useState('');
-  const [rentDuration, setRentDuration] = useState('');
-  const [moreFilters, setMoreFilters] = useState<Record<string, string>>({});
+  const [rooms, setRooms] = useState<string[]>([]);
+  const [bathrooms, setBathrooms] = useState<string[]>([]);
+  const [rentDuration, setRentDuration] = useState<string[]>([]);
+  const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
 
   const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
 
@@ -74,34 +75,29 @@ const BuyPage = () => {
   if (propertyTypes.length > 0) selectedBadges['Property Type'] = propertyTypes;
   if (minPrice || maxPrice) selectedBadges['Price'] = [`$${minPrice || '0'} - $${maxPrice || '∞'}`];
   if (minArea || maxArea) selectedBadges['Area'] = [`${minArea || '0'} - ${maxArea || '∞'} m²`];
-  if (rooms) selectedBadges['Rooms'] = [rooms];
-  if (bathrooms) selectedBadges['Bathrooms'] = [bathrooms];
-  if (rentDuration) selectedBadges['Rent Duration'] = [rentDuration];
-  Object.entries(moreFilters).forEach(([key, val]) => {
-    if (val && val !== 'Any') {
-      if (key === 'exteriorAmenities') {
-        selectedBadges['Amenities'] = val.split(',');
-      } else {
-        selectedBadges[key] = [val];
-      }
-    }
-  });
+  if (rooms.length > 0) selectedBadges['Rooms'] = rooms;
+  if (bathrooms.length > 0) selectedBadges['Bathrooms'] = bathrooms;
+  if (rentDuration.length > 0) selectedBadges['Rent Duration'] = rentDuration;
+  if (moreFilters.floorLevels.length > 0) selectedBadges['Floor Level'] = moreFilters.floorLevels;
+  if (moreFilters.parkingSpaces.length > 0) selectedBadges['Parking'] = moreFilters.parkingSpaces;
+  if (moreFilters.furniture.length > 0) selectedBadges['Furniture'] = moreFilters.furniture;
+  if (moreFilters.propertyAges.length > 0) selectedBadges['Property Age'] = moreFilters.propertyAges;
+  if (moreFilters.exteriorAmenities.length > 0) selectedBadges['Ext. Amenities'] = moreFilters.exteriorAmenities;
+  if (moreFilters.interiorAmenities.length > 0) selectedBadges['Int. Amenities'] = moreFilters.interiorAmenities;
 
   function clearBadge(categoryKey: string, value: string) {
     if (categoryKey === 'Property Type') setPropertyTypes(propertyTypes.filter(t => t !== value));
     else if (categoryKey === 'Price') { setMinPrice(''); setMaxPrice(''); }
     else if (categoryKey === 'Area') { setMinArea(''); setMaxArea(''); }
-    else if (categoryKey === 'Rooms') setRooms('');
-    else if (categoryKey === 'Bathrooms') setBathrooms('');
-    else if (categoryKey === 'Rent Duration') setRentDuration('');
-    else if (categoryKey === 'Amenities') {
-      const current = moreFilters.exteriorAmenities?.split(',') || [];
-      setMoreFilters({ ...moreFilters, exteriorAmenities: current.filter(v => v !== value).join(',') });
-    } else {
-      const updated = { ...moreFilters };
-      delete updated[categoryKey];
-      setMoreFilters(updated);
-    }
+    else if (categoryKey === 'Rooms') setRooms(rooms.filter(v => v !== value));
+    else if (categoryKey === 'Bathrooms') setBathrooms(bathrooms.filter(v => v !== value));
+    else if (categoryKey === 'Rent Duration') setRentDuration(rentDuration.filter(v => v !== value));
+    else if (categoryKey === 'Floor Level') setMoreFilters({ ...moreFilters, floorLevels: moreFilters.floorLevels.filter(v => v !== value) });
+    else if (categoryKey === 'Parking') setMoreFilters({ ...moreFilters, parkingSpaces: moreFilters.parkingSpaces.filter(v => v !== value) });
+    else if (categoryKey === 'Furniture') setMoreFilters({ ...moreFilters, furniture: moreFilters.furniture.filter(v => v !== value) });
+    else if (categoryKey === 'Property Age') setMoreFilters({ ...moreFilters, propertyAges: moreFilters.propertyAges.filter(v => v !== value) });
+    else if (categoryKey === 'Ext. Amenities') setMoreFilters({ ...moreFilters, exteriorAmenities: moreFilters.exteriorAmenities.filter(v => v !== value) });
+    else if (categoryKey === 'Int. Amenities') setMoreFilters({ ...moreFilters, interiorAmenities: moreFilters.interiorAmenities.filter(v => v !== value) });
   }
 
   const hasBadges = Object.keys(selectedBadges).length > 0;

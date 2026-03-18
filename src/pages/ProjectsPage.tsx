@@ -43,7 +43,7 @@ const ProjectsPage = () => {
   const [selectedUnitTypes, setSelectedUnitTypes] = useState<string[]>([]);
   const [minArea, setMinArea] = useState('');
   const [maxArea, setMaxArea] = useState('');
-  const [rooms, setRooms] = useState('');
+  const [rooms, setRooms] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [projectStatus, setProjectStatus] = useState('');
@@ -55,7 +55,7 @@ const ProjectsPage = () => {
   const selectedBadges: Record<string, string[]> = {};
   if (selectedUnitTypes.length > 0) selectedBadges['Unit Type'] = selectedUnitTypes;
   if (minArea || maxArea) selectedBadges['Area'] = [`${minArea || '0'} - ${maxArea || '∞'} m²`];
-  if (rooms) selectedBadges['Rooms'] = [rooms];
+  if (rooms.length > 0) selectedBadges['Rooms'] = rooms;
   if (minPrice || maxPrice) selectedBadges['Price'] = [`$${minPrice || '0'} - $${maxPrice || '∞'}`];
   if (projectStatus && projectStatus !== 'Any') selectedBadges['Status'] = [projectStatus];
   if (selectedAmenities.length > 0) selectedBadges['Amenities'] = selectedAmenities;
@@ -210,7 +210,7 @@ const ProjectsPage = () => {
                     removed.forEach(v => {
                       if (key === 'Unit Type') setSelectedUnitTypes(prev => prev.filter(t => t !== v));
                       else if (key === 'Area') { setMinArea(''); setMaxArea(''); }
-                      else if (key === 'Rooms') setRooms('');
+                      else if (key === 'Rooms') setRooms(prev => prev.filter(r => r !== v));
                       else if (key === 'Price') { setMinPrice(''); setMaxPrice(''); }
                       else if (key === 'Status') setProjectStatus('');
                       else if (key === 'Amenities') setSelectedAmenities(prev => prev.filter(a => a !== v));
