@@ -179,38 +179,7 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Open House / Viewing Hours */}
-            {(property.openHouseStart || property.viewingHours) && (
-              <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                  <CalendarDays className="h-5 w-5 text-primary" />
-                  Open House & Viewing Hours
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  {property.openHouseStart && (
-                    <div className="flex items-start gap-3 bg-muted/50 rounded-lg p-4">
-                      <CalendarDays className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-foreground">Open House Date & Time</p>
-                        <p className="text-muted-foreground">{property.openHouseStart}</p>
-                        {property.openHouseEnd && (
-                          <p className="text-muted-foreground">Ends: {property.openHouseEnd}</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {property.viewingHours && (
-                    <div className="flex items-start gap-3 bg-muted/50 rounded-lg p-4">
-                      <Clock className="h-5 w-5 text-primary mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-foreground">Viewing Hours</p>
-                        <p className="text-muted-foreground">{property.viewingHours}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+
 
             {/* Amenities */}
             <div className="bg-card rounded-xl border border-border p-6">
