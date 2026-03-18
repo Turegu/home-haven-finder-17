@@ -14,6 +14,7 @@ export interface Property {
   agentLogo: string;
   agentName: string;
   isFeatured: boolean;
+  listingTier: 'premium' | 'featured' | 'standard';
   listingType: 'buy' | 'rent';
 }
 
