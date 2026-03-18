@@ -134,7 +134,11 @@ const BuyPage = () => {
                         <PropertyListCard key={property.id} property={property} />
                       ))}
                       {chunkIdx < Math.ceil(properties.length / 7) - 1 && (
-                        <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="my-6" />
+                        <div className="my-6">
+                          <BannerDisplay pageName={purpose === 'rent' ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                        </div>
+                      )}
                       )}
                     </div>
                   );
