@@ -2,8 +2,7 @@ import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-
-const bathroomOptions = ['1', '2', '3', '4', '5', '6+'];
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 interface BathroomsDropdownProps {
   value: string[];
