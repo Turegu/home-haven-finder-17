@@ -35,7 +35,7 @@ export default function AreaDropdown({ minArea, maxArea, onChange }: AreaDropdow
           <span className={hasValue ? 'text-foreground' : 'text-muted-foreground'}>
             {hasValue ? `${minArea || '0'} - ${maxArea || '∞'} m²` : 'Area'}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-3" align="start">
