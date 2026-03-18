@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  Bookmark, ChevronLeft, ChevronRight
+  Bookmark, ChevronLeft, ChevronRight, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -22,7 +22,7 @@ import BathroomsDropdown from '@/components/BathroomsDropdown';
 import RentDurationDropdown from '@/components/RentDurationDropdown';
 import PropertyFiltersModal from '@/components/PropertyFiltersModal';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
-import { mockProperties } from '@/data/mockProperties';
+import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
@@ -46,29 +46,86 @@ const BuyPage = () => {
   const [keyword, setKeyword] = useState(searchParams.get('q') || "");
 
   // Filter states
-  const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [propertyTypes, setPropertyTypes] = useState<string[]>(
+    searchParams.get('propertyTypes')?.split(',').filter(Boolean) || []
+  );
+  const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
+  const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
   const [minArea, setMinArea] = useState('');
   const [maxArea, setMaxArea] = useState('');
-  const [rooms, setRooms] = useState<string[]>([]);
+  const [rooms, setRooms] = useState<string[]>(
+    searchParams.get('rooms')?.split(',').filter(Boolean) || []
+  );
   const [bathrooms, setBathrooms] = useState<string[]>([]);
   const [rentDuration, setRentDuration] = useState<string[]>([]);
   const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
 
+  // Search params that trigger the query (committed on Search click)
+  const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
+    propertyPurpose: isRent ? 'rent' : 'buy',
+    province: location.province,
+    district: location.district,
+    neighborhood: location.neighborhood,
+    keyword: keyword || undefined,
+    propertyTypes: propertyTypes.length > 0 ? propertyTypes : undefined,
+    minPrice: minPrice || undefined,
+    maxPrice: maxPrice || undefined,
+    minArea: minArea || undefined,
+    maxArea: maxArea || undefined,
+    rooms: rooms.length > 0 ? rooms : undefined,
+    bathrooms: bathrooms.length > 0 ? bathrooms : undefined,
+    rentDuration: rentDuration.length > 0 ? rentDuration : undefined,
+    moreFilters,
+    sortBy,
+    page: 1,
+    pageSize: viewMode === 'grid' ? 15 : 21,
+  });
+
   const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
 
-  const allProperties = mockProperties;
-  const GRID_ROWS_PER_PAGE = 5;
-  const GRID_COLS = 3;
-  const LIST_ROWS_PER_PAGE = 21;
-  const itemsPerPage = viewMode === 'grid' ? GRID_ROWS_PER_PAGE * GRID_COLS : LIST_ROWS_PER_PAGE;
-  const totalPages = Math.ceil(allProperties.length / itemsPerPage);
-  const properties = allProperties.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  // Query
+  const { data, isLoading, isFetching } = usePropertySearch(committedParams);
+  const allProperties = data?.properties ?? [];
+  const totalCount = data?.total ?? 0;
+
+  const GRID_ITEMS = 15;
+  const LIST_ITEMS = 21;
+  const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   useEffect(() => {
     document.title = `${isRent ? 'Rent' : 'Buy'} | Turegu`;
   }, [isRent]);
+
+  // Commit search
+  const handleSearch = useCallback(() => {
+    const newParams: PropertySearchParams = {
+      propertyPurpose: isRent ? 'rent' : 'buy',
+      province: location.province,
+      district: location.district,
+      neighborhood: location.neighborhood,
+      keyword: keyword.trim() || undefined,
+      propertyTypes: propertyTypes.length > 0 ? propertyTypes : undefined,
+      minPrice: minPrice || undefined,
+      maxPrice: maxPrice || undefined,
+      minArea: minArea || undefined,
+      maxArea: maxArea || undefined,
+      rooms: rooms.length > 0 ? rooms : undefined,
+      bathrooms: bathrooms.length > 0 ? bathrooms : undefined,
+      rentDuration: rentDuration.length > 0 ? rentDuration : undefined,
+      moreFilters,
+      sortBy,
+      page: 1,
+      pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS,
+    };
+    setCommittedParams(newParams);
+    setCurrentPage(1);
+  }, [isRent, location, keyword, propertyTypes, minPrice, maxPrice, minArea, maxArea, rooms, bathrooms, rentDuration, moreFilters, sortBy, viewMode]);
+
+  // Re-search when sort changes
+  useEffect(() => {
+    setCommittedParams(prev => ({ ...prev, sortBy, page: currentPage, pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS }));
+  }, [sortBy, currentPage, viewMode]);
 
   // Build selected filter badges from all filter states
   const selectedBadges: Record<string, string[]> = {};
@@ -102,6 +159,30 @@ const BuyPage = () => {
 
   const hasBadges = Object.keys(selectedBadges).length > 0;
 
+  // Map DB results to card-compatible shape
+  function toCardProp(p: typeof allProperties[number]) {
+    return {
+      id: p.id,
+      title: p.title,
+      price: p.price ?? 0,
+      currency: p.currency ?? 'USD',
+      location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
+      city: p.town ?? '',
+      type: p.property_type,
+      area: p.area ?? 0,
+      areaUnit: p.area_unit ?? 'm²',
+      bedrooms: p.bedrooms ?? 0,
+      bathrooms: p.bathrooms ?? 0,
+      images: (p.images && p.images.length > 0) ? p.images : ['/placeholder.svg'],
+      agentLogo: '',
+      agentName: '',
+      isFeatured: p.display_on_homepage,
+      listingTier: 'standard' as const,
+      listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+      advertisingTags: p.advertising_tags ?? [],
+    };
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -117,6 +198,7 @@ const BuyPage = () => {
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Enter Search Area, City, Address"
                 className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
               />
@@ -131,8 +213,8 @@ const BuyPage = () => {
               <BathroomsDropdown value={bathrooms} onChange={setBathrooms} />
             )}
             <PropertyFiltersModal filters={moreFilters} onFiltersChange={setMoreFilters} />
-            <Button className="h-10 px-6 font-semibold">
-              <Search className="h-4 w-4 mr-1" />
+            <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
+              {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
               Search
             </Button>
           </div>
@@ -143,7 +225,6 @@ const BuyPage = () => {
               <SelectedFilterBadges
                 selectedFilters={selectedBadges}
                 onFiltersChange={(updated) => {
-                  // Find which badges were removed
                   Object.keys(selectedBadges).forEach(key => {
                     const oldValues = selectedBadges[key];
                     const newValues = updated[key] || [];
@@ -169,7 +250,7 @@ const BuyPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            {title} in <span className="text-primary">{allProperties.length} Properties</span>
+            {title} in <span className="text-primary">{totalCount} Properties</span>
           </h1>
           <div className="flex items-center gap-3">
             <select
@@ -203,83 +284,96 @@ const BuyPage = () => {
           </div>
         </div>
 
-        {/* Layout with side banner */}
-        <div className="flex gap-6">
-          <div className="flex-1 min-w-0">
-            {viewMode === 'grid' ? (
-              <div className="space-y-6">
-                {Array.from({ length: Math.ceil(properties.length / 3) }, (_, chunkIdx) => {
-                  const chunk = properties.slice(chunkIdx * 3, (chunkIdx + 1) * 3);
-                  return (
-                    <div key={chunkIdx}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {chunk.map((property) => (
-                          <Link key={property.id} to={`/property/${property.id}`}>
-                            <PropertyCard property={property} />
-                          </Link>
-                        ))}
-                      </div>
-                      {chunkIdx < Math.ceil(properties.length / 3) - 1 && (
-                        <div className="my-6">
-                          <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
-                          <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : viewMode === 'list' ? (
-              <div className="space-y-6">
-                {Array.from({ length: Math.ceil(properties.length / 4) }, (_, chunkIdx) => {
-                  const chunk = properties.slice(chunkIdx * 4, (chunkIdx + 1) * 4);
-                  return (
-                    <div key={chunkIdx} className="space-y-6">
-                      {chunk.map((property) => (
-                        <PropertyListCard key={property.id} property={property} />
-                      ))}
-                      {chunkIdx < Math.ceil(properties.length / 4) - 1 && (
-                        <div className="my-6">
-                          <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
-                          <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <ListingMapView
-                listings={allProperties.map(p => ({
-                  id: p.id,
-                  title: p.title,
-                  location: p.location,
-                  image: p.images[0],
-                  images: p.images,
-                  price: p.price,
-                  currency: p.currency,
-                  linkTo: `/property/${p.id}`,
-                  type: 'property' as const,
-                  subtitle: `${p.type} • ${p.bedrooms} bed • ${p.bathrooms} bath`,
-                  meta: `${p.area} ${p.areaUnit}`,
-                  logo: p.agentLogo,
-                  bedrooms: p.bedrooms,
-                  bathrooms: p.bathrooms,
-                  area: p.area,
-                  areaUnit: p.areaUnit,
-                  propertyType: p.type,
-                }))}
-              />
-            )}
+        {/* Loading state */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Loading properties...</span>
           </div>
+        ) : allProperties.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-lg font-medium text-foreground mb-2">No properties found</p>
+            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+          </div>
+        ) : (
+          /* Layout with side banner */
+          <div className="flex gap-6">
+            <div className="flex-1 min-w-0">
+              {viewMode === 'grid' ? (
+                <div className="space-y-6">
+                  {Array.from({ length: Math.ceil(allProperties.length / 3) }, (_, chunkIdx) => {
+                    const chunk = allProperties.slice(chunkIdx * 3, (chunkIdx + 1) * 3);
+                    return (
+                      <div key={chunkIdx}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {chunk.map((property) => (
+                            <Link key={property.id} to={`/property/${property.id}`}>
+                              <PropertyCard property={toCardProp(property)} />
+                            </Link>
+                          ))}
+                        </div>
+                        {chunkIdx < Math.ceil(allProperties.length / 3) - 1 && (
+                          <div className="my-6">
+                            <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                            <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : viewMode === 'list' ? (
+                <div className="space-y-6">
+                  {Array.from({ length: Math.ceil(allProperties.length / 4) }, (_, chunkIdx) => {
+                    const chunk = allProperties.slice(chunkIdx * 4, (chunkIdx + 1) * 4);
+                    return (
+                      <div key={chunkIdx} className="space-y-6">
+                        {chunk.map((property) => (
+                          <PropertyListCard key={property.id} property={toCardProp(property)} />
+                        ))}
+                        {chunkIdx < Math.ceil(allProperties.length / 4) - 1 && (
+                          <div className="my-6">
+                            <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="horizontal" position={chunkIdx + 1} className="" />
+                            <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <ListingMapView
+                  listings={allProperties.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || '',
+                    image: p.images?.[0] || '/placeholder.svg',
+                    images: p.images || ['/placeholder.svg'],
+                    price: p.price ?? 0,
+                    currency: p.currency ?? 'USD',
+                    linkTo: `/property/${p.id}`,
+                    type: 'property' as const,
+                    subtitle: `${p.property_type} • ${p.bedrooms ?? 0} bed • ${p.bathrooms ?? 0} bath`,
+                    meta: `${p.area ?? 0} ${p.area_unit ?? 'm²'}`,
+                    logo: '',
+                    bedrooms: p.bedrooms ?? 0,
+                    bathrooms: p.bathrooms ?? 0,
+                    area: p.area ?? 0,
+                    areaUnit: p.area_unit ?? 'm²',
+                    propertyType: p.property_type,
+                  }))}
+                />
+              )}
+            </div>
 
-          <div className="hidden lg:block w-[225px] shrink-0">
-            <div className="sticky top-[160px]">
-              <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="vertical" className="" />
-              <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
+            <div className="hidden lg:block w-[225px] shrink-0">
+              <div className="sticky top-[160px]">
+                <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="vertical" className="" />
+                <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
