@@ -123,7 +123,7 @@ const BuyPage = () => {
                 {Array.from({ length: Math.ceil(properties.length / 7) }, (_, chunkIdx) => {
                   const chunk = properties.slice(chunkIdx * 7, (chunkIdx + 1) * 7);
                   return (
-                    <div key={chunkIdx} className="space-y-10">
+                    <div key={chunkIdx} className="space-y-6">
                       {chunk.map((property) => (
                         <PropertyListCard key={property.id} property={property} />
                       ))}
