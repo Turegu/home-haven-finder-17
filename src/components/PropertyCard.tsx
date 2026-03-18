@@ -27,6 +27,13 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
     return `$${price.toLocaleString()}`;
   };
 
+  const tagColorMap: Record<string, string> = {
+    'Hot Deal': 'bg-red-500',
+    'Price Drop': 'bg-green-600',
+    'Exclusive': 'bg-purple-600',
+    'New Launch': 'bg-teal-600',
+  };
+
   return (
     <div className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
       {/* Image Area */}
