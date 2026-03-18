@@ -33,16 +33,16 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
   const tierBadge = () => {
     if (property.listingTier === 'premium') {
       return (
-        <Badge className="bg-amber-500 hover:bg-amber-500 text-white border-0 gap-1 text-[10px] uppercase font-bold">
-          <Crown className="h-3 w-3" /> Premium
-        </Badge>
+        <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md" title="Premium">
+          <Crown className="h-4 w-4 text-white" />
+        </span>
       );
     }
     if (property.listingTier === 'featured') {
       return (
-        <Badge className="bg-blue-500 hover:bg-blue-500 text-white border-0 gap-1 text-[10px] uppercase font-bold">
-          <Star className="h-3 w-3" /> Featured
-        </Badge>
+        <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+          <Star className="h-4 w-4 text-white" />
+        </span>
       );
     }
     return null;
@@ -187,6 +187,12 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 alt={property.agentName}
                 className="h-8 w-14 rounded object-cover border border-border"
               />
+            </div>
+          </div>
+
+          {/* Bottom row: contact icons */}
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+            <div className="flex items-center gap-2">
               {property.agentAvatar && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={property.agentAvatar} alt="Agent" />
@@ -195,11 +201,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               )}
               <span className="text-xs text-muted-foreground">{property.agentName}</span>
             </div>
-          </div>
-
-          {/* Bottom row: contact icons */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            <span className="text-xs text-muted-foreground">Listed recently</span>
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
