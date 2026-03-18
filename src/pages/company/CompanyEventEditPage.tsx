@@ -253,7 +253,7 @@ const CompanyEventEditPage = () => {
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Event" : "New Event"}</h1>
 
-      <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
+      <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
 
         {/* ─── Description & Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
