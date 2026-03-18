@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
-  Search, ChevronDown, LayoutGrid, List, Map,
+  Search, LayoutGrid, List, Map,
   Bookmark, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
