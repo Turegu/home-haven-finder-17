@@ -58,6 +58,7 @@ export const mockProperties: Property[] = [
     agentLogo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
     agentName: 'Prime Properties',
     isFeatured: true,
+    listingTier: 'premium',
     listingType: 'buy',
   },
   {
