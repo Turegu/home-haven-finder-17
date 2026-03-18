@@ -172,23 +172,29 @@ const PropertyDetailPage = () => {
               </div>
 
               {/* Specs bar */}
-              <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Building className="h-4 w-4" />
-                  {property.type}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Maximize className="h-4 w-4" />
-                  {property.area} {property.areaUnit}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <BedDouble className="h-4 w-4" />
-                  {property.bedrooms} Bedrooms
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Bath className="h-4 w-4" />
-                  {property.bathrooms} Bathrooms
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-6">
+                  <span className="flex items-center gap-1.5">
+                    <Building className="h-4 w-4" />
+                    {property.type}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Maximize className="h-4 w-4" />
+                    {property.area} {property.areaUnit}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <BedDouble className="h-4 w-4" />
+                    {property.bedrooms} Bedrooms
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Bath className="h-4 w-4" />
+                    {property.bathrooms} Bathrooms
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-xs">
+                  <span>Ad ID: <span className="font-mono font-medium text-foreground">{property.listingId}</span></span>
+                  <span>Added: <span className="font-medium text-foreground">01/01/2025</span></span>
+                </div>
               </div>
             </div>
 
@@ -215,7 +221,7 @@ const PropertyDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <OverviewItem icon={Hash} label="Listing ID" value={property.listingId} />
+                
                 <OverviewItem icon={Building} label="Type" value={property.type} />
                 <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
                 <OverviewItem icon={Ruler} label="Area" value={`${property.area} ${property.areaUnit}`} />
