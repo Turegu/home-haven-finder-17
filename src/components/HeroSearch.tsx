@@ -32,7 +32,7 @@ const HeroSearch = () => {
           {/* Buy / Rent Toggle */}
           <div className="flex gap-1 mb-4 bg-muted rounded-lg p-1 w-fit">
             <button
-              onClick={() => setActiveTab('buy')}
+              onClick={() => { setActiveTab('buy'); setSelectedFilters({}); }}
               className={`px-6 py-2 text-sm font-semibold rounded-md transition-all ${
                 activeTab === 'buy'
                   ? 'bg-primary text-primary-foreground shadow-sm'
@@ -42,7 +42,7 @@ const HeroSearch = () => {
               Buy
             </button>
             <button
-              onClick={() => setActiveTab('rent')}
+              onClick={() => { setActiveTab('rent'); setSelectedFilters({}); }}
               className={`px-6 py-2 text-sm font-semibold rounded-md transition-all ${
                 activeTab === 'rent'
                   ? 'bg-primary text-primary-foreground shadow-sm'
@@ -78,7 +78,8 @@ const HeroSearch = () => {
               context="property"
               selectedFilters={selectedFilters}
               onFiltersChange={setSelectedFilters}
-              quickFilterKeys={["residential_property_types", "rooms", "furniture", "property_status"]}
+              quickFilterKeys={["residential_property_types", "price_range", "area_range", "rooms", "bathrooms"]}
+              inline
             />
           </div>
         </div>

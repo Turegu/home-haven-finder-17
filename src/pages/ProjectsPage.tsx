@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Search, ChevronDown, LayoutGrid, List, Map,
+  Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, MessageCircle, Heart, Layers
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
-import SearchFilters from '@/components/SearchFilters';
+import SearchFilters, { SelectedFilterBadges } from '@/components/SearchFilters';
 import ListingMapView from '@/components/ListingMapView';
 import LocationPicker from '@/components/LocationPicker';
 import { mockProjects } from '@/data/mockProperties';
@@ -25,27 +25,37 @@ const ProjectsPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Search Bar with dynamic filters */}
+      {/* Search Bar with project-specific filters */}
       <div className="sticky top-[104px] z-40 bg-background border-b border-border">
-        <div className="container mx-auto px-4 py-3 flex flex-wrap items-center gap-2">
-          <LocationPicker value={location} onChange={setLocation} compact />
-          <div className="relative flex-1 min-w-[200px]">
-            <input
-              type="text"
-              placeholder="Enter Search Area, City, Address"
-              className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <LocationPicker value={location} onChange={setLocation} compact />
+            <div className="relative flex-1 min-w-[200px]">
+              <input
+                type="text"
+                placeholder="Enter Search Area, City, Address"
+                className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+              />
+            </div>
+            <SearchFilters
+              context="project"
+              selectedFilters={selectedFilters}
+              onFiltersChange={setSelectedFilters}
+              quickFilterKeys={["project_unit_types", "area_range", "rooms", "price_range"]}
+            />
+            <Button className="h-10 px-6 font-semibold">
+              <Search className="h-4 w-4 mr-1" />
+              Search
+            </Button>
+          </div>
+
+          {/* Selected filter badges - separate row */}
+          <div className="pt-2 pb-1">
+            <SelectedFilterBadges
+              selectedFilters={selectedFilters}
+              onFiltersChange={setSelectedFilters}
             />
           </div>
-          <SearchFilters
-            context="project"
-            selectedFilters={selectedFilters}
-            onFiltersChange={setSelectedFilters}
-            quickFilterKeys={["project_types", "project_unit_types", "rooms", "exterior_amenities"]}
-          />
-          <Button className="h-10 px-6 font-semibold">
-            <Search className="h-4 w-4 mr-1" />
-            Search
-          </Button>
         </div>
       </div>
 
