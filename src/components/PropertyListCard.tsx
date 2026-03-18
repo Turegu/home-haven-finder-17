@@ -140,25 +140,22 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               </div>
 
-              {/* Deal tag — lower right of right thumbnail (only first tag) */}
-              {property.advertisingTags && property.advertisingTags.length > 0 && (
-                <div className="absolute bottom-2 right-2">
-                  <Badge
-                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-                  >
-                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
-                  </Badge>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Price bar below thumbnails */}
-          <div className="bg-foreground px-3 py-1.5">
+          <div className="bg-foreground px-3 py-1.5 flex items-center justify-between">
             <span className="text-base font-bold text-background">
               $ {property.price.toLocaleString()}
               {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
             </span>
+            {property.advertisingTags && property.advertisingTags.length > 0 && (
+              <Badge
+                className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+              >
+                <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+              </Badge>
+            )}
           </div>
         </div>
 
