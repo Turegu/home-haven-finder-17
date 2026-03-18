@@ -57,17 +57,13 @@ const PropertyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery — side by side, landscape aspect */}
-      <div className="relative w-full bg-muted overflow-hidden">
-        <div className="flex transition-transform duration-300" style={{ transform: `translateX(-${currentImage * (100 / Math.min(property.images.length, 3))}%)` }}>
-          {property.images.map((img, i) => (
-            <div key={i} className="flex-shrink-0 w-full md:w-1/3 px-[1px]">
-              <div className="aspect-[16/9]">
-                <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Image Gallery */}
+      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
+        <img
+          src={property.images[currentImage]}
+          alt={property.title}
+          className="w-full h-full object-cover"
+        />
         <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -383,16 +379,19 @@ const PropertyDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Phone className="h-5 w-5" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Phone className="h-4 w-4" />
+                  Call
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <Mail className="h-5 w-5" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <Mail className="h-4 w-4" />
+                  Email
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center text-primary hover:bg-secondary py-2.5 rounded-lg">
-                  <MessageCircle className="h-5 w-5" />
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                  <MessageCircle className="h-4 w-4" />
+                  Chat
                 </button>
               </div>
             </div>
