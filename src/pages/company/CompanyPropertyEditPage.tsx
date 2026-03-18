@@ -428,6 +428,13 @@ const CompanyPropertyEditPage = () => {
             <BedDouble className="h-4 w-4" /> Rooms & Features
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <FormSelect
+              label="Property Status"
+              icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+              value={form.property_status}
+              onChange={(v) => updateField("property_status", v)}
+              options={propertyStatusOptions.map(o => ({ value: o, label: o.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase()) }))}
+            />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <BedDouble className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Rooms
