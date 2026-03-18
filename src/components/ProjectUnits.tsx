@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ChevronLeft, ChevronRight, Building, Maximize,
-  BedDouble, Bath, Car, Eye
+  BedDouble, Bath, Car, Eye, DollarSign, Home
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -210,40 +210,6 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
               ))}
             </div>
 
-            {/* Selected unit quick facts */}
-            {currentUnit && (
-              <div className="mt-4 rounded-lg border border-border bg-muted/30 p-4 space-y-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quick Facts</p>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Price</span>
-                    <span className="font-bold text-primary">{currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Area</span>
-                    <span className="font-semibold text-foreground">{currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Rooms</span>
-                    <span className="font-semibold text-foreground">{currentUnit.rooms || '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Bathrooms</span>
-                    <span className="font-semibold text-foreground">{currentUnit.bathrooms != null ? currentUnit.bathrooms : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Parking</span>
-                    <span className="font-semibold text-foreground">{currentUnit.car_parking != null ? currentUnit.car_parking : '—'}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Status</span>
-                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[currentUnit.status] || ''}`}>
-                      {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Unit Detail (right) */}
@@ -298,20 +264,17 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                 )}
               </div>
 
-              {/* Unit Info */}
-              <h3 className="font-bold text-foreground text-lg mb-1">{currentUnit.unit_name}</h3>
-              {currentUnit.price != null && (
-                <p className="text-xl font-bold text-primary mb-4">
-                  {currentUnit.currency || '$'}{currentUnit.price.toLocaleString()}
-                </p>
-              )}
 
-              <div className="grid grid-cols-2 gap-3">
+
+
+              <div className="grid grid-cols-4 gap-3">
+                <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
                 <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
                 <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'} />
                 <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
                 <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
                 <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />
+                <UnitSpecCard icon={Home} label="Unit" value={currentUnit.unit_name} />
                 <UnitSpecCard icon={Eye} label="Status" value={currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)} />
               </div>
             </div>
