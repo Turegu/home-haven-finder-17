@@ -152,9 +152,7 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
   );
 }
 
-const unitTypes = ["apartment", "villa", "studio", "duplex", "penthouse", "shop", "office"];
-const unitInteriorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace"];
-const unitExteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Gym"];
+// Unit types and amenities now fetched dynamically via filterOpts
 
 interface UnitForm {
   unit_name: string;

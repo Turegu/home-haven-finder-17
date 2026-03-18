@@ -16,7 +16,8 @@ import {
   CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
-import { eventTypes, getEventLogo } from "@/data/eventTypes";
+import { getEventLogo } from "@/data/eventTypes";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {

@@ -13,16 +13,9 @@ import BannerDisplay from '@/components/BannerDisplay';
 import LocationPicker from '@/components/LocationPicker';
 import { mockEvents } from '@/data/mockEvents';
 import ListingMapView from '@/components/ListingMapView';
+import { useFilterOptions } from '@/hooks/useFilterOptions';
 
-const eventTypes = [
-  'Seminar/Conference',
-  'Exhibition/Trade Show',
-  'Auction',
-  'Viewing Tour',
-  'Project Launch',
-  'Open House',
-  'All',
-];
+// Event types now fetched dynamically
 
 const EventsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
