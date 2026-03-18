@@ -177,12 +177,19 @@ interface UnitForm {
   interior_amenities: string[];
   exterior_amenities: string[];
   images: string[];
+  status: string;
 }
+
+const unitStatuses = [
+  { value: "available", label: "Available" },
+  { value: "reserved", label: "Reserved" },
+  { value: "sold", label: "Sold" },
+];
 
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
-  interior_amenities: [], exterior_amenities: [], images: [],
+  interior_amenities: [], exterior_amenities: [], images: [], status: "available",
 };
 
 const CompanyProjectEditPage = () => {
