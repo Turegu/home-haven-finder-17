@@ -19,6 +19,7 @@ import { mockProperties } from '@/data/mockProperties';
 
 const PropertyDetailPage = () => {
   const { id: _id } = useParams();
+  const navigate = useNavigate();
   const property = mockPropertyDetail;
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState('photos');
