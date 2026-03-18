@@ -260,6 +260,20 @@ const CompanyPropertyEditPage = () => {
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.title.trim()) { toast.error("Title is required"); return; }
+    if (!form.price) { toast.error("Price is required"); return; }
+    if (!form.area) { toast.error("Area is required"); return; }
+    if (!form.rooms) { toast.error("Rooms selection is required"); return; }
+    if (!form.bedrooms) { toast.error("Bedrooms is required"); return; }
+    if (!form.bathrooms) { toast.error("Bathrooms is required"); return; }
+    if (!form.floor_level) { toast.error("Floor level is required"); return; }
+    if (!form.furniture) { toast.error("Furniture status is required"); return; }
+    if (!form.property_age) { toast.error("Property age is required"); return; }
+    if (!form.property_orientation) { toast.error("Property orientation is required"); return; }
+    if (!form.title_deed) { toast.error("Title deed is required"); return; }
+    if (!form.province) { toast.error("Province is required"); return; }
+    if (!form.town) { toast.error("Town/District is required"); return; }
+    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return; }
+    if (isRent && !form.rent_duration) { toast.error("Rent duration is required"); return; }
     setLoading(true);
 
     const payload: any = {

@@ -16,7 +16,8 @@ import {
   Globe, ChevronDown, Search, Briefcase
 } from "lucide-react";
 
-const languageOptions = ["English", "Turkish", "Arabic", "French", "German", "Russian", "Farsi"];
+import { allLanguages } from "@/data/languages";
+const languageOptions = allLanguages;
 
 function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
@@ -163,6 +164,13 @@ const CompanyAgentEditPage = () => {
     if (!companyId) { toast.error("Company not found"); return; }
     if (!form.name.trim()) { toast.error("Agent name is required"); return; }
     if (!form.email.trim()) { toast.error("Email is required"); return; }
+    if (!form.designation.trim()) { toast.error("Designation is required"); return; }
+    if (!form.phone.trim()) { toast.error("Phone is required"); return; }
+    if (!form.whatsapp.trim()) { toast.error("WhatsApp number is required"); return; }
+    if (!form.service_areas.trim()) { toast.error("Service areas are required"); return; }
+    if (form.languages.length === 0) { toast.error("At least one language is required"); return; }
+    if (!form.registration_number.trim()) { toast.error("Registration number is required"); return; }
+    if (!form.description.trim()) { toast.error("Description is required"); return; }
 
     setLoading(true);
 
@@ -258,27 +266,27 @@ const CompanyAgentEditPage = () => {
                 <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" required placeholder="Enter Agent Name" />
               </div>
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Agent Designation</Label>
-                <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" placeholder="Enter Agent Designation" />
+                <Label className="text-foreground font-medium">Agent Designation *</Label>
+                <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" placeholder="Enter Agent Designation" required />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Service Areas</Label>
-                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." />
+                <Label className="text-foreground font-medium">Service Areas *</Label>
+                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." required />
               </div>
               <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Registration Number</Label>
-              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" placeholder="Registration Number" />
+              <Label className="text-foreground font-medium">Registration Number *</Label>
+              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" placeholder="Registration Number" required />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Description</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" placeholder="Write Agent Description" />
+              <Label className="text-foreground font-medium">Description *</Label>
+              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" placeholder="Write Agent Description" required />
             </div>
           </div>
         </section>
@@ -301,14 +309,14 @@ const CompanyAgentEditPage = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Phone</Label>
-                <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" />
+                <Label className="text-foreground font-medium">Phone *</Label>
+                <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">WhatsApp Number</Label>
-                <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" />
+                <Label className="text-foreground font-medium">WhatsApp Number *</Label>
+                <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
               </div>
             </div>
           </div>
