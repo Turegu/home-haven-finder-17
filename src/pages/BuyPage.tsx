@@ -139,7 +139,6 @@ const BuyPage = () => {
                           <img src={horizontalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
                         </div>
                       )}
-                      )}
                     </div>
                   );
                 })}
