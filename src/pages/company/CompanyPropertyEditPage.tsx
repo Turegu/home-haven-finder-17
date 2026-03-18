@@ -494,7 +494,7 @@ const CompanyPropertyEditPage = () => {
             <MultiSelectDropdown
               label="Interior Amenities"
               icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
-              options={interiorAmenities}
+              options={filterOpts["interior_amenities"] || []}
               selected={form.interior_amenities}
               onToggle={(val) => toggleArrayField("interior_amenities", val)}
               searchable
