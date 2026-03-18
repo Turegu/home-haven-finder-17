@@ -26,6 +26,7 @@ const BuyPage = () => {
   const [searchParams] = useSearchParams();
   const purpose = routerLocation.pathname === '/rent' ? 'rent' : (searchParams.get('propertyPurpose') || 'buy');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
