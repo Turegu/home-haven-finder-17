@@ -25,17 +25,9 @@ import {
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
-const projectTypes = [
-  { value: "residential", label: "Residential" },
-  { value: "commercial", label: "Commercial" },
-  { value: "mixed_use", label: "Mixed Use" },
-  { value: "residential_compound", label: "Residential Compound" },
-];
-const projectStatuses = ["new", "under_construction", "ready", "off_plan", "completed"];
-
-const interiorAmenities = ["Central Heating", "Air Conditioning", "Elevator", "Smart Home", "Jacuzzi", "Sauna", "Fireplace", "Laundry Room"];
-const exteriorAmenities = ["Swimming Pool", "Garden", "Garage", "Security", "Playground", "BBQ Area", "Tennis Court", "Gym", "Doorman"];
+/* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
