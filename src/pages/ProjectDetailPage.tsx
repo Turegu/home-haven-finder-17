@@ -14,6 +14,7 @@ import { mockProjectDetail } from '@/data/mockDetails';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const project = mockProjectDetail;
   const [currentImage, setCurrentImage] = useState(0);
   const [activeTab, setActiveTab] = useState('photos');
