@@ -85,6 +85,39 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               )}
 
+              {/* Right arrow — only when single thumbnail (below lg) */}
+              {property.images.length > 1 && (
+                <button
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+
+              {/* Save & Compare — only when single thumbnail (below lg) */}
+              <div className="absolute top-2 right-2 flex items-center gap-1 lg:hidden">
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  className="bg-foreground/40 hover:bg-foreground/60 text-white p-1.5 rounded-full transition-colors"
+                  aria-label="Compare"
+                >
+                  <Layers className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
+                  className={`p-1.5 rounded-full transition-colors ${
+                    isFavorited
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-foreground/40 hover:bg-foreground/60 text-white'
+                  }`}
+                  aria-label="Favorite"
+                >
+                  <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
+                </button>
+              </div>
+
               {/* Tier badge — top left corner */}
               {property.listingTier !== 'standard' && (
                 <div className="absolute top-2 left-2">
