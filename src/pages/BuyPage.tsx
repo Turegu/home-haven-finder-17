@@ -176,6 +176,7 @@ const BuyPage = () => {
                   title: p.title,
                   location: p.location,
                   image: p.images[0],
+                  images: p.images,
                   price: p.price,
                   currency: p.currency,
                   linkTo: `/property/${p.id}`,
@@ -183,6 +184,11 @@ const BuyPage = () => {
                   subtitle: `${p.type} • ${p.bedrooms} bed • ${p.bathrooms} bath`,
                   meta: `${p.area} ${p.areaUnit}`,
                   logo: p.agentLogo,
+                  bedrooms: p.bedrooms,
+                  bathrooms: p.bathrooms,
+                  area: p.area,
+                  areaUnit: p.areaUnit,
+                  propertyType: p.type,
                 }))}
               />
             )}

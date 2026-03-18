@@ -149,6 +149,7 @@ const ProjectsPage = () => {
                   type: 'project' as const,
                   subtitle: p.developer,
                   meta: `${p.units} Units`,
+                  units: p.units,
                 }))}
               />
             )}
