@@ -224,10 +224,10 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
           <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
             <img
               src={property.agentLogo}
-              alt={property.agentName}
+              alt={property.companyName}
               className="h-10 w-16 rounded object-cover border border-border shadow-sm"
             />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.companyName}</span>
           </div>
 
           <div className="pr-24">
