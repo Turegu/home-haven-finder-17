@@ -109,7 +109,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
             onClick={handleFavorite}
             className={`p-1.5 rounded-full transition-colors shadow-sm ${
               isFavorited
-                ? 'bg-blue-500 text-white'
+                ? 'bg-primary text-primary-foreground'
                 : 'bg-background/90 hover:bg-background text-foreground/70 hover:text-destructive'
             }`}
             aria-label="Favorite"
