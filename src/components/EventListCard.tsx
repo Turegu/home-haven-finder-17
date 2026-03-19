@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, Camera, MapPin,
-  CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Star
+  CalendarDays, Users, Phone, Mail, MessageCircle, Star,
+  Home, Rocket, Bus, Gavel, Store, Mic
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -23,6 +24,16 @@ const entryLabel = (entry: string) => {
   if (entry === 'paid') return 'Paid Entry';
   if (entry === 'rsvp') return 'RSVP Required';
   return entry;
+};
+
+const eventTypeIcons: Record<string, React.ElementType> = {
+  open_house: Home,
+  project_launch: Rocket,
+  viewing_tour: Bus,
+  auction: Gavel,
+  exhibition: Store,
+  exhibition_trade_show: Store,
+  seminar_conference: Mic,
 };
 
 const TierBadge = ({ displayOnHomepage }: { displayOnHomepage: boolean }) => {
@@ -54,6 +65,7 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
   const companyLogo = event.companies?.logo_url ?? event.logo_url ?? '';
   const agentName = event.agents?.name ?? '';
   const agentAvatar = event.agents?.avatar_url ?? '';
+  const TypeIcon = eventTypeIcons[event.event_type] || CalendarDays;
 
   return (
     <Link to={`/events/${event.id}`} className="block">
@@ -87,14 +99,15 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
               <span>{currentImage + 1}/{images.length}</span>
             </div>
 
-            {/* Tier icon — top-left (same circular style as properties) */}
+            {/* Tier icon — top-left */}
             <div className="absolute top-2 left-2">
               <TierBadge displayOnHomepage={event.display_on_homepage} />
             </div>
 
-            {/* Event type tag — top-right */}
+            {/* Event type tag with icon — top-right */}
             <div className="absolute top-2 right-2">
-              <Badge className="bg-primary hover:bg-primary text-primary-foreground border-0 text-[10px] uppercase font-bold">
+              <Badge className="bg-primary hover:bg-primary text-primary-foreground border-0 text-[10px] uppercase font-bold gap-1">
+                <TypeIcon className="h-3 w-3" />
                 {event.event_type.replace(/_/g, ' ')}
               </Badge>
             </div>
@@ -139,7 +152,7 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
                 <span className="font-medium text-foreground">{formatDate(event.event_date)}</span>
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
+                <TypeIcon className="h-3.5 w-3.5" />
                 <span className="font-medium text-foreground">{event.event_type.replace(/_/g, ' ')}</span>
               </span>
               <span className="flex items-center gap-1">

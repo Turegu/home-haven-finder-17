@@ -130,7 +130,11 @@ export function usePropertySearch(params: PropertySearchParams) {
         }
       }
 
-      // Sorting
+      // Sorting — always tier first: premium > featured > standard (via property_classification)
+      // Then display_on_homepage DESC, then user-selected sort
+      query = query.order("property_classification", { ascending: true, nullsFirst: false });
+      query = query.order("display_on_homepage", { ascending: false });
+
       switch (params.sortBy) {
         case "price_asc":
           query = query.order("price", { ascending: true, nullsFirst: false });
