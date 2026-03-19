@@ -251,19 +251,29 @@ const CompareListPage = () => {
     }
   };
 
-  // Build price & ROI comparison data
-  const LONG_TERM_YIELD = 0.05; // 5% annual yield estimate
+  // Build price & ROI comparison data using REAL market rental rates
   const AIRBNB_MULTIPLIER = 1.8; // Airbnb typically 1.5-2x long-term rent
   const OCCUPANCY_RATE = 0.70; // 70% average Airbnb occupancy
+  const FALLBACK_YIELD = 0.05; // 5% fallback if no rental data
 
   const investmentData = items.map((item, i) => {
     const p = item.property;
     const price = p?.price || 0;
     const area = p?.area || 1;
     const pricePerSqm = price > 0 && area > 0 ? Math.round(price / area) : 0;
-    const annualRent = price * LONG_TERM_YIELD;
-    const monthlyRent = Math.round(annualRent / 12);
+
+    // Use real market rental rate if available, otherwise fallback
+    const marketRentPerSqm = rentalRates[p?.id || ""] || 0;
+    const hasMarketData = marketRentPerSqm > 0;
+
+    // Monthly rent based on market data or fallback estimate
+    const monthlyRent = hasMarketData
+      ? Math.round(marketRentPerSqm * area)
+      : Math.round((price * FALLBACK_YIELD) / 12);
+
+    const annualRent = monthlyRent * 12;
     const roi = price > 0 ? ((annualRent / price) * 100) : 0;
+
     const airbnbNightly = area > 0 ? Math.round((monthlyRent * AIRBNB_MULTIPLIER) / 30) : 0;
     const airbnbMonthly = Math.round(airbnbNightly * 30 * OCCUPANCY_RATE);
     const airbnbAnnual = airbnbMonthly * 12;
@@ -271,11 +281,12 @@ const CompareListPage = () => {
     const breakEvenYears = annualRent > 0 ? Math.round(price / annualRent) : 0;
     const airbnbBreakEven = airbnbAnnual > 0 ? Math.round(price / airbnbAnnual) : 0;
     const name = (p?.title || "Property").substring(0, 15);
+    const dataSource = hasMarketData ? "market" : "estimate";
 
     return {
       name, price, pricePerSqm, annualRent, monthlyRent, roi,
       airbnbNightly, airbnbMonthly, airbnbAnnual, airbnbROI,
-      breakEvenYears, airbnbBreakEven,
+      breakEvenYears, airbnbBreakEven, dataSource,
       fill: CHART_COLORS[i], currency: p?.currency || "$",
     };
   });
