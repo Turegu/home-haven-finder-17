@@ -23,6 +23,7 @@ export async function toggleSaveProperty(propertyId: string): Promise<boolean | 
     const { error } = await supabase.from('saved_properties').insert({ user_id: user.id, property_id: propertyId });
     if (error) { toast.error('Failed to save property'); return null; }
     toast.success('Property saved!');
+    window.dispatchEvent(new Event('property-actions-changed'));
     return true;
   }
 }
