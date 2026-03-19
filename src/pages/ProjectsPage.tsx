@@ -83,7 +83,7 @@ const ProjectsPage = () => {
       pageSize: 21,
     });
     setCurrentPage(1);
-  }, [location, keyword, selectedUnitTypes, minPrice, maxPrice, minArea, maxArea, rooms, projectStatus, selectedAmenities, sortBy]);
+  }, [location, keyword, selectedUnitTypes, minPrice, maxPrice, minArea, maxArea, rooms, projectStatus, exteriorAmenities, interiorAmenities, sortBy]);
 
   // Build badges
   const selectedBadges: Record<string, string[]> = {};
