@@ -106,13 +106,13 @@ const ProjectsPage = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative min-w-[140px] max-w-[200px]">
               <input
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Enter Search Area, City, Address"
+                placeholder="Search keyword..."
                 className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
               />
             </div>
@@ -148,51 +148,33 @@ const ProjectsPage = () => {
             <RoomsDropdown value={rooms} onChange={setRooms} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
 
-            {/* Filter (More) button */}
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground">
-                  <SlidersHorizontal className="h-4 w-4" />
-                  Filter
-                  {moreFilterCount > 0 && (
-                    <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
-                      {moreFilterCount}
-                    </Badge>
-                  )}
+            {/* Status dropdown - same design as Unit Type */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[100px]">
+                  <span className={projectStatus ? 'text-foreground' : 'text-muted-foreground'}>
+                    {projectStatus || 'Status'}
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[480px] max-h-[85vh] flex flex-col p-0">
-                <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
-                  <DialogTitle>Filter</DialogTitle>
-                </DialogHeader>
-                <ScrollArea className="flex-1 px-6 py-4">
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="text-sm font-semibold text-foreground mb-2">Status</h4>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button className="flex items-center justify-between w-full px-3 py-2 text-sm border border-border rounded-md bg-background">
-                            <span className={projectStatus ? 'text-foreground' : 'text-muted-foreground'}>
-                              {projectStatus || 'Select Status'}
-                            </span>
-                            <ChevronDown className="h-3.5 w-3.5 text-amber-500" />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-1" align="start">
-                          {projectStatuses.map((s) => (
-                            <button
-                              key={s}
-                              onClick={() => setProjectStatus(s === 'Any' ? '' : s)}
-                              className={`w-full text-left px-3 py-1.5 text-sm rounded-md transition-colors ${
-                                projectStatus === s ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-foreground'
-                              }`}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-52 p-1" align="start">
+                <ScrollArea>
+                  <div className="space-y-0.5">
+                    {projectStatuses.map((s) => (
+                      <label
+                        key={s}
+                        className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors"
+                        onClick={() => setProjectStatus(s === 'Any' ? '' : s)}
+                      >
+                        <Checkbox checked={projectStatus === s || (s === 'Any' && !projectStatus)} onCheckedChange={() => setProjectStatus(s === 'Any' ? '' : s)} />
+                        <span className="text-sm text-foreground">{s}</span>
+                      </label>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
                     <div>
                       <h4 className="text-sm font-semibold text-foreground mb-2">Amenities</h4>
                       <div className="space-y-2">
