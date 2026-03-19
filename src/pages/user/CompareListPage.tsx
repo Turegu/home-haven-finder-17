@@ -49,6 +49,74 @@ const CompareListPage = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [scores, setScores] = useState<PropertyScore[]>([]);
   const [winner, setWinner] = useState("");
+  const [rentalRates, setRentalRates] = useState<Record<string, number>>({}); // property_id -> rent per m²/month
+
+  // Fetch actual rental rates from the database for each property's area
+  const fetchRentalData = async (compareItems: CompareItem[]) => {
+    const rates: Record<string, number> = {};
+
+    for (const item of compareItems) {
+      const p = item.property;
+      if (!p) continue;
+
+      // Try neighbourhood first, then town, then province
+      let avgRentPerSqm: number | null = null;
+
+      // 1. Same neighbourhood
+      if (p.neighbourhood && p.town && p.province) {
+        const { data: rentals } = await supabase
+          .from("properties")
+          .select("price, area")
+          .eq("status", "active")
+          .eq("property_purpose", "rent")
+          .eq("province", p.province)
+          .eq("town", p.town)
+          .eq("neighbourhood", p.neighbourhood)
+          .gt("price", 0)
+          .gt("area", 0);
+        if (rentals && rentals.length > 0) {
+          avgRentPerSqm = rentals.reduce((sum, r) => sum + (r.price! / r.area!), 0) / rentals.length;
+        }
+      }
+
+      // 2. Same town (fallback)
+      if (!avgRentPerSqm && p.town && p.province) {
+        const { data: rentals } = await supabase
+          .from("properties")
+          .select("price, area")
+          .eq("status", "active")
+          .eq("property_purpose", "rent")
+          .eq("province", p.province)
+          .eq("town", p.town)
+          .gt("price", 0)
+          .gt("area", 0)
+          .limit(50);
+        if (rentals && rentals.length > 0) {
+          avgRentPerSqm = rentals.reduce((sum, r) => sum + (r.price! / r.area!), 0) / rentals.length;
+        }
+      }
+
+      // 3. Same province (fallback)
+      if (!avgRentPerSqm && p.province) {
+        const { data: rentals } = await supabase
+          .from("properties")
+          .select("price, area")
+          .eq("status", "active")
+          .eq("property_purpose", "rent")
+          .eq("province", p.province)
+          .gt("price", 0)
+          .gt("area", 0)
+          .limit(100);
+        if (rentals && rentals.length > 0) {
+          avgRentPerSqm = rentals.reduce((sum, r) => sum + (r.price! / r.area!), 0) / rentals.length;
+        }
+      }
+
+      rates[p.id] = avgRentPerSqm || 0;
+    }
+
+    setRentalRates(rates);
+  };
 
   const load = async () => {
     const { data: { user } } = await supabase.auth.getUser();
