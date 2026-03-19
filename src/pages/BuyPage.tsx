@@ -60,6 +60,7 @@ const BuyPage = () => {
   const [bathrooms, setBathrooms] = useState<string[]>([]);
   const [rentDuration, setRentDuration] = useState<string[]>([]);
   const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
+  const [saveSearchOpen, setSaveSearchOpen] = useState(false);
 
   // Search params that trigger the query (committed on Search click)
   const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
