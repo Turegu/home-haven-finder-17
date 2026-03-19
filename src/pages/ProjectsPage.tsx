@@ -217,18 +217,18 @@ const ProjectsPage = () => {
 
                 <Tabs defaultValue="interior" className="flex-1 flex flex-col overflow-hidden">
                   <TabsList className="w-full grid grid-cols-2">
-                    <TabsTrigger value="interior" className="gap-1.5">
+                    <TabsTrigger value="interior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                       <Lamp className="h-4 w-4" />
                       Interior
                       {interiorAmenities.length > 0 && (
-                        <Badge variant="default" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{interiorAmenities.length}</Badge>
+                        <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{interiorAmenities.length}</Badge>
                       )}
                     </TabsTrigger>
-                    <TabsTrigger value="exterior" className="gap-1.5">
+                    <TabsTrigger value="exterior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                       <TreePine className="h-4 w-4" />
                       Exterior
                       {exteriorAmenities.length > 0 && (
-                        <Badge variant="default" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{exteriorAmenities.length}</Badge>
+                        <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{exteriorAmenities.length}</Badge>
                       )}
                     </TabsTrigger>
                   </TabsList>
