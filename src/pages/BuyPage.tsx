@@ -24,6 +24,7 @@ import PropertyFiltersModal from '@/components/PropertyFiltersModal';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
 import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
+import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
