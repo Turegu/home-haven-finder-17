@@ -13,6 +13,7 @@ import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyAc
 
 interface PropertyListCardProps {
   property: Property;
+  onLocationClick?: (propertyId: string) => void;
 }
 
 const PropertyListCard = ({ property }: PropertyListCardProps) => {
