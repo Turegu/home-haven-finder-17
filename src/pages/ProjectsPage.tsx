@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
-  TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar
+  TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar,
+  Crown, Star, Tag
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
