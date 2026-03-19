@@ -102,10 +102,50 @@ const Header = () => {
     setUnreadCount(count || 0);
   };
 
+  const fetchSavedItems = async (uid: string) => {
+    const { data } = await supabase
+      .from("saved_properties")
+      .select("id, property_id, created_at, properties:property_id(title, price, currency, images, location)")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setSavedItems((data || []).map((d: any) => ({
+      id: d.id,
+      property_id: d.property_id,
+      title: d.properties?.title || "Property",
+      price: d.properties?.price,
+      currency: d.properties?.currency,
+      images: d.properties?.images,
+      location: d.properties?.location,
+      created_at: d.created_at,
+    })));
+  };
+
+  const fetchCompareItems = async (uid: string) => {
+    const { data } = await supabase
+      .from("property_comparisons")
+      .select("id, property_id, created_at, properties:property_id(title, price, currency, images, location)")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setCompareItems((data || []).map((d: any) => ({
+      id: d.id,
+      property_id: d.property_id,
+      title: d.properties?.title || "Property",
+      price: d.properties?.price,
+      currency: d.properties?.currency,
+      images: d.properties?.images,
+      location: d.properties?.location,
+      created_at: d.created_at,
+    })));
+  };
+
   useEffect(() => {
     if (!currentUser?.id) return;
     fetchCounts(currentUser.id);
     fetchNotifications(currentUser.id);
+    fetchSavedItems(currentUser.id);
+    fetchCompareItems(currentUser.id);
   }, [currentUser?.id]);
 
   // Listen for property action changes to refresh counts
