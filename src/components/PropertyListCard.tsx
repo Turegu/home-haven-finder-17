@@ -5,7 +5,6 @@ import {
   ChevronLeft, ChevronRight, Camera, MapPin,
   Building, Maximize, BedDouble, Bath, Crown, Star, Tag
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
