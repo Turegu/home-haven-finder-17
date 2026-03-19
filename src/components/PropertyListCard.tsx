@@ -159,7 +159,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               <img
                 src={secondaryImages[0] || property.images[currentImage]}
                 alt={`${property.title} 2`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
               {/* Right arrow on right thumbnail */}
@@ -194,6 +194,17 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                   <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
                 </button>
               </div>
+
+              {/* Advertising tag — lower left of right thumbnail */}
+              {property.advertisingTags && property.advertisingTags.length > 0 && (
+                <div className="absolute bottom-2 left-2">
+                  <Badge
+                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}
+                  >
+                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+                  </Badge>
+                </div>
+              )}
 
             </div>
           </div>
