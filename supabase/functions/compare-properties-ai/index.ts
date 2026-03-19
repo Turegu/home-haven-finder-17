@@ -47,8 +47,19 @@ Now write the full analysis using these EXACT markdown sections:
 ## Price Analysis
 Compare price per m², value for money. Use bullet points.
 
-## Rental Yield Potential  
-Estimate rental yield, tenant demand, occupancy. Use bullet points.
+## Long-term Rental Potential
+Estimate monthly/annual rental yield, tenant demand, occupancy rates. Consider the property type and location for rental appeal.
+
+## Airbnb & Short-term Rental Potential
+Analyze each property's suitability for Airbnb/short-term rentals. Consider:
+- Tourist appeal of the location
+- Property type suitability (apartments vs villas for Airbnb)
+- Expected nightly rates and seasonal demand
+- Regulatory considerations if applicable
+Use bullet points.
+
+## ROI & Break-even Analysis
+Compare the investment return timeline. Which property pays for itself faster? Consider both long-term rental and Airbnb scenarios.
 
 ## Pros & Cons
 
@@ -61,7 +72,7 @@ For EACH property, write its name as a ### heading, then list pros with ✅ and 
 - ❌ Another con
 
 ## Final Verdict
-Clearly state which property wins and why. Be decisive. Summarize in 2-3 sentences.
+Clearly state which property wins and why. Include a recommendation for which rental strategy (long-term vs Airbnb) suits each property best. Be decisive. Summarize in 2-3 sentences.
 
 Be concise and data-driven.`;
 
