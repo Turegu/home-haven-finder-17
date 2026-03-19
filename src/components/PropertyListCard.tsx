@@ -209,13 +209,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               $ {property.price.toLocaleString()}
               {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
             </span>
-            {property.advertisingTags && property.advertisingTags.length > 0 && (
-              <Badge
-                className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-              >
-                <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
-              </Badge>
-            )}
           </div>
         </div>
 
