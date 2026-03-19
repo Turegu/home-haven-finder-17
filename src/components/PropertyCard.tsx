@@ -164,7 +164,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
 
         {/* Specs Row */}
-        <div className="flex items-center gap-3 pt-3 border-t border-border">
+        <div className="flex items-center gap-3 pt-3 border-t border-foreground/10">
           <SpecItem icon={<Building className="h-3.5 w-3.5" />} label={property.type} />
           <SpecItem icon={<Maximize className="h-3.5 w-3.5" />} label={`${property.area} ${property.areaUnit}`} />
           {property.bedrooms > 0 && (
