@@ -310,9 +310,79 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate(currentUser ? '/account/notifications' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Notifications">
-              <Bell className="h-5 w-5 text-foreground/70" />
-            </button>
+            {/* Notifications Dropdown */}
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => {
+                  if (!currentUser) { navigate('/login'); return; }
+                  setOpenDropdown(openDropdown === 'notifications' ? null : 'notifications');
+                }}
+                className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+                aria-label="Notifications"
+              >
+                <Bell className="h-5 w-5 text-foreground/70" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-0.5">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              {openDropdown === 'notifications' && (
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <button onClick={markAllRead} className="text-xs text-primary hover:underline">
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Bell className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No new notifications</p>
+                      </div>
+                    ) : (
+                      notifications.map(n => (
+                        <div
+                          key={n.id}
+                          className="px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 cursor-pointer group"
+                          onClick={() => {
+                            markNotificationRead(n.id);
+                            setOpenDropdown(null);
+                            if (n.property_id) navigate(`/property/${n.property_id}`);
+                            else navigate('/account/notifications');
+                          }}
+                        >
+                          <div className="flex gap-3">
+                            <div className="mt-0.5 shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              {getNotifIcon(n.notification_type)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground leading-tight">{n.title}</p>
+                              {n.message && (
+                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.message}</p>
+                              )}
+                              <p className="text-[10px] text-muted-foreground mt-1">{timeAgo(n.created_at)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t border-border">
+                    <Link
+                      to="/account/notifications"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
+                    >
+                      View All Notifications
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
             <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
               <Heart className="h-5 w-5 text-foreground/70" />
               {counts.savedProperties > 0 && (
