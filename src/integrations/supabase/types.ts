@@ -1427,6 +1427,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          advertising_tags: string[] | null
           agent_id: string | null
           area_unit: string | null
           company_id: string | null
@@ -1455,6 +1456,7 @@ export type Database = {
           plans: string[] | null
           project_status: string
           project_type: string
+          property_classification: string | null
           province: string | null
           status: string
           tagline: string | null
@@ -1465,6 +1467,7 @@ export type Database = {
           view_360_link: string | null
         }
         Insert: {
+          advertising_tags?: string[] | null
           agent_id?: string | null
           area_unit?: string | null
           company_id?: string | null
@@ -1493,6 +1496,7 @@ export type Database = {
           plans?: string[] | null
           project_status?: string
           project_type?: string
+          property_classification?: string | null
           province?: string | null
           status?: string
           tagline?: string | null
@@ -1503,6 +1507,7 @@ export type Database = {
           view_360_link?: string | null
         }
         Update: {
+          advertising_tags?: string[] | null
           agent_id?: string | null
           area_unit?: string | null
           company_id?: string | null
@@ -1531,6 +1536,7 @@ export type Database = {
           plans?: string[] | null
           project_status?: string
           project_type?: string
+          property_classification?: string | null
           province?: string | null
           status?: string
           tagline?: string | null
