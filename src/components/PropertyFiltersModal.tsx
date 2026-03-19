@@ -4,13 +4,10 @@ import {
   Building2, Car, Sofa, Calendar, TreePine, Lamp, LayoutGrid,
 } from 'lucide-react';
 import AmenitiesViewAllDialog from '@/components/AmenitiesViewAllDialog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
-
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
