@@ -62,7 +62,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
             Commercial
           </button>
         </div>
-        <ScrollArea className="max-h-[250px]">
+        <ScrollArea className="max-h-[350px]">
           <div className="p-1 space-y-0.5">
             {types.map((type) => (
               <button
