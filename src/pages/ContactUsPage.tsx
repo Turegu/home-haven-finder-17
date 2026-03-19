@@ -13,110 +13,158 @@ import {
 } from "lucide-react";
 
 const HeroIllustration = () => (
-  <svg viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-    {/* Sky gradient */}
+  <svg viewBox="0 0 800 420" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
     <defs>
-      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="hsl(174, 60%, 90%)" />
-        <stop offset="100%" stopColor="hsl(174, 30%, 97%)" />
+      <linearGradient id="bgGrad" x1="0" y1="0" x2="800" y2="420">
+        <stop offset="0%" stopColor="hsl(174, 50%, 95%)" />
+        <stop offset="100%" stopColor="hsl(174, 30%, 90%)" />
       </linearGradient>
-      <linearGradient id="buildingGrad1" x1="0" y1="0" x2="0" y2="1">
+      <linearGradient id="deskGrad" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stopColor="hsl(174, 100%, 29%)" />
         <stop offset="100%" stopColor="hsl(174, 80%, 22%)" />
       </linearGradient>
-      <linearGradient id="buildingGrad2" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="hsl(174, 60%, 40%)" />
-        <stop offset="100%" stopColor="hsl(174, 50%, 30%)" />
-      </linearGradient>
-      <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor="hsl(174, 30%, 85%)" />
-        <stop offset="100%" stopColor="hsl(174, 20%, 92%)" />
+      <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="hsl(174, 60%, 85%)" />
+        <stop offset="100%" stopColor="hsl(174, 40%, 92%)" />
       </linearGradient>
     </defs>
-    <rect width="800" height="400" fill="url(#skyGrad)" />
+    <rect width="800" height="420" fill="url(#bgGrad)" />
 
-    {/* Clouds */}
-    <ellipse cx="150" cy="80" rx="60" ry="20" fill="white" opacity="0.6" />
-    <ellipse cx="170" cy="75" rx="40" ry="15" fill="white" opacity="0.5" />
-    <ellipse cx="600" cy="60" rx="50" ry="18" fill="white" opacity="0.5" />
-    <ellipse cx="620" cy="55" rx="35" ry="12" fill="white" opacity="0.4" />
+    {/* Decorative circles background */}
+    <circle cx="120" cy="80" r="40" fill="hsl(174, 100%, 29%)" opacity="0.06" />
+    <circle cx="700" cy="100" r="55" fill="hsl(36, 70%, 55%)" opacity="0.08" />
+    <circle cx="650" cy="350" r="35" fill="hsl(174, 100%, 29%)" opacity="0.05" />
 
-    {/* Sun */}
-    <circle cx="680" cy="70" r="35" fill="hsl(36, 70%, 55%)" opacity="0.3" />
-    <circle cx="680" cy="70" r="25" fill="hsl(36, 70%, 65%)" opacity="0.5" />
+    {/* ---- PERSON (center) ---- */}
+    {/* Chair */}
+    <rect x="355" y="310" width="90" height="12" rx="6" fill="hsl(174, 60%, 35%)" />
+    <rect x="370" y="322" width="8" height="40" rx="3" fill="hsl(174, 50%, 40%)" />
+    <rect x="422" y="322" width="8" height="40" rx="3" fill="hsl(174, 50%, 40%)" />
+    <rect x="358" y="360" width="84" height="6" rx="3" fill="hsl(174, 50%, 40%)" />
+    <ellipse cx="400" cy="290" rx="42" ry="30" fill="hsl(174, 60%, 35%)" />
 
-    {/* Ground */}
-    <rect x="0" y="310" width="800" height="90" fill="url(#groundGrad)" />
+    {/* Body */}
+    <rect x="375" y="230" width="50" height="70" rx="20" fill="hsl(36, 70%, 55%)" />
+    {/* Arms */}
+    <rect x="350" y="245" width="25" height="12" rx="6" fill="hsl(36, 60%, 50%)" />
+    <rect x="425" y="245" width="25" height="12" rx="6" fill="hsl(36, 60%, 50%)" />
+    {/* Hands on desk */}
+    <circle cx="345" cy="252" r="7" fill="hsl(28, 50%, 70%)" />
+    <circle cx="455" cy="252" r="7" fill="hsl(28, 50%, 70%)" />
 
-    {/* Far buildings */}
-    <rect x="50" y="200" width="45" height="110" rx="2" fill="hsl(174, 40%, 70%)" opacity="0.5" />
-    <rect x="100" y="230" width="35" height="80" rx="2" fill="hsl(174, 40%, 65%)" opacity="0.5" />
-    <rect x="620" y="210" width="40" height="100" rx="2" fill="hsl(174, 40%, 70%)" opacity="0.5" />
-    <rect x="670" y="240" width="50" height="70" rx="2" fill="hsl(174, 40%, 65%)" opacity="0.5" />
+    {/* Head */}
+    <circle cx="400" cy="200" r="28" fill="hsl(28, 50%, 70%)" />
+    {/* Hair */}
+    <ellipse cx="400" cy="182" rx="30" ry="16" fill="hsl(30, 30%, 30%)" />
+    {/* Eyes */}
+    <circle cx="391" cy="200" r="2.5" fill="hsl(0, 0%, 20%)" />
+    <circle cx="409" cy="200" r="2.5" fill="hsl(0, 0%, 20%)" />
+    {/* Smile */}
+    <path d="M393 210 Q400 216 407 210" stroke="hsl(0,0%,20%)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
 
-    {/* Main building left */}
-    <rect x="180" y="140" width="80" height="170" rx="3" fill="url(#buildingGrad1)" />
-    {[0,1,2,3,4,5].map(r => [0,1,2].map(c => (
-      <rect key={`wl-${r}-${c}`} x={192 + c * 22} y={155 + r * 25} width="14" height="10" rx="1" fill="hsl(174, 80%, 85%)" opacity="0.7" />
-    )))}
+    {/* Headset */}
+    <path d="M370 195 Q370 168 400 168 Q430 168 430 195" stroke="hsl(174, 100%, 29%)" strokeWidth="4" fill="none" strokeLinecap="round" />
+    <rect x="364" y="192" width="10" height="16" rx="5" fill="hsl(174, 100%, 29%)" />
+    <rect x="426" y="192" width="10" height="16" rx="5" fill="hsl(174, 100%, 29%)" />
+    {/* Mic arm */}
+    <path d="M366 208 Q360 220 370 226" stroke="hsl(174, 80%, 35%)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+    <circle cx="372" cy="227" r="4" fill="hsl(174, 100%, 29%)" />
 
-    {/* Main building center (tall) */}
-    <rect x="310" y="100" width="100" height="210" rx="3" fill="url(#buildingGrad2)" />
-    <rect x="340" y="90" width="40" height="15" rx="2" fill="hsl(174, 50%, 35%)" />
-    {[0,1,2,3,4,5,6].map(r => [0,1,2,3].map(c => (
-      <rect key={`wc-${r}-${c}`} x={320 + c * 22} y={115 + r * 25} width="14" height="10" rx="1" fill="hsl(174, 60%, 80%)" opacity="0.7" />
-    )))}
+    {/* ---- DESK ---- */}
+    <rect x="260" y="260" width="280" height="14" rx="4" fill="url(#deskGrad)" />
+    {/* Desk legs */}
+    <rect x="275" y="274" width="8" height="50" rx="2" fill="hsl(174, 80%, 25%)" />
+    <rect x="517" y="274" width="8" height="50" rx="2" fill="hsl(174, 80%, 25%)" />
 
-    {/* Main building right */}
-    <rect x="460" y="170" width="70" height="140" rx="3" fill="url(#buildingGrad1)" />
-    {[0,1,2,3,4].map(r => [0,1,2].map(c => (
-      <rect key={`wr-${r}-${c}`} x={470 + c * 20} y={185 + r * 25} width="12" height="10" rx="1" fill="hsl(174, 80%, 85%)" opacity="0.7" />
-    )))}
+    {/* ---- MONITOR ---- */}
+    <rect x="310" y="150" width="130" height="90" rx="6" fill="hsl(0, 0%, 25%)" />
+    <rect x="315" y="155" width="120" height="80" rx="3" fill="url(#screenGrad)" />
+    {/* Screen content lines */}
+    <rect x="330" y="175" width="50" height="4" rx="2" fill="hsl(174, 100%, 29%)" opacity="0.5" />
+    <rect x="330" y="185" width="70" height="3" rx="1.5" fill="hsl(174, 60%, 50%)" opacity="0.3" />
+    <rect x="330" y="193" width="60" height="3" rx="1.5" fill="hsl(174, 60%, 50%)" opacity="0.3" />
+    <rect x="330" y="201" width="40" height="3" rx="1.5" fill="hsl(174, 60%, 50%)" opacity="0.3" />
+    {/* Screen chat avatar */}
+    <circle cx="410" cy="185" r="10" fill="hsl(174, 100%, 29%)" opacity="0.3" />
+    <circle cx="410" cy="182" r="4" fill="white" opacity="0.5" />
+    <rect x="404" y="188" width="12" height="6" rx="3" fill="white" opacity="0.5" />
+    {/* Monitor stand */}
+    <rect x="365" y="240" width="20" height="20" rx="2" fill="hsl(0, 0%, 30%)" />
+    <rect x="350" y="256" width="50" height="5" rx="2" fill="hsl(0, 0%, 35%)" />
 
-    {/* Trees */}
-    {[140, 280, 540, 700].map((tx, i) => (
-      <g key={`tree-${i}`}>
-        <rect x={tx + 6} y="280" width="6" height="30" fill="hsl(30, 30%, 50%)" />
-        <ellipse cx={tx + 9} cy="270" rx="18" ry="22" fill="hsl(150, 40%, 45%)" opacity="0.8" />
-        <ellipse cx={tx + 9} cy="265" rx="14" ry="16" fill="hsl(150, 45%, 55%)" opacity="0.7" />
-      </g>
+    {/* ---- KEYBOARD ---- */}
+    <rect x="340" y="265" width="70" height="8" rx="3" fill="hsl(0, 0%, 40%)" />
+    {[0,1,2,3,4,5].map(i => (
+      <rect key={`key-${i}`} x={345 + i * 10} y="267" width="6" height="4" rx="1" fill="hsl(0, 0%, 55%)" />
     ))}
 
-    {/* Road */}
-    <rect x="0" y="310" width="800" height="12" fill="hsl(0, 0%, 75%)" opacity="0.5" />
-    {[0,1,2,3,4,5,6,7,8,9].map(i => (
-      <rect key={`dash-${i}`} x={20 + i * 80} y="314" width="40" height="4" rx="2" fill="white" opacity="0.6" />
-    ))}
+    {/* ---- COFFEE MUG ---- */}
+    <rect x="470" y="242" width="18" height="18" rx="3" fill="hsl(36, 70%, 55%)" />
+    <path d="M488 248 Q496 248 496 254 Q496 260 488 260" stroke="hsl(36, 60%, 45%)" strokeWidth="2" fill="none" />
+    {/* Steam */}
+    <path d="M475 238 Q477 230 479 238" stroke="hsl(0,0%,60%)" strokeWidth="1" fill="none" opacity="0.5" />
+    <path d="M481 236 Q483 228 485 236" stroke="hsl(0,0%,60%)" strokeWidth="1" fill="none" opacity="0.4" />
 
-    {/* Envelope icon floating */}
-    <g transform="translate(380, 50)" opacity="0.8">
-      <rect x="-20" y="-12" width="40" height="24" rx="3" fill="hsl(36, 70%, 55%)" />
-      <path d="M-18 -10 L0 4 L18 -10" stroke="white" strokeWidth="2" fill="none" />
-    </g>
+    {/* ---- PHONE on desk ---- */}
+    <rect x="280" y="248" width="22" height="14" rx="3" fill="hsl(174, 80%, 25%)" />
+    <rect x="283" y="250" width="16" height="8" rx="1" fill="hsl(174, 60%, 70%)" opacity="0.5" />
 
-    {/* Chat bubbles */}
-    <g transform="translate(560, 130)" opacity="0.6">
-      <rect x="0" y="0" width="50" height="30" rx="12" fill="hsl(174, 100%, 29%)" />
-      <circle cx="15" cy="15" r="3" fill="white" opacity="0.8" />
-      <circle cx="25" cy="15" r="3" fill="white" opacity="0.8" />
-      <circle cx="35" cy="15" r="3" fill="white" opacity="0.8" />
-    </g>
-    <g transform="translate(200, 100)" opacity="0.5">
-      <rect x="0" y="0" width="40" height="25" rx="10" fill="hsl(36, 70%, 55%)" />
-      <circle cx="12" cy="12" r="2.5" fill="white" opacity="0.8" />
-      <circle cx="20" cy="12" r="2.5" fill="white" opacity="0.8" />
-      <circle cx="28" cy="12" r="2.5" fill="white" opacity="0.8" />
+    {/* ---- CHAT BUBBLES floating ---- */}
+    {/* Right bubble */}
+    <g>
+      <rect x="560" y="130" width="120" height="50" rx="18" fill="hsl(174, 100%, 29%)" opacity="0.9" />
+      <text x="585" y="152" fontSize="10" fill="white" fontFamily="sans-serif" opacity="0.9">How can I</text>
+      <text x="585" y="166" fontSize="10" fill="white" fontFamily="sans-serif" opacity="0.9">help you?</text>
+      <polygon points="575,180 585,175 580,190" fill="hsl(174, 100%, 29%)" opacity="0.9" />
     </g>
 
-    {/* People silhouettes */}
-    <g transform="translate(350, 290)" opacity="0.6">
-      <circle cx="0" cy="-10" r="5" fill="hsl(174, 60%, 30%)" />
-      <rect x="-4" y="-5" width="8" height="18" rx="3" fill="hsl(174, 60%, 30%)" />
+    {/* Left bubble */}
+    <g>
+      <rect x="100" y="160" width="110" height="45" rx="16" fill="hsl(36, 70%, 55%)" opacity="0.85" />
+      <text x="122" y="180" fontSize="10" fill="white" fontFamily="sans-serif" opacity="0.9">I need info</text>
+      <text x="122" y="193" fontSize="10" fill="white" fontFamily="sans-serif" opacity="0.9">about a listing</text>
+      <polygon points="200,205 190,200 205,215" fill="hsl(36, 70%, 55%)" opacity="0.85" />
     </g>
-    <g transform="translate(370, 292)" opacity="0.5">
-      <circle cx="0" cy="-10" r="4.5" fill="hsl(36, 50%, 45%)" />
-      <rect x="-3.5" y="-5" width="7" height="16" rx="3" fill="hsl(36, 50%, 45%)" />
+
+    {/* Top small bubble */}
+    <g>
+      <rect x="500" y="60" width="80" height="35" rx="14" fill="hsl(174, 80%, 40%)" opacity="0.6" />
+      <circle cx="525" cy="77" r="3" fill="white" opacity="0.7" />
+      <circle cx="535" cy="77" r="3" fill="white" opacity="0.7" />
+      <circle cx="545" cy="77" r="3" fill="white" opacity="0.7" />
     </g>
+
+    {/* ---- SMALL PEOPLE silhouettes (callers) ---- */}
+    {/* Left person */}
+    <g transform="translate(140, 260)" opacity="0.6">
+      <circle cx="0" cy="-15" r="12" fill="hsl(174, 50%, 45%)" />
+      <rect x="-10" y="-3" width="20" height="35" rx="8" fill="hsl(174, 50%, 45%)" />
+      {/* Phone to ear */}
+      <rect x="10" y="-18" width="6" height="14" rx="3" fill="hsl(0, 0%, 30%)" />
+    </g>
+
+    {/* Right person */}
+    <g transform="translate(660, 240)" opacity="0.6">
+      <circle cx="0" cy="-15" r="12" fill="hsl(36, 55%, 50%)" />
+      <rect x="-10" y="-3" width="20" height="35" rx="8" fill="hsl(36, 55%, 50%)" />
+      {/* Phone to ear */}
+      <rect x="-16" y="-18" width="6" height="14" rx="3" fill="hsl(0, 0%, 30%)" />
+    </g>
+
+    {/* ---- SIGNAL WAVES from headset ---- */}
+    <path d="M440 180 Q455 175 450 160" stroke="hsl(174, 100%, 29%)" strokeWidth="1.5" fill="none" opacity="0.3" />
+    <path d="M445 178 Q462 170 458 152" stroke="hsl(174, 100%, 29%)" strokeWidth="1.5" fill="none" opacity="0.2" />
+    <path d="M360 180 Q345 175 350 160" stroke="hsl(174, 100%, 29%)" strokeWidth="1.5" fill="none" opacity="0.3" />
+
+    {/* ---- FLOOR ---- */}
+    <rect x="0" y="370" width="800" height="50" fill="hsl(174, 20%, 88%)" />
+    <rect x="200" y="370" width="400" height="3" rx="1.5" fill="hsl(174, 30%, 80%)" opacity="0.5" />
+
+    {/* ---- PLANT ---- */}
+    <rect x="570" y="300" width="12" height="30" rx="4" fill="hsl(30, 30%, 50%)" />
+    <ellipse cx="576" cy="290" rx="18" ry="20" fill="hsl(150, 45%, 40%)" opacity="0.8" />
+    <ellipse cx="576" cy="284" rx="14" ry="14" fill="hsl(150, 50%, 50%)" opacity="0.7" />
+    <rect x="564" y="330" width="24" height="10" rx="4" fill="hsl(30, 25%, 55%)" />
   </svg>
 );
 
