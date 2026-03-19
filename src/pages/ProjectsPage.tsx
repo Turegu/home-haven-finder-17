@@ -575,14 +575,41 @@ const ProjectsPage = () => {
   );
 };
 
+const tagColorMap: Record<string, string> = {
+  'Hot Deal': 'bg-red-500',
+  'Price Drop': 'bg-green-600',
+  'Exclusive': 'bg-purple-600',
+  'New Launch': 'bg-teal-600',
+};
+
 function ProjectGridCard({ project }: { project: ProjectResult }) {
   const img = project.images?.[0] || '/placeholder.svg';
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
+  const tier = project.property_classification;
+  const adTags = project.advertising_tags ?? [];
   return (
     <Link to={`/projects/${project.id}`}>
       <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
         <div className="relative aspect-[16/10] overflow-hidden">
           <img src={img} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          {/* Tier badge + Ad tag — top left */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {tier === 'premium' && (
+              <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md" title="Premium">
+                <Crown className="h-4 w-4 text-white" />
+              </span>
+            )}
+            {tier === 'featured' && (
+              <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+                <Star className="h-4 w-4 text-white" />
+              </span>
+            )}
+            {adTags.length > 0 && (
+              <Badge className={`${tagColorMap[adTags[0]] || 'bg-orange-500'} hover:${tagColorMap[adTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}>
+                <Tag className="h-3 w-3" /> {adTags[0]}
+              </Badge>
+            )}
+          </div>
         </div>
         <div className="p-4">
           <h3 className="font-semibold text-foreground mb-1">{project.title}</h3>
@@ -592,19 +619,20 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
           </div>
           <div className="flex items-center justify-between pt-3 border-t border-border">
             <p className="text-sm font-bold text-foreground">
-              Starting From {(project.currency ?? 'TRY')} {(project.min_price ?? 0).toLocaleString()}
+              Starting from {(project.currency ?? 'TRY')} {(project.min_price ?? 0).toLocaleString()}
             </p>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Building className="h-3.5 w-3.5" />
-              <span>{project.max_units ?? 0} Units</span>
-            </div>
+            {project.completion_date && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{project.completion_date}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </Link>
   );
 }
-
 function ProjectListCard({ project }: { project: ProjectResult }) {
   const images = project.images && project.images.length > 0 ? project.images : ['/placeholder.svg'];
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
