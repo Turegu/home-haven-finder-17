@@ -83,7 +83,6 @@ const PropertyDetailPage = () => {
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
           exteriorAmenities: p.exterior_amenities || [],
-          rooms: p.rooms || String(p.bedrooms ?? ''),
           agentName: p.agents?.name || p.companies?.name || mockPropertyDetail.agentName,
           agentLogo: p.agents?.avatar_url || mockPropertyDetail.agentLogo,
           agentDesignation: p.agents?.designation || null,
@@ -91,9 +90,8 @@ const PropertyDetailPage = () => {
           agentCompany: p.companies?.name || p.agents?.companies?.name || '',
           companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
         });
-        if (p.agents) setAgentData(p.agents);
-        if (p.companies) setCompanyData(p.companies);
-        else if (p.agents?.companies) setCompanyData(p.agents.companies);
+        setRealAgentId(p.agents?.id || null);
+        setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
       }
     };
     fetchProperty();
