@@ -136,7 +136,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
             onClick={(e) => { e.stopPropagation(); setIsFavorited(!isFavorited); }}
             className={`p-1 rounded-full transition-colors shadow-sm ${
               isFavorited
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-blue-500 text-white'
                 : 'bg-background/90 hover:bg-background text-foreground/70 hover:text-destructive'
             }`}
           >
