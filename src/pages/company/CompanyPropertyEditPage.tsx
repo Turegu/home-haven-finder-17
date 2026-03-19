@@ -422,18 +422,22 @@ const CompanyPropertyEditPage = () => {
               onChange={(v) => updateField("property_status", v)}
               options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <BedDouble className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Rooms
-              </Label>
-              <Input value={form.rooms} onChange={(e) => updateField("rooms", e.target.value)} className="bg-secondary/50" placeholder="e.g. 3+1" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Bath className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Bathrooms
-              </Label>
-              <Input type="number" value={form.bathrooms} onChange={(e) => updateField("bathrooms", e.target.value)} className="bg-secondary/50" />
-            </div>
+            <FormSelect
+              label="No. Of Rooms"
+              icon={<BedDouble className="h-4 w-4 text-muted-foreground" />}
+              value={form.rooms}
+              onChange={(v) => updateField("rooms", v)}
+              options={(filterOpts["rooms"] || []).map(r => ({ value: r, label: r }))}
+              placeholder="Select rooms"
+            />
+            <FormSelect
+              label="No. Of Bathrooms"
+              icon={<Bath className="h-4 w-4 text-muted-foreground" />}
+              value={form.bathrooms}
+              onChange={(v) => updateField("bathrooms", v)}
+              options={(filterOpts["bathrooms"] || []).map(b => ({ value: b, label: b }))}
+              placeholder="Select bathrooms"
+            />
             <FormSelect
               label="Floor Level"
               icon={<Layers className="h-4 w-4 text-muted-foreground" />}

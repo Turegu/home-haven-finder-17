@@ -255,15 +255,36 @@ const CompanyProjectUnitsPage = () => {
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">No Of Rooms</Label>
-                <Input value={form.rooms} onChange={(e) => updateField("rooms", e.target.value)} className="bg-secondary/50" placeholder="e.g. 3+1" />
+                <Select value={form.rooms} onValueChange={(v) => updateField("rooms", v)}>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select rooms" /></SelectTrigger>
+                  <SelectContent>
+                    {(filterOpts["rooms"] || []).map(r => (
+                      <SelectItem key={r} value={r}>{r}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">No Of Bathrooms</Label>
-                <Input type="number" value={form.bathrooms} onChange={(e) => updateField("bathrooms", e.target.value)} className="bg-secondary/50" />
+                <Select value={form.bathrooms} onValueChange={(v) => updateField("bathrooms", v)}>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select bathrooms" /></SelectTrigger>
+                  <SelectContent>
+                    {(filterOpts["bathrooms"] || []).map(b => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">Car Parking</Label>
-                <Input type="number" value={form.car_parking} onChange={(e) => updateField("car_parking", e.target.value)} className="bg-secondary/50" />
+                <Select value={form.car_parking} onValueChange={(v) => updateField("car_parking", v)}>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select parking" /></SelectTrigger>
+                  <SelectContent>
+                    {(filterOpts["parking"] || []).map(p => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">Unit Price ({form.currency})</Label>
