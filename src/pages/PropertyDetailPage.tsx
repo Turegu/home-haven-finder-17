@@ -38,6 +38,7 @@ const PropertyDetailPage = () => {
   const [property, setProperty] = useState(mockPropertyDetail);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     if (!id) return;
