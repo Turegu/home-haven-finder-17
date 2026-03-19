@@ -17,6 +17,7 @@ export async function toggleSaveProperty(propertyId: string): Promise<boolean | 
   if (existing) {
     await supabase.from('saved_properties').delete().eq('id', existing.id);
     toast.success('Removed from saved properties');
+    window.dispatchEvent(new Event('property-actions-changed'));
     return false;
   } else {
     const { error } = await supabase.from('saved_properties').insert({ user_id: user.id, property_id: propertyId });
