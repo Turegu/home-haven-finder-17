@@ -56,53 +56,35 @@ export function useProjectSearch(params: ProjectSearchParams) {
   return useQuery({
     queryKey: ["project-search", params],
     queryFn: async () => {
-      let query = supabase
-        .from("projects")
-        .select("*", { count: "exact" })
-        .eq("status", "active");
-
-      if (params.province) query = query.eq("province", params.province);
-      if (params.district) query = query.eq("town", params.district);
-      if (params.neighborhood) query = query.eq("neighbourhood", params.neighborhood);
-
-      if (params.keyword?.trim()) {
-        const kw = `%${params.keyword.trim()}%`;
-        query = query.or(`title.ilike.${kw},location.ilike.${kw},developer.ilike.${kw},neighbourhood.ilike.${kw},town.ilike.${kw},province.ilike.${kw}`);
-      }
-
-      if (params.minPrice) query = query.gte("min_price", Number(params.minPrice));
-      if (params.maxPrice) query = query.lte("max_price", Number(params.maxPrice));
-      if (params.minArea) query = query.gte("min_area", Number(params.minArea));
-      if (params.maxArea) query = query.lte("max_area", Number(params.maxArea));
-
-      if (params.amenities && params.amenities.length > 0) {
-        query = query.overlaps("exterior_amenities", params.amenities);
-      }
-
-      // Sorting
-      switch (params.sortBy) {
-        case "price_asc":
-          query = query.order("min_price", { ascending: true, nullsFirst: false });
-          break;
-        case "price_desc":
-          query = query.order("min_price", { ascending: false, nullsFirst: false });
-          break;
-        default:
-          query = query.order("created_at", { ascending: false });
-      }
-
       const page = params.page || 1;
       const size = params.pageSize || 21;
-      const from = (page - 1) * size;
-      query = query.range(from, from + size - 1);
+      const offset = (page - 1) * size;
 
-      const { data, error, count } = await query;
+      const { data, error } = await supabase.rpc("search_projects_by_units", {
+        p_province: params.province || null,
+        p_district: params.district || null,
+        p_neighborhood: params.neighborhood || null,
+        p_keyword: params.keyword?.trim() || null,
+        p_unit_types: params.unitTypes && params.unitTypes.length > 0 ? params.unitTypes : null,
+        p_min_price: params.minPrice ? Number(params.minPrice) : null,
+        p_max_price: params.maxPrice ? Number(params.maxPrice) : null,
+        p_min_area: params.minArea ? Number(params.minArea) : null,
+        p_max_area: params.maxArea ? Number(params.maxArea) : null,
+        p_rooms: params.rooms && params.rooms.length > 0 ? params.rooms : null,
+        p_project_status: params.projectStatus || null,
+        p_amenities: params.amenities && params.amenities.length > 0 ? params.amenities : null,
+        p_sort_by: params.sortBy || "newest",
+        p_offset: offset,
+        p_limit: size,
+      });
+
       if (error) throw error;
 
-      return {
-        projects: (data ?? []) as ProjectResult[],
-        total: count ?? 0,
-      };
+      const rows = (data ?? []) as { project_row: any; total_count: number }[];
+      const total = rows.length > 0 ? rows[0].total_count : 0;
+      const projects = rows.map((r) => r.project_row as ProjectResult);
+
+      return { projects, total };
     },
     staleTime: 60 * 1000,
   });
