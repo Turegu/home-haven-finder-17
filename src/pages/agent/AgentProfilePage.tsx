@@ -58,7 +58,7 @@ function MultiSelectLanguages({
               <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
             </div>
           </div>
-          <ScrollArea className="max-h-[200px]">
+          <ScrollArea>
             <div className="p-2 space-y-1">
               {filtered.map((lang) => (
                 <label key={lang} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">

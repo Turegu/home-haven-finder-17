@@ -114,7 +114,7 @@ function MultiSelectDropdown({
               </div>
             </div>
           )}
-          <ScrollArea className="max-h-[200px]">
+          <ScrollArea>
             <div className="p-2 space-y-1">
               {filtered.map((opt) => (
                 <label key={opt} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">

@@ -149,7 +149,7 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {openDropdown === 'lang' && languages.length > 0 && (
-                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[180px] py-1 z-[60] max-h-[300px] overflow-y-auto">
+                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[180px] py-1 z-[60]">
                   {languages.map(lang => (
                     <button key={lang.id} onClick={() => selectLang(lang)} className={cn("w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2", selectedLang?.id === lang.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
                       {lang.name}
@@ -167,7 +167,7 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {openDropdown === 'currency' && currencies.length > 0 && (
-                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[260px] py-1 z-[60] max-h-[350px] overflow-y-auto">
+                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[260px] py-1 z-[60]">
                   {currencies.map(curr => (
                     <button key={curr.id} onClick={() => selectCurrency(curr)} className={cn("w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors", selectedCurrency?.id === curr.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
                       {curr.name} ({curr.symbol})
