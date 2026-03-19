@@ -26,6 +26,7 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const BlogsPage = lazy(() => import("./pages/BlogsPage.tsx"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage.tsx"));
 const FaqPage = lazy(() => import("./pages/FaqPage.tsx"));
+const ContactUsPage = lazy(() => import("./pages/ContactUsPage.tsx"));
 
 // User auth pages
 const UserLoginPage = lazy(() => import("./pages/user/UserLoginPage.tsx"));
@@ -146,6 +147,7 @@ const App = () => (
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/advertise" element={<AdvertisePage />} />
             <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
+            <Route path="/contact-us" element={<ContactUsPage />} />
 
             {/* User auth */}
             <Route path="/login" element={<UserLoginPage />} />

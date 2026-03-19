@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Phone, MessageCircle, Mail, Lock, Info } from "lucide-react";
+import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
 
 const AdminSettingsPage = () => {
@@ -16,6 +16,7 @@ const AdminSettingsPage = () => {
   const [salesPhone, setSalesPhone] = useState("");
   const [salesWhatsapp, setSalesWhatsapp] = useState("");
   const [salesEmail, setSalesEmail] = useState("");
+  const [salesAddress, setSalesAddress] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
@@ -33,6 +34,7 @@ const AdminSettingsPage = () => {
         setSalesPhone(map.sales_phone || "");
         setSalesWhatsapp(map.sales_whatsapp || "");
         setSalesEmail(map.sales_email || "");
+        setSalesAddress(map.sales_address || "");
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
@@ -57,6 +59,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_phone", salesPhone),
       saveSetting("sales_whatsapp", salesWhatsapp),
       saveSetting("sales_email", salesEmail),
+      saveSetting("sales_address", salesAddress),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
@@ -120,6 +123,11 @@ const AdminSettingsPage = () => {
           <div className="space-y-2">
             <Label className="flex items-center gap-2"><Mail className="h-4 w-4" /> Contact Email</Label>
             <Input type="email" value={salesEmail} onChange={e => setSalesEmail(e.target.value)} placeholder="sales@turegu.com" />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Office Address</Label>
+            <Input value={salesAddress} onChange={e => setSalesAddress(e.target.value)} placeholder="123 Main St, City, Country" />
           </div>
 
           <Button onClick={handleSaveSettings} disabled={saving}>
