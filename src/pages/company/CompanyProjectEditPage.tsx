@@ -29,6 +29,14 @@ import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
+const advertisingTagOptions = [
+  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
+  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
+  "Lower Price", "Below Market", "Reduced", "Cash Only",
+  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
+  "Fully Renovated", "Motivated Seller", "Open House",
+];
+
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
   const buttons = [
