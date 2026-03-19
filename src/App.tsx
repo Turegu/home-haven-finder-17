@@ -26,6 +26,7 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const BlogsPage = lazy(() => import("./pages/BlogsPage.tsx"));
 const BlogDetailPage = lazy(() => import("./pages/BlogDetailPage.tsx"));
 const FaqPage = lazy(() => import("./pages/FaqPage.tsx"));
+const ContactUsPage = lazy(() => import("./pages/ContactUsPage.tsx"));
 
 // User auth pages
 const UserLoginPage = lazy(() => import("./pages/user/UserLoginPage.tsx"));
