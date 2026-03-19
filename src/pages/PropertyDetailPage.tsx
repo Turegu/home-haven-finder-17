@@ -441,7 +441,7 @@ const PropertyDetailPage = () => {
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
               {/* Agent info — links to agent profile */}
-              <Link to={`/agent/${property.id}`} className="block text-center mb-4 group">
+              <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
                 <img
                   src={property.agentLogo}
                   alt={property.agentName}
