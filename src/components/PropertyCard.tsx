@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Building, ChevronLeft, ChevronRight, Camera, Crown, Star, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Property } from '@/data/mockProperties';
-import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
 
 interface PropertyCardProps {
   property: Property;
@@ -12,6 +12,11 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
+
+  useEffect(() => {
+    checkIfSaved(property.id).then(setIsFavorited);
+    checkIfCompared(property.id).then(setIsCompared);
+  }, [property.id]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart, Layers, Phone, Mail, MessageCircle,
@@ -8,7 +8,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
-import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {
@@ -21,6 +21,11 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+
+  useEffect(() => {
+    checkIfSaved(property.id).then(setIsFavorited);
+    checkIfCompared(property.id).then(setIsCompared);
+  }, [property.id]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
