@@ -29,7 +29,7 @@ import { useProjectSearch, type ProjectSearchParams, type ProjectResult } from '
 const ProjectsPage = () => {
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
-  const projectStatuses = [...(fo["project_statuses"] || []), 'Any'];
+  const projectStatuses = fo["project_statuses"] || [];
   const extAmenityOptions = fo["exterior_amenities"] || [];
   const intAmenityOptions = fo["interior_amenities"] || [];
 
