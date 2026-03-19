@@ -336,7 +336,7 @@ const BuyPage = () => {
               <option value="area_desc">Area: Largest First</option>
             </select>
             <button
-              onClick={() => toast.success('Search saved! You\'ll be notified of new matches.', { description: 'Visit Saved Searches to manage your alerts.' })}
+              onClick={() => setSaveSearchOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
