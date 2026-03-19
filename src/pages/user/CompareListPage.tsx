@@ -178,14 +178,42 @@ const CompareListPage = () => {
     }
   };
 
-  // Build price comparison data
-  const priceData = items.map((item, i) => ({
-    name: (item.property?.title || "Property").substring(0, 15),
-    price: item.property?.price || 0,
-    pricePerSqm: item.property?.price && item.property?.area
-      ? Math.round(item.property.price / item.property.area)
-      : 0,
-    fill: CHART_COLORS[i],
+  // Build price & ROI comparison data
+  const LONG_TERM_YIELD = 0.05; // 5% annual yield estimate
+  const AIRBNB_MULTIPLIER = 1.8; // Airbnb typically 1.5-2x long-term rent
+  const OCCUPANCY_RATE = 0.70; // 70% average Airbnb occupancy
+
+  const investmentData = items.map((item, i) => {
+    const p = item.property;
+    const price = p?.price || 0;
+    const area = p?.area || 1;
+    const pricePerSqm = price > 0 && area > 0 ? Math.round(price / area) : 0;
+    const annualRent = price * LONG_TERM_YIELD;
+    const monthlyRent = Math.round(annualRent / 12);
+    const roi = price > 0 ? ((annualRent / price) * 100) : 0;
+    const airbnbNightly = area > 0 ? Math.round((monthlyRent * AIRBNB_MULTIPLIER) / 30) : 0;
+    const airbnbMonthly = Math.round(airbnbNightly * 30 * OCCUPANCY_RATE);
+    const airbnbAnnual = airbnbMonthly * 12;
+    const airbnbROI = price > 0 ? ((airbnbAnnual / price) * 100) : 0;
+    const breakEvenYears = annualRent > 0 ? Math.round(price / annualRent) : 0;
+    const airbnbBreakEven = airbnbAnnual > 0 ? Math.round(price / airbnbAnnual) : 0;
+    const name = (p?.title || "Property").substring(0, 15);
+
+    return {
+      name, price, pricePerSqm, annualRent, monthlyRent, roi,
+      airbnbNightly, airbnbMonthly, airbnbAnnual, airbnbROI,
+      breakEvenYears, airbnbBreakEven,
+      fill: CHART_COLORS[i], currency: p?.currency || "$",
+    };
+  });
+
+  const priceData = investmentData;
+
+  // ROI comparison chart data
+  const roiChartData = investmentData.map(d => ({
+    name: d.name,
+    "Long-term ROI %": parseFloat(d.roi.toFixed(1)),
+    "Airbnb ROI %": parseFloat(d.airbnbROI.toFixed(1)),
   }));
 
   // Build radar data from scores
@@ -195,8 +223,6 @@ const CompareListPage = () => {
     { metric: "Growth", ...Object.fromEntries(scores.map(s => [s.name, s.growth])) },
     { metric: "Overall", ...Object.fromEntries(scores.map(s => [s.name, s.overall])) },
   ] : [];
-
-  // No need to pre-filter - renderMarkdownLine handles SCORES/WINNER lines
 
   const renderMarkdownLine = (line: string, i: number) => {
     // Skip structural data lines
