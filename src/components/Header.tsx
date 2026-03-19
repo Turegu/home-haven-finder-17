@@ -190,7 +190,9 @@ const Header = () => {
         openDropdown === 'currency' && currRef.current && !currRef.current.contains(e.target as Node) ||
         openDropdown === 'area' && areaRef.current && !areaRef.current.contains(e.target as Node) ||
         openDropdown === 'user' && userRef.current && !userRef.current.contains(e.target as Node) ||
-        openDropdown === 'notifications' && notifRef.current && !notifRef.current.contains(e.target as Node)
+        openDropdown === 'notifications' && notifRef.current && !notifRef.current.contains(e.target as Node) ||
+        openDropdown === 'saved' && savedRef.current && !savedRef.current.contains(e.target as Node) ||
+        openDropdown === 'compare' && compareRef.current && !compareRef.current.contains(e.target as Node)
       ) {
         setOpenDropdown(null);
       }
