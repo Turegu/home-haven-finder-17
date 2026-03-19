@@ -487,7 +487,7 @@ const BuyPage = () => {
       <SaveSearchDialog
         open={saveSearchOpen}
         onOpenChange={setSaveSearchOpen}
-        searchParams={committedParams as Record<string, unknown>}
+        searchParams={committedParams as unknown as Record<string, unknown>}
         selectedFilters={selectedBadges}
         searchType={isRent ? 'rent' : 'buy'}
         location={location}
