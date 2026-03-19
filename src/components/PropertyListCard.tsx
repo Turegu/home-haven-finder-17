@@ -41,10 +41,10 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
   const handleCompare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const prev = isCompared;
-    setIsCompared(!prev);
-    const result = await toggleCompareProperty(property.id);
-    if (result === null) setIsCompared(prev);
+    const prev = isComparedLocal;
+    setIsComparedLocal(!prev);
+    const result = await toggleCompareProperty(property.id, queryClient);
+    if (result === null) setIsComparedLocal(prev);
   };
 
   const handleFavorite = async (e: React.MouseEvent) => {
