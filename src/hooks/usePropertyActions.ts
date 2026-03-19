@@ -3,6 +3,30 @@ import { toast } from 'sonner';
 
 const MAX_COMPARE = 3;
 
+export async function checkIfSaved(propertyId: string): Promise<boolean> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data } = await supabase
+    .from('saved_properties')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('property_id', propertyId)
+    .maybeSingle();
+  return !!data;
+}
+
+export async function checkIfCompared(propertyId: string): Promise<boolean> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data } = await supabase
+    .from('property_comparisons')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('property_id', propertyId)
+    .maybeSingle();
+  return !!data;
+}
+
 export async function toggleSaveProperty(propertyId: string): Promise<boolean | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { toast.error('Please sign in first.'); return null; }
