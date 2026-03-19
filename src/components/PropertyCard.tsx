@@ -114,11 +114,11 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
 
         {/* Company Logo */}
-        <div className="absolute bottom-2 right-2">
+        <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm rounded px-1.5 py-1 shadow-md">
           <img
             src={property.agentLogo}
             alt={property.agentName}
-            className="h-10 w-14 rounded border border-background object-cover shadow-md bg-background"
+            className="h-7 w-auto max-w-[60px] object-contain"
           />
         </div>
 
@@ -164,7 +164,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
 
         {/* Specs Row */}
-        <div className="flex items-center gap-3 pt-3 border-t border-border">
+        <div className="flex items-center gap-3 pt-3 border-t border-foreground/10">
           <SpecItem icon={<Building className="h-3.5 w-3.5" />} label={property.type} />
           <SpecItem icon={<Maximize className="h-3.5 w-3.5" />} label={`${property.area} ${property.areaUnit}`} />
           {property.bedrooms > 0 && (
