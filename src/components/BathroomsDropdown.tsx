@@ -1,8 +1,11 @@
-import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
+
+const VISIBLE_COUNT = 8;
 
 interface BathroomsDropdownProps {
   value: string[];
@@ -12,6 +15,11 @@ interface BathroomsDropdownProps {
 export default function BathroomsDropdown({ value, onChange }: BathroomsDropdownProps) {
   const { options: fo } = useFilterOptions("search");
   const bathroomOptions = fo["bathrooms"] || [];
+  const [expanded, setExpanded] = useState(false);
+
+  const visible = expanded ? bathroomOptions : bathroomOptions.slice(0, VISIBLE_COUNT);
+  const hasMore = bathroomOptions.length > VISIBLE_COUNT;
+
   function toggle(opt: string) {
     if (value.includes(opt)) {
       onChange(value.filter(v => v !== opt));
@@ -21,7 +29,7 @@ export default function BathroomsDropdown({ value, onChange }: BathroomsDropdown
   }
 
   return (
-    <Popover>
+    <Popover onOpenChange={() => setExpanded(false)}>
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[100px]">
           <span className={value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
@@ -35,15 +43,27 @@ export default function BathroomsDropdown({ value, onChange }: BathroomsDropdown
           <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1" align="start">
-        <div className="space-y-0.5">
-          {bathroomOptions.map((opt) => (
+      <PopoverContent className="w-44 p-0" align="start">
+        <div className="p-1 space-y-0.5">
+          {visible.map((opt) => (
             <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
               <Checkbox checked={value.includes(opt)} onCheckedChange={() => toggle(opt)} />
               <span className="text-sm text-foreground">{opt}</span>
             </label>
           ))}
         </div>
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-primary hover:bg-muted/50 border-t border-border transition-colors"
+          >
+            {expanded ? (
+              <>Show Less <ChevronUp className="h-3 w-3" /></>
+            ) : (
+              <>Show More ({bathroomOptions.length - VISIBLE_COUNT}) <ChevronDown className="h-3 w-3" /></>
+            )}
+          </button>
+        )}
       </PopoverContent>
     </Popover>
   );
