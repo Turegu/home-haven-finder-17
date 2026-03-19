@@ -484,6 +484,16 @@ const BuyPage = () => {
       </div>
 
       <Footer />
+
+      <SaveSearchDialog
+        open={saveSearchOpen}
+        onOpenChange={setSaveSearchOpen}
+        searchParams={committedParams as Record<string, unknown>}
+        selectedFilters={selectedBadges}
+        searchType={isRent ? 'rent' : 'buy'}
+        location={location}
+        keyword={keyword}
+      />
     </div>
   );
 };
