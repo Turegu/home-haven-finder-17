@@ -1,1 +1,7 @@
 project_id = "xlueciwbkbozwenwiwbg"
+
+[functions.create-agent-user]
+verify_jwt = false
+
+[functions.compare-properties-ai]
+verify_jwt = false
