@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  MapPin, Search, Clock, CalendarDays, Phone, Mail, Heart,
-  Layers, LayoutGrid, List, Map, ChevronRight, ChevronDown,
+  Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
+  ChevronDown, CalendarDays, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -11,45 +11,87 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import LocationPicker from '@/components/LocationPicker';
-import { mockEvents } from '@/data/mockEvents';
 import ListingMapView from '@/components/ListingMapView';
+import EventListCard from '@/components/EventListCard';
+import EventGridCard from '@/components/EventGridCard';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
-
-// Event types now fetched dynamically
+import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
 
 const EventsPage = () => {
-  const { options: fo } = useFilterOptions("search");
-  const eventTypes = [...(fo["event_types"] || []), 'All'];
+  const { options: fo } = useFilterOptions('search');
+  const eventTypes = ['All', ...(fo['event_types'] || [])];
+
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedEventType, setSelectedEventType] = useState('All');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+  const [keyword, setKeyword] = useState('');
+
+  const GRID_ITEMS = 15;
+  const LIST_ITEMS = 12;
+  const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
+
+  const [committedParams, setCommittedParams] = useState<EventSearchParams>({
+    sortBy: 'newest',
+    page: 1,
+    pageSize: LIST_ITEMS,
+  });
 
   useEffect(() => { document.title = 'Events | Turegu'; }, []);
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const { data, isLoading, isFetching } = useEventSearch(committedParams);
+  const allEvents = data?.events ?? [];
+  const totalCount = data?.total ?? 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  const handleSearch = useCallback(() => {
+    const params: EventSearchParams = {
+      province: location.province,
+      district: location.district,
+      neighborhood: location.neighborhood,
+      keyword: keyword.trim() || undefined,
+      eventType: selectedEventType !== 'All' ? selectedEventType : undefined,
+      dateFrom: dateRange.from?.toISOString(),
+      dateTo: dateRange.to?.toISOString(),
+      sortBy,
+      page: 1,
+      pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS,
+    };
+    setCommittedParams(params);
+    setCurrentPage(1);
+  }, [location, keyword, selectedEventType, dateRange, sortBy, viewMode]);
+
+  useEffect(() => {
+    setCommittedParams(prev => ({ ...prev, sortBy, page: currentPage, pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS }));
+  }, [sortBy, currentPage, viewMode]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Search Bar - Event-specific filters */}
-      <div className="border-b border-border bg-background sticky top-[104px] z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-wrap items-center gap-3">
+      {/* Search Bar */}
+      <div className="sticky top-[104px] z-40 bg-background border-b border-border">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <input
-              type="text"
-              placeholder="Enter Search Area, City, Address"
-              className="flex-1 min-w-[200px] border border-border rounded-md px-3 py-2 text-sm bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+            <div className="relative flex-1 min-w-[200px]">
+              <input
+                type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search events by name, venue..."
+                className="w-full h-10 pl-3 pr-4 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+              />
+            </div>
 
             {/* Event Type Dropdown */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
+                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
                   <span className={selectedEventType === 'All' ? 'text-muted-foreground' : 'text-foreground'}>
                     {selectedEventType === 'All' ? 'Event Type' : selectedEventType}
                   </span>
@@ -78,7 +120,7 @@ const EventsPage = () => {
             {/* Date Range Picker */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 min-w-[160px] text-sm hover:border-primary/50 transition-colors bg-background">
+                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[160px] text-sm hover:border-primary/50 transition-colors bg-background">
                   <CalendarDays className="h-4 w-4 text-muted-foreground" />
                   <span className={dateRange.from ? 'text-foreground' : 'text-muted-foreground'}>
                     {dateRange.from
@@ -97,199 +139,183 @@ const EventsPage = () => {
                 />
                 <div className="p-3 border-t border-border flex justify-end gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setDateRange({})}>Clear</Button>
-                  <Button size="sm">Apply</Button>
                 </div>
               </PopoverContent>
             </Popover>
 
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6">
-              <Search className="h-4 w-4 mr-2" />
+            <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
+              {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
               Search
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Results */}
       <div className="container mx-auto px-4 py-6">
-        <EventResultsSection
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          formatDate={formatDate}
-        />
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
+          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+          <span>{'>'}</span>
+          <span className="text-primary font-medium">Events</span>
+        </div>
+
+        {/* Results Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+          <h1 className="text-lg font-bold text-foreground">
+            Public Gatherings & Events <span className="text-primary">({totalCount})</span>
+          </h1>
+          <div className="flex items-center gap-3">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="newest">Newest First</option>
+              <option value="date_asc">Date: Earliest</option>
+              <option value="date_desc">Date: Latest</option>
+            </select>
+            <div className="flex border border-border rounded-md overflow-hidden">
+              {[
+                { mode: 'grid' as const, icon: LayoutGrid },
+                { mode: 'list' as const, icon: List },
+                { mode: 'map' as const, icon: Map },
+              ].map(({ mode, icon: Icon }) => (
+                <button
+                  key={mode}
+                  onClick={() => { setViewMode(mode); setCurrentPage(1); setFocusListingId(null); }}
+                  className={`p-2 ${viewMode === mode ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'}`}
+                >
+                  <Icon className="h-4 w-4" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Loading */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-3 text-muted-foreground">Loading events...</span>
+          </div>
+        ) : allEvents.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-lg font-medium text-foreground mb-2">No events found</p>
+            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+          </div>
+        ) : (
+          <div className="flex gap-6">
+            <div className="flex-1 min-w-0">
+              {viewMode === 'grid' ? (
+                <div className="space-y-6">
+                  {Array.from({ length: Math.ceil(allEvents.length / 3) }, (_, chunkIdx) => {
+                    const chunk = allEvents.slice(chunkIdx * 3, (chunkIdx + 1) * 3);
+                    return (
+                      <div key={chunkIdx}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {chunk.map((event) => (
+                            <EventGridCard key={event.id} event={event} />
+                          ))}
+                        </div>
+                        {chunkIdx < Math.ceil(allEvents.length / 3) - 1 && chunkIdx % 2 === 1 && (
+                          <div className="my-6">
+                            <BannerDisplay pageName="events" bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : viewMode === 'list' ? (
+                <div className="space-y-6">
+                  {Array.from({ length: Math.ceil(allEvents.length / 4) }, (_, chunkIdx) => {
+                    const chunk = allEvents.slice(chunkIdx * 4, (chunkIdx + 1) * 4);
+                    return (
+                      <div key={chunkIdx} className="space-y-6">
+                        {chunk.map((event) => (
+                          <EventListCard
+                            key={event.id}
+                            event={event}
+                            onLocationClick={(id) => { setFocusListingId(id); setViewMode('map'); }}
+                          />
+                        ))}
+                        {chunkIdx < Math.ceil(allEvents.length / 4) - 1 && (
+                          <div className="my-6">
+                            <BannerDisplay pageName="events" bannerType="horizontal" position={chunkIdx + 1} className="" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <ListingMapView
+                  listings={allEvents.map(e => ({
+                    id: e.id,
+                    title: e.title,
+                    location: e.location || [e.neighbourhood, e.town, e.province].filter(Boolean).join(', ') || '',
+                    image: e.images?.[0] || '/placeholder.svg',
+                    price: e.price ?? 0,
+                    currency: e.currency ?? 'USD',
+                    linkTo: `/events/${e.id}`,
+                    type: 'event' as const,
+                    subtitle: e.organizer || e.companies?.name || '',
+                    meta: `${e.event_type.replace(/_/g, ' ')} • ${e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBA'}`,
+                    logo: e.companies?.logo_url || e.logo_url || '',
+                  }))}
+                  focusListingId={focusListingId}
+                />
+              )}
+            </div>
+
+            {/* Vertical Sidebar Banner */}
+            <div className="hidden lg:block w-[225px] shrink-0">
+              <div className="sticky top-[160px]">
+                <BannerDisplay pageName="events" bannerType="vertical" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8 mb-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={currentPage === 1}
+              onClick={() => { setCurrentPage((p) => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={page === currentPage ? 'default' : 'outline'}
+                size="sm"
+                className="h-9 w-9 p-0"
+                onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={currentPage === totalPages}
+              onClick={() => { setCurrentPage((p) => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <Footer />
     </div>
   );
 };
-
-/** Extracted results section to keep the file manageable */
-function EventResultsSection({
-  viewMode, setViewMode, sortBy, setSortBy, formatDate,
-}: {
-  viewMode: 'grid' | 'list' | 'map';
-  setViewMode: (m: 'grid' | 'list' | 'map') => void;
-  sortBy: string;
-  setSortBy: (s: string) => void;
-  formatDate: (d: string) => string;
-}) {
-  return (
-    <>
-      {/* Breadcrumb & Controls */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-            <Link to="/" className="hover:text-primary">Home</Link>
-            <ChevronRight className="h-3 w-3" />
-            <span className="text-primary font-medium">Events</span>
-          </div>
-          <p className="text-sm text-muted-foreground">{mockEvents.length} Events</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring">
-            <option value="newest">Newest First</option>
-            <option value="date_asc">Date: Earliest</option>
-            <option value="date_desc">Date: Latest</option>
-          </select>
-          <div className="flex border border-border rounded-md overflow-hidden">
-            {[
-              { mode: 'grid' as const, icon: LayoutGrid },
-              { mode: 'list' as const, icon: List },
-              { mode: 'map' as const, icon: Map },
-            ].map(({ mode, icon: Icon }) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                className={`p-2 ${viewMode === mode ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-secondary'}`}
-              >
-                <Icon className="h-4 w-4" />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Content with sidebar banner */}
-      <div className="flex gap-6">
-        <div className="flex-1">
-          {viewMode === 'map' ? (
-            <ListingMapView
-              listings={mockEvents.map(e => ({
-                id: e.id,
-                title: e.title,
-                location: e.location,
-                image: e.images[0],
-                price: e.price,
-                currency: e.currency,
-                linkTo: `/events/${e.id}`,
-                type: 'event' as const,
-                subtitle: e.organizer,
-                meta: `${e.eventType} • ${new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
-                logo: e.organizerLogo,
-              }))}
-            />
-          ) : (
-            <>
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-6'}>
-                {mockEvents.map((event) => (
-                  <EventCard key={event.id} event={event} viewMode={viewMode} formatDate={formatDate} />
-                ))}
-              </div>
-              <BannerDisplay pageName="events" bannerType="horizontal" className="mt-6" />
-            </>
-          )}
-        </div>
-
-        {/* Vertical Sidebar Banner */}
-        <div className="hidden lg:block w-[225px] shrink-0">
-          <div className="sticky top-[160px]">
-            <BannerDisplay pageName="events" bannerType="vertical" />
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function EventCard({ event, viewMode, formatDate }: {
-  event: typeof mockEvents[0];
-  viewMode: 'grid' | 'list';
-  formatDate: (d: string) => string;
-}) {
-  return (
-    <div
-      className={`bg-card border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow ${
-        viewMode === 'list' ? 'flex flex-col md:flex-row' : ''
-      }`}
-    >
-      <div className={`relative ${viewMode === 'list' ? 'md:w-[360px] md:min-h-[220px]' : ''}`}>
-        <Link to={`/events/${event.id}`}>
-          <img
-            src={event.images[0]}
-            alt={event.title}
-            className={`w-full object-cover ${viewMode === 'list' ? 'h-[200px] md:h-full' : 'h-[200px]'}`}
-          />
-        </Link>
-        <div className="absolute top-3 right-3 flex gap-2">
-          <button className="p-1.5 bg-background/80 backdrop-blur-sm rounded-md hover:bg-background">
-            <Layers className="h-4 w-4 text-foreground/70" />
-          </button>
-          <button className="p-1.5 bg-background/80 backdrop-blur-sm rounded-md hover:bg-background">
-            <Heart className="h-4 w-4 text-foreground/70" />
-          </button>
-        </div>
-        {event.organizerLogo && (
-          <img
-            src={event.organizerLogo}
-            alt={event.organizer}
-            className="absolute bottom-3 right-3 w-10 h-10 rounded-full border-2 border-background object-cover"
-          />
-        )}
-      </div>
-      <div className="flex-1 p-4">
-        <Link to={`/events/${event.id}`}>
-          <h3 className="text-lg font-semibold text-foreground hover:text-primary transition-colors mb-2">
-            {event.title}
-          </h3>
-        </Link>
-        <div className="flex items-start gap-1.5 mb-3">
-          <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-          <span className="text-sm text-muted-foreground line-clamp-1">{event.location}</span>
-        </div>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{event.eventType}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{formatDate(event.date)}</span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between pt-3 border-t border-border">
-          <span className="text-lg font-bold text-foreground">
-            {event.price ? `$ ${event.price.toLocaleString()}` : 'Open Invitation'}
-          </span>
-          <div className="flex items-center gap-2">
-            <button className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
-              <Phone className="h-4 w-4" />
-            </button>
-            <button className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20">
-              <Mail className="h-4 w-4" />
-            </button>
-            <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default EventsPage;
