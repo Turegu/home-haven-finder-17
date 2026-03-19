@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Globe, ChevronDown, Ruler, Bell, Heart, Layers,
   Menu, X, User, LogOut, Settings, Users2, Search,
-  MessageSquare, FileText
+  MessageSquare, FileText, MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -26,7 +26,7 @@ const Header = () => {
   const [selectedLang, setSelectedLang] = useState<{ id: string; name: string; code: string } | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<{ id: string; name: string; code: string; symbol: string } | null>(null);
   const [selectedArea, setSelectedArea] = useState(AREA_UNITS[0]);
-  const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | 'notifications' | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | 'notifications' | 'saved' | 'compare' | null>(null);
 
   // Auth state
   const [currentUser, setCurrentUser] = useState<{ id: string; email: string; displayName: string } | null>(null);
@@ -35,12 +35,16 @@ const Header = () => {
   const [counts, setCounts] = useState({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
   const [notifications, setNotifications] = useState<{ id: string; title: string; message: string | null; notification_type: string; is_read: boolean; created_at: string; source_company_id: string | null; property_id: string | null }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [savedItems, setSavedItems] = useState<{ id: string; property_id: string; title: string; price: number | null; currency: string | null; images: string[] | null; location: string | null; created_at: string }[]>([]);
+  const [compareItems, setCompareItems] = useState<{ id: string; property_id: string; title: string; price: number | null; currency: string | null; images: string[] | null; location: string | null; created_at: string }[]>([]);
 
   const langRef = useRef<HTMLDivElement>(null);
   const currRef = useRef<HTMLDivElement>(null);
   const areaRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const savedRef = useRef<HTMLDivElement>(null);
+  const compareRef = useRef<HTMLDivElement>(null);
 
   // Check auth
   useEffect(() => {
@@ -98,10 +102,50 @@ const Header = () => {
     setUnreadCount(count || 0);
   };
 
+  const fetchSavedItems = async (uid: string) => {
+    const { data } = await supabase
+      .from("saved_properties")
+      .select("id, property_id, created_at, properties:property_id(title, price, currency, images, location)")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setSavedItems((data || []).map((d: any) => ({
+      id: d.id,
+      property_id: d.property_id,
+      title: d.properties?.title || "Property",
+      price: d.properties?.price,
+      currency: d.properties?.currency,
+      images: d.properties?.images,
+      location: d.properties?.location,
+      created_at: d.created_at,
+    })));
+  };
+
+  const fetchCompareItems = async (uid: string) => {
+    const { data } = await supabase
+      .from("property_comparisons")
+      .select("id, property_id, created_at, properties:property_id(title, price, currency, images, location)")
+      .eq("user_id", uid)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setCompareItems((data || []).map((d: any) => ({
+      id: d.id,
+      property_id: d.property_id,
+      title: d.properties?.title || "Property",
+      price: d.properties?.price,
+      currency: d.properties?.currency,
+      images: d.properties?.images,
+      location: d.properties?.location,
+      created_at: d.created_at,
+    })));
+  };
+
   useEffect(() => {
     if (!currentUser?.id) return;
     fetchCounts(currentUser.id);
     fetchNotifications(currentUser.id);
+    fetchSavedItems(currentUser.id);
+    fetchCompareItems(currentUser.id);
   }, [currentUser?.id]);
 
   // Listen for property action changes to refresh counts
@@ -146,7 +190,9 @@ const Header = () => {
         openDropdown === 'currency' && currRef.current && !currRef.current.contains(e.target as Node) ||
         openDropdown === 'area' && areaRef.current && !areaRef.current.contains(e.target as Node) ||
         openDropdown === 'user' && userRef.current && !userRef.current.contains(e.target as Node) ||
-        openDropdown === 'notifications' && notifRef.current && !notifRef.current.contains(e.target as Node)
+        openDropdown === 'notifications' && notifRef.current && !notifRef.current.contains(e.target as Node) ||
+        openDropdown === 'saved' && savedRef.current && !savedRef.current.contains(e.target as Node) ||
+        openDropdown === 'compare' && compareRef.current && !compareRef.current.contains(e.target as Node)
       ) {
         setOpenDropdown(null);
       }
@@ -165,6 +211,20 @@ const Header = () => {
     await supabase.from("user_notifications").update({ is_read: true }).eq("user_id", currentUser.id).eq("is_read", false);
     setNotifications([]);
     setUnreadCount(0);
+  };
+
+  const removeSavedProperty = async (id: string) => {
+    await supabase.from("saved_properties").delete().eq("id", id);
+    setSavedItems(prev => prev.filter(s => s.id !== id));
+    setCounts(prev => ({ ...prev, savedProperties: Math.max(0, prev.savedProperties - 1) }));
+    window.dispatchEvent(new Event('property-actions-changed'));
+  };
+
+  const removeCompareItem = async (id: string) => {
+    await supabase.from("property_comparisons").delete().eq("id", id);
+    setCompareItems(prev => prev.filter(c => c.id !== id));
+    setCounts(prev => ({ ...prev, compare: Math.max(0, prev.compare - 1) }));
+    window.dispatchEvent(new Event('property-actions-changed'));
   };
 
   const timeAgo = (dateStr: string) => {
@@ -383,22 +443,163 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
-              <Heart className="h-5 w-5 text-foreground/70" />
-              {counts.savedProperties > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {counts.savedProperties}
-                </span>
+            {/* Saved Properties Dropdown */}
+            <div className="relative" ref={savedRef}>
+              <button
+                onClick={() => {
+                  if (!currentUser) { navigate('/login'); return; }
+                  setOpenDropdown(openDropdown === 'saved' ? null : 'saved');
+                }}
+                className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+                aria-label="Saved Properties"
+              >
+                <Heart className="h-5 w-5 text-foreground/70" />
+                {counts.savedProperties > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-0.5">
+                    {counts.savedProperties > 9 ? '9+' : counts.savedProperties}
+                  </span>
+                )}
+              </button>
+              {openDropdown === 'saved' && (
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Saved Properties</h3>
+                    <span className="text-xs text-muted-foreground">{counts.savedProperties} saved</span>
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {savedItems.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Heart className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No saved properties</p>
+                      </div>
+                    ) : (
+                      savedItems.map(item => (
+                        <div
+                          key={item.id}
+                          className="px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 cursor-pointer group"
+                        >
+                          <div className="flex gap-3">
+                            <img
+                              src={item.images?.[0] || "/placeholder.svg"}
+                              alt=""
+                              className="h-12 w-16 rounded object-cover shrink-0"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            />
+                            <div
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            >
+                              <p className="text-sm font-medium text-foreground leading-tight truncate">{item.title}</p>
+                              {item.location && (
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1">
+                                  <MapPin className="h-3 w-3 shrink-0" />{item.location}
+                                </p>
+                              )}
+                              <p className="text-xs font-semibold text-primary mt-0.5">{item.currency || '$'} {item.price?.toLocaleString() || 'N/A'}</p>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeSavedProperty(item.id); }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded shrink-0 self-center"
+                              title="Remove"
+                            >
+                              <X className="h-3.5 w-3.5 text-destructive" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t border-border">
+                    <Link
+                      to="/account/saved-properties"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
+                    >
+                      View All Saved Properties
+                    </Link>
+                  </div>
+                </div>
               )}
-            </button>
-            <button onClick={() => navigate(currentUser ? '/account/compare' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
-              <Layers className="h-5 w-5 text-foreground/70" />
-              {counts.compare > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {counts.compare}
-                </span>
+            </div>
+
+            {/* Compare List Dropdown */}
+            <div className="relative" ref={compareRef}>
+              <button
+                onClick={() => {
+                  if (!currentUser) { navigate('/login'); return; }
+                  setOpenDropdown(openDropdown === 'compare' ? null : 'compare');
+                }}
+                className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+                aria-label="Compare"
+              >
+                <Layers className="h-5 w-5 text-foreground/70" />
+                {counts.compare > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-0.5">
+                    {counts.compare > 9 ? '9+' : counts.compare}
+                  </span>
+                )}
+              </button>
+              {openDropdown === 'compare' && (
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Compare List</h3>
+                    <span className="text-xs text-muted-foreground">{counts.compare}/3</span>
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {compareItems.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Layers className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No properties to compare</p>
+                      </div>
+                    ) : (
+                      compareItems.map(item => (
+                        <div
+                          key={item.id}
+                          className="px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 cursor-pointer group"
+                        >
+                          <div className="flex gap-3">
+                            <img
+                              src={item.images?.[0] || "/placeholder.svg"}
+                              alt=""
+                              className="h-12 w-16 rounded object-cover shrink-0"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            />
+                            <div
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            >
+                              <p className="text-sm font-medium text-foreground leading-tight truncate">{item.title}</p>
+                              {item.location && (
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1">
+                                  <MapPin className="h-3 w-3 shrink-0" />{item.location}
+                                </p>
+                              )}
+                              <p className="text-xs font-semibold text-primary mt-0.5">{item.currency || '$'} {item.price?.toLocaleString() || 'N/A'}</p>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeCompareItem(item.id); }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded shrink-0 self-center"
+                              title="Remove"
+                            >
+                              <X className="h-3.5 w-3.5 text-destructive" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t border-border">
+                    <Link
+                      to="/account/compare"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
+                    >
+                      View Compare List
+                    </Link>
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
 
             {/* User Menu / Login */}
             {currentUser ? (
