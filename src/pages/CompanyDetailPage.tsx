@@ -145,7 +145,7 @@ const CompanyDetailPage = () => {
               <div className="p-5 text-center relative">
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2">
                   {company.logo_url ? (
-                    <img src={company.logo_url} alt={company.name} className="w-20 h-20 rounded-lg border-2 border-background object-cover shadow" />
+                    <img src={company.logo_url} alt={company.name} className="h-20 w-auto max-w-[120px] rounded-lg border-2 border-background object-contain bg-white shadow" />
                   ) : (
                     <div className="w-20 h-20 rounded-lg border-2 border-background bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl shadow">
                       {company.name.charAt(0)}

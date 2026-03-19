@@ -166,9 +166,9 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             <img
               src={property.agentLogo}
               alt={property.agentName}
-              className="h-10 w-16 rounded object-cover border border-border shadow-sm"
+              className="h-10 w-auto max-w-[80px] rounded object-contain"
             />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{property.agentName}</span>
           </div>
 
           <div className="pr-24">

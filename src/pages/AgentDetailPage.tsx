@@ -121,7 +121,7 @@ const AgentDetailPage = () => {
               {agent.companies && (
                 <Link to={`/company/${agent.companies.id}`} className="flex items-center gap-3 mb-5 pb-5 border-b border-border">
                   {agent.companies.logo_url ? (
-                    <img src={agent.companies.logo_url} alt={agent.companies.name} className="w-12 h-12 rounded-lg object-cover" />
+                    <img src={agent.companies.logo_url} alt={agent.companies.name} className="h-12 w-auto max-w-[80px] rounded-lg object-contain" />
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold">
                       {agent.companies.name.charAt(0)}

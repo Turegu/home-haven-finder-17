@@ -85,7 +85,7 @@ const CompanyDashboardPage = () => {
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-1">
           {company?.logo_url ? (
-            <img src={company.logo_url} alt={company.name} className="h-12 w-12 rounded-xl object-cover border border-border shadow-sm" />
+            <img src={company.logo_url} alt={company.name} className="h-12 w-auto max-w-[100px] rounded-xl object-contain border border-border shadow-sm" />
           ) : (
             <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
               {company?.name?.charAt(0) || "C"}
