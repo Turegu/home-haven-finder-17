@@ -21,7 +21,7 @@ import {
   Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
   Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
   Bold, Italic, Underline, List, Heading, Activity, Video,
-  Plus, Trash2, Pencil, Package
+  Plus, Trash2, Pencil, Package, Tag
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
