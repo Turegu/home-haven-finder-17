@@ -542,7 +542,7 @@ const CompareListPage = () => {
               </div>
             </div>
 
-            <p className="text-[10px] text-muted-foreground italic">* Estimates based on 5% annual yield for long-term rental, 1.8x multiplier for Airbnb with 70% occupancy. Actual returns may vary.</p>
+            <p className="text-[10px] text-muted-foreground italic">* Rental estimates based on {Object.values(rentalRates).some(r => r > 0) ? "actual market rental listings in the area" : "5% annual yield estimate (no rental data found)"}. Airbnb uses 1.8x multiplier with 70% occupancy. Actual returns may vary.</p>
           </div>
         )}
 
