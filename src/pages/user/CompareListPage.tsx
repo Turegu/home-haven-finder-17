@@ -18,6 +18,8 @@ interface CompareProperty {
   property_type: string; area: number | null; area_unit: string | null;
   images: string[] | null; location: string | null; rooms: string | null;
   bedrooms: number | null; bathrooms: number | null; parking_spaces: number | null;
+  province: string | null; town: string | null; neighbourhood: string | null;
+  property_purpose: string;
 }
 
 interface CompareItem {
@@ -47,16 +49,88 @@ const CompareListPage = () => {
   const [aiLoading, setAiLoading] = useState(false);
   const [scores, setScores] = useState<PropertyScore[]>([]);
   const [winner, setWinner] = useState("");
+  const [rentalRates, setRentalRates] = useState<Record<string, number>>({}); // property_id -> rent per m²/month
+
+  // Fetch actual rental rates from the database for each property's area
+  const fetchRentalData = async (compareItems: CompareItem[]) => {
+    const rates: Record<string, number> = {};
+
+    for (const item of compareItems) {
+      const p = item.property;
+      if (!p) continue;
+
+      // Try neighbourhood first, then town, then province
+      let avgRentPerSqm: number | null = null;
+
+      // 1. Same neighbourhood
+      if (p.neighbourhood && p.town && p.province) {
+        const { data: rentals } = await supabase
+          .from("properties")
+          .select("price, area")
+          .eq("status", "active")
+          .eq("property_purpose", "rent")
+          .eq("province", p.province)
+          .eq("town", p.town)
+          .eq("neighbourhood", p.neighbourhood)
+          .gt("price", 0)
+          .gt("area", 0);
+        if (rentals && rentals.length > 0) {
+          avgRentPerSqm = rentals.reduce((sum, r) => sum + (r.price! / r.area!), 0) / rentals.length;
+        }
+      }
+
+      // 2. Same town (fallback)
+      if (!avgRentPerSqm && p.town && p.province) {
+        const { data: rentals } = await supabase
+          .from("properties")
+          .select("price, area")
+          .eq("status", "active")
+          .eq("property_purpose", "rent")
+          .eq("province", p.province)
+          .eq("town", p.town)
+          .gt("price", 0)
+          .gt("area", 0)
+          .limit(50);
+        if (rentals && rentals.length > 0) {
+          avgRentPerSqm = rentals.reduce((sum, r) => sum + (r.price! / r.area!), 0) / rentals.length;
+        }
+      }
+
+      // 3. Same province (fallback)
+      if (!avgRentPerSqm && p.province) {
+        const { data: rentals } = await supabase
+          .from("properties")
+          .select("price, area")
+          .eq("status", "active")
+          .eq("property_purpose", "rent")
+          .eq("province", p.province)
+          .gt("price", 0)
+          .gt("area", 0)
+          .limit(100);
+        if (rentals && rentals.length > 0) {
+          avgRentPerSqm = rentals.reduce((sum, r) => sum + (r.price! / r.area!), 0) / rentals.length;
+        }
+      }
+
+      rates[p.id] = avgRentPerSqm || 0;
+    }
+
+    setRentalRates(rates);
+  };
 
   const load = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { data } = await supabase
       .from("property_comparisons")
-      .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces)")
+      .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces, province, town, neighbourhood, property_purpose)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }) as any;
-    setItems((data || []).map((d: any) => ({ ...d, property: d.properties })));
+    const mappedItems: CompareItem[] = (data || []).map((d: any) => ({ ...d, property: d.properties }));
+    setItems(mappedItems);
+
+    // Fetch real rental market data for each property's area
+    await fetchRentalData(mappedItems);
     setLoading(false);
   };
 
@@ -177,19 +251,29 @@ const CompareListPage = () => {
     }
   };
 
-  // Build price & ROI comparison data
-  const LONG_TERM_YIELD = 0.05; // 5% annual yield estimate
+  // Build price & ROI comparison data using REAL market rental rates
   const AIRBNB_MULTIPLIER = 1.8; // Airbnb typically 1.5-2x long-term rent
   const OCCUPANCY_RATE = 0.70; // 70% average Airbnb occupancy
+  const FALLBACK_YIELD = 0.05; // 5% fallback if no rental data
 
   const investmentData = items.map((item, i) => {
     const p = item.property;
     const price = p?.price || 0;
     const area = p?.area || 1;
     const pricePerSqm = price > 0 && area > 0 ? Math.round(price / area) : 0;
-    const annualRent = price * LONG_TERM_YIELD;
-    const monthlyRent = Math.round(annualRent / 12);
+
+    // Use real market rental rate if available, otherwise fallback
+    const marketRentPerSqm = rentalRates[p?.id || ""] || 0;
+    const hasMarketData = marketRentPerSqm > 0;
+
+    // Monthly rent based on market data or fallback estimate
+    const monthlyRent = hasMarketData
+      ? Math.round(marketRentPerSqm * area)
+      : Math.round((price * FALLBACK_YIELD) / 12);
+
+    const annualRent = monthlyRent * 12;
     const roi = price > 0 ? ((annualRent / price) * 100) : 0;
+
     const airbnbNightly = area > 0 ? Math.round((monthlyRent * AIRBNB_MULTIPLIER) / 30) : 0;
     const airbnbMonthly = Math.round(airbnbNightly * 30 * OCCUPANCY_RATE);
     const airbnbAnnual = airbnbMonthly * 12;
@@ -197,11 +281,12 @@ const CompareListPage = () => {
     const breakEvenYears = annualRent > 0 ? Math.round(price / annualRent) : 0;
     const airbnbBreakEven = airbnbAnnual > 0 ? Math.round(price / airbnbAnnual) : 0;
     const name = (p?.title || "Property").substring(0, 15);
+    const dataSource = hasMarketData ? "market" : "estimate";
 
     return {
       name, price, pricePerSqm, annualRent, monthlyRent, roi,
       airbnbNightly, airbnbMonthly, airbnbAnnual, airbnbROI,
-      breakEvenYears, airbnbBreakEven,
+      breakEvenYears, airbnbBreakEven, dataSource,
       fill: CHART_COLORS[i], currency: p?.currency || "$",
     };
   });
@@ -349,7 +434,10 @@ const CompareListPage = () => {
                 <div key={d.name} className="bg-card rounded-xl border border-border p-5 space-y-4">
                   <div className="flex items-center gap-2 border-b border-border pb-3">
                     <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS[i] }} />
-                    <h3 className="text-sm font-bold text-foreground truncate">{d.name}</h3>
+                    <h3 className="text-sm font-bold text-foreground truncate flex-1">{d.name}</h3>
+                    <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${d.dataSource === 'market' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      {d.dataSource === 'market' ? '📊 Market Data' : '📐 Estimated'}
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-muted/50 rounded-lg p-3 text-center">
@@ -457,7 +545,7 @@ const CompareListPage = () => {
               </div>
             </div>
 
-            <p className="text-[10px] text-muted-foreground italic">* Estimates based on 5% annual yield for long-term rental, 1.8x multiplier for Airbnb with 70% occupancy. Actual returns may vary.</p>
+            <p className="text-[10px] text-muted-foreground italic">* Rental estimates based on {Object.values(rentalRates).some(r => r > 0) ? "actual market rental listings in the area" : "5% annual yield estimate (no rental data found)"}. Airbnb uses 1.8x multiplier with 70% occupancy. Actual returns may vary.</p>
           </div>
         )}
 
