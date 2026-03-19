@@ -323,6 +323,27 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
           </div>
         </div>
       </div>
+
+      <ContactCompanyDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        property={{
+          id: property.id,
+          title: property.title,
+          location: property.location,
+          type: property.type,
+          area: property.area,
+          areaUnit: property.areaUnit,
+          bathrooms: property.bathrooms,
+          bedrooms: property.bedrooms,
+          price: property.price,
+          currency: property.currency,
+          images: property.images,
+        }}
+        companyId={null}
+        agentId={null}
+        companyName={property.companyName}
+      />
     </Link>
   );
 };
