@@ -188,6 +188,8 @@ export function SelectedFilterBadges({
   );
 }
 
+const FILTER_VISIBLE_COUNT = 8;
+
 function FilterDropdown({
   category,
   options,
@@ -201,8 +203,12 @@ function FilterDropdown({
   onToggle: (title: string) => void;
   onClear: () => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? options : options.slice(0, FILTER_VISIBLE_COUNT);
+  const hasMore = options.length > FILTER_VISIBLE_COUNT;
+
   return (
-    <Popover>
+    <Popover onOpenChange={() => setExpanded(false)}>
       <PopoverTrigger asChild>
         <button className="hidden md:flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground">
           {category.title}
@@ -214,26 +220,36 @@ function FilterDropdown({
           <ChevronDown className="h-3.5 w-3.5" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-2" align="start">
-        <div className="flex items-center justify-between mb-2 px-1">
+      <PopoverContent className="w-56 p-0" align="start">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
           <span className="text-xs font-semibold text-muted-foreground uppercase">{category.title}</span>
           {selected.length > 0 && (
             <button onClick={onClear} className="text-[10px] text-destructive hover:underline">Clear</button>
           )}
         </div>
-        <ScrollArea>
-          <div className="space-y-0.5">
-            {options.map((opt) => (
-              <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
-                <Checkbox
-                  checked={selected.includes(opt.title)}
-                  onCheckedChange={() => onToggle(opt.title)}
-                />
-                <span className="text-sm">{opt.title}</span>
-              </label>
-            ))}
-          </div>
-        </ScrollArea>
+        <div className="p-1 space-y-0.5">
+          {visible.map((opt) => (
+            <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
+              <Checkbox
+                checked={selected.includes(opt.title)}
+                onCheckedChange={() => onToggle(opt.title)}
+              />
+              <span className="text-sm">{opt.title}</span>
+            </label>
+          ))}
+        </div>
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-primary hover:bg-muted/50 border-t border-border transition-colors"
+          >
+            {expanded ? (
+              <>Show Less <ChevronUp className="h-3 w-3" /></>
+            ) : (
+              <>Show More ({options.length - FILTER_VISIBLE_COUNT}) <ChevronDown className="h-3 w-3" /></>
+            )}
+          </button>
+        )}
       </PopoverContent>
     </Popover>
   );
