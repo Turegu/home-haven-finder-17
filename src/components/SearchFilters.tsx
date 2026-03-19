@@ -220,7 +220,7 @@ function FilterDropdown({
             <button onClick={onClear} className="text-[10px] text-destructive hover:underline">Clear</button>
           )}
         </div>
-        <ScrollArea className="max-h-[250px]">
+        <ScrollArea>
           <div className="space-y-0.5">
             {options.map((opt) => (
               <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">

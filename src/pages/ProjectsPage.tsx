@@ -123,7 +123,7 @@ const ProjectsPage = () => {
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-52 p-1" align="start">
-                <ScrollArea className="max-h-[250px]">
+                <ScrollArea>
                   <div className="space-y-0.5">
                     {unitTypes.map((type) => (
                       <label key={type} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">

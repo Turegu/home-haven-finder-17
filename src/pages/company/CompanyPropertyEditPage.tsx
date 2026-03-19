@@ -760,7 +760,7 @@ function MultiSelectDropdown({
               </div>
             </div>
           )}
-          <ScrollArea className="max-h-[240px]">
+          <ScrollArea>
             <div className="p-1.5 space-y-0.5">
               {filtered.length === 0 && (
                 <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
