@@ -479,7 +479,7 @@ const PropertyDetailPage = () => {
                 <img
                   src={property.agentLogo}
                   alt={property.agentName}
-                  className="h-24 w-24 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
+                  className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
                 />
                 <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName}</h3>
                 {property.agentDesignation && (
