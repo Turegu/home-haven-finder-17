@@ -136,9 +136,10 @@ interface AmenitiesViewAllDialogProps {
   options: string[];
   selected: string[];
   onToggle: (v: string) => void;
+  trigger?: React.ReactNode;
 }
 
-export default function AmenitiesViewAllDialog({ type, options, selected, onToggle }: AmenitiesViewAllDialogProps) {
+export default function AmenitiesViewAllDialog({ type, options, selected, onToggle, trigger }: AmenitiesViewAllDialogProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -150,16 +151,22 @@ export default function AmenitiesViewAllDialog({ type, options, selected, onTogg
 
   return (
     <>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="h-8 w-8 shrink-0"
-        onClick={() => setOpen(true)}
-        title={`View all ${title.toLowerCase()}`}
-      >
-        <LayoutGrid className="h-4 w-4 text-primary" />
-      </Button>
+      {trigger ? (
+        <div onClick={() => setOpen(true)} className="cursor-pointer">
+          {trigger}
+        </div>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 shrink-0"
+          onClick={() => setOpen(true)}
+          title={`View all ${title.toLowerCase()}`}
+        >
+          <LayoutGrid className="h-4 w-4 text-primary" />
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
