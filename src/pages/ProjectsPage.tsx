@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
-  TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar
+  TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar,
+  Crown, Star, Tag
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -574,14 +575,41 @@ const ProjectsPage = () => {
   );
 };
 
+const tagColorMap: Record<string, string> = {
+  'Hot Deal': 'bg-red-500',
+  'Price Drop': 'bg-green-600',
+  'Exclusive': 'bg-purple-600',
+  'New Launch': 'bg-teal-600',
+};
+
 function ProjectGridCard({ project }: { project: ProjectResult }) {
   const img = project.images?.[0] || '/placeholder.svg';
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
+  const tier = project.property_classification;
+  const adTags = project.advertising_tags ?? [];
   return (
     <Link to={`/projects/${project.id}`}>
       <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group">
         <div className="relative aspect-[16/10] overflow-hidden">
           <img src={img} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          {/* Tier badge + Ad tag — top left */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1">
+            {tier === 'premium' && (
+              <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md" title="Premium">
+                <Crown className="h-4 w-4 text-white" />
+              </span>
+            )}
+            {tier === 'featured' && (
+              <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+                <Star className="h-4 w-4 text-white" />
+              </span>
+            )}
+            {adTags.length > 0 && (
+              <Badge className={`${tagColorMap[adTags[0]] || 'bg-orange-500'} hover:${tagColorMap[adTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}>
+                <Tag className="h-3 w-3" /> {adTags[0]}
+              </Badge>
+            )}
+          </div>
         </div>
         <div className="p-4">
           <h3 className="font-semibold text-foreground mb-1">{project.title}</h3>
@@ -591,23 +619,26 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
           </div>
           <div className="flex items-center justify-between pt-3 border-t border-border">
             <p className="text-sm font-bold text-foreground">
-              Starting From {(project.currency ?? 'TRY')} {(project.min_price ?? 0).toLocaleString()}
+              Starting from {(project.currency ?? 'TRY')} {(project.min_price ?? 0).toLocaleString()}
             </p>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Building className="h-3.5 w-3.5" />
-              <span>{project.max_units ?? 0} Units</span>
-            </div>
+            {project.completion_date && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" />
+                <span>{project.completion_date}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </Link>
   );
 }
-
 function ProjectListCard({ project }: { project: ProjectResult }) {
   const images = project.images && project.images.length > 0 ? project.images : ['/placeholder.svg'];
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
   const [currentImage, setCurrentImage] = useState(0);
+  const tier = project.property_classification;
+  const adTags = project.advertising_tags ?? [];
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -621,7 +652,6 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
     setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // 3-image mosaic: main + 2 stacked side images
   const sideImages = images.length > 1 ? images.filter((_, i) => i !== currentImage).slice(0, 2) : [];
   const descriptionSnippet = project.description
     ? project.description.replace(/[#*_~`>]/g, '').slice(0, 180) + (project.description.length > 180 ? '…' : '')
@@ -630,11 +660,10 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
   return (
     <Link to={`/projects/${project.id}`} className="block">
       <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
-        {/* Top row: Image mosaic + Content */}
         <div className="flex flex-col lg:flex-row">
           {/* Image mosaic area */}
           <div className="relative w-full lg:w-[520px] xl:w-[580px] shrink-0">
-            {/* Status badge + photo count overlay bar */}
+            {/* Top overlay: photo count + status + tier icons */}
             <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-3 py-2 bg-gradient-to-b from-foreground/60 to-transparent">
               <div className="flex items-center gap-1.5 bg-foreground/70 text-white text-xs px-2 py-1 rounded">
                 <Camera className="h-3 w-3" />
@@ -645,7 +674,27 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                   {project.project_status}
                 </span>
               )}
+              {/* Tier icons */}
+              {tier === 'premium' && (
+                <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md ml-auto" title="Premium">
+                  <Crown className="h-4 w-4 text-white" />
+                </span>
+              )}
+              {tier === 'featured' && (
+                <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md ml-auto" title="Featured">
+                  <Star className="h-4 w-4 text-white" />
+                </span>
+              )}
             </div>
+
+            {/* Advertising tag — bottom-right of image */}
+            {adTags.length > 0 && (
+              <div className="absolute bottom-[44px] right-2 z-10">
+                <Badge className={`${tagColorMap[adTags[0]] || 'bg-orange-500'} hover:${tagColorMap[adTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}>
+                  <Tag className="h-3 w-3" /> {adTags[0]}
+                </Badge>
+              </div>
+            )}
 
             <div className="flex h-[220px] lg:h-[260px]">
               {/* Main large image */}
@@ -660,6 +709,7 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                     <ChevronLeft className="h-4 w-4" />
                   </button>
                 )}
+                {/* Right arrow on mobile (no side images) */}
                 {images.length > 1 && (
                   <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/50 hover:bg-foreground/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden">
                     <ChevronRight className="h-4 w-4" />
@@ -676,11 +726,6 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                       alt={`${project.title} 2`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    {images.length > 1 && (
-                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/50 hover:bg-foreground/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    )}
                   </div>
                   <div className="relative flex-1 overflow-hidden">
                     <img
@@ -688,6 +733,12 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                       alt={`${project.title} 3`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    {/* Right arrow — exact opposite of left arrow */}
+                    {images.length > 1 && (
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/50 hover:bg-foreground/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -696,11 +747,11 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
             {/* Price bar */}
             <div className="bg-primary px-4 py-2 flex items-center justify-between">
               <span className="text-lg font-bold text-primary-foreground">
-                {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
+                Starting from {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
               </span>
-              {project.max_price && project.max_price !== project.min_price && (
-                <span className="text-sm text-primary-foreground/80">
-                  up to {project.currency ?? 'TRY'} {project.max_price.toLocaleString()}
+              {project.completion_date && (
+                <span className="flex items-center gap-1.5 text-sm text-primary-foreground/90">
+                  <Calendar className="h-3.5 w-3.5" /> {project.completion_date}
                 </span>
               )}
             </div>
@@ -709,16 +760,11 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
           {/* Content area */}
           <div className="flex-1 p-5 flex flex-col justify-between">
             <div>
-              {/* Title */}
               <h3 className="text-lg font-bold text-foreground mb-0.5 line-clamp-1 group-hover:text-primary transition-colors">{project.title}</h3>
-
-              {/* Location */}
               <div className="flex items-center gap-1.5 text-muted-foreground text-sm mb-3">
                 <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
                 <span className="line-clamp-1">{loc}</span>
               </div>
-
-              {/* Property specs row */}
               <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground mb-4">
                 <span className="flex items-center gap-1.5">
                   <Building className="h-4 w-4" />
@@ -728,28 +774,17 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                   <Maximize className="h-4 w-4" />
                   <span className="font-medium text-foreground">{project.max_units ?? 0} Units</span>
                 </span>
-                {project.completion_date && (
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="h-4 w-4" />
-                    <span className="font-medium text-foreground">{project.completion_date}</span>
-                  </span>
-                )}
               </div>
-
-              {/* Description snippet */}
               {descriptionSnippet && (
                 <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-3">{descriptionSnippet}</p>
               )}
-
-              {/* Tagline */}
               {project.tagline && (
                 <p className="text-xs italic text-muted-foreground/80">{project.tagline}</p>
               )}
             </div>
 
-            {/* Footer bar: developer branding + actions */}
+            {/* Footer bar */}
             <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-              {/* Developer/Company branding */}
               <div className="flex items-center gap-3">
                 {project.logo_url && (
                   <img
@@ -762,8 +797,6 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                   <span className="text-xs text-muted-foreground max-w-[140px] truncate">{project.developer}</span>
                 )}
               </div>
-
-              {/* Actions */}
               <div className="flex items-center gap-1">
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
                   <Phone className="h-4 w-4" /> Call

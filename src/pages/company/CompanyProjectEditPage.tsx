@@ -21,13 +21,21 @@ import {
   Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
   Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
   Bold, Italic, Underline, List, Heading, Activity, Video,
-  Plus, Trash2, Pencil, Package
+  Plus, Trash2, Pencil, Package, Tag
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
+
+const advertisingTagOptions = [
+  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
+  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
+  "Lower Price", "Below Market", "Reduced", "Cash Only",
+  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
+  "Fully Renovated", "Motivated Seller", "Open House",
+];
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
@@ -221,6 +229,8 @@ const CompanyProjectEditPage = () => {
     project_status: "new",
     interior_amenities: [] as string[],
     exterior_amenities: [] as string[],
+    advertising_tags: [] as string[],
+    property_classification: "",
     province: "", town: "", neighbourhood: "", pin_location: "",
     location: "", video_link: "", view_360_link: "",
   });
@@ -261,6 +271,8 @@ const CompanyProjectEditPage = () => {
         project_status: data.project_status || "new",
         interior_amenities: (data as any).interior_amenities || [],
         exterior_amenities: (data as any).exterior_amenities || [],
+        advertising_tags: (data as any).advertising_tags || [],
+        property_classification: (data as any).property_classification || "",
         province: (data as any).province || "", town: (data as any).town || "",
         neighbourhood: (data as any).neighbourhood || "", pin_location: (data as any).pin_location || "",
         location: data.location || "",
@@ -431,6 +443,8 @@ const CompanyProjectEditPage = () => {
       project_status: form.project_status,
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
+      advertising_tags: form.advertising_tags,
+      property_classification: form.property_classification || null,
       province: form.province || null, town: form.town || null,
       neighbourhood: form.neighbourhood || null, pin_location: form.pin_location || null,
       location: form.location || null,
@@ -604,7 +618,89 @@ const CompanyProjectEditPage = () => {
           </div>
         </section>
 
-        {/* ─── Location ─── */}
+        {/* ─── Advertising Tags ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<Tag className="h-4 w-4" />} title="Advertising Tags" />
+          <p className="text-xs text-muted-foreground mb-3">Select preset tags or create your own (max 15 characters each)</p>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {advertisingTagOptions.map((tag) => (
+              <button
+                key={tag} type="button"
+                onClick={() => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter((t: string) => t !== tag) : [...form.advertising_tags, tag])}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  form.advertising_tags.includes(tag)
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                }`}
+              >{tag}</button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 max-w-xs">
+              <Input
+                id="proj-custom-tag-input"
+                maxLength={15}
+                placeholder="Type custom tag…"
+                className="bg-secondary/50 pr-16 text-sm"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const input = e.currentTarget;
+                    const val = input.value.trim();
+                    if (val && val.length <= 15 && !form.advertising_tags.includes(val)) {
+                      updateField("advertising_tags", [...form.advertising_tags, val]);
+                      input.value = "";
+                    }
+                  }
+                }}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">max 15</span>
+            </div>
+            <Button
+              type="button" variant="outline" size="sm"
+              onClick={() => {
+                const input = document.getElementById("proj-custom-tag-input") as HTMLInputElement;
+                if (!input) return;
+                const val = input.value.trim();
+                if (val && val.length <= 15 && !form.advertising_tags.includes(val)) {
+                  updateField("advertising_tags", [...form.advertising_tags, val]);
+                  input.value = "";
+                }
+              }}
+            >Add</Button>
+          </div>
+          {form.advertising_tags.filter((t: string) => !advertisingTagOptions.includes(t)).length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="text-xs text-muted-foreground mr-1 self-center">Custom:</span>
+              {form.advertising_tags.filter((t: string) => !advertisingTagOptions.includes(t)).map((tag: string) => (
+                <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
+                  {tag}
+                  <button type="button" onClick={() => updateField("advertising_tags", form.advertising_tags.filter((t: string) => t !== tag))} className="hover:opacity-70"><X className="h-3 w-3" /></button>
+                </span>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* ─── Listing Classification ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<Activity className="h-4 w-4" />} title="Listing Classification" />
+          <div className="max-w-xs">
+            <FormSelect
+              label="Classification"
+              icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
+              value={form.property_classification}
+              onChange={(v) => updateField("property_classification", v)}
+              options={[
+                { value: "standard", label: "Standard" },
+                { value: "featured", label: "Featured" },
+                { value: "premium", label: "Premium" },
+              ]}
+              placeholder="Select classification"
+            />
+          </div>
+        </section>
+
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
           <LocationFormFields

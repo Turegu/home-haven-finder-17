@@ -50,6 +50,8 @@ export interface ProjectResult {
   completion_date: string | null;
   created_at: string;
   pin_location: string | null;
+  advertising_tags: string[] | null;
+  property_classification: string | null;
 }
 
 export function useProjectSearch(params: ProjectSearchParams) {
