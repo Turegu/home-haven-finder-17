@@ -190,19 +190,33 @@ const BuyPage = () => {
   if (moreFilters.exteriorAmenities.length > 0) selectedBadges['Ext. Amenities'] = moreFilters.exteriorAmenities;
   if (moreFilters.interiorAmenities.length > 0) selectedBadges['Int. Amenities'] = moreFilters.interiorAmenities;
 
+  function resetAllFilters() {
+    setLocation({});
+    setKeyword('');
+    setPropertyTypes([]);
+    setMinPrice('');
+    setMaxPrice('');
+    setMinArea('');
+    setMaxArea('');
+    setRooms([]);
+    setBathrooms([]);
+    setRentDuration([]);
+    setMoreFilters(emptyMoreFilters);
+  }
+
   function clearBadge(categoryKey: string, value: string) {
-    if (categoryKey === 'Property Type') setPropertyTypes(propertyTypes.filter(t => t !== value));
+    if (categoryKey === 'Property Type') setPropertyTypes(prev => prev.filter(t => t !== value));
     else if (categoryKey === 'Price') { setMinPrice(''); setMaxPrice(''); }
     else if (categoryKey === 'Area') { setMinArea(''); setMaxArea(''); }
-    else if (categoryKey === 'Rooms') setRooms(rooms.filter(v => v !== value));
-    else if (categoryKey === 'Bathrooms') setBathrooms(bathrooms.filter(v => v !== value));
-    else if (categoryKey === 'Rent Duration') setRentDuration(rentDuration.filter(v => v !== value));
-    else if (categoryKey === 'Floor Level') setMoreFilters({ ...moreFilters, floorLevels: moreFilters.floorLevels.filter(v => v !== value) });
-    else if (categoryKey === 'Parking') setMoreFilters({ ...moreFilters, parkingSpaces: moreFilters.parkingSpaces.filter(v => v !== value) });
-    else if (categoryKey === 'Furniture') setMoreFilters({ ...moreFilters, furniture: moreFilters.furniture.filter(v => v !== value) });
-    else if (categoryKey === 'Property Age') setMoreFilters({ ...moreFilters, propertyAges: moreFilters.propertyAges.filter(v => v !== value) });
-    else if (categoryKey === 'Ext. Amenities') setMoreFilters({ ...moreFilters, exteriorAmenities: moreFilters.exteriorAmenities.filter(v => v !== value) });
-    else if (categoryKey === 'Int. Amenities') setMoreFilters({ ...moreFilters, interiorAmenities: moreFilters.interiorAmenities.filter(v => v !== value) });
+    else if (categoryKey === 'Rooms') setRooms(prev => prev.filter(v => v !== value));
+    else if (categoryKey === 'Bathrooms') setBathrooms(prev => prev.filter(v => v !== value));
+    else if (categoryKey === 'Rent Duration') setRentDuration(prev => prev.filter(v => v !== value));
+    else if (categoryKey === 'Floor Level') setMoreFilters(prev => ({ ...prev, floorLevels: prev.floorLevels.filter(v => v !== value) }));
+    else if (categoryKey === 'Parking') setMoreFilters(prev => ({ ...prev, parkingSpaces: prev.parkingSpaces.filter(v => v !== value) }));
+    else if (categoryKey === 'Furniture') setMoreFilters(prev => ({ ...prev, furniture: prev.furniture.filter(v => v !== value) }));
+    else if (categoryKey === 'Property Age') setMoreFilters(prev => ({ ...prev, propertyAges: prev.propertyAges.filter(v => v !== value) }));
+    else if (categoryKey === 'Ext. Amenities') setMoreFilters(prev => ({ ...prev, exteriorAmenities: prev.exteriorAmenities.filter(v => v !== value) }));
+    else if (categoryKey === 'Int. Amenities') setMoreFilters(prev => ({ ...prev, interiorAmenities: prev.interiorAmenities.filter(v => v !== value) }));
   }
 
   const hasBadges = Object.keys(selectedBadges).length > 0;
@@ -260,21 +274,10 @@ const BuyPage = () => {
             ) : (
               <BathroomsDropdown value={bathrooms} onChange={setBathrooms} />
             )}
-             <PropertyFiltersModal
+            <PropertyFiltersModal
               filters={moreFilters}
               onFiltersChange={setMoreFilters}
-              onClearAll={() => {
-                setLocation({});
-                setKeyword('');
-                setPropertyTypes([]);
-                setMinPrice('');
-                setMaxPrice('');
-                setMinArea('');
-                setMaxArea('');
-                setRooms([]);
-                setBathrooms([]);
-                setRentDuration([]);
-              }}
+              onClearAll={resetAllFilters}
             />
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
               {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
@@ -288,6 +291,10 @@ const BuyPage = () => {
               <SelectedFilterBadges
                 selectedFilters={selectedBadges}
                 onFiltersChange={(updated) => {
+                  if (Object.keys(updated).length === 0) {
+                    resetAllFilters();
+                    return;
+                  }
                   Object.keys(selectedBadges).forEach(key => {
                     const oldValues = selectedBadges[key];
                     const newValues = updated[key] || [];

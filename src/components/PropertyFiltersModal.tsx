@@ -74,7 +74,16 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
   }
 
   function clearAll() {
-    setLocal(emptyMoreFilters);
+    const cleared: PropertyMoreFilters = {
+      floorLevels: [],
+      parkingSpaces: [],
+      furniture: [],
+      propertyAges: [],
+      exteriorAmenities: [],
+      interiorAmenities: [],
+    };
+    setLocal(cleared);
+    onFiltersChange(cleared);
     onClearAll?.();
   }
 
