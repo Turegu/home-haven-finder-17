@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
@@ -335,7 +336,15 @@ const BuyPage = () => {
               <option value="area_desc">Area: Largest First</option>
             </select>
             <button
-              onClick={() => setSaveSearchOpen(true)}
+              onClick={() => {
+                const hasLocation = location.province || location.district || location.neighborhood;
+                const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
+                if (!hasFilters) {
+                  toast.error('Please select at least one filter before saving a search.');
+                  return;
+                }
+                setSaveSearchOpen(true);
+              }}
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
