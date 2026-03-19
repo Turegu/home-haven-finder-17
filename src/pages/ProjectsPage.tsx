@@ -29,7 +29,7 @@ import { useProjectSearch, type ProjectSearchParams, type ProjectResult } from '
 const ProjectsPage = () => {
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
-  const projectStatuses = [...(fo["project_statuses"] || []), 'Any'];
+  const projectStatuses = fo["project_statuses"] || [];
   const extAmenityOptions = fo["exterior_amenities"] || [];
   const intAmenityOptions = fo["interior_amenities"] || [];
 
@@ -168,9 +168,9 @@ const ProjectsPage = () => {
                       <label
                         key={s}
                         className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors"
-                        onClick={() => setProjectStatus(s === 'Any' ? '' : s)}
+                        onClick={() => setProjectStatus(prev => prev === s ? '' : s)}
                       >
-                        <Checkbox checked={projectStatus === s || (s === 'Any' && !projectStatus)} onCheckedChange={() => setProjectStatus(s === 'Any' ? '' : s)} />
+                        <Checkbox checked={projectStatus === s} onCheckedChange={() => setProjectStatus(prev => prev === s ? '' : s)} />
                         <span className="text-sm text-foreground">{s}</span>
                       </label>
                     ))}
