@@ -114,7 +114,7 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
 
         {/* Company Logo */}
-        <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm rounded px-1.5 py-1 shadow-md">
+        <div className="absolute bottom-2 right-2">
           <img
             src={property.agentLogo}
             alt={property.agentName}
