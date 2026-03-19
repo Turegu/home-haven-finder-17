@@ -154,6 +154,36 @@ const Header = () => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [openDropdown]);
+  const markNotificationRead = async (notifId: string) => {
+    await supabase.from("user_notifications").update({ is_read: true }).eq("id", notifId);
+    setNotifications(prev => prev.filter(n => n.id !== notifId));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+
+  const markAllRead = async () => {
+    if (!currentUser?.id) return;
+    await supabase.from("user_notifications").update({ is_read: true }).eq("user_id", currentUser.id).eq("is_read", false);
+    setNotifications([]);
+    setUnreadCount(0);
+  };
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+  };
+
+  const getNotifIcon = (type: string) => {
+    if (type === 'announcement') return <MessageSquare className="h-4 w-4 text-primary" />;
+    if (type === 'new_listing') return <Heart className="h-4 w-4 text-primary" />;
+    if (type === 'follow') return <Users2 className="h-4 w-4 text-primary" />;
+    return <Bell className="h-4 w-4 text-primary" />;
+  };
 
   const selectLang = (lang: typeof languages[0]) => { setSelectedLang(lang); localStorage.setItem('selectedLangCode', lang.code); setOpenDropdown(null); };
   const selectCurrency = (currency: typeof currencies[0]) => { setSelectedCurrency(currency); localStorage.setItem('selectedCurrencyCode', currency.code); setOpenDropdown(null); };
