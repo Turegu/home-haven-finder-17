@@ -46,6 +46,8 @@ const ProjectsPage = () => {
   const [projectStatus, setProjectStatus] = useState('');
   const [exteriorAmenities, setExteriorAmenities] = useState<string[]>([]);
   const [interiorAmenities, setInteriorAmenities] = useState<string[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [amenitySearch, setAmenitySearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const [committedParams, setCommittedParams] = useState<ProjectSearchParams>({
