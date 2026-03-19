@@ -129,9 +129,9 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
                 </button>
                 <button
                   onClick={handleFavorite}
-                  className={`p-1.5 rounded-full transition-colors ${
+                   className={`p-1.5 rounded-full transition-colors ${
                     isFavorited
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-blue-500 text-white'
                       : 'bg-foreground/40 hover:bg-foreground/60 text-white'
                   }`}
                   aria-label="Favorite"
