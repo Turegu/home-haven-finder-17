@@ -443,22 +443,163 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
-              <Heart className="h-5 w-5 text-foreground/70" />
-              {counts.savedProperties > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {counts.savedProperties}
-                </span>
+            {/* Saved Properties Dropdown */}
+            <div className="relative" ref={savedRef}>
+              <button
+                onClick={() => {
+                  if (!currentUser) { navigate('/login'); return; }
+                  setOpenDropdown(openDropdown === 'saved' ? null : 'saved');
+                }}
+                className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+                aria-label="Saved Properties"
+              >
+                <Heart className="h-5 w-5 text-foreground/70" />
+                {counts.savedProperties > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-0.5">
+                    {counts.savedProperties > 9 ? '9+' : counts.savedProperties}
+                  </span>
+                )}
+              </button>
+              {openDropdown === 'saved' && (
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Saved Properties</h3>
+                    <span className="text-xs text-muted-foreground">{counts.savedProperties} saved</span>
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {savedItems.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Heart className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No saved properties</p>
+                      </div>
+                    ) : (
+                      savedItems.map(item => (
+                        <div
+                          key={item.id}
+                          className="px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 cursor-pointer group"
+                        >
+                          <div className="flex gap-3">
+                            <img
+                              src={item.images?.[0] || "/placeholder.svg"}
+                              alt=""
+                              className="h-12 w-16 rounded object-cover shrink-0"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            />
+                            <div
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            >
+                              <p className="text-sm font-medium text-foreground leading-tight truncate">{item.title}</p>
+                              {item.location && (
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1">
+                                  <MapPin className="h-3 w-3 shrink-0" />{item.location}
+                                </p>
+                              )}
+                              <p className="text-xs font-semibold text-primary mt-0.5">{item.currency || '$'} {item.price?.toLocaleString() || 'N/A'}</p>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeSavedProperty(item.id); }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded shrink-0 self-center"
+                              title="Remove"
+                            >
+                              <X className="h-3.5 w-3.5 text-destructive" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t border-border">
+                    <Link
+                      to="/account/saved-properties"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
+                    >
+                      View All Saved Properties
+                    </Link>
+                  </div>
+                </div>
               )}
-            </button>
-            <button onClick={() => navigate(currentUser ? '/account/compare' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
-              <Layers className="h-5 w-5 text-foreground/70" />
-              {counts.compare > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {counts.compare}
-                </span>
+            </div>
+
+            {/* Compare List Dropdown */}
+            <div className="relative" ref={compareRef}>
+              <button
+                onClick={() => {
+                  if (!currentUser) { navigate('/login'); return; }
+                  setOpenDropdown(openDropdown === 'compare' ? null : 'compare');
+                }}
+                className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+                aria-label="Compare"
+              >
+                <Layers className="h-5 w-5 text-foreground/70" />
+                {counts.compare > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-0.5">
+                    {counts.compare > 9 ? '9+' : counts.compare}
+                  </span>
+                )}
+              </button>
+              {openDropdown === 'compare' && (
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Compare List</h3>
+                    <span className="text-xs text-muted-foreground">{counts.compare}/3</span>
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {compareItems.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Layers className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No properties to compare</p>
+                      </div>
+                    ) : (
+                      compareItems.map(item => (
+                        <div
+                          key={item.id}
+                          className="px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 cursor-pointer group"
+                        >
+                          <div className="flex gap-3">
+                            <img
+                              src={item.images?.[0] || "/placeholder.svg"}
+                              alt=""
+                              className="h-12 w-16 rounded object-cover shrink-0"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            />
+                            <div
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => { setOpenDropdown(null); navigate(`/property/${item.property_id}`); }}
+                            >
+                              <p className="text-sm font-medium text-foreground leading-tight truncate">{item.title}</p>
+                              {item.location && (
+                                <p className="text-xs text-muted-foreground mt-0.5 truncate flex items-center gap-1">
+                                  <MapPin className="h-3 w-3 shrink-0" />{item.location}
+                                </p>
+                              )}
+                              <p className="text-xs font-semibold text-primary mt-0.5">{item.currency || '$'} {item.price?.toLocaleString() || 'N/A'}</p>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeCompareItem(item.id); }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded shrink-0 self-center"
+                              title="Remove"
+                            >
+                              <X className="h-3.5 w-3.5 text-destructive" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t border-border">
+                    <Link
+                      to="/account/compare"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
+                    >
+                      View Compare List
+                    </Link>
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
 
             {/* User Menu / Login */}
             {currentUser ? (
