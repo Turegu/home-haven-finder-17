@@ -19,7 +19,6 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [compareCount] = useState(0);
 
   const { data: languages = [] } = useLanguages();
   const { data: currencies = [] } = useCurrencies();
@@ -30,7 +29,10 @@ const Header = () => {
   const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | null>(null);
 
   // Auth state
-  const [currentUser, setCurrentUser] = useState<{ email: string; displayName: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ id: string; email: string; displayName: string } | null>(null);
+
+  // Counts
+  const [counts, setCounts] = useState({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
 
   const langRef = useRef<HTMLDivElement>(null);
   const currRef = useRef<HTMLDivElement>(null);
@@ -49,11 +51,13 @@ const Header = () => {
           .limit(1)
           .maybeSingle();
         setCurrentUser({
+          id: user.id,
           email: user.email || "",
           displayName: profile?.display_name || profile?.first_name || user.email?.split("@")[0] || "User",
         });
       } else {
         setCurrentUser(null);
+        setCounts({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
       }
     };
     checkUser();
@@ -62,6 +66,27 @@ const Header = () => {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch counts when user changes
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    const uid = currentUser.id;
+    const fetchCounts = async () => {
+      const [sp, ss, cmp, fa] = await Promise.all([
+        supabase.from("saved_properties").select("*", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("saved_searches").select("*", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("property_comparisons").select("*", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("agent_followers").select("*", { count: "exact", head: true }).eq("user_id", uid),
+      ]);
+      setCounts({
+        savedProperties: sp.count ?? 0,
+        savedSearches: ss.count ?? 0,
+        compare: cmp.count ?? 0,
+        followedAgents: fa.count ?? 0,
+      });
+    };
+    fetchCounts();
+  }, [currentUser?.id]);
 
   // Set defaults once data loads
   useEffect(() => {
@@ -123,6 +148,13 @@ const Header = () => {
     { label: 'Property Request', to: '/property-request' },
     { label: 'Agents', to: '/agents' },
   ];
+
+  const countMap: Record<string, number> = {
+    '/account/followed-agents': counts.followedAgents,
+    '/account/saved-properties': counts.savedProperties,
+    '/account/saved-searches': counts.savedSearches,
+    '/account/compare': counts.compare,
+  };
 
   const userMenuLinks = [
     { label: 'Account Settings', to: '/account', icon: Settings },
@@ -227,12 +259,17 @@ const Header = () => {
             </button>
             <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
               <Heart className="h-5 w-5 text-foreground/70" />
+              {counts.savedProperties > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                  {counts.savedProperties}
+                </span>
+              )}
             </button>
             <button onClick={() => navigate(currentUser ? '/account/compare' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Compare">
               <Layers className="h-5 w-5 text-foreground/70" />
-              {compareCount > 0 && (
+              {counts.compare > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {compareCount}
+                  {counts.compare}
                 </span>
               )}
             </button>
@@ -254,17 +291,25 @@ const Header = () => {
                       <p className="text-sm font-medium text-foreground truncate">{currentUser.displayName}</p>
                       <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>
                     </div>
-                    {userMenuLinks.map(link => (
-                      <Link
-                        key={link.to}
-                        to={link.to}
-                        onClick={() => setOpenDropdown(null)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
-                      >
-                        <link.icon className="h-4 w-4 text-muted-foreground" />
-                        {link.label}
-                      </Link>
-                    ))}
+                    {userMenuLinks.map(link => {
+                      const count = countMap[link.to];
+                      return (
+                        <Link
+                          key={link.to}
+                          to={link.to}
+                          onClick={() => setOpenDropdown(null)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
+                        >
+                          <link.icon className="h-4 w-4 text-muted-foreground" />
+                          <span className="flex-1">{link.label}</span>
+                          {count != null && count > 0 && (
+                            <span className="bg-primary/10 text-primary text-[10px] font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1">
+                              {count}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
                     <div className="border-t border-border mt-1">
                       <button
                         onClick={handleLogout}
