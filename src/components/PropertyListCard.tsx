@@ -35,15 +35,19 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
   const handleCompare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const prev = isCompared;
+    setIsCompared(!prev);
     const result = await toggleCompareProperty(property.id);
-    if (result !== null) setIsCompared(result);
+    if (result === null) setIsCompared(prev);
   };
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    const prev = isFavorited;
+    setIsFavorited(!prev);
     const result = await toggleSaveProperty(property.id);
-    if (result !== null) setIsFavorited(result);
+    if (result === null) setIsFavorited(prev);
   };
 
   const tierBadge = () => {
