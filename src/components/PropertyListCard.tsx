@@ -297,19 +297,19 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="h-9 w-9 rounded-md bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
+                className="h-9 w-9 rounded-full border-2 border-primary flex items-center justify-center hover:bg-primary hover:text-primary-foreground text-primary transition-colors"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <Phone className="h-4 w-4 text-primary-foreground" fill="currentColor" />
+                <Phone className="h-4 w-4" strokeWidth={2.5} />
               </button>
               <button
-                className="h-9 w-9 rounded-md bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
+                className="h-9 w-9 rounded-full bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEmailDialogOpen(true); }}
               >
-                <Mail className="h-4 w-4 text-primary-foreground" fill="currentColor" />
+                <Mail className="h-4 w-4 text-primary-foreground" />
               </button>
               <button
-                className="h-9 w-9 rounded-md bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
+                className="h-9 w-9 rounded-full bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
                 <MessageCircle className="h-4 w-4 text-primary-foreground" fill="currentColor" />
