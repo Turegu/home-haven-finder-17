@@ -238,7 +238,7 @@ const Index = () => {
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   return (
-    <div className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden`}>
+    <div className={`relative w-full ${isMain ? "aspect-video" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-xl`}>
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${hero?.image_url || defaultBg})` }} />
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
       <div className="relative z-10 text-center px-4 pb-10 pt-20">
