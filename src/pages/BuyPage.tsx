@@ -245,7 +245,6 @@ const BuyPage = () => {
       agentLogo: (p as any).companies?.logo_url ?? '',
       agentName: (p as any).agents?.name ?? '',
       companyName: (p as any).companies?.name ?? '',
-      companyName: (p as any).companies?.name ?? '',
       isFeatured: p.display_on_homepage,
       listingTier: tierMap[p.property_classification ?? ''] ?? 'standard' as const,
       listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
