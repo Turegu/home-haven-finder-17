@@ -33,12 +33,28 @@ serve(async (req) => {
     }).join("\n\n");
 
     const systemPrompt = `You are a real estate investment analyst. You will be given details about 2-3 properties.
-Your job is to:
-1. Compare them across key investment metrics (price per m², location value, rental yield potential, resale potential).
-2. Highlight pros and cons of each.
-3. Recommend which property is the best investment and why.
 
-Be concise, use bullet points, and be objective. Format your response in clear sections with markdown headers.`;
+Your job is to provide a comprehensive investment analysis. Structure your response EXACTLY as follows:
+
+## Investment Scores
+Give each property a score out of 10 for these categories. Use this EXACT format for each property:
+SCORES|Property Name|value_score|rental_score|growth_score|overall_score
+
+Example: SCORES|Luxury Villa|7|8|6|7
+
+## Price Analysis
+Compare price per m² and value proposition of each property.
+
+## Rental Yield Potential
+Estimate rental yield potential based on location, type, and market.
+
+## Pros & Cons
+List 2-3 pros and cons for each property using bullet points.
+
+## Investment Recommendation
+Give a clear recommendation with a winner indicated like: WINNER|Property Name
+
+Be concise, data-driven and objective.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
