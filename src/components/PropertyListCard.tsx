@@ -5,7 +5,6 @@ import {
   ChevronLeft, ChevronRight, Camera, MapPin,
   Building, Maximize, BedDouble, Bath, Crown, Star, Tag
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
@@ -13,9 +12,10 @@ import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyAc
 
 interface PropertyListCardProps {
   property: Property;
+  onLocationClick?: (propertyId: string) => void;
 }
 
-const PropertyListCard = ({ property }: PropertyListCardProps) => {
+const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
@@ -246,10 +246,17 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
             <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
 
             {/* Location */}
-            <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onLocationClick?.(property.id);
+              }}
+              className="flex items-center gap-1 text-muted-foreground text-sm hover:text-primary transition-colors"
+            >
               <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
               <span className="line-clamp-1">{property.location}</span>
-            </div>
+            </button>
 
             {/* Property specs */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
@@ -286,30 +293,30 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               )}
               <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{property.agentName}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs gap-1"
+            <div className="flex items-center gap-0">
+              <button
+                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <Phone className="h-3.5 w-3.5" /> Call
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs gap-1"
+                <Phone className="h-4 w-4" />
+                Call
+              </button>
+              <div className="w-px h-5 bg-border" />
+              <button
+                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <Mail className="h-3.5 w-3.5" /> Email
-              </Button>
-              <Button
-                size="sm"
-                className="h-8 text-xs gap-1 bg-primary hover:bg-primary/90"
+                <Mail className="h-4 w-4" />
+                Email
+              </button>
+              <div className="w-px h-5 bg-border" />
+              <button
+                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
-              </Button>
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </button>
             </div>
           </div>
         </div>
