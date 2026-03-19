@@ -7,38 +7,104 @@ import BannerDisplay from '@/components/BannerDisplay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LanguageSearchDropdown from '@/components/LanguageSearchDropdown';
-import { mockCompanies, mockAgents } from '@/data/mockAgents';
 import { supabase } from '@/integrations/supabase/client';
+
+interface CompanyRow {
+  id: string;
+  name: string;
+  company_type: string | null;
+  logo_url: string | null;
+  cover_url: string | null;
+  languages: string[] | null;
+  service_areas: string[] | null;
+}
+
+interface AgentRow {
+  id: string;
+  name: string;
+  designation: string | null;
+  avatar_url: string | null;
+  company_id: string;
+  languages: string[] | null;
+  service_areas: string[] | null;
+  companies: { name: string; logo_url: string | null } | null;
+}
 
 const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('companies');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
+  const [companies, setCompanies] = useState<CompanyRow[]>([]);
+  const [agents, setAgents] = useState<AgentRow[]>([]);
+  const [companyCounts, setCompanyCounts] = useState<Record<string, { agents: number; buy: number; rent: number }>>({});
 
   useEffect(() => {
-    const fetchCms = async () => {
-      const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1);
-      if (data?.[0]) {
-        const c = (data[0] as any).content;
+    const fetchData = async () => {
+      // CMS
+      const { data: cms } = await supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1);
+      if (cms?.[0]) {
+        const c = (cms[0] as any).content;
         if (c?.hero?.image_url) setHeroImage(c.hero.image_url);
       }
+
+      // Companies
+      const { data: compData } = await supabase
+        .from("companies")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas")
+        .eq("is_verified", true);
+      setCompanies((compData ?? []) as CompanyRow[]);
+
+      // Agents with company join
+      const { data: agentData } = await supabase
+        .from("agents")
+        .select("id, name, designation, avatar_url, company_id, languages, service_areas, companies(name, logo_url)")
+        .eq("status", "active");
+      setAgents((agentData ?? []) as unknown as AgentRow[]);
+
+      // Counts per company
+      if (compData && compData.length > 0) {
+        const ids = compData.map(c => c.id);
+        const counts: Record<string, { agents: number; buy: number; rent: number }> = {};
+        ids.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
+
+        // Agent counts
+        const { data: agentCounts } = await supabase
+          .from("agents").select("company_id").eq("status", "active").in("company_id", ids);
+        (agentCounts ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
+
+        // Property counts
+        const { data: propCounts } = await supabase
+          .from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", ids);
+        (propCounts ?? []).forEach((p: any) => {
+          if (!counts[p.company_id]) return;
+          if (p.property_purpose === 'rent') counts[p.company_id].rent++;
+          else counts[p.company_id].buy++;
+        });
+
+        setCompanyCounts(counts);
+      }
     };
-    fetchCms();
+    fetchData();
   }, []);
 
-  const filteredCompanies = mockCompanies.filter(c =>
+  const filteredCompanies = companies.filter(c =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const filteredAgents = mockAgents.filter(a =>
+  const filteredAgents = agents.filter(a =>
     a.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const typeLabel = (t: string | null) => {
+    if (!t) return 'Real Estate Company';
+    return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Hero Banner - CMS controlled */}
+      {/* Hero Banner */}
       <div className="relative h-32 md:h-40 overflow-hidden">
         <img src={heroImage} alt="Agents banner" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-foreground/30" />
@@ -111,61 +177,84 @@ const AgentsPage = () => {
 
         {activeTab === 'companies' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCompanies.map((company) => (
-              <Link key={company.id} to={`/company/${company.id}`}
-                className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-28 overflow-hidden">
-                  <img src={company.coverImage} alt={company.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="p-5 relative">
-                  <div className="absolute -top-8 left-5">
-                    <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-lg border-2 border-background object-cover shadow-sm" />
+            {filteredCompanies.map((company) => {
+              const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
+              return (
+                <Link key={company.id} to={`/company/${company.id}`}
+                  className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="h-28 overflow-hidden bg-muted">
+                    {company.cover_url ? (
+                      <img src={company.cover_url} alt={company.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-primary/20 to-primary/5" />
+                    )}
                   </div>
-                  <div className="mt-6">
-                    <h3 className="font-semibold text-foreground">{company.name}</h3>
-                    <p className="text-sm text-muted-foreground">{company.type}</p>
+                  <div className="p-5 relative">
+                    <div className="absolute -top-8 left-5">
+                      {company.logo_url ? (
+                        <img src={company.logo_url} alt={company.name} className="w-16 h-16 rounded-lg border-2 border-background object-cover shadow-sm" />
+                      ) : (
+                        <div className="w-16 h-16 rounded-lg border-2 border-background bg-primary/10 flex items-center justify-center text-primary font-bold text-xl shadow-sm">
+                          {company.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-6">
+                      <h3 className="font-semibold text-foreground">{company.name}</h3>
+                      <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
+                    </div>
+                    <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                      <span><span className="text-primary font-semibold">{counts.agents}</span> Agents</span>
+                      <span><span className="text-primary font-semibold">{counts.buy}</span> For Buy</span>
+                      <span><span className="text-primary font-semibold">{counts.rent}</span> For Rent</span>
+                    </div>
+                    {company.service_areas && company.service_areas.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1">
+                        {company.service_areas.slice(0, 3).map((area) => (
+                          <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{area}</span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span><span className="text-primary font-semibold">{company.agents}</span> Agents</span>
-                    <span><span className="text-primary font-semibold">{company.propertiesForBuy}</span> For Buy</span>
-                    <span><span className="text-primary font-semibold">{company.propertiesForRent}</span> For Rent</span>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {company.serviceAreas.slice(0, 3).map((area) => (
-                      <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{area}</span>
-                    ))}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
+            {filteredCompanies.length === 0 && (
+              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No companies found.</div>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAgents.map((agent) => (
               <Link key={agent.id} to={`/agents/${agent.id}`}
                 className="bg-card rounded-xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow text-center">
-                <img src={agent.photo} alt={agent.name} className="w-20 h-20 rounded-full mx-auto object-cover border-2 border-primary/20" />
+                {agent.avatar_url ? (
+                  <img src={agent.avatar_url} alt={agent.name} className="w-20 h-20 rounded-lg mx-auto object-cover border-2 border-primary/20" />
+                ) : (
+                  <div className="w-20 h-20 rounded-lg mx-auto bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl border-2 border-primary/20">
+                    {agent.name.charAt(0)}
+                  </div>
+                )}
                 <h3 className="font-semibold text-foreground mt-3">{agent.name}</h3>
                 <p className="text-sm text-muted-foreground">{agent.designation}</p>
                 <div className="mt-2 flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                  <User className="h-3 w-3" /><span>{agent.companyName}</span>
+                  <User className="h-3 w-3" /><span>{agent.companies?.name ?? ''}</span>
                 </div>
-                <div className="mt-3 flex items-center justify-center gap-4 text-xs text-muted-foreground">
-                  <span><span className="text-primary font-semibold">{agent.propertiesForBuy}</span> Buy</span>
-                  <span><span className="text-primary font-semibold">{agent.propertiesForRent}</span> Rent</span>
-                  <span><span className="text-primary font-semibold">{agent.projects}</span> Projects</span>
-                </div>
-                <div className="mt-3 flex flex-wrap justify-center gap-1">
-                  {agent.languages.slice(0, 3).map((lang) => (
-                    <span key={lang} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{lang}</span>
-                  ))}
-                </div>
+                {agent.languages && agent.languages.length > 0 && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-1">
+                    {agent.languages.slice(0, 3).map((lang) => (
+                      <span key={lang} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{lang}</span>
+                    ))}
+                  </div>
+                )}
               </Link>
             ))}
+            {filteredAgents.length === 0 && (
+              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No agents found.</div>
+            )}
           </div>
         )}
 
-        {/* Horizontal Banner */}
         <BannerDisplay pageName="agents" bannerType="horizontal" className="mt-8" />
       </div>
 
