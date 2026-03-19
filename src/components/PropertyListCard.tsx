@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {
   property: Property;
