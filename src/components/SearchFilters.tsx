@@ -1,4 +1,5 @@
-import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ChevronUp, X, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
