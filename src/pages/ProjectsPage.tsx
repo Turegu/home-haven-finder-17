@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  MapPin, Building, Maximize, Phone, Mail, MessageCircle, Heart, Layers, SlidersHorizontal, Loader2,
+  MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
   TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
