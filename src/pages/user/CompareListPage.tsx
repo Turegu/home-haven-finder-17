@@ -445,6 +445,18 @@ const CompareListPage = () => {
                   </div>
                 </div>
               )}
+              {/* Winner Banner */}
+              {winner && !aiLoading && (
+                <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 flex items-center gap-3">
+                  <div className="bg-primary rounded-full p-2">
+                    <Trophy className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Best Investment Pick</p>
+                    <p className="text-lg font-bold text-foreground">{winner}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Rendered AI text */}
               {aiResult && (
