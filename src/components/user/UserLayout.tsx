@@ -13,14 +13,14 @@ interface UserLayoutProps {
 }
 
 const sidebarLinks = [
-  { label: "Account Settings", path: "/account", icon: Settings },
-  { label: "Followed Agents", path: "/account/followed-agents", icon: Users2 },
-  { label: "Saved Properties", path: "/account/saved-properties", icon: Heart },
-  { label: "Saved Searches", path: "/account/saved-searches", icon: Search },
-  { label: "Compare List", path: "/account/compare", icon: Layers },
-  { label: "Notifications", path: "/account/notifications", icon: Bell },
-  { label: "Contacted Properties", path: "/account/contacted", icon: MessageSquare },
-  { label: "Property Requests", path: "/account/requests", icon: FileText },
+  { label: "Account Settings", path: "/account", icon: Settings, countKey: null },
+  { label: "Followed Agents", path: "/account/followed-agents", icon: Users2, countKey: "followed" },
+  { label: "Saved Properties", path: "/account/saved-properties", icon: Heart, countKey: "saved" },
+  { label: "Saved Searches", path: "/account/saved-searches", icon: Search, countKey: "searches" },
+  { label: "Compare List", path: "/account/compare", icon: Layers, countKey: "compare" },
+  { label: "Notifications", path: "/account/notifications", icon: Bell, countKey: "notifications" },
+  { label: "Contacted Properties", path: "/account/contacted", icon: MessageSquare, countKey: "contacted" },
+  { label: "Property Requests", path: "/account/requests", icon: FileText, countKey: null },
 ];
 
 const UserLayout = ({ children }: UserLayoutProps) => {
@@ -28,6 +28,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -43,6 +44,25 @@ const UserLayout = ({ children }: UserLayoutProps) => {
         .limit(1)
         .maybeSingle();
       setDisplayName(profile?.display_name || profile?.first_name || user.email || "User");
+
+      // Fetch counts in parallel
+      const [saved, searches, compare, followed, notifications, contacted] = await Promise.all([
+        supabase.from("saved_properties").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("saved_searches").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("property_comparisons").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("agent_followers").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("user_notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false),
+        supabase.from("user_inquiries").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      ]);
+
+      setCounts({
+        saved: saved.count || 0,
+        searches: searches.count || 0,
+        compare: compare.count || 0,
+        followed: followed.count || 0,
+        notifications: notifications.count || 0,
+        contacted: contacted.count || 0,
+      });
     };
     checkAuth();
   }, [navigate]);
@@ -77,6 +97,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {sidebarLinks.map((link) => {
             const isActive = location.pathname === link.path;
+            const count = link.countKey ? counts[link.countKey] || 0 : 0;
             return (
               <Link
                 key={link.path}
@@ -89,7 +110,16 @@ const UserLayout = ({ children }: UserLayoutProps) => {
                 }`}
               >
                 <link.icon className="h-4 w-4 shrink-0" />
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {link.countKey && count > 0 && (
+                  <span className={`text-[10px] font-bold min-w-[20px] h-5 flex items-center justify-center rounded-full px-1.5 ${
+                    isActive
+                      ? "bg-primary-foreground/20 text-primary-foreground"
+                      : "bg-primary/15 text-primary"
+                  }`}>
+                    {count}
+                  </span>
+                )}
               </Link>
             );
           })}
