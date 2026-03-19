@@ -195,16 +195,47 @@ const ProjectsPage = () => {
                     </div>
                     <div>
                       <h4 className="text-sm font-semibold text-foreground mb-2">Amenities</h4>
-                      <div className="space-y-1">
-                        {projectAmenities.map((amenity) => (
-                          <label key={amenity} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
-                            <Checkbox
-                              checked={selectedAmenities.includes(amenity)}
-                              onCheckedChange={() => setSelectedAmenities(prev => prev.includes(amenity) ? prev.filter(a => a !== amenity) : [...prev, amenity])}
-                            />
-                            <span className="text-sm text-foreground">{amenity}</span>
-                          </label>
-                        ))}
+                      <div className="space-y-2">
+                        <AmenitiesViewAllDialog
+                          type="exterior"
+                          options={extAmenityOptions}
+                          selected={exteriorAmenities}
+                          onToggle={(v) => setExteriorAmenities(prev => prev.includes(v) ? prev.filter(a => a !== v) : [...prev, v])}
+                          trigger={
+                            <button type="button" className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+                              exteriorAmenities.length > 0 ? 'border-primary/40 bg-primary/5' : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+                            }`}>
+                              <span className="flex items-center gap-2.5">
+                                <TreePine className={`h-4 w-4 ${exteriorAmenities.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                                <span className={`font-medium ${exteriorAmenities.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>Exterior Amenities</span>
+                                {exteriorAmenities.length > 0 && (
+                                  <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">{exteriorAmenities.length}</Badge>
+                                )}
+                              </span>
+                              <ChevronDown className="h-3.5 w-3.5 text-amber-500" />
+                            </button>
+                          }
+                        />
+                        <AmenitiesViewAllDialog
+                          type="interior"
+                          options={intAmenityOptions}
+                          selected={interiorAmenities}
+                          onToggle={(v) => setInteriorAmenities(prev => prev.includes(v) ? prev.filter(a => a !== v) : [...prev, v])}
+                          trigger={
+                            <button type="button" className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+                              interiorAmenities.length > 0 ? 'border-primary/40 bg-primary/5' : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+                            }`}>
+                              <span className="flex items-center gap-2.5">
+                                <Lamp className={`h-4 w-4 ${interiorAmenities.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                                <span className={`font-medium ${interiorAmenities.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>Interior Amenities</span>
+                                {interiorAmenities.length > 0 && (
+                                  <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">{interiorAmenities.length}</Badge>
+                                )}
+                              </span>
+                              <ChevronDown className="h-3.5 w-3.5 text-amber-500" />
+                            </button>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
