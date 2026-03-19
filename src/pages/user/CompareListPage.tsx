@@ -195,11 +195,7 @@ const CompareListPage = () => {
     { metric: "Overall", ...Object.fromEntries(scores.map(s => [s.name, s.overall])) },
   ] : [];
 
-  // Clean AI text: remove SCORES and WINNER lines for display
-  const cleanedAiText = aiResult
-    .split('\n')
-    .filter(line => !line.startsWith("SCORES|") && !line.startsWith("WINNER|"))
-    .join('\n');
+  // No need to pre-filter - renderMarkdownLine handles SCORES/WINNER lines
 
   const renderMarkdownLine = (line: string, i: number) => {
     // Skip structural data lines
