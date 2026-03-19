@@ -5,7 +5,7 @@ import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import {
   Trash2, MapPin, Sparkles, Loader2, TrendingUp, DollarSign,
-  Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star
+  Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star, Plane
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -177,15 +177,36 @@ const CompareListPage = () => {
     }
   };
 
-  // Build price comparison data
-  const priceData = items.map((item, i) => ({
-    name: (item.property?.title || "Property").substring(0, 15),
-    price: item.property?.price || 0,
-    pricePerSqm: item.property?.price && item.property?.area
-      ? Math.round(item.property.price / item.property.area)
-      : 0,
-    fill: CHART_COLORS[i],
-  }));
+  // Build price & ROI comparison data
+  const LONG_TERM_YIELD = 0.05; // 5% annual yield estimate
+  const AIRBNB_MULTIPLIER = 1.8; // Airbnb typically 1.5-2x long-term rent
+  const OCCUPANCY_RATE = 0.70; // 70% average Airbnb occupancy
+
+  const investmentData = items.map((item, i) => {
+    const p = item.property;
+    const price = p?.price || 0;
+    const area = p?.area || 1;
+    const pricePerSqm = price > 0 && area > 0 ? Math.round(price / area) : 0;
+    const annualRent = price * LONG_TERM_YIELD;
+    const monthlyRent = Math.round(annualRent / 12);
+    const roi = price > 0 ? ((annualRent / price) * 100) : 0;
+    const airbnbNightly = area > 0 ? Math.round((monthlyRent * AIRBNB_MULTIPLIER) / 30) : 0;
+    const airbnbMonthly = Math.round(airbnbNightly * 30 * OCCUPANCY_RATE);
+    const airbnbAnnual = airbnbMonthly * 12;
+    const airbnbROI = price > 0 ? ((airbnbAnnual / price) * 100) : 0;
+    const breakEvenYears = annualRent > 0 ? Math.round(price / annualRent) : 0;
+    const airbnbBreakEven = airbnbAnnual > 0 ? Math.round(price / airbnbAnnual) : 0;
+    const name = (p?.title || "Property").substring(0, 15);
+
+    return {
+      name, price, pricePerSqm, annualRent, monthlyRent, roi,
+      airbnbNightly, airbnbMonthly, airbnbAnnual, airbnbROI,
+      breakEvenYears, airbnbBreakEven,
+      fill: CHART_COLORS[i], currency: p?.currency || "$",
+    };
+  });
+
+  const priceData = investmentData;
 
   // Build radar data from scores
   const radarData = scores.length > 0 ? [
@@ -194,8 +215,6 @@ const CompareListPage = () => {
     { metric: "Growth", ...Object.fromEntries(scores.map(s => [s.name, s.growth])) },
     { metric: "Overall", ...Object.fromEntries(scores.map(s => [s.name, s.overall])) },
   ] : [];
-
-  // No need to pre-filter - renderMarkdownLine handles SCORES/WINNER lines
 
   const renderMarkdownLine = (line: string, i: number) => {
     // Skip structural data lines
@@ -321,42 +340,124 @@ const CompareListPage = () => {
           </div>
         )}
 
-        {/* Price Comparison Charts - always visible if items exist */}
+        {/* Investment Metrics - always visible if items exist */}
         {items.length >= 2 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-card rounded-xl border border-border p-5">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
-                <DollarSign className="h-4 w-4 text-primary" />
-                Price Comparison
-              </h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={priceData} barSize={40}>
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
-                  <Bar dataKey="price" radius={[6, 6, 0, 0]}>
-                    {priceData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+          <div className="space-y-4">
+            {/* ROI Summary Cards per property */}
+            <div className={`grid gap-4 ${items.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
+              {investmentData.map((d, i) => (
+                <div key={d.name} className="bg-card rounded-xl border border-border p-5 space-y-4">
+                  <div className="flex items-center gap-2 border-b border-border pb-3">
+                    <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS[i] }} />
+                    <h3 className="text-sm font-bold text-foreground truncate">{d.name}</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <DollarSign className="h-4 w-4 mx-auto text-primary mb-1" />
+                      <p className="text-xs text-muted-foreground">Price/m²</p>
+                      <p className="text-sm font-bold text-foreground">{d.currency} {d.pricePerSqm.toLocaleString()}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <Home className="h-4 w-4 mx-auto text-primary mb-1" />
+                      <p className="text-xs text-muted-foreground">Monthly Rent</p>
+                      <p className="text-sm font-bold text-foreground">{d.currency} {d.monthlyRent.toLocaleString()}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <TrendingUp className="h-4 w-4 mx-auto text-primary mb-1" />
+                      <p className="text-xs text-muted-foreground">Annual ROI</p>
+                      <p className="text-sm font-bold text-foreground">{d.roi.toFixed(1)}%</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <BarChart3 className="h-4 w-4 mx-auto text-primary mb-1" />
+                      <p className="text-xs text-muted-foreground">Break-even</p>
+                      <p className="text-sm font-bold text-foreground">{d.breakEvenYears} yrs</p>
+                    </div>
+                  </div>
+                  {/* Airbnb section */}
+                  <div className="border-t border-border pt-3">
+                    <p className="text-xs font-semibold text-foreground flex items-center gap-1.5 mb-2">
+                      <Plane className="h-3.5 w-3.5 text-primary" /> Airbnb Potential
+                      <span className="text-[10px] text-muted-foreground font-normal">(70% occupancy est.)</span>
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Nightly</p>
+                        <p className="text-sm font-bold text-foreground">{d.currency} {d.airbnbNightly}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Monthly</p>
+                        <p className="text-sm font-bold text-foreground">{d.currency} {d.airbnbMonthly.toLocaleString()}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">ROI</p>
+                        <p className="text-sm font-bold text-foreground">{d.airbnbROI.toFixed(1)}%</p>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1.5">Break-even: ~{d.airbnbBreakEven} years</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="bg-card rounded-xl border border-border p-5">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
-                <BarChart3 className="h-4 w-4 text-primary" />
-                Price per m²
-              </h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={priceData} barSize={40}>
-                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(value: number) => `$${value.toLocaleString()}/m²`} />
-                  <Bar dataKey="pricePerSqm" radius={[6, 6, 0, 0]}>
-                    {priceData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
+                  <DollarSign className="h-4 w-4 text-primary" />
+                  Price Comparison
+                </h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={priceData} barSize={32}>
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip formatter={(value: number) => `$${value.toLocaleString()}`} />
+                    <Bar dataKey="price" radius={[6, 6, 0, 0]}>
+                      {priceData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
+                  <BarChart3 className="h-4 w-4 text-primary" />
+                  Price per m²
+                </h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={priceData} barSize={32}>
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip formatter={(value: number) => `$${value.toLocaleString()}/m²`} />
+                    <Bar dataKey="pricePerSqm" radius={[6, 6, 0, 0]}>
+                      {priceData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  ROI Comparison
+                </h3>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={investmentData.map(d => ({
+                    name: d.name,
+                    "Long-term": parseFloat(d.roi.toFixed(1)),
+                    "Airbnb": parseFloat(d.airbnbROI.toFixed(1)),
+                  }))} barSize={16}>
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} unit="%" />
+                    <Tooltip formatter={(value: number) => `${value}%`} />
+                    <Bar dataKey="Long-term" fill="hsl(174, 100%, 29%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Airbnb" fill="hsl(43, 54%, 55%)" radius={[4, 4, 0, 0]} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
+
+            <p className="text-[10px] text-muted-foreground italic">* Estimates based on 5% annual yield for long-term rental, 1.8x multiplier for Airbnb with 70% occupancy. Actual returns may vary.</p>
           </div>
         )}
 
