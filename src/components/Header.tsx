@@ -145,7 +145,8 @@ const Header = () => {
         openDropdown === 'lang' && langRef.current && !langRef.current.contains(e.target as Node) ||
         openDropdown === 'currency' && currRef.current && !currRef.current.contains(e.target as Node) ||
         openDropdown === 'area' && areaRef.current && !areaRef.current.contains(e.target as Node) ||
-        openDropdown === 'user' && userRef.current && !userRef.current.contains(e.target as Node)
+        openDropdown === 'user' && userRef.current && !userRef.current.contains(e.target as Node) ||
+        openDropdown === 'notifications' && notifRef.current && !notifRef.current.contains(e.target as Node)
       ) {
         setOpenDropdown(null);
       }
