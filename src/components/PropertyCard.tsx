@@ -114,6 +114,41 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
         </div>
 
         {/* Tier badge + Ad tag — top left */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {property.listingTier === 'premium' && (
+            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md" title="Premium">
+              <Crown className="h-4 w-4 text-white" />
+            </span>
+          )}
+          {property.listingTier === 'featured' && (
+            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+              <Star className="h-4 w-4 text-white" />
+            </span>
+          )}
+          {property.advertisingTags && property.advertisingTags.length > 0 && (
+            <Badge
+              className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
+            >
+              <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        {/* Price + Company Logo Row */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-lg font-bold text-foreground">
+            {formatPrice(property.price)}
+            {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
+          </div>
+          <img
+            src={property.agentLogo}
+            alt={property.agentName}
+            className="h-7 w-auto max-w-[60px] object-contain"
+          />
+        </div>
 
         {/* Title */}
         <h3 className="text-sm font-medium text-foreground/90 mb-2 line-clamp-1">
