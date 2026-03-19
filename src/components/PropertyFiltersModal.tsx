@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-  Search, SlidersHorizontal, ChevronRight, ChevronDown, ChevronUp,
+  Search, SlidersHorizontal, ChevronRight,
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
