@@ -146,6 +146,17 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <Camera className="h-3 w-3" />
                 <span>{currentImage + 1}/{property.images.length}</span>
               </div>
+
+              {/* Advertising tag — lower right of left thumbnail */}
+              {property.advertisingTags && property.advertisingTags.length > 0 && (
+                <div className="absolute bottom-2 right-2 lg:right-auto lg:left-1/2 lg:-translate-x-1/2">
+                  <Badge
+                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}
+                  >
+                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+                  </Badge>
+                </div>
+              )}
             </div>
 
             {/* Right image — equal size */}
@@ -198,13 +209,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               $ {property.price.toLocaleString()}
               {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
             </span>
-            {property.advertisingTags && property.advertisingTags.length > 0 && (
-              <Badge
-                className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
-              >
-                <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
-              </Badge>
-            )}
           </div>
         </div>
 
@@ -255,7 +259,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
           {/* Bottom row: agent avatar + action buttons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            {/* Agent avatar */}
+            {/* Agent avatar + name */}
             <div className="flex items-center gap-2">
               {property.agentAvatar && (
                 <Avatar className="h-8 w-8 border-2 border-border shadow-sm">
@@ -263,6 +267,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                   <AvatarFallback className="text-xs">AG</AvatarFallback>
                 </Avatar>
               )}
+              <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{property.agentName}</span>
             </div>
             <div className="flex items-center gap-2">
               <Button
