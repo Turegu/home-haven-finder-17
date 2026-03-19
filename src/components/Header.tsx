@@ -67,25 +67,34 @@ const Header = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Fetch counts when user changes
+  // Fetch counts when user changes or after property actions
+  const fetchCounts = async (uid: string) => {
+    const [sp, ss, cmp, fa] = await Promise.all([
+      supabase.from("saved_properties").select("*", { count: "exact", head: true }).eq("user_id", uid),
+      supabase.from("saved_searches").select("*", { count: "exact", head: true }).eq("user_id", uid),
+      supabase.from("property_comparisons").select("*", { count: "exact", head: true }).eq("user_id", uid),
+      supabase.from("agent_followers").select("*", { count: "exact", head: true }).eq("user_id", uid),
+    ]);
+    setCounts({
+      savedProperties: sp.count ?? 0,
+      savedSearches: ss.count ?? 0,
+      compare: cmp.count ?? 0,
+      followedAgents: fa.count ?? 0,
+    });
+  };
+
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    fetchCounts(currentUser.id);
+  }, [currentUser?.id]);
+
+  // Listen for property action changes to refresh counts
   useEffect(() => {
     if (!currentUser?.id) return;
     const uid = currentUser.id;
-    const fetchCounts = async () => {
-      const [sp, ss, cmp, fa] = await Promise.all([
-        supabase.from("saved_properties").select("*", { count: "exact", head: true }).eq("user_id", uid),
-        supabase.from("saved_searches").select("*", { count: "exact", head: true }).eq("user_id", uid),
-        supabase.from("property_comparisons").select("*", { count: "exact", head: true }).eq("user_id", uid),
-        supabase.from("agent_followers").select("*", { count: "exact", head: true }).eq("user_id", uid),
-      ]);
-      setCounts({
-        savedProperties: sp.count ?? 0,
-        savedSearches: ss.count ?? 0,
-        compare: cmp.count ?? 0,
-        followedAgents: fa.count ?? 0,
-      });
-    };
-    fetchCounts();
+    const handler = () => fetchCounts(uid);
+    window.addEventListener('property-actions-changed', handler);
+    return () => window.removeEventListener('property-actions-changed', handler);
   }, [currentUser?.id]);
 
   // Set defaults once data loads
