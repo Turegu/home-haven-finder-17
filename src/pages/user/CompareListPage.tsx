@@ -18,6 +18,8 @@ interface CompareProperty {
   property_type: string; area: number | null; area_unit: string | null;
   images: string[] | null; location: string | null; rooms: string | null;
   bedrooms: number | null; bathrooms: number | null; parking_spaces: number | null;
+  province: string | null; town: string | null; neighbourhood: string | null;
+  property_purpose: string;
 }
 
 interface CompareItem {
