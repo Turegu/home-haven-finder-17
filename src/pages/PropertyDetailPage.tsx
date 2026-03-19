@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
   PersonStanding, Clock, CalendarDays, X,
-  Hash, DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
+  DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -18,6 +18,7 @@ import ROICalculator from '@/components/ROICalculator';
 import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import { mockProperties } from '@/data/mockProperties';
+import { supabase } from '@/integrations/supabase/client';
 
 const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
@@ -32,9 +33,62 @@ const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; l
 );
 
 const PropertyDetailPage = () => {
-  const { id: _id } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const property = mockPropertyDetail;
+  const [property, setProperty] = useState(mockPropertyDetail);
+  const [realAgentId, setRealAgentId] = useState<string | null>(null);
+  const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProperty = async () => {
+      const { data } = await supabase
+        .from("properties")
+        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type)), companies(id, name, logo_url, company_type)")
+        .eq("id", id)
+        .maybeSingle();
+      if (data) {
+        const p = data as any;
+        setProperty({
+          ...mockPropertyDetail,
+          id: p.id,
+          title: p.title || mockPropertyDetail.title,
+          price: p.price || mockPropertyDetail.price,
+          currency: p.currency || 'USD',
+          location: p.location || mockPropertyDetail.location,
+          city: p.province || mockPropertyDetail.city,
+          type: p.property_type || mockPropertyDetail.type,
+          area: p.area || mockPropertyDetail.area,
+          areaUnit: p.area_unit || 'm²',
+          bedrooms: p.bedrooms ?? mockPropertyDetail.bedrooms,
+          bathrooms: p.bathrooms ?? mockPropertyDetail.bathrooms,
+          parkingSpaces: p.parking_spaces ?? 0,
+          floorLevel: p.floor_level || '—',
+          propertyAge: p.property_age || '—',
+          titleDeed: p.title_deed || '—',
+          propertyStatus: p.property_status || 'New',
+          furniture: p.furniture || '—',
+          orientation: p.property_orientation ? [p.property_orientation] : [],
+          listingId: p.listing_id || '',
+          listingDate: p.created_at?.slice(0, 10) || '',
+          listingType: (p.property_purpose || 'buy') as 'buy',
+          images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
+          description: p.description || mockPropertyDetail.description,
+          interiorAmenities: p.interior_amenities || [],
+          exteriorAmenities: p.exterior_amenities || [],
+          agentName: p.agents?.name || p.companies?.name || mockPropertyDetail.agentName,
+          agentLogo: p.agents?.avatar_url || mockPropertyDetail.agentLogo,
+          agentDesignation: p.agents?.designation || null,
+          agentLanguages: p.agents?.languages || [],
+          agentCompany: p.companies?.name || p.agents?.companies?.name || '',
+          companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
+        });
+        setRealAgentId(p.agents?.id || null);
+        setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+      }
+    };
+    fetchProperty();
+  }, [id]);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
@@ -387,7 +441,7 @@ const PropertyDetailPage = () => {
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
               {/* Agent info — links to agent profile */}
-              <Link to={`/agent/${property.id}`} className="block text-center mb-4 group">
+              <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
                 <img
                   src={property.agentLogo}
                   alt={property.agentName}
@@ -413,7 +467,7 @@ const PropertyDetailPage = () => {
 
               {/* Company logo — links to company profile */}
               {property.companyLogo && (
-                <Link to={`/company/${property.id}`} className="flex items-center gap-4 py-4 border-t border-border group">
+                <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex items-center gap-4 py-4 border-t border-border group">
                   <img
                     src={property.companyLogo}
                     alt={property.agentCompany}
