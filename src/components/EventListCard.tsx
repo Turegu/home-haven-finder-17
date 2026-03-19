@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, Camera, MapPin,
-  CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Tag
+  CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { EventResult } from '@/hooks/useEventSearch';
@@ -27,7 +27,6 @@ const entryLabel = (entry: string) => {
 const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const images = event.images && event.images.length > 0 ? event.images : ['/placeholder.svg'];
-  const secondaryImages = images.length > 1 ? images.filter((_, i) => i !== currentImage).slice(0, 1) : [];
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -47,65 +46,49 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
   return (
     <Link to={`/events/${event.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        {/* Dual thumbnail area */}
-        <div className="relative w-full md:w-[320px] lg:w-[440px] xl:w-[500px] shrink-0">
-          <div className="flex h-[190px]">
-            {/* Left image */}
-            <div className="relative flex-1 overflow-hidden">
-              <img
-                src={images[currentImage]}
-                alt={event.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {images.length > 1 && (
+        {/* Single thumbnail area */}
+        <div className="relative w-full md:w-[320px] lg:w-[380px] shrink-0">
+          <div className="relative h-[190px] overflow-hidden">
+            <img
+              src={images[currentImage]}
+              alt={event.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            {images.length > 1 && (
+              <>
                 <button
                   onClick={prevImage}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
-              )}
-              {images.length > 1 && (
-                <button
-                  onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              )}
-              <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
-                <Camera className="h-3 w-3" />
-                <span>{currentImage + 1}/{images.length}</span>
-              </div>
-              {/* Event type badge top-left */}
-              <div className="absolute top-2 left-2">
-                <Badge className="bg-primary hover:bg-primary text-primary-foreground border-0 text-[10px] uppercase font-bold gap-1">
-                  <Tag className="h-3 w-3" /> {event.event_type.replace(/_/g, ' ')}
-                </Badge>
-              </div>
-            </div>
-
-            {/* Right image */}
-            <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
-              <img
-                src={secondaryImages[0] || images[currentImage]}
-                alt={`${event.title} 2`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {images.length > 1 && (
                 <button
                   onClick={nextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
+              </>
+            )}
+            <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+              <Camera className="h-3 w-3" />
+              <span>{currentImage + 1}/{images.length}</span>
+            </div>
+
+            {/* Featured / Premium icon — top-left */}
+            <div className="absolute top-2 left-2 flex flex-col gap-1">
+              {event.display_on_homepage && (
+                <Badge className="bg-amber-500 hover:bg-amber-500 text-white border-0 text-[10px] uppercase font-bold gap-1">
+                  <Star className="h-3 w-3" /> Featured
+                </Badge>
               )}
-              {/* Company branding top-right */}
-              {companyLogo && (
-                <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-background/80 backdrop-blur-sm rounded-md px-2 py-1">
-                  <img src={companyLogo} alt={companyName} className="h-6 w-auto max-w-[50px] object-contain" />
-                </div>
-              )}
+            </div>
+
+            {/* Event type tag — top-right */}
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-primary hover:bg-primary text-primary-foreground border-0 text-[10px] uppercase font-bold">
+                {event.event_type.replace(/_/g, ' ')}
+              </Badge>
             </div>
           </div>
 
@@ -124,7 +107,7 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
         <div className="flex-1 p-4 flex flex-col justify-between relative">
           {/* Company logo + name — upper right */}
           {companyLogo && (
-            <div className="absolute top-3 right-3 flex flex-col items-center gap-1 hidden md:flex">
+            <div className="absolute top-3 right-3 flex-col items-center gap-1 hidden md:flex">
               <img src={companyLogo} alt={companyName} className="h-10 w-auto max-w-[80px] rounded object-contain" />
               <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{companyName}</span>
             </div>
