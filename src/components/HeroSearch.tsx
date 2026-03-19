@@ -120,6 +120,7 @@ const HeroSearch = () => {
                 setRooms([]);
                 setBathrooms([]);
                 setRentDuration([]);
+                setMoreFilters(emptyMoreFilters);
               }}
             />
           </div>
