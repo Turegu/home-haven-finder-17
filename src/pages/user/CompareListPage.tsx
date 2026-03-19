@@ -558,6 +558,19 @@ const CompareListPage = () => {
                 AI Investment Analysis
               </h2>
 
+              {/* Winner Banner at the top */}
+              {winner && !aiLoading && (
+                <div className="bg-primary/10 border-2 border-primary/40 rounded-xl p-5 flex items-center gap-4 mb-6">
+                  <div className="bg-primary rounded-full p-3">
+                    <Trophy className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">🏆 Best Investment Pick</p>
+                    <p className="text-xl font-bold text-foreground">{winner}</p>
+                  </div>
+                </div>
+              )}
+
               {aiLoading && !aiResult && (
                 <div className="flex items-center gap-3 text-muted-foreground text-sm py-8 justify-center">
                   <Loader2 className="h-5 w-5 animate-spin text-primary" />
@@ -568,7 +581,6 @@ const CompareListPage = () => {
               {/* Score Cards & Radar Chart */}
               {scores.length > 0 && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                  {/* Score Cards */}
                   <div className="space-y-3">
                     {scores.map((s, i) => (
                       <div
@@ -610,7 +622,6 @@ const CompareListPage = () => {
                     ))}
                   </div>
 
-                  {/* Radar Chart */}
                   <div className="bg-card rounded-lg border border-border p-4 flex items-center justify-center">
                     <ResponsiveContainer width="100%" height={280}>
                       <RadarChart data={radarData}>
@@ -634,23 +645,11 @@ const CompareListPage = () => {
                   </div>
                 </div>
               )}
+
               {/* Rendered AI text - full analysis with pros/cons/verdict */}
               {aiResult && (
                 <div className="bg-card rounded-lg border border-border p-5 mt-4">
                   {aiResult.split('\n').map(renderMarkdownLine)}
-                </div>
-              )}
-
-              {/* Winner Banner at the bottom for emphasis */}
-              {winner && !aiLoading && (
-                <div className="bg-primary/10 border-2 border-primary/40 rounded-xl p-5 flex items-center gap-4 mt-4">
-                  <div className="bg-primary rounded-full p-3">
-                    <Trophy className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">🏆 Best Investment Pick</p>
-                    <p className="text-xl font-bold text-foreground">{winner}</p>
-                  </div>
                 </div>
               )}
             </div>
