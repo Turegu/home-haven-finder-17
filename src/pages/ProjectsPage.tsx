@@ -175,6 +175,25 @@ const ProjectsPage = () => {
                 </ScrollArea>
               </PopoverContent>
             </Popover>
+            {/* Filter (More) button */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Filter
+                  {moreFilterCount > 0 && (
+                    <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
+                      {moreFilterCount}
+                    </Badge>
+                  )}
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[480px] max-h-[85vh] flex flex-col p-0">
+                <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
+                  <DialogTitle>Filter</DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="flex-1 px-6 py-4">
+                  <div className="space-y-6">
                     <div>
                       <h4 className="text-sm font-semibold text-foreground mb-2">Amenities</h4>
                       <div className="space-y-2">
