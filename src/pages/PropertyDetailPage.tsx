@@ -36,13 +36,15 @@ const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [property, setProperty] = useState(mockPropertyDetail);
-  const [agentData, setAgentData] = useState<{
+  const [_agentData, setAgentData] = useState<{
     id: string; name: string; designation: string | null; avatar_url: string | null;
     languages: string[] | null; companies: { id: string; name: string; logo_url: string | null; company_type: string | null } | null;
   } | null>(null);
-  const [companyData, setCompanyData] = useState<{
+  const [_companyData, setCompanyData] = useState<{
     id: string; name: string; logo_url: string | null; company_type: string | null;
   } | null>(null);
+  const [agentId, setAgentId] = useState<string | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
