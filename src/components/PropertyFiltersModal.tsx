@@ -40,6 +40,7 @@ export const emptyMoreFilters: PropertyMoreFilters = {
 interface PropertyFiltersModalProps {
   filters: PropertyMoreFilters;
   onFiltersChange: (filters: PropertyMoreFilters) => void;
+  onClearAll?: () => void;
 }
 
 export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
