@@ -34,6 +34,7 @@ const AdminSettingsPage = () => {
         setSalesPhone(map.sales_phone || "");
         setSalesWhatsapp(map.sales_whatsapp || "");
         setSalesEmail(map.sales_email || "");
+        setSalesAddress(map.sales_address || "");
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
