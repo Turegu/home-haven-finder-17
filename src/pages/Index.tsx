@@ -107,7 +107,7 @@ const Index = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockProperties.filter(p => p.isFeatured).map((property) => (
+          {featuredProperties.map((property) => (
             <Link key={property.id} to={`/property/${property.id}`}>
               <PropertyCard property={property} />
             </Link>
