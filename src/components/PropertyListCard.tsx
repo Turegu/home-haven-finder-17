@@ -247,10 +247,17 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
             <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
 
             {/* Location */}
-            <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onLocationClick?.(property.id);
+              }}
+              className="flex items-center gap-1 text-muted-foreground text-sm hover:text-primary transition-colors"
+            >
               <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
               <span className="line-clamp-1">{property.location}</span>
-            </div>
+            </button>
 
             {/* Property specs */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
