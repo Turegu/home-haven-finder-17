@@ -13,6 +13,7 @@ export interface Property {
   images: string[];
   agentLogo: string;
   agentName: string;
+  companyName: string;
   agentAvatar?: string;
   isFeatured: boolean;
   listingTier: 'premium' | 'featured' | 'standard';
@@ -58,7 +59,8 @@ export const mockProperties: Property[] = [
       'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=400&fit=crop',
     ],
     agentLogo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
-    agentName: 'Prime Properties',
+    agentName: 'John Smith',
+    companyName: 'Prime Properties',
     agentAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'premium',
@@ -82,7 +84,8 @@ export const mockProperties: Property[] = [
       'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop',
     ],
     agentLogo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
-    agentName: 'Istanbul Estates',
+    agentName: 'Mehmet Yilmaz',
+    companyName: 'Istanbul Estates',
     agentAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'featured',
@@ -106,7 +109,8 @@ export const mockProperties: Property[] = [
       'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&h=400&fit=crop',
     ],
     agentLogo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop',
-    agentName: 'Gulf Realty',
+    agentName: 'Sara Al-Hassan',
+    companyName: 'Gulf Realty',
     agentAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'premium',
@@ -130,7 +134,8 @@ export const mockProperties: Property[] = [
       'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop',
     ],
     agentLogo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=80&h=80&fit=crop',
-    agentName: 'Rental Hub',
+    agentName: 'Ali Mansour',
+    companyName: 'Rental Hub',
     agentAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop',
     isFeatured: false,
     listingTier: 'standard',
@@ -153,7 +158,8 @@ export const mockProperties: Property[] = [
       'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&h=400&fit=crop',
     ],
     agentLogo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
-    agentName: 'Ankara Properties',
+    agentName: 'Emre Kaya',
+    companyName: 'Ankara Properties',
     agentAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&h=80&fit=crop',
     isFeatured: true,
     listingTier: 'featured',
@@ -177,7 +183,8 @@ export const mockProperties: Property[] = [
       'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&h=400&fit=crop',
     ],
     agentLogo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop',
-    agentName: 'Sharjah Homes',
+    agentName: 'Fatima Al-Qasimi',
+    companyName: 'Sharjah Homes',
     agentAvatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=80&h=80&fit=crop',
     isFeatured: false,
     listingTier: 'standard',

@@ -151,9 +151,9 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <span>{currentImage + 1}/{property.images.length}</span>
               </div>
 
-              {/* Advertising tag — lower right of left thumbnail */}
+              {/* Advertising tag — lower right of left thumbnail (mobile only) */}
               {property.advertisingTags && property.advertisingTags.length > 0 && (
-                <div className="absolute bottom-2 right-2 lg:right-auto lg:left-1/2 lg:-translate-x-1/2">
+                <div className="absolute bottom-2 right-2 lg:hidden">
                   <Badge
                     className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}
                   >
@@ -161,14 +161,16 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                   </Badge>
                 </div>
               )}
+
             </div>
+
 
             {/* Right image — equal size */}
             <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
               <img
                 src={secondaryImages[0] || property.images[currentImage]}
                 alt={`${property.title} 2`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
               {/* Right arrow on right thumbnail */}
@@ -204,6 +206,17 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               </div>
 
+              {/* Advertising tag — lower left of right thumbnail */}
+              {property.advertisingTags && property.advertisingTags.length > 0 && (
+                <div className="absolute bottom-2 left-2">
+                  <Badge
+                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}
+                  >
+                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+                  </Badge>
+                </div>
+              )}
+
             </div>
           </div>
 
@@ -222,10 +235,10 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
           <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
             <img
               src={property.agentLogo}
-              alt={property.agentName}
+              alt={property.companyName}
               className="h-10 w-16 rounded object-cover border border-border shadow-sm"
             />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.companyName}</span>
           </div>
 
           <div className="pr-24">
