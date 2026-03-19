@@ -4,8 +4,10 @@ import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
-import { mockProperties, mockProjects } from '@/data/mockProperties';
+import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CmsContent {
   hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
