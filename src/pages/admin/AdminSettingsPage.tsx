@@ -16,6 +16,7 @@ const AdminSettingsPage = () => {
   const [salesPhone, setSalesPhone] = useState("");
   const [salesWhatsapp, setSalesWhatsapp] = useState("");
   const [salesEmail, setSalesEmail] = useState("");
+  const [salesAddress, setSalesAddress] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
