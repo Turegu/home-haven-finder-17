@@ -208,13 +208,6 @@ const CompareListPage = () => {
 
   const priceData = investmentData;
 
-  // ROI comparison chart data
-  const roiChartData = investmentData.map(d => ({
-    name: d.name,
-    "Long-term ROI %": parseFloat(d.roi.toFixed(1)),
-    "Airbnb ROI %": parseFloat(d.airbnbROI.toFixed(1)),
-  }));
-
   // Build radar data from scores
   const radarData = scores.length > 0 ? [
     { metric: "Value", ...Object.fromEntries(scores.map(s => [s.name, s.value])) },
