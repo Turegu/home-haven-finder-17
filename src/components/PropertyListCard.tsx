@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
+import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
 
 interface PropertyListCardProps {
   property: Property;
@@ -17,6 +18,7 @@ interface PropertyListCardProps {
 const PropertyListCard = ({ property }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [isCompared, setIsCompared] = useState(false);
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -28,6 +30,20 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
     e.preventDefault();
     e.stopPropagation();
     setCurrentImage((prev) => (prev - 1 + property.images.length) % property.images.length);
+  };
+
+  const handleCompare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const result = await toggleCompareProperty(property.id);
+    if (result !== null) setIsCompared(result);
+  };
+
+  const handleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const result = await toggleSaveProperty(property.id);
+    if (result !== null) setIsFavorited(result);
   };
 
   const tierBadge = () => {
@@ -60,10 +76,34 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
     ? property.images.filter((_, i) => i !== currentImage).slice(0, 2)
     : [];
 
+  const compareButton = (
+    <button
+      onClick={handleCompare}
+      className={`p-1.5 rounded-full transition-colors ${isCompared ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
+      aria-label="Compare"
+    >
+      <Layers className="h-3.5 w-3.5" />
+    </button>
+  );
+
+  const favoriteButton = (
+    <button
+      onClick={handleFavorite}
+      className={`p-1.5 rounded-full transition-colors ${
+        isFavorited
+          ? 'bg-primary text-primary-foreground'
+          : 'bg-foreground/40 hover:bg-foreground/60 text-white'
+      }`}
+      aria-label="Favorite"
+    >
+      <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
+    </button>
+  );
+
   return (
     <Link to={`/property/${property.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        {/* Dual thumbnail area — two equal-size landscape images side by side */}
+        {/* Dual thumbnail area */}
         <div className="relative w-full md:w-[320px] lg:w-[440px] xl:w-[500px] shrink-0">
           <div className="flex h-[190px]">
             {/* Left image */}
@@ -74,7 +114,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
-              {/* Left arrow on left thumbnail */}
               {property.images.length > 1 && (
                 <button
                   onClick={prevImage}
@@ -85,7 +124,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               )}
 
-              {/* Right arrow — only when single thumbnail (below lg) */}
               {property.images.length > 1 && (
                 <button
                   onClick={nextImage}
@@ -98,41 +136,23 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
               {/* Save & Compare — only when single thumbnail (below lg) */}
               <div className="absolute top-2 right-2 flex items-center gap-1 lg:hidden">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="bg-foreground/40 hover:bg-foreground/60 text-white p-1.5 rounded-full transition-colors"
-                  aria-label="Compare"
-                >
-                  <Layers className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
-                  className={`p-1.5 rounded-full transition-colors ${
-                    isFavorited
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-foreground/40 hover:bg-foreground/60 text-white'
-                  }`}
-                  aria-label="Favorite"
-                >
-                  <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
-                </button>
+                {compareButton}
+                {favoriteButton}
               </div>
 
-              {/* Tier badge — top left corner */}
               {property.listingTier !== 'standard' && (
                 <div className="absolute top-2 left-2">
                   {tierBadge()}
                 </div>
               )}
 
-              {/* Photo count — lower left of left thumbnail */}
               <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
                 <Camera className="h-3 w-3" />
                 <span>{currentImage + 1}/{property.images.length}</span>
               </div>
             </div>
 
-            {/* Right image — equal size */}
+            {/* Right image */}
             <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
               <img
                 src={secondaryImages[0] || property.images[currentImage]}
@@ -140,7 +160,6 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 className="w-full h-full object-cover"
               />
 
-              {/* Right arrow on right thumbnail */}
               {property.images.length > 1 && (
                 <button
                   onClick={nextImage}
@@ -153,124 +172,73 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
               {/* Save & Compare — upper right of right thumbnail */}
               <div className="absolute top-2 right-2 flex items-center gap-1">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  className="bg-foreground/40 hover:bg-foreground/60 text-white p-1.5 rounded-full transition-colors"
-                  aria-label="Compare"
-                >
-                  <Layers className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
-                  className={`p-1.5 rounded-full transition-colors ${
-                    isFavorited
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-foreground/40 hover:bg-foreground/60 text-white'
-                  }`}
-                  aria-label="Favorite"
-                >
-                  <Heart className="h-3.5 w-3.5" fill={isFavorited ? 'currentColor' : 'none'} />
-                </button>
+                {compareButton}
+                {favoriteButton}
               </div>
-
             </div>
           </div>
 
-          {/* Price bar below thumbnails */}
-          <div className="bg-foreground px-3 py-1.5 flex items-center justify-between">
-            <span className="text-base font-bold text-background">
-              $ {property.price.toLocaleString()}
-              {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
-            </span>
-            {property.advertisingTags && property.advertisingTags.length > 0 && (
+          {/* Ad tag bottom left */}
+          {property.advertisingTags && property.advertisingTags.length > 0 && (
+            <div className="absolute bottom-2 left-2 z-10">
               <Badge
                 className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold`}
               >
                 <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
               </Badge>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Content area */}
-        <div className="flex-1 p-4 flex flex-col justify-between relative">
-          {/* Company logo + name — upper right corner */}
-          <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
-            <img
-              src={property.agentLogo}
-              alt={property.agentName}
-              className="h-10 w-16 rounded object-cover border border-border shadow-sm"
-            />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
-          </div>
-
-          <div className="pr-24">
-            {/* Title */}
-            <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
+        <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+          <div>
+            {/* Price + title */}
+            <div className="flex items-start justify-between gap-2 mb-1.5">
+              <div className="min-w-0">
+                <div className="text-lg font-bold text-foreground">
+                  {property.currency} {property.price.toLocaleString()}
+                  {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
+                </div>
+                <h3 className="text-sm font-medium text-foreground/90 line-clamp-1">{property.title}</h3>
+              </div>
+            </div>
 
             {/* Location */}
-            <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
+            <div className="flex items-center gap-1 text-muted-foreground text-xs mb-3">
               <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
               <span className="line-clamp-1">{property.location}</span>
             </div>
 
-            {/* Property specs */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
-              <span className="flex items-center gap-1">
-                <Building className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.type}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <Maximize className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.area} {property.areaUnit}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <Bath className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.bathrooms}</span> Bath
-              </span>
-              {property.bedrooms > 0 && (
-                <span className="flex items-center gap-1">
-                  <BedDouble className="h-3.5 w-3.5" />
-                  <span className="font-medium text-foreground">{property.bedrooms}</span> Bed
-                </span>
-              )}
+            {/* Specs Row */}
+            <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+              <span className="flex items-center gap-1"><Building className="h-3.5 w-3.5" /> {property.type}</span>
+              <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /> {property.area} {property.areaUnit}</span>
+              {property.bedrooms > 0 && <span className="flex items-center gap-1"><BedDouble className="h-3.5 w-3.5" /> {property.bedrooms}</span>}
+              <span className="flex items-center gap-1"><Bath className="h-3.5 w-3.5" /> {property.bathrooms}</span>
             </div>
           </div>
 
-          {/* Bottom row: agent avatar + action buttons */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            {/* Agent avatar */}
-            <div className="flex items-center gap-2">
-              {property.agentAvatar && (
-                <Avatar className="h-8 w-8 border-2 border-border shadow-sm">
-                  <AvatarImage src={property.agentAvatar} alt="Agent" />
-                  <AvatarFallback className="text-xs">AG</AvatarFallback>
-                </Avatar>
-              )}
+          {/* Agent row + CTA */}
+          <div className="flex items-center justify-between pt-3 border-t border-border">
+            <div className="flex items-center gap-2 min-w-0">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={property.agentAvatar || property.agentLogo} />
+                <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                  {property.agentName?.charAt(0) || 'A'}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-xs text-muted-foreground truncate">{property.agentName || 'Agent'}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs gap-1"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              >
-                <Phone className="h-3.5 w-3.5" /> Call
+            <div className="flex items-center gap-1.5">
+              <Button variant="outline" size="sm" className="h-8 px-2.5" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <Phone className="h-3.5 w-3.5" />
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs gap-1"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              >
-                <Mail className="h-3.5 w-3.5" /> Email
+              <Button variant="outline" size="sm" className="h-8 px-2.5" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <Mail className="h-3.5 w-3.5" />
               </Button>
-              <Button
-                size="sm"
-                className="h-8 text-xs gap-1 bg-primary hover:bg-primary/90"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-              >
-                <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+              <Button variant="outline" size="sm" className="h-8 px-2.5" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <MessageCircle className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>
