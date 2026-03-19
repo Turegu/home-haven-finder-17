@@ -220,7 +220,16 @@ function FilterDropdown({
             <button onClick={onClear} className="text-[10px] text-destructive hover:underline">Clear</button>
           )}
         </div>
-        <div className="overflow-y-auto max-h-[280px] p-1 space-y-0.5">
+        <div
+          className="overflow-y-auto max-h-[280px] p-1 space-y-0.5"
+          onWheel={(e) => {
+            const el = e.currentTarget;
+            if (el.scrollHeight <= el.clientHeight) return;
+            e.preventDefault();
+            e.stopPropagation();
+            el.scrollTop += e.deltaY;
+          }}
+        >
           {options.map((opt) => (
             <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
               <Checkbox
