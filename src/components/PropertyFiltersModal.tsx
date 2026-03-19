@@ -143,66 +143,22 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
             selected={local.propertyAges}
             onToggle={(v) => toggleArray('propertyAges', v)}
           />
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {}}
-              className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
-                local.exteriorAmenities.length > 0
-                  ? 'border-primary/40 bg-primary/5'
-                  : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
-              }`}
-              style={{ pointerEvents: 'none' }}
-            >
-              <span className="flex items-center gap-2.5">
-                <TreePine className={`h-4 w-4 ${local.exteriorAmenities.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className={`font-medium ${local.exteriorAmenities.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  Exterior Amenities
-                </span>
-                {local.exteriorAmenities.length > 0 && (
-                  <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
-                    {local.exteriorAmenities.length}
-                  </Badge>
-                )}
-              </span>
-            </button>
-            <AmenitiesViewAllDialog
-              type="exterior"
-              options={fo["exterior_amenities"] || []}
-              selected={local.exteriorAmenities}
-              onToggle={(v) => toggleArray('exteriorAmenities', v)}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {}}
-              className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
-                local.interiorAmenities.length > 0
-                  ? 'border-primary/40 bg-primary/5'
-                  : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
-              }`}
-              style={{ pointerEvents: 'none' }}
-            >
-              <span className="flex items-center gap-2.5">
-                <Lamp className={`h-4 w-4 ${local.interiorAmenities.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
-                <span className={`font-medium ${local.interiorAmenities.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  Interior Amenities
-                </span>
-                {local.interiorAmenities.length > 0 && (
-                  <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
-                    {local.interiorAmenities.length}
-                  </Badge>
-                )}
-              </span>
-            </button>
-            <AmenitiesViewAllDialog
-              type="interior"
-              options={fo["interior_amenities"] || []}
-              selected={local.interiorAmenities}
-              onToggle={(v) => toggleArray('interiorAmenities', v)}
-            />
-          </div>
+          <AmenitiesRowButton
+            label="Exterior Amenities"
+            icon={TreePine}
+            type="exterior"
+            options={fo["exterior_amenities"] || []}
+            selected={local.exteriorAmenities}
+            onToggle={(v) => toggleArray('exteriorAmenities', v)}
+          />
+          <AmenitiesRowButton
+            label="Interior Amenities"
+            icon={Lamp}
+            type="interior"
+            options={fo["interior_amenities"] || []}
+            selected={local.interiorAmenities}
+            onToggle={(v) => toggleArray('interiorAmenities', v)}
+          />
         </div>
 
         {/* Apply button */}
