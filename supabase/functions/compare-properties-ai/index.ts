@@ -32,29 +32,38 @@ serve(async (req) => {
   - Location: ${p.location || 'N/A'}`;
     }).join("\n\n");
 
-    const systemPrompt = `You are a real estate investment analyst. You will be given details about 2-3 properties.
+    const systemPrompt = `You are a real estate investment analyst. Analyze 2-3 properties and provide a structured investment report.
 
-Your job is to provide a comprehensive investment analysis. Structure your response EXACTLY as follows:
+IMPORTANT: Your response MUST contain these exact structured lines mixed into your analysis:
 
-## Investment Scores
-Give each property a score out of 10 for these categories. Use this EXACT format for each property:
-SCORES|Property Name|value_score|rental_score|growth_score|overall_score
+1. For each property, output a line like this (scores 1-10):
+SCORES|Short Property Name|value_score|rental_score|growth_score|overall_score
 
-Example: SCORES|Luxury Villa|7|8|6|7
+2. At the very end, output:
+WINNER|Short Property Name
+
+Now write the full analysis using these EXACT markdown sections:
 
 ## Price Analysis
-Compare price per m² and value proposition of each property.
+Compare price per m², value for money. Use bullet points.
 
-## Rental Yield Potential
-Estimate rental yield potential based on location, type, and market.
+## Rental Yield Potential  
+Estimate rental yield, tenant demand, occupancy. Use bullet points.
 
 ## Pros & Cons
-List 2-3 pros and cons for each property using bullet points.
 
-## Investment Recommendation
-Give a clear recommendation with a winner indicated like: WINNER|Property Name
+For EACH property, write its name as a ### heading, then list pros with ✅ and cons with ❌:
 
-Be concise, data-driven and objective.`;
+### Property Name
+- ✅ Pro point here
+- ✅ Another pro
+- ❌ Con point here
+- ❌ Another con
+
+## Final Verdict
+Clearly state which property wins and why. Be decisive. Summarize in 2-3 sentences.
+
+Be concise and data-driven.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -66,7 +75,7 @@ Be concise, data-driven and objective.`;
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Please analyze and compare these properties as investment opportunities:\n\n${propertySummaries}` },
+          { role: "user", content: `Analyze these properties as investments:\n\n${propertySummaries}` },
         ],
         stream: true,
       }),
