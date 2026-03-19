@@ -22,6 +22,7 @@ import BathroomsDropdown from '@/components/BathroomsDropdown';
 import RentDurationDropdown from '@/components/RentDurationDropdown';
 import PropertyFiltersModal from '@/components/PropertyFiltersModal';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
+import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
