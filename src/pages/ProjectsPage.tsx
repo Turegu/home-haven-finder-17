@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, MessageCircle, Heart, Layers, SlidersHorizontal, Loader2,
-  TreePine, Lamp, Check
+  TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,7 +14,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ChevronDown } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -23,8 +23,17 @@ import AreaDropdown from '@/components/AreaDropdown';
 import RoomsDropdown from '@/components/RoomsDropdown';
 import PriceDropdown from '@/components/PriceDropdown';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
+import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useProjectSearch, type ProjectSearchParams, type ProjectResult } from '@/hooks/useProjectSearch';
+import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
+import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
+import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
+
+const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
+
+const GRID_ITEMS = 15;
+const LIST_ITEMS = 21;
 
 const ProjectsPage = () => {
   const { options: fo } = useFilterOptions("search");
@@ -34,6 +43,7 @@ const ProjectsPage = () => {
   const intAmenityOptions = fo["interior_amenities"] || [];
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
   const [keyword, setKeyword] = useState('');
@@ -49,23 +59,27 @@ const ProjectsPage = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [amenitySearch, setAmenitySearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [saveSearchOpen, setSaveSearchOpen] = useState(false);
+
+  const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
 
   const [committedParams, setCommittedParams] = useState<ProjectSearchParams>({
     sortBy: 'newest',
     page: 1,
-    pageSize: 21,
+    pageSize: LIST_ITEMS,
   });
 
   const { data, isLoading, isFetching } = useProjectSearch(committedParams);
   const projects = data?.projects ?? [];
   const totalCount = data?.total ?? 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   useEffect(() => { document.title = 'Projects | Turegu'; }, []);
 
-  // Re-query on sort/page change
+  // Re-query on sort/page/viewMode change
   useEffect(() => {
-    setCommittedParams(prev => ({ ...prev, sortBy, page: currentPage }));
-  }, [sortBy, currentPage]);
+    setCommittedParams(prev => ({ ...prev, sortBy, page: currentPage, pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS }));
+  }, [sortBy, currentPage, viewMode]);
 
   const handleSearch = useCallback(() => {
     setCommittedParams({
@@ -83,10 +97,10 @@ const ProjectsPage = () => {
       amenities: [...exteriorAmenities, ...interiorAmenities].length > 0 ? [...exteriorAmenities, ...interiorAmenities] : undefined,
       sortBy,
       page: 1,
-      pageSize: 21,
+      pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS,
     });
     setCurrentPage(1);
-  }, [location, keyword, selectedUnitTypes, minPrice, maxPrice, minArea, maxArea, rooms, projectStatus, exteriorAmenities, interiorAmenities, sortBy]);
+  }, [location, keyword, selectedUnitTypes, minPrice, maxPrice, minArea, maxArea, rooms, projectStatus, exteriorAmenities, interiorAmenities, sortBy, viewMode]);
 
   // Build badges
   const selectedBadges: Record<string, string[]> = {};
@@ -101,10 +115,37 @@ const ProjectsPage = () => {
   const hasBadges = Object.keys(selectedBadges).length > 0;
   const moreFilterCount = allAmenities.length;
 
+  function resetAllFilters() {
+    setLocation({});
+    setKeyword('');
+    setSelectedUnitTypes([]);
+    setMinPrice('');
+    setMaxPrice('');
+    setMinArea('');
+    setMaxArea('');
+    setRooms([]);
+    setProjectStatus('');
+    setExteriorAmenities([]);
+    setInteriorAmenities([]);
+  }
+
+  function clearBadge(key: string, v: string) {
+    if (key === 'Unit Type') setSelectedUnitTypes(prev => prev.filter(t => t !== v));
+    else if (key === 'Area') { setMinArea(''); setMaxArea(''); }
+    else if (key === 'Rooms') setRooms(prev => prev.filter(r => r !== v));
+    else if (key === 'Price') { setMinPrice(''); setMaxPrice(''); }
+    else if (key === 'Status') setProjectStatus('');
+    else if (key === 'Amenities') {
+      setExteriorAmenities(prev => prev.filter(a => a !== v));
+      setInteriorAmenities(prev => prev.filter(a => a !== v));
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
+      {/* Search Bar + Filters */}
       <div className="sticky top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
@@ -151,7 +192,7 @@ const ProjectsPage = () => {
             <RoomsDropdown value={rooms} onChange={setRooms} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
 
-            {/* Status dropdown - same design as Unit Type */}
+            {/* Status dropdown */}
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[100px]">
@@ -178,7 +219,8 @@ const ProjectsPage = () => {
                 </ScrollArea>
               </PopoverContent>
             </Popover>
-            {/* Filter button - opens amenities dialog directly */}
+
+            {/* Filter button */}
             <button
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground"
               onClick={() => setFilterOpen(true)}
@@ -192,6 +234,7 @@ const ProjectsPage = () => {
               )}
             </button>
 
+            {/* Amenities Dialog */}
             <Dialog open={filterOpen} onOpenChange={(v) => { setFilterOpen(v); if (!v) setAmenitySearch(''); }}>
               <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
                 <DialogHeader>
@@ -320,23 +363,21 @@ const ProjectsPage = () => {
             </Button>
           </div>
 
+          {/* Selected filter badges */}
           {hasBadges && (
             <div className="pt-2 pb-1">
               <SelectedFilterBadges
                 selectedFilters={selectedBadges}
                 onFiltersChange={(updated) => {
+                  if (Object.keys(updated).length === 0) {
+                    resetAllFilters();
+                    return;
+                  }
                   Object.keys(selectedBadges).forEach(key => {
-                    const removed = (selectedBadges[key] || []).filter(v => !(updated[key] || []).includes(v));
-                    removed.forEach(v => {
-                      if (key === 'Unit Type') setSelectedUnitTypes(prev => prev.filter(t => t !== v));
-                      else if (key === 'Area') { setMinArea(''); setMaxArea(''); }
-                      else if (key === 'Rooms') setRooms(prev => prev.filter(r => r !== v));
-                      else if (key === 'Price') { setMinPrice(''); setMaxPrice(''); }
-                      else if (key === 'Status') setProjectStatus('');
-                      else if (key === 'Amenities') {
-                        setExteriorAmenities(prev => prev.filter(a => a !== v));
-                        setInteriorAmenities(prev => prev.filter(a => a !== v));
-                      }
+                    const oldValues = selectedBadges[key] || [];
+                    const newValues = updated[key] || [];
+                    oldValues.forEach(v => {
+                      if (!newValues.includes(v)) clearBadge(key, v);
                     });
                   });
                 }}
@@ -347,36 +388,58 @@ const ProjectsPage = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6">
+        {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
           <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
           <span>{'>'}</span>
           <span className="text-primary font-medium">Projects</span>
         </div>
 
+        {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            <span className="text-primary">{totalCount}</span> Projects
+            Projects in <span className="text-primary">{totalCount} Projects</span>
           </h1>
           <div className="flex items-center gap-3">
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
+            >
               <option value="newest">Newest First</option>
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
             </select>
+            <button
+              onClick={() => {
+                const hasLocation = location.province || location.district || location.neighborhood;
+                const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
+                if (!hasFilters) {
+                  toast.error('Please select at least one filter before saving a search.');
+                  return;
+                }
+                setSaveSearchOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
+            >
+              <Bookmark className="h-4 w-4" />
+              Save Search
+            </button>
             <div className="flex border border-border rounded-md overflow-hidden">
-              <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />
               </button>
-              <button onClick={() => setViewMode('list')} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('list'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <List className="h-4 w-4" />
               </button>
-              <button onClick={() => setViewMode('map')} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('map'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <Map className="h-4 w-4" />
               </button>
             </div>
           </div>
         </div>
 
+        {/* Loading state */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -388,19 +451,48 @@ const ProjectsPage = () => {
             <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
           </div>
         ) : (
+          /* Layout with side banner */
           <div className="flex gap-6">
             <div className="flex-1 min-w-0">
-              {viewMode === 'list' ? (
+              {viewMode === 'grid' ? (
                 <div className="space-y-6">
-                  {projects.map((project) => (
-                    <ProjectListCard key={project.id} project={project} />
-                  ))}
+                  {Array.from({ length: Math.ceil(projects.length / 3) }, (_, chunkIdx) => {
+                    const chunk = projects.slice(chunkIdx * 3, (chunkIdx + 1) * 3);
+                    return (
+                      <div key={chunkIdx}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {chunk.map((project) => (
+                            <ProjectGridCard key={project.id} project={project} />
+                          ))}
+                        </div>
+                        {chunkIdx < Math.ceil(projects.length / 3) - 1 && (
+                          <div className="my-6">
+                            <BannerDisplay pageName="projects" bannerType="horizontal" position={chunkIdx + 1} className="" />
+                            <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-              ) : viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {projects.map((project) => (
-                    <ProjectGridCard key={project.id} project={project} />
-                  ))}
+              ) : viewMode === 'list' ? (
+                <div className="space-y-6">
+                  {Array.from({ length: Math.ceil(projects.length / 4) }, (_, chunkIdx) => {
+                    const chunk = projects.slice(chunkIdx * 4, (chunkIdx + 1) * 4);
+                    return (
+                      <div key={chunkIdx} className="space-y-6">
+                        {chunk.map((project) => (
+                          <ProjectListCard key={project.id} project={project} />
+                        ))}
+                        {chunkIdx < Math.ceil(projects.length / 4) - 1 && (
+                          <div className="my-6">
+                            <BannerDisplay pageName="projects" bannerType="horizontal" position={chunkIdx + 1} className="" />
+                            <img src={horizontalBanners[chunkIdx % 2]} alt="Advertisement" className="w-full h-auto rounded-lg object-cover max-h-[160px]" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <ListingMapView
@@ -417,20 +509,67 @@ const ProjectsPage = () => {
                     meta: `${p.max_units ?? 0} Units`,
                     units: p.max_units ?? 0,
                   }))}
+                  focusListingId={focusListingId}
                 />
               )}
             </div>
 
             <div className="hidden lg:block w-[225px] shrink-0">
               <div className="sticky top-[160px]">
-                <BannerDisplay pageName="projects" bannerType="vertical" />
+                <BannerDisplay pageName="projects" bannerType="vertical" className="" />
+                <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8 mb-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={currentPage === 1}
+              onClick={() => { setCurrentPage((p) => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={page === currentPage ? 'default' : 'outline'}
+                size="sm"
+                className="h-9 w-9 p-0"
+                onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9"
+              disabled={currentPage === totalPages}
+              onClick={() => { setCurrentPage((p) => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         )}
       </div>
 
       <Footer />
+
+      <SaveSearchDialog
+        open={saveSearchOpen}
+        onOpenChange={setSaveSearchOpen}
+        searchParams={committedParams as unknown as Record<string, unknown>}
+        selectedFilters={selectedBadges}
+        searchType="projects"
+        location={location}
+        keyword={keyword}
+      />
     </div>
   );
 };
