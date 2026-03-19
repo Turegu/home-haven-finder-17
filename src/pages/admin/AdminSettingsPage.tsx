@@ -125,6 +125,11 @@ const AdminSettingsPage = () => {
             <Input type="email" value={salesEmail} onChange={e => setSalesEmail(e.target.value)} placeholder="sales@turegu.com" />
           </div>
 
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Office Address</Label>
+            <Input value={salesAddress} onChange={e => setSalesAddress(e.target.value)} placeholder="123 Main St, City, Country" />
+          </div>
+
           <Button onClick={handleSaveSettings} disabled={saving}>
             <Save className="h-4 w-4 mr-2" /> {saving ? "Saving..." : "Save Settings"}
           </Button>
