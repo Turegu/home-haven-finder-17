@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import {
-  Search, SlidersHorizontal, ChevronRight,
-  Building2, Car, Sofa, Calendar, TreePine, Lamp, LayoutGrid,
+  Search, SlidersHorizontal, ChevronRight, Check,
+  Building2, Car, Sofa, Calendar, TreePine, Lamp,
 } from 'lucide-react';
-import AmenitiesViewAllDialog from '@/components/AmenitiesViewAllDialog';
+import { getIcon } from '@/components/AmenitiesViewAllDialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -13,7 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
-import type { LucideIcon } from 'lucide-react';
+
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 // Hardcoded fallbacks removed — all options now fetched dynamically from the database
@@ -43,6 +44,8 @@ interface PropertyFiltersModalProps {
 
 export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
+  const [amenitiesOpen, setAmenitiesOpen] = useState(false);
+  const [amenitySearch, setAmenitySearch] = useState('');
   const [local, setLocal] = useState<PropertyMoreFilters>(filters);
   const { options: fo } = useFilterOptions("search");
 
@@ -142,22 +145,29 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
             selected={local.propertyAges}
             onToggle={(v) => toggleArray('propertyAges', v)}
           />
-          <AmenitiesRowButton
-            label="Exterior Amenities"
-            icon={TreePine}
-            type="exterior"
-            options={fo["exterior_amenities"] || []}
-            selected={local.exteriorAmenities}
-            onToggle={(v) => toggleArray('exteriorAmenities', v)}
-          />
-          <AmenitiesRowButton
-            label="Interior Amenities"
-            icon={Lamp}
-            type="interior"
-            options={fo["interior_amenities"] || []}
-            selected={local.interiorAmenities}
-            onToggle={(v) => toggleArray('interiorAmenities', v)}
-          />
+          {/* Single Amenities button that opens tabbed dialog */}
+          <button
+            type="button"
+            onClick={() => setAmenitiesOpen(true)}
+            className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+              (local.exteriorAmenities.length + local.interiorAmenities.length) > 0
+                ? 'border-primary/40 bg-primary/5'
+                : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+            }`}
+          >
+            <span className="flex items-center gap-2.5">
+              <TreePine className={`h-4 w-4 ${(local.exteriorAmenities.length + local.interiorAmenities.length) > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+              <span className={`font-medium ${(local.exteriorAmenities.length + local.interiorAmenities.length) > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                Amenities
+              </span>
+              {(local.exteriorAmenities.length + local.interiorAmenities.length) > 0 && (
+                <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
+                  {local.exteriorAmenities.length + local.interiorAmenities.length}
+                </Badge>
+              )}
+            </span>
+            <ChevronRight className="h-4 w-4 text-amber-500" />
+          </button>
         </div>
 
         {/* Apply button */}
@@ -170,6 +180,119 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
           </Button>
         </div>
       </DialogContent>
+
+      {/* Amenities tabbed dialog */}
+      <Dialog open={amenitiesOpen} onOpenChange={(v) => { setAmenitiesOpen(v); if (!v) setAmenitySearch(''); }}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TreePine className="h-5 w-5 text-primary" />
+              Amenities
+              {(local.exteriorAmenities.length + local.interiorAmenities.length) > 0 && (
+                <Badge variant="default" className="ml-2">{local.exteriorAmenities.length + local.interiorAmenities.length} selected</Badge>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={amenitySearch}
+              onChange={(e) => setAmenitySearch(e.target.value)}
+              placeholder="Search amenities..."
+              className="w-full h-9 pl-9 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+            />
+          </div>
+
+          <Tabs defaultValue="interior" className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="w-full grid grid-cols-2">
+              <TabsTrigger value="interior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Lamp className="h-4 w-4" />
+                Interior
+                {local.interiorAmenities.length > 0 && (
+                  <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{local.interiorAmenities.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="exterior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <TreePine className="h-4 w-4" />
+                Exterior
+                {local.exteriorAmenities.length > 0 && (
+                  <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{local.exteriorAmenities.length}</Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="interior" className="flex-1 overflow-hidden mt-3">
+              <div
+                className="overflow-y-auto h-full max-h-[45vh] -mx-1 px-1"
+                onWheel={(e) => { const el = e.currentTarget; if (el.scrollHeight <= el.clientHeight) return; e.stopPropagation(); }}
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {(fo["interior_amenities"] || []).filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).length === 0 && (
+                    <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+                  )}
+                  {(fo["interior_amenities"] || []).filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).map((opt) => {
+                    const IconComp = getIcon(opt, 'interior');
+                    const isChecked = local.interiorAmenities.includes(opt);
+                    return (
+                      <label
+                        key={opt}
+                        className={`flex items-center gap-2.5 cursor-pointer py-2.5 px-3 rounded-lg border transition-all duration-150 ${
+                          isChecked ? 'border-primary/40 bg-primary/5' : 'border-border hover:border-primary/20 hover:bg-muted/40'
+                        }`}
+                      >
+                        <Checkbox checked={isChecked} onCheckedChange={() => toggleArray('interiorAmenities', opt)} />
+                        <IconComp className={`h-4 w-4 shrink-0 ${isChecked ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <span className={`text-sm leading-tight ${isChecked ? 'text-foreground font-medium' : 'text-foreground'}`}>{opt}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="exterior" className="flex-1 overflow-hidden mt-3">
+              <div
+                className="overflow-y-auto h-full max-h-[45vh] -mx-1 px-1"
+                onWheel={(e) => { const el = e.currentTarget; if (el.scrollHeight <= el.clientHeight) return; e.stopPropagation(); }}
+              >
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {(fo["exterior_amenities"] || []).filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).length === 0 && (
+                    <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+                  )}
+                  {(fo["exterior_amenities"] || []).filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).map((opt) => {
+                    const IconComp = getIcon(opt, 'exterior');
+                    const isChecked = local.exteriorAmenities.includes(opt);
+                    return (
+                      <label
+                        key={opt}
+                        className={`flex items-center gap-2.5 cursor-pointer py-2.5 px-3 rounded-lg border transition-all duration-150 ${
+                          isChecked ? 'border-primary/40 bg-primary/5' : 'border-border hover:border-primary/20 hover:bg-muted/40'
+                        }`}
+                      >
+                        <Checkbox checked={isChecked} onCheckedChange={() => toggleArray('exteriorAmenities', opt)} />
+                        <IconComp className={`h-4 w-4 shrink-0 ${isChecked ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <span className={`text-sm leading-tight ${isChecked ? 'text-foreground font-medium' : 'text-foreground'}`}>{opt}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex items-center justify-between pt-3 border-t border-border mt-3">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-primary">{local.exteriorAmenities.length + local.interiorAmenities.length}</span> of {(fo["exterior_amenities"] || []).length + (fo["interior_amenities"] || []).length} selected
+            </p>
+            <Button onClick={() => { setAmenitiesOpen(false); setAmenitySearch(''); }}>
+              <Check className="h-4 w-4 mr-1.5" />
+              Done
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
@@ -185,7 +308,7 @@ function FilterDropdown({
   searchable = false,
 }: {
   label: string;
-  icon: LucideIcon;
+  icon: typeof Building2;
   options: string[];
   selected: string[];
   onToggle: (v: string) => void;
@@ -281,57 +404,5 @@ function FilterDropdown({
         )}
       </PopoverContent>
     </Popover>
-  );
-}
-
-/* ─── Amenities row that opens full dialog on click ─── */
-
-function AmenitiesRowButton({
-  label,
-  icon: Icon,
-  type,
-  options,
-  selected,
-  onToggle,
-}: {
-  label: string;
-  icon: LucideIcon;
-  type: 'exterior' | 'interior';
-  options: string[];
-  selected: string[];
-  onToggle: (v: string) => void;
-}) {
-  const hasSelected = selected.length > 0;
-
-  return (
-    <AmenitiesViewAllDialog
-      type={type}
-      options={options}
-      selected={selected}
-      onToggle={onToggle}
-      trigger={
-        <button
-          type="button"
-          className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
-            hasSelected
-              ? 'border-primary/40 bg-primary/5'
-              : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
-          }`}
-        >
-          <span className="flex items-center gap-2.5">
-            <Icon className={`h-4 w-4 ${hasSelected ? 'text-primary' : 'text-muted-foreground'}`} />
-            <span className={`font-medium ${hasSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
-              {label}
-            </span>
-            {hasSelected && (
-              <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
-                {selected.length}
-              </Badge>
-            )}
-          </span>
-          <LayoutGrid className="h-4 w-4 text-primary" />
-        </button>
-      }
-    />
   );
 }
