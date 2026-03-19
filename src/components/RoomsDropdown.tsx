@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
-
-const VISIBLE_COUNT = 8;
 
 interface RoomsDropdownProps {
   value: string[];
@@ -17,16 +15,10 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
   const { options: fo } = useFilterOptions("search");
   const roomOptions = fo["rooms"] || [];
   const [search, setSearch] = useState("");
-  const [expanded, setExpanded] = useState(false);
 
   const filtered = search
     ? roomOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
     : roomOptions;
-
-  // When searching, show all results; otherwise cap at VISIBLE_COUNT unless expanded
-  const showAll = search.length > 0 || expanded;
-  const visible = showAll ? filtered : filtered.slice(0, VISIBLE_COUNT);
-  const hasMore = !search && filtered.length > VISIBLE_COUNT;
 
   function toggle(opt: string) {
     if (value.includes(opt)) {
@@ -37,7 +29,7 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
   }
 
   return (
-    <Popover onOpenChange={() => setExpanded(false)}>
+    <Popover>
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[80px]">
           <span className={value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
@@ -64,26 +56,14 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
             />
           </div>
         </div>
-        <div className="p-1 space-y-0.5">
-          {visible.map((opt) => (
+        <div className="overflow-y-auto max-h-[280px] p-1 space-y-0.5">
+          {filtered.map((opt) => (
             <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
               <Checkbox checked={value.includes(opt)} onCheckedChange={() => toggle(opt)} />
               <span className="text-sm text-foreground">{opt}</span>
             </label>
           ))}
         </div>
-        {hasMore && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-primary hover:bg-muted/50 border-t border-border transition-colors"
-          >
-            {expanded ? (
-              <>Show Less <ChevronUp className="h-3 w-3" /></>
-            ) : (
-              <>Show More ({filtered.length - VISIBLE_COUNT}) <ChevronDown className="h-3 w-3" /></>
-            )}
-          </button>
-        )}
       </PopoverContent>
     </Popover>
   );

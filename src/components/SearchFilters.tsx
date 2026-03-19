@@ -1,5 +1,4 @@
-import { ChevronDown, ChevronUp, X, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -188,8 +187,6 @@ export function SelectedFilterBadges({
   );
 }
 
-const FILTER_VISIBLE_COUNT = 8;
-
 function FilterDropdown({
   category,
   options,
@@ -203,12 +200,8 @@ function FilterDropdown({
   onToggle: (title: string) => void;
   onClear: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? options : options.slice(0, FILTER_VISIBLE_COUNT);
-  const hasMore = options.length > FILTER_VISIBLE_COUNT;
-
   return (
-    <Popover onOpenChange={() => setExpanded(false)}>
+    <Popover>
       <PopoverTrigger asChild>
         <button className="hidden md:flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground">
           {category.title}
@@ -227,8 +220,8 @@ function FilterDropdown({
             <button onClick={onClear} className="text-[10px] text-destructive hover:underline">Clear</button>
           )}
         </div>
-        <div className="p-1 space-y-0.5">
-          {visible.map((opt) => (
+        <div className="overflow-y-auto max-h-[280px] p-1 space-y-0.5">
+          {options.map((opt) => (
             <label key={opt.id} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
               <Checkbox
                 checked={selected.includes(opt.title)}
@@ -238,18 +231,6 @@ function FilterDropdown({
             </label>
           ))}
         </div>
-        {hasMore && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-primary hover:bg-muted/50 border-t border-border transition-colors"
-          >
-            {expanded ? (
-              <>Show Less <ChevronUp className="h-3 w-3" /></>
-            ) : (
-              <>Show More ({options.length - FILTER_VISIBLE_COUNT}) <ChevronDown className="h-3 w-3" /></>
-            )}
-          </button>
-        )}
       </PopoverContent>
     </Popover>
   );

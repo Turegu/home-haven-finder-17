@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
-
-const VISIBLE_COUNT = 8;
 
 interface PropertyTypeDropdownProps {
   selected: string[];
@@ -14,14 +12,11 @@ interface PropertyTypeDropdownProps {
 export default function PropertyTypeDropdown({ selected, onChange }: PropertyTypeDropdownProps) {
   const [activeTab, setActiveTab] = useState<'residential' | 'commercial'>('residential');
   const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState(false);
   const { options: fo } = useFilterOptions("search");
   const residentialTypes = fo["residential_property_types"] || [];
   const commercialTypes = fo["commercial_property_types"] || [];
 
   const types = activeTab === 'residential' ? residentialTypes : commercialTypes;
-  const visible = expanded ? types : types.slice(0, VISIBLE_COUNT);
-  const hasMore = types.length > VISIBLE_COUNT;
 
   function toggleType(type: string) {
     if (selected.includes(type)) {
@@ -32,7 +27,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
   }
 
   return (
-    <Popover open={open} onOpenChange={(v) => { setOpen(v); if (!v) setExpanded(false); }}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
           <span className={selected.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
@@ -42,10 +37,9 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-0" align="start">
-        {/* Residential / Commercial tabs */}
         <div className="flex border-b border-border">
           <button
-            onClick={() => { setActiveTab('residential'); setExpanded(false); }}
+            onClick={() => setActiveTab('residential')}
             className={`flex-1 py-2 text-sm font-medium transition-colors ${
               activeTab === 'residential'
                 ? 'text-primary border-b-2 border-primary'
@@ -55,7 +49,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
             Residential
           </button>
           <button
-            onClick={() => { setActiveTab('commercial'); setExpanded(false); }}
+            onClick={() => setActiveTab('commercial')}
             className={`flex-1 py-2 text-sm font-medium transition-colors ${
               activeTab === 'commercial'
                 ? 'text-primary border-b-2 border-primary'
@@ -65,8 +59,8 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
             Commercial
           </button>
         </div>
-        <div className="p-1 space-y-0.5">
-          {visible.map((type) => (
+        <div className="overflow-y-auto max-h-[280px] p-1 space-y-0.5">
+          {types.map((type) => (
             <button
               key={type}
               onClick={() => toggleType(type)}
@@ -80,18 +74,6 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
             </button>
           ))}
         </div>
-        {hasMore && (
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-primary hover:bg-muted/50 border-t border-border transition-colors"
-          >
-            {expanded ? (
-              <>Show Less <ChevronUp className="h-3 w-3" /></>
-            ) : (
-              <>Show More ({types.length - VISIBLE_COUNT}) <ChevronDown className="h-3 w-3" /></>
-            )}
-          </button>
-        )}
       </PopoverContent>
     </Popover>
   );
