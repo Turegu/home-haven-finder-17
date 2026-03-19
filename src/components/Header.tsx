@@ -26,18 +26,21 @@ const Header = () => {
   const [selectedLang, setSelectedLang] = useState<{ id: string; name: string; code: string } | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<{ id: string; name: string; code: string; symbol: string } | null>(null);
   const [selectedArea, setSelectedArea] = useState(AREA_UNITS[0]);
-  const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | 'notifications' | null>(null);
 
   // Auth state
   const [currentUser, setCurrentUser] = useState<{ id: string; email: string; displayName: string } | null>(null);
 
   // Counts
   const [counts, setCounts] = useState({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
+  const [notifications, setNotifications] = useState<{ id: string; title: string; message: string | null; notification_type: string; is_read: boolean; created_at: string; source_company_id: string | null; property_id: string | null }[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const langRef = useRef<HTMLDivElement>(null);
   const currRef = useRef<HTMLDivElement>(null);
   const areaRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   // Check auth
   useEffect(() => {
@@ -83,9 +86,22 @@ const Header = () => {
     });
   };
 
+  const fetchNotifications = async (uid: string) => {
+    const { data, count } = await supabase
+      .from("user_notifications")
+      .select("id, title, message, notification_type, is_read, created_at, source_company_id, property_id", { count: "exact" })
+      .eq("user_id", uid)
+      .eq("is_read", false)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setNotifications(data || []);
+    setUnreadCount(count || 0);
+  };
+
   useEffect(() => {
     if (!currentUser?.id) return;
     fetchCounts(currentUser.id);
+    fetchNotifications(currentUser.id);
   }, [currentUser?.id]);
 
   // Listen for property action changes to refresh counts
@@ -129,7 +145,8 @@ const Header = () => {
         openDropdown === 'lang' && langRef.current && !langRef.current.contains(e.target as Node) ||
         openDropdown === 'currency' && currRef.current && !currRef.current.contains(e.target as Node) ||
         openDropdown === 'area' && areaRef.current && !areaRef.current.contains(e.target as Node) ||
-        openDropdown === 'user' && userRef.current && !userRef.current.contains(e.target as Node)
+        openDropdown === 'user' && userRef.current && !userRef.current.contains(e.target as Node) ||
+        openDropdown === 'notifications' && notifRef.current && !notifRef.current.contains(e.target as Node)
       ) {
         setOpenDropdown(null);
       }
@@ -137,6 +154,36 @@ const Header = () => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [openDropdown]);
+  const markNotificationRead = async (notifId: string) => {
+    await supabase.from("user_notifications").update({ is_read: true }).eq("id", notifId);
+    setNotifications(prev => prev.filter(n => n.id !== notifId));
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+
+  const markAllRead = async () => {
+    if (!currentUser?.id) return;
+    await supabase.from("user_notifications").update({ is_read: true }).eq("user_id", currentUser.id).eq("is_read", false);
+    setNotifications([]);
+    setUnreadCount(0);
+  };
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    return `${days}d ago`;
+  };
+
+  const getNotifIcon = (type: string) => {
+    if (type === 'announcement') return <MessageSquare className="h-4 w-4 text-primary" />;
+    if (type === 'new_listing') return <Heart className="h-4 w-4 text-primary" />;
+    if (type === 'follow') return <Users2 className="h-4 w-4 text-primary" />;
+    return <Bell className="h-4 w-4 text-primary" />;
+  };
 
   const selectLang = (lang: typeof languages[0]) => { setSelectedLang(lang); localStorage.setItem('selectedLangCode', lang.code); setOpenDropdown(null); };
   const selectCurrency = (currency: typeof currencies[0]) => { setSelectedCurrency(currency); localStorage.setItem('selectedCurrencyCode', currency.code); setOpenDropdown(null); };
@@ -263,9 +310,79 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate(currentUser ? '/account/notifications' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Notifications">
-              <Bell className="h-5 w-5 text-foreground/70" />
-            </button>
+            {/* Notifications Dropdown */}
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => {
+                  if (!currentUser) { navigate('/login'); return; }
+                  setOpenDropdown(openDropdown === 'notifications' ? null : 'notifications');
+                }}
+                className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+                aria-label="Notifications"
+              >
+                <Bell className="h-5 w-5 text-foreground/70" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full h-4 min-w-[16px] flex items-center justify-center px-0.5">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              {openDropdown === 'notifications' && (
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <button onClick={markAllRead} className="text-xs text-primary hover:underline">
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Bell className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">No new notifications</p>
+                      </div>
+                    ) : (
+                      notifications.map(n => (
+                        <div
+                          key={n.id}
+                          className="px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border last:border-0 cursor-pointer group"
+                          onClick={() => {
+                            markNotificationRead(n.id);
+                            setOpenDropdown(null);
+                            if (n.property_id) navigate(`/property/${n.property_id}`);
+                            else navigate('/account/notifications');
+                          }}
+                        >
+                          <div className="flex gap-3">
+                            <div className="mt-0.5 shrink-0 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                              {getNotifIcon(n.notification_type)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground leading-tight">{n.title}</p>
+                              {n.message && (
+                                <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.message}</p>
+                              )}
+                              <p className="text-[10px] text-muted-foreground mt-1">{timeAgo(n.created_at)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="border-t border-border">
+                    <Link
+                      to="/account/notifications"
+                      onClick={() => setOpenDropdown(null)}
+                      className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
+                    >
+                      View All Notifications
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
             <button onClick={() => navigate(currentUser ? '/account/saved-properties' : '/login')} className="relative p-2 rounded-full hover:bg-secondary transition-colors" aria-label="Favorites">
               <Heart className="h-5 w-5 text-foreground/70" />
               {counts.savedProperties > 0 && (
