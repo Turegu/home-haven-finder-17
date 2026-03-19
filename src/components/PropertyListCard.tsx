@@ -126,7 +126,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
               <div className="absolute top-2 right-2 flex items-center gap-1 lg:hidden">
                 <button
                   onClick={handleCompare}
-                  className={`p-1.5 rounded-full transition-colors ${isCompared ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
+                  className={`p-1.5 rounded-full transition-colors ${isComparedLocal ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
                   aria-label="Compare"
                 >
                   <Layers className="h-3.5 w-3.5" />
