@@ -225,6 +225,7 @@ const Header = () => {
     setCompareItems(prev => prev.filter(c => c.id !== id));
     setCounts(prev => ({ ...prev, compare: Math.max(0, prev.compare - 1) }));
     window.dispatchEvent(new Event('property-actions-changed'));
+  };
 
   const timeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
