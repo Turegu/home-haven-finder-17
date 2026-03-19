@@ -265,7 +265,10 @@ const ProjectsPage = () => {
                       else if (key === 'Rooms') setRooms(prev => prev.filter(r => r !== v));
                       else if (key === 'Price') { setMinPrice(''); setMaxPrice(''); }
                       else if (key === 'Status') setProjectStatus('');
-                      else if (key === 'Amenities') setSelectedAmenities(prev => prev.filter(a => a !== v));
+                      else if (key === 'Amenities') {
+                        setExteriorAmenities(prev => prev.filter(a => a !== v));
+                        setInteriorAmenities(prev => prev.filter(a => a !== v));
+                      }
                     });
                   });
                 }}
