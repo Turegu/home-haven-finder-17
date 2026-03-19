@@ -605,40 +605,133 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
 }
 
 function ProjectListCard({ project }: { project: ProjectResult }) {
-  const img = project.images?.[0] || '/placeholder.svg';
+  const images = project.images && project.images.length > 0 ? project.images : ['/placeholder.svg'];
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
+  const [currentImage, setCurrentImage] = useState(0);
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImage((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const secondaryImages = images.length > 1
+    ? images.filter((_, i) => i !== currentImage).slice(0, 1)
+    : [];
+
   return (
-    <Link to={`/projects/${project.id}`}>
+    <Link to={`/projects/${project.id}`} className="block">
       <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        <div className="relative w-full md:w-[360px] aspect-[4/3] md:aspect-auto md:h-auto shrink-0 overflow-hidden">
-          <img src={img} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-          <div className="absolute top-2 right-2 flex gap-1.5">
-            <button className="bg-background/90 hover:bg-background text-foreground/70 p-1.5 rounded-full shadow-sm"><Layers className="h-4 w-4" /></button>
-            <button className="bg-background/90 hover:bg-background text-foreground/70 p-1.5 rounded-full shadow-sm"><Heart className="h-4 w-4" /></button>
-          </div>
-        </div>
-        <div className="flex-1 p-4 flex flex-col justify-between">
-          <div>
-            <h3 className="text-xl font-bold text-foreground mb-1">{project.title}</h3>
-            <p className="text-sm text-muted-foreground mb-2">{project.developer}</p>
-            <div className="flex items-center gap-1 text-muted-foreground text-sm mb-4">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span>{loc}</span>
+        {/* Dual thumbnail area */}
+        <div className="relative w-full md:w-[320px] lg:w-[440px] xl:w-[500px] shrink-0">
+          <div className="flex h-[190px]">
+            {/* Left image */}
+            <div className="relative flex-1 overflow-hidden">
+              <img src={images[currentImage]} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              {images.length > 1 && (
+                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+              )}
+              {images.length > 1 && (
+                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+              <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+                <Camera className="h-3 w-3" />
+                <span>{currentImage + 1}/{images.length}</span>
+              </div>
+              {project.project_status && (
+                <div className="absolute top-2 left-2">
+                  <span className="inline-flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2 py-1 rounded-md shadow-md">
+                    {project.project_status}
+                  </span>
+                </div>
+              )}
+              <div className="absolute top-2 right-2 flex items-center gap-1 lg:hidden">
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
+                  <Layers className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
+                  <Heart className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5"><Building className="h-4 w-4" /><span>{project.project_type}</span></span>
-              <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" /><span>{project.max_units ?? 0} Units</span></span>
+            {/* Right image */}
+            <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
+              <img src={secondaryImages[0] || images[currentImage]} alt={`${project.title} 2`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              {images.length > 1 && (
+                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+              <div className="absolute top-2 right-2 flex items-center gap-1">
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
+                  <Layers className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
+                  <Heart className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            <span className="text-lg font-bold text-foreground">
-              <span className="text-xs font-normal text-muted-foreground mr-1">Starting From</span>
+          {/* Price bar */}
+          <div className="bg-foreground px-3 py-1.5 flex items-center justify-between">
+            <span className="text-base font-bold text-background">
+              <span className="text-sm font-normal text-background/80 mr-1">From</span>
               {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
             </span>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="h-8 text-xs gap-1"><Phone className="h-3.5 w-3.5" /> Call</Button>
-              <Button size="sm" variant="outline" className="h-8 text-xs gap-1"><Mail className="h-3.5 w-3.5" /> Email</Button>
-              <Button size="sm" className="h-8 text-xs gap-1 bg-primary hover:bg-primary/90"><MessageCircle className="h-3.5 w-3.5" /> Whatsapp</Button>
+            {project.completion_date && (
+              <span className="flex items-center gap-1 text-xs text-background/70">
+                <Calendar className="h-3 w-3" />
+                {project.completion_date}
+              </span>
+            )}
+          </div>
+        </div>
+        {/* Content area */}
+        <div className="flex-1 p-4 flex flex-col justify-between relative">
+          {project.logo_url && (
+            <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
+              <img src={project.logo_url} alt={project.developer ?? project.title} className="h-10 w-auto max-w-[80px] rounded object-contain" />
+              {project.developer && (
+                <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{project.developer}</span>
+              )}
+            </div>
+          )}
+          <div className={project.logo_url ? "pr-24" : ""}>
+            <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{project.title}</h3>
+            {project.tagline && <p className="text-sm text-muted-foreground italic mb-1 line-clamp-1">{project.tagline}</p>}
+            <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="line-clamp-1">{loc}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1"><Building className="h-3.5 w-3.5" /><span className="font-medium text-foreground">{project.project_type}</span></span>
+              <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /><span className="font-medium text-foreground">{project.max_units ?? 0} Units</span></span>
+              {project.developer && !project.logo_url && <span className="text-xs text-muted-foreground">by {project.developer}</span>}
+            </div>
+          </div>
+          <div className="flex items-center justify-end mt-4 pt-3 border-t border-border">
+            <div className="flex items-center gap-0">
+              <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <Phone className="h-4 w-4" /> Call
+              </button>
+              <div className="w-px h-5 bg-border" />
+              <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <Mail className="h-4 w-4" /> Email
+              </button>
+              <div className="w-px h-5 bg-border" />
+              <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                <MessageCircle className="h-4 w-4" /> WhatsApp
+              </button>
             </div>
           </div>
         </div>
