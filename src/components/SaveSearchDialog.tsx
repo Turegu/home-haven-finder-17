@@ -14,7 +14,7 @@ interface SaveSearchDialogProps {
   onOpenChange: (open: boolean) => void;
   searchParams: Record<string, unknown>;
   selectedFilters: Record<string, string[]>;
-  searchType: 'buy' | 'rent';
+  searchType: 'buy' | 'rent' | 'projects';
   location?: { province?: string; district?: string; neighborhood?: string };
   keyword?: string;
 }
