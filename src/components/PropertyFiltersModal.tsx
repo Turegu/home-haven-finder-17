@@ -14,7 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
-import type { LucideIcon } from 'lucide-react';
+
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 // Hardcoded fallbacks removed — all options now fetched dynamically from the database
