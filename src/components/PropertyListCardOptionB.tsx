@@ -131,7 +131,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavorited(!isFavorited); }}
                   className={`p-1.5 rounded-full transition-colors ${
                     isFavorited
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-primary text-primary-foreground'
                       : 'bg-foreground/40 hover:bg-foreground/60 text-white'
                   }`}
                   aria-label="Favorite"
