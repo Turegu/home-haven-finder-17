@@ -13,6 +13,7 @@ export interface Property {
   images: string[];
   agentLogo: string;
   agentName: string;
+  companyName: string;
   agentAvatar?: string;
   isFeatured: boolean;
   listingTier: 'premium' | 'featured' | 'standard';

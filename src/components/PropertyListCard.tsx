@@ -151,17 +151,8 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <span>{currentImage + 1}/{property.images.length}</span>
               </div>
 
-              {/* Advertising tag — lower right of left thumbnail */}
-              {property.advertisingTags && property.advertisingTags.length > 0 && (
-                <div className="absolute bottom-2 right-2 lg:right-auto lg:left-1/2 lg:-translate-x-1/2">
-                  <Badge
-                    className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}
-                  >
-                    <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
-                  </Badge>
-                </div>
-              )}
             </div>
+
 
             {/* Right image — equal size */}
             <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
