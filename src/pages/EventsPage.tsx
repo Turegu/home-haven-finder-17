@@ -65,7 +65,7 @@ const EventsPage = () => {
       district: location.district,
       neighborhood: location.neighborhood,
       keyword: keyword.trim() || undefined,
-      eventType: selectedEventType !== 'All' ? selectedEventType : undefined,
+      eventType: selectedEventType || undefined,
       dateFrom: dateRange.from?.toISOString(),
       dateTo: dateRange.to?.toISOString(),
       sortBy,
