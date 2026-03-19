@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart, Layers, Phone, Mail, MessageCircle,
@@ -7,25 +7,24 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Property } from '@/data/mockProperties';
-import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
+import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {
   property: Property;
+  isSaved?: boolean;
+  isCompared?: boolean;
   onLocationClick?: (propertyId: string) => void;
 }
 
-const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) => {
+const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, onLocationClick }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [isCompared, setIsCompared] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(isSaved);
+  const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-
-  useEffect(() => {
-    checkIfSaved(property.id).then(setIsFavorited);
-    checkIfCompared(property.id).then(setIsCompared);
-  }, [property.id]);
+  const queryClient = useQueryClient();
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
