@@ -1,0 +1,1 @@
+UPDATE events SET display_on_homepage = true WHERE id IN ('863d9f97-391c-4f27-8449-67ff4d4a9893', '3a12c492-f745-48a0-9b8d-656433e80c3a')
