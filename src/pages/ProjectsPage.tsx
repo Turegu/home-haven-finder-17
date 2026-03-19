@@ -92,7 +92,8 @@ const ProjectsPage = () => {
   if (rooms.length > 0) selectedBadges['Rooms'] = rooms;
   if (minPrice || maxPrice) selectedBadges['Price'] = [`$${minPrice || '0'} - $${maxPrice || '∞'}`];
   if (projectStatus && projectStatus !== 'Any') selectedBadges['Status'] = [projectStatus];
-  if (selectedAmenities.length > 0) selectedBadges['Amenities'] = selectedAmenities;
+  const allAmenities = [...exteriorAmenities, ...interiorAmenities];
+  if (allAmenities.length > 0) selectedBadges['Amenities'] = allAmenities;
 
   const hasBadges = Object.keys(selectedBadges).length > 0;
   const moreFilterCount = (projectStatus && projectStatus !== 'Any' ? 1 : 0) + selectedAmenities.length;
