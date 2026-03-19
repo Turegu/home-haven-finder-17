@@ -244,6 +244,7 @@ const BuyPage = () => {
       images: (p.images && p.images.length > 0) ? p.images : ['/placeholder.svg'],
       agentLogo: (p as any).companies?.logo_url ?? '',
       agentName: (p as any).agents?.name ?? '',
+      agentAvatar: (p as any).agents?.avatar_url ?? '',
       companyName: (p as any).companies?.name ?? '',
       isFeatured: p.display_on_homepage,
       listingTier: tierMap[p.property_classification ?? ''] ?? 'standard' as const,
