@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  MapPin, Building, Maximize, Phone, Mail, MessageCircle, Heart, Layers, SlidersHorizontal, Loader2,
+  MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
   TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -621,117 +621,162 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
     setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  const secondaryImages = images.length > 1
-    ? images.filter((_, i) => i !== currentImage).slice(0, 1)
-    : [];
+  // 3-image mosaic: main + 2 stacked side images
+  const sideImages = images.length > 1 ? images.filter((_, i) => i !== currentImage).slice(0, 2) : [];
+  const descriptionSnippet = project.description
+    ? project.description.replace(/[#*_~`>]/g, '').slice(0, 180) + (project.description.length > 180 ? '…' : '')
+    : null;
 
   return (
     <Link to={`/projects/${project.id}`} className="block">
-      <div className="flex flex-col md:flex-row bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group">
-        {/* Dual thumbnail area */}
-        <div className="relative w-full md:w-[320px] lg:w-[440px] xl:w-[500px] shrink-0">
-          <div className="flex h-[190px]">
-            {/* Left image */}
-            <div className="relative flex-1 overflow-hidden">
-              <img src={images[currentImage]} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              {images.length > 1 && (
-                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-              )}
-              {images.length > 1 && (
-                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden">
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              )}
-              <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
+        {/* Top row: Image mosaic + Content */}
+        <div className="flex flex-col lg:flex-row">
+          {/* Image mosaic area */}
+          <div className="relative w-full lg:w-[520px] xl:w-[580px] shrink-0">
+            {/* Status badge + photo count overlay bar */}
+            <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-3 py-2 bg-gradient-to-b from-foreground/60 to-transparent">
+              <div className="flex items-center gap-1.5 bg-foreground/70 text-white text-xs px-2 py-1 rounded">
                 <Camera className="h-3 w-3" />
                 <span>{currentImage + 1}/{images.length}</span>
               </div>
               {project.project_status && (
-                <div className="absolute top-2 left-2">
-                  <span className="inline-flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2 py-1 rounded-md shadow-md">
-                    {project.project_status}
-                  </span>
+                <span className="inline-flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2.5 py-1 rounded shadow-sm">
+                  {project.project_status}
+                </span>
+              )}
+            </div>
+
+            <div className="flex h-[220px] lg:h-[260px]">
+              {/* Main large image */}
+              <div className="relative flex-[1.6] overflow-hidden">
+                <img
+                  src={images[currentImage]}
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                {images.length > 1 && (
+                  <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/50 hover:bg-foreground/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                )}
+                {images.length > 1 && (
+                  <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/50 hover:bg-foreground/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden">
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Two stacked side images */}
+              {sideImages.length > 0 && (
+                <div className="hidden lg:flex flex-col flex-1 gap-[2px] ml-[2px]">
+                  <div className="relative flex-1 overflow-hidden">
+                    <img
+                      src={sideImages[0]}
+                      alt={`${project.title} 2`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {images.length > 1 && (
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/50 hover:bg-foreground/70 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative flex-1 overflow-hidden">
+                    <img
+                      src={sideImages[1] || sideImages[0]}
+                      alt={`${project.title} 3`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
                 </div>
               )}
-              <div className="absolute top-2 right-2 flex items-center gap-1 lg:hidden">
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
-                  <Layers className="h-3.5 w-3.5" />
-                </button>
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
-                  <Heart className="h-3.5 w-3.5" />
-                </button>
-              </div>
             </div>
-            {/* Right image */}
-            <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
-              <img src={secondaryImages[0] || images[currentImage]} alt={`${project.title} 2`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              {images.length > 1 && (
-                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              )}
-              <div className="absolute top-2 right-2 flex items-center gap-1">
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
-                  <Layers className="h-3.5 w-3.5" />
-                </button>
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="p-1.5 rounded-full bg-foreground/40 hover:bg-foreground/60 text-white transition-colors">
-                  <Heart className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-          {/* Price bar */}
-          <div className="bg-foreground px-3 py-1.5 flex items-center justify-between">
-            <span className="text-base font-bold text-background">
-              <span className="text-sm font-normal text-background/80 mr-1">From</span>
-              {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
-            </span>
-            {project.completion_date && (
-              <span className="flex items-center gap-1 text-xs text-background/70">
-                <Calendar className="h-3 w-3" />
-                {project.completion_date}
+
+            {/* Price bar */}
+            <div className="bg-primary px-4 py-2 flex items-center justify-between">
+              <span className="text-lg font-bold text-primary-foreground">
+                {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
               </span>
-            )}
-          </div>
-        </div>
-        {/* Content area */}
-        <div className="flex-1 p-4 flex flex-col justify-between relative">
-          {project.logo_url && (
-            <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
-              <img src={project.logo_url} alt={project.developer ?? project.title} className="h-10 w-auto max-w-[80px] rounded object-contain" />
-              {project.developer && (
-                <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{project.developer}</span>
+              {project.max_price && project.max_price !== project.min_price && (
+                <span className="text-sm text-primary-foreground/80">
+                  up to {project.currency ?? 'TRY'} {project.max_price.toLocaleString()}
+                </span>
               )}
             </div>
-          )}
-          <div className={project.logo_url ? "pr-24" : ""}>
-            <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{project.title}</h3>
-            {project.tagline && <p className="text-sm text-muted-foreground italic mb-1 line-clamp-1">{project.tagline}</p>}
-            <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
-              <span className="line-clamp-1">{loc}</span>
-            </div>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1"><Building className="h-3.5 w-3.5" /><span className="font-medium text-foreground">{project.project_type}</span></span>
-              <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" /><span className="font-medium text-foreground">{project.max_units ?? 0} Units</span></span>
-              {project.developer && !project.logo_url && <span className="text-xs text-muted-foreground">by {project.developer}</span>}
-            </div>
           </div>
-          <div className="flex items-center justify-end mt-4 pt-3 border-t border-border">
-            <div className="flex items-center gap-0">
-              <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                <Phone className="h-4 w-4" /> Call
-              </button>
-              <div className="w-px h-5 bg-border" />
-              <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                <Mail className="h-4 w-4" /> Email
-              </button>
-              <div className="w-px h-5 bg-border" />
-              <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                <MessageCircle className="h-4 w-4" /> WhatsApp
-              </button>
+
+          {/* Content area */}
+          <div className="flex-1 p-5 flex flex-col justify-between">
+            <div>
+              {/* Title */}
+              <h3 className="text-lg font-bold text-foreground mb-0.5 line-clamp-1 group-hover:text-primary transition-colors">{project.title}</h3>
+
+              {/* Location */}
+              <div className="flex items-center gap-1.5 text-muted-foreground text-sm mb-3">
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
+                <span className="line-clamp-1">{loc}</span>
+              </div>
+
+              {/* Property specs row */}
+              <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground mb-4">
+                <span className="flex items-center gap-1.5">
+                  <Building className="h-4 w-4" />
+                  <span className="font-medium text-foreground">{project.project_type}</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Maximize className="h-4 w-4" />
+                  <span className="font-medium text-foreground">{project.max_units ?? 0} Units</span>
+                </span>
+                {project.completion_date && (
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-4 w-4" />
+                    <span className="font-medium text-foreground">{project.completion_date}</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Description snippet */}
+              {descriptionSnippet && (
+                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-3">{descriptionSnippet}</p>
+              )}
+
+              {/* Tagline */}
+              {project.tagline && (
+                <p className="text-xs italic text-muted-foreground/80">{project.tagline}</p>
+              )}
+            </div>
+
+            {/* Footer bar: developer branding + actions */}
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
+              {/* Developer/Company branding */}
+              <div className="flex items-center gap-3">
+                {project.logo_url && (
+                  <img
+                    src={project.logo_url}
+                    alt={project.developer ?? project.title}
+                    className="h-9 w-auto max-w-[100px] rounded object-contain border border-border px-2 py-1 bg-background"
+                  />
+                )}
+                {project.developer && (
+                  <span className="text-xs text-muted-foreground max-w-[140px] truncate">{project.developer}</span>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-1">
+                <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                  <Phone className="h-4 w-4" /> Call
+                </button>
+                <div className="w-px h-5 bg-border" />
+                <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                  <Mail className="h-4 w-4" /> Email
+                </button>
+                <div className="w-px h-5 bg-border" />
+                <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                  <Heart className="h-4 w-4" /> Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
