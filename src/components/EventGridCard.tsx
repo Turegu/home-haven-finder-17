@@ -16,6 +16,15 @@ const formatDate = (dateStr: string | null) => {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+const TierBadge = ({ displayOnHomepage }: { displayOnHomepage: boolean }) => {
+  if (!displayOnHomepage) return null;
+  return (
+    <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+      <Star className="h-4 w-4 text-white" />
+    </span>
+  );
+};
+
 const EventGridCard = ({ event }: EventGridCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const images = event.images && event.images.length > 0 ? event.images : ['/placeholder.svg'];
@@ -63,13 +72,9 @@ const EventGridCard = ({ event }: EventGridCardProps) => {
             <span>{currentImage + 1}/{images.length}</span>
           </div>
 
-          {/* Featured / Premium icons — top-left */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {event.display_on_homepage && (
-              <Badge className="bg-amber-500 hover:bg-amber-500 text-white border-0 text-[10px] uppercase font-bold gap-1">
-                <Star className="h-3 w-3" /> Featured
-              </Badge>
-            )}
+          {/* Tier icon + entry badge — top-left (same as properties) */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1.5 items-start">
+            <TierBadge displayOnHomepage={event.display_on_homepage} />
             {event.entry_type === 'open_invitation' && (
               <Badge className="bg-green-600 hover:bg-green-600 text-white border-0 text-[10px] uppercase font-bold gap-1">
                 <Users className="h-3 w-3" /> Open Invitation
@@ -92,7 +97,6 @@ const EventGridCard = ({ event }: EventGridCardProps) => {
             <div className="text-lg font-bold text-foreground">
               {event.price ? `${event.currency || 'USD'} ${event.price.toLocaleString()}` : 'Free Entry'}
             </div>
-            {/* Company logo: rectangular with object-contain */}
             {companyLogo && (
               <img src={companyLogo} alt="" className="h-7 w-auto max-w-[60px] rounded-lg object-contain" />
             )}

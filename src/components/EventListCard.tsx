@@ -25,6 +25,15 @@ const entryLabel = (entry: string) => {
   return entry;
 };
 
+const TierBadge = ({ displayOnHomepage }: { displayOnHomepage: boolean }) => {
+  if (!displayOnHomepage) return null;
+  return (
+    <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
+      <Star className="h-4 w-4 text-white" />
+    </span>
+  );
+};
+
 const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const images = event.images && event.images.length > 0 ? event.images : ['/placeholder.svg'];
@@ -78,13 +87,9 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
               <span>{currentImage + 1}/{images.length}</span>
             </div>
 
-            {/* Featured / Premium icon — top-left */}
-            <div className="absolute top-2 left-2 flex flex-col gap-1">
-              {event.display_on_homepage && (
-                <Badge className="bg-amber-500 hover:bg-amber-500 text-white border-0 text-[10px] uppercase font-bold gap-1">
-                  <Star className="h-3 w-3" /> Featured
-                </Badge>
-              )}
+            {/* Tier icon — top-left (same circular style as properties) */}
+            <div className="absolute top-2 left-2">
+              <TierBadge displayOnHomepage={event.display_on_homepage} />
             </div>
 
             {/* Event type tag — top-right */}
@@ -151,7 +156,6 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
           {/* Bottom row: agent avatar OR company logo + actions */}
           <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
             <div className="flex items-center gap-2">
-              {/* Agent: circular avatar (like properties) */}
               {agentAvatar ? (
                 <>
                   <Avatar className="h-8 w-8 border-2 border-border shadow-sm">
@@ -162,7 +166,6 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
                 </>
               ) : companyLogo ? (
                 <>
-                  {/* Company: rectangular logo */}
                   <img src={companyLogo} alt={companyName} className="h-7 w-auto max-w-[60px] rounded-lg border border-border object-contain" />
                   <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{companyName}</span>
                 </>
