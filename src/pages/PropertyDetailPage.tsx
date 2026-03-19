@@ -19,6 +19,7 @@ import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
+import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
@@ -39,6 +40,7 @@ const PropertyDetailPage = () => {
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -520,7 +522,7 @@ const PropertyDetailPage = () => {
                   Call
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Mail className="h-4 w-4" />
                   Email
                 </button>
@@ -552,6 +554,30 @@ const PropertyDetailPage = () => {
           </div>
         </section>
       </div>
+
+      <ContactCompanyDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        property={{
+          id: property.id,
+          title: property.title,
+          location: property.location,
+          type: property.type,
+          area: property.area,
+          areaUnit: property.areaUnit,
+          bathrooms: property.bathrooms,
+          bedrooms: property.bedrooms,
+          price: property.price,
+          currency: property.currency,
+          images: property.images,
+          listingId: property.listingId,
+          floorLevel: property.floorLevel,
+          rooms: (property as any).rooms,
+        }}
+        companyId={realCompanyId}
+        agentId={realAgentId}
+        companyName={property.agentCompany}
+      />
 
       <Footer />
     </div>
