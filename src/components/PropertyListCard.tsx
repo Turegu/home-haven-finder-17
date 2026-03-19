@@ -350,6 +350,8 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
       />
     </Link>
   );
-};
+});
+
+PropertyListCard.displayName = 'PropertyListCard';
 
 export default PropertyListCard;
