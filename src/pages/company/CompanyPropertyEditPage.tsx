@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import AmenitiesViewAllDialog from "@/components/AmenitiesViewAllDialog";
 
 /* ─── Options aligned with front-end search filters ─── */
 
