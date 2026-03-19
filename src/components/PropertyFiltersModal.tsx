@@ -75,6 +75,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
 
   function clearAll() {
     setLocal(emptyMoreFilters);
+    onClearAll?.();
   }
 
   function handleApply() {
