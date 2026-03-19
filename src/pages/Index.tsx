@@ -238,18 +238,18 @@ const Index = () => {
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   return (
-    <div className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex items-center justify-center overflow-hidden`}>
+    <div className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden`}>
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${hero?.image_url || defaultBg})` }} />
-      <div className="absolute inset-0 bg-foreground/50" />
-      <div className="relative z-10 text-center px-4 py-12">
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
+      <div className="relative z-10 text-center px-4 pb-10 pt-20">
+        <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
           {hero?.title || "Your Property, Our Priority"}
         </h1>
-        <p className="text-white/80 text-base md:text-lg mb-4 font-light">
+        <p className="text-white/80 text-sm md:text-base mb-4 font-light">
           {hero?.subtitle || "Find your dream property across the Middle East & Turkey"}
         </p>
         {hero?.enable_link && hero?.link_text && (
-          <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2 rounded-full text-sm font-medium border border-white/30">
+          <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors cursor-pointer">
             {hero.link_text}
           </span>
         )}
