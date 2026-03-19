@@ -296,3 +296,113 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
     </Dialog>
   );
 }
+
+/* ─── Unified filter dropdown (with optional search) ─── */
+
+function FilterDropdown({
+  label,
+  icon: Icon,
+  options,
+  selected,
+  onToggle,
+  searchable = false,
+}: {
+  label: string;
+  icon: typeof Building2;
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+  searchable?: boolean;
+}) {
+  const [search, setSearch] = useState('');
+  const filtered = search
+    ? options.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    : options;
+
+  const hasSelected = selected.length > 0;
+
+  return (
+    <Popover onOpenChange={() => setSearch('')}>
+      <PopoverTrigger asChild>
+        <button
+          className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+            hasSelected
+              ? 'border-primary/40 bg-primary/5'
+              : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+          }`}
+        >
+          <span className="flex items-center gap-2.5">
+            <Icon className={`h-4 w-4 ${hasSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`font-medium ${hasSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {label}
+            </span>
+            {hasSelected && (
+              <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
+                {selected.length}
+              </Badge>
+            )}
+          </span>
+          <ChevronRight className="h-4 w-4 text-amber-500 transition-transform group-data-[state=open]:rotate-90" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-0" align="start" sideOffset={6}>
+        {searchable && (
+          <div className="p-2.5 border-b border-border">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={`Search ${label.toLowerCase()}...`}
+                className="w-full h-8 pl-8 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+        )}
+
+        <div
+          className="overflow-y-auto max-h-[280px] p-1.5 space-y-0.5"
+          onWheel={(e) => {
+            const el = e.currentTarget;
+            if (el.scrollHeight <= el.clientHeight) return;
+            e.preventDefault();
+            e.stopPropagation();
+            el.scrollTop += e.deltaY;
+          }}
+        >
+          {filtered.length === 0 && (
+            <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
+          )}
+          {filtered.map((opt) => {
+            const isChecked = selected.includes(opt);
+            return (
+              <label
+                key={opt}
+                className={`flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-md transition-colors ${
+                  isChecked ? 'bg-primary/5' : 'hover:bg-muted'
+                }`}
+              >
+                <Checkbox
+                  checked={isChecked}
+                  onCheckedChange={() => onToggle(opt)}
+                />
+                <span className={`text-sm ${isChecked ? 'text-foreground font-medium' : 'text-foreground'}`}>
+                  {opt}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+
+        {selected.length > 0 && (
+          <div className="px-3 py-2 border-t border-border bg-muted/30">
+            <p className="text-xs text-muted-foreground">
+              <span className="font-medium text-primary">{selected.length}</span> selected
+            </p>
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
