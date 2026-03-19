@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, Camera, MapPin,
-  CalendarDays, Clock, Users, Tag
+  CalendarDays, Clock, Users, Star, Crown
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { EventResult } from '@/hooks/useEventSearch';
@@ -63,22 +63,31 @@ const EventGridCard = ({ event }: EventGridCardProps) => {
             <span>{currentImage + 1}/{images.length}</span>
           </div>
 
-          {/* Event type badge + entry type */}
+          {/* Featured / Premium icon — top-left */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
-            <Badge className="bg-primary hover:bg-primary text-primary-foreground border-0 text-[10px] uppercase font-bold gap-1">
-              <Tag className="h-3 w-3" /> {event.event_type.replace(/_/g, ' ')}
-            </Badge>
+            {event.display_on_homepage && (
+              <Badge className="bg-amber-500 hover:bg-amber-500 text-white border-0 text-[10px] uppercase font-bold gap-1">
+                <Star className="h-3 w-3" /> Featured
+              </Badge>
+            )}
             {event.entry_type === 'open_invitation' && (
               <Badge className="bg-green-600 hover:bg-green-600 text-white border-0 text-[10px] uppercase font-bold gap-1">
                 <Users className="h-3 w-3" /> Open Invitation
               </Badge>
             )}
           </div>
+
+          {/* Event type tag — top-right */}
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-primary hover:bg-primary text-primary-foreground border-0 text-[10px] uppercase font-bold">
+              {event.event_type.replace(/_/g, ' ')}
+            </Badge>
+          </div>
         </div>
 
         {/* Content */}
         <div className="p-4">
-          {/* Price + Company Logo Row */}
+          {/* Price Row */}
           <div className="flex items-center justify-between mb-1">
             <div className="text-lg font-bold text-foreground">
               {event.price ? `${event.currency || 'USD'} ${event.price.toLocaleString()}` : 'Free Entry'}
