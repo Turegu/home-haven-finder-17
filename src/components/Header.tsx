@@ -26,7 +26,7 @@ const Header = () => {
   const [selectedLang, setSelectedLang] = useState<{ id: string; name: string; code: string } | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<{ id: string; name: string; code: string; symbol: string } | null>(null);
   const [selectedArea, setSelectedArea] = useState(AREA_UNITS[0]);
-  const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | 'notifications' | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | 'notifications' | 'saved' | 'compare' | null>(null);
 
   // Auth state
   const [currentUser, setCurrentUser] = useState<{ id: string; email: string; displayName: string } | null>(null);
