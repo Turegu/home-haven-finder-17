@@ -2,13 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  MapPin, Building, Maximize, Phone, Mail, MessageCircle, Heart, Layers, SlidersHorizontal, Loader2
+  MapPin, Building, Maximize, Phone, Mail, MessageCircle, Heart, Layers, SlidersHorizontal, Loader2,
+  TreePine, Lamp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import AmenitiesViewAllDialog from '@/components/AmenitiesViewAllDialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronDown } from 'lucide-react';
 import Header from '@/components/Header';
@@ -27,7 +29,8 @@ const ProjectsPage = () => {
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
   const projectStatuses = [...(fo["project_statuses"] || []), 'Any'];
-  const projectAmenities = [...(fo["exterior_amenities"] || []), ...(fo["proximity"] || [])];
+  const extAmenityOptions = fo["exterior_amenities"] || [];
+  const intAmenityOptions = fo["interior_amenities"] || [];
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
@@ -40,7 +43,8 @@ const ProjectsPage = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [projectStatus, setProjectStatus] = useState('');
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [exteriorAmenities, setExteriorAmenities] = useState<string[]>([]);
+  const [interiorAmenities, setInteriorAmenities] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [committedParams, setCommittedParams] = useState<ProjectSearchParams>({
@@ -73,13 +77,13 @@ const ProjectsPage = () => {
       maxArea: maxArea || undefined,
       rooms: rooms.length > 0 ? rooms : undefined,
       projectStatus: projectStatus || undefined,
-      amenities: selectedAmenities.length > 0 ? selectedAmenities : undefined,
+      amenities: [...exteriorAmenities, ...interiorAmenities].length > 0 ? [...exteriorAmenities, ...interiorAmenities] : undefined,
       sortBy,
       page: 1,
       pageSize: 21,
     });
     setCurrentPage(1);
-  }, [location, keyword, selectedUnitTypes, minPrice, maxPrice, minArea, maxArea, rooms, projectStatus, selectedAmenities, sortBy]);
+  }, [location, keyword, selectedUnitTypes, minPrice, maxPrice, minArea, maxArea, rooms, projectStatus, exteriorAmenities, interiorAmenities, sortBy]);
 
   // Build badges
   const selectedBadges: Record<string, string[]> = {};
@@ -88,10 +92,11 @@ const ProjectsPage = () => {
   if (rooms.length > 0) selectedBadges['Rooms'] = rooms;
   if (minPrice || maxPrice) selectedBadges['Price'] = [`$${minPrice || '0'} - $${maxPrice || '∞'}`];
   if (projectStatus && projectStatus !== 'Any') selectedBadges['Status'] = [projectStatus];
-  if (selectedAmenities.length > 0) selectedBadges['Amenities'] = selectedAmenities;
+  const allAmenities = [...exteriorAmenities, ...interiorAmenities];
+  if (allAmenities.length > 0) selectedBadges['Amenities'] = allAmenities;
 
   const hasBadges = Object.keys(selectedBadges).length > 0;
-  const moreFilterCount = (projectStatus && projectStatus !== 'Any' ? 1 : 0) + selectedAmenities.length;
+  const moreFilterCount = (projectStatus && projectStatus !== 'Any' ? 1 : 0) + allAmenities.length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -190,16 +195,47 @@ const ProjectsPage = () => {
                     </div>
                     <div>
                       <h4 className="text-sm font-semibold text-foreground mb-2">Amenities</h4>
-                      <div className="space-y-1">
-                        {projectAmenities.map((amenity) => (
-                          <label key={amenity} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
-                            <Checkbox
-                              checked={selectedAmenities.includes(amenity)}
-                              onCheckedChange={() => setSelectedAmenities(prev => prev.includes(amenity) ? prev.filter(a => a !== amenity) : [...prev, amenity])}
-                            />
-                            <span className="text-sm text-foreground">{amenity}</span>
-                          </label>
-                        ))}
+                      <div className="space-y-2">
+                        <AmenitiesViewAllDialog
+                          type="exterior"
+                          options={extAmenityOptions}
+                          selected={exteriorAmenities}
+                          onToggle={(v) => setExteriorAmenities(prev => prev.includes(v) ? prev.filter(a => a !== v) : [...prev, v])}
+                          trigger={
+                            <button type="button" className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+                              exteriorAmenities.length > 0 ? 'border-primary/40 bg-primary/5' : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+                            }`}>
+                              <span className="flex items-center gap-2.5">
+                                <TreePine className={`h-4 w-4 ${exteriorAmenities.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                                <span className={`font-medium ${exteriorAmenities.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>Exterior Amenities</span>
+                                {exteriorAmenities.length > 0 && (
+                                  <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">{exteriorAmenities.length}</Badge>
+                                )}
+                              </span>
+                              <ChevronDown className="h-3.5 w-3.5 text-amber-500" />
+                            </button>
+                          }
+                        />
+                        <AmenitiesViewAllDialog
+                          type="interior"
+                          options={intAmenityOptions}
+                          selected={interiorAmenities}
+                          onToggle={(v) => setInteriorAmenities(prev => prev.includes(v) ? prev.filter(a => a !== v) : [...prev, v])}
+                          trigger={
+                            <button type="button" className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+                              interiorAmenities.length > 0 ? 'border-primary/40 bg-primary/5' : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+                            }`}>
+                              <span className="flex items-center gap-2.5">
+                                <Lamp className={`h-4 w-4 ${interiorAmenities.length > 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                                <span className={`font-medium ${interiorAmenities.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>Interior Amenities</span>
+                                {interiorAmenities.length > 0 && (
+                                  <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">{interiorAmenities.length}</Badge>
+                                )}
+                              </span>
+                              <ChevronDown className="h-3.5 w-3.5 text-amber-500" />
+                            </button>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -229,7 +265,10 @@ const ProjectsPage = () => {
                       else if (key === 'Rooms') setRooms(prev => prev.filter(r => r !== v));
                       else if (key === 'Price') { setMinPrice(''); setMaxPrice(''); }
                       else if (key === 'Status') setProjectStatus('');
-                      else if (key === 'Amenities') setSelectedAmenities(prev => prev.filter(a => a !== v));
+                      else if (key === 'Amenities') {
+                        setExteriorAmenities(prev => prev.filter(a => a !== v));
+                        setInteriorAmenities(prev => prev.filter(a => a !== v));
+                      }
                     });
                   });
                 }}
