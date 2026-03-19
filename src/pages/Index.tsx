@@ -23,6 +23,8 @@ const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
+  const { data: savedIds } = useSavedPropertyIds();
+  const { data: comparedIds } = useComparedPropertyIds();
 
   const { data: featuredProperties = [] } = useQuery({
     queryKey: ['featured-properties'],
