@@ -137,6 +137,8 @@ const BuyPage = () => {
 
   // Query
   const { data, isLoading, isFetching } = usePropertySearch(committedParams);
+  const { data: savedIds } = useSavedPropertyIds();
+  const { data: comparedIds } = useComparedPropertyIds();
   const allProperties = data?.properties ?? [];
   const totalCount = data?.total ?? 0;
 
