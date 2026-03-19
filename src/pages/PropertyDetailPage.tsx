@@ -86,6 +86,39 @@ const PropertyDetailPage = () => {
         });
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+
+        // Fetch similar properties
+        const { data: similar } = await supabase
+          .from('properties')
+          .select('*, agents(name, avatar_url), companies(name, logo_url)')
+          .eq('status', 'active')
+          .eq('property_type', p.property_type)
+          .neq('id', p.id)
+          .limit(3);
+        if (similar) {
+          setSimilarProperties(similar.map((s: any) => ({
+            id: s.id,
+            title: s.title,
+            price: s.price ?? 0,
+            currency: s.currency ?? 'USD',
+            location: s.location || [s.neighbourhood, s.town, s.province].filter(Boolean).join(', ') || 'N/A',
+            city: s.town ?? '',
+            type: s.property_type,
+            area: s.area ?? 0,
+            areaUnit: s.area_unit ?? 'm²',
+            bedrooms: s.bedrooms ?? 0,
+            bathrooms: s.bathrooms ?? 0,
+            images: (s.images?.length > 0) ? s.images : ['/placeholder.svg'],
+            agentLogo: s.companies?.logo_url ?? '',
+            agentName: s.agents?.name ?? '',
+            agentAvatar: s.agents?.avatar_url ?? '',
+            companyName: s.companies?.name ?? '',
+            isFeatured: s.display_on_homepage,
+            listingTier: 'standard' as const,
+            listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+            advertisingTags: s.advertising_tags ?? [],
+          })));
+        }
       }
     };
     fetchProperty();
