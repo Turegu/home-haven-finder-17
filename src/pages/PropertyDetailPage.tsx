@@ -40,6 +40,7 @@ const PropertyDetailPage = () => {
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
