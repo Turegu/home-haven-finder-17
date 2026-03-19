@@ -634,23 +634,23 @@ const CompareListPage = () => {
                   </div>
                 </div>
               )}
-              {/* Winner Banner */}
-              {winner && !aiLoading && (
-                <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 flex items-center gap-3">
-                  <div className="bg-primary rounded-full p-2">
-                    <Trophy className="h-5 w-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Best Investment Pick</p>
-                    <p className="text-lg font-bold text-foreground">{winner}</p>
-                  </div>
+              {/* Rendered AI text - full analysis with pros/cons/verdict */}
+              {aiResult && (
+                <div className="bg-card rounded-lg border border-border p-5 mt-4">
+                  {aiResult.split('\n').map(renderMarkdownLine)}
                 </div>
               )}
 
-              {/* Rendered AI text */}
-              {aiResult && (
-                <div className="bg-card rounded-lg border border-border p-5">
-                  {aiResult.split('\n').map(renderMarkdownLine)}
+              {/* Winner Banner at the bottom for emphasis */}
+              {winner && !aiLoading && (
+                <div className="bg-primary/10 border-2 border-primary/40 rounded-xl p-5 flex items-center gap-4 mt-4">
+                  <div className="bg-primary rounded-full p-3">
+                    <Trophy className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">🏆 Best Investment Pick</p>
+                    <p className="text-xl font-bold text-foreground">{winner}</p>
+                  </div>
                 </div>
               )}
             </div>
