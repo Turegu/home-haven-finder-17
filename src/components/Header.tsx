@@ -35,12 +35,16 @@ const Header = () => {
   const [counts, setCounts] = useState({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
   const [notifications, setNotifications] = useState<{ id: string; title: string; message: string | null; notification_type: string; is_read: boolean; created_at: string; source_company_id: string | null; property_id: string | null }[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [savedItems, setSavedItems] = useState<{ id: string; property_id: string; title: string; price: number | null; currency: string | null; images: string[] | null; location: string | null; created_at: string }[]>([]);
+  const [compareItems, setCompareItems] = useState<{ id: string; property_id: string; title: string; price: number | null; currency: string | null; images: string[] | null; location: string | null; created_at: string }[]>([]);
 
   const langRef = useRef<HTMLDivElement>(null);
   const currRef = useRef<HTMLDivElement>(null);
   const areaRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const savedRef = useRef<HTMLDivElement>(null);
+  const compareRef = useRef<HTMLDivElement>(null);
 
   // Check auth
   useEffect(() => {
