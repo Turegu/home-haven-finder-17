@@ -5,6 +5,7 @@ import {
   CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { EventResult } from '@/hooks/useEventSearch';
 
 interface EventListCardProps {
@@ -42,6 +43,8 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
 
   const companyName = event.companies?.name ?? event.organizer ?? '';
   const companyLogo = event.companies?.logo_url ?? event.logo_url ?? '';
+  const agentName = event.agents?.name ?? '';
+  const agentAvatar = event.agents?.avatar_url ?? '';
 
   return (
     <Link to={`/events/${event.id}`} className="block">
@@ -105,10 +108,10 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
 
         {/* Content area */}
         <div className="flex-1 p-4 flex flex-col justify-between relative">
-          {/* Company logo + name — upper right */}
+          {/* Company logo (rectangular) — upper right of content */}
           {companyLogo && (
             <div className="absolute top-3 right-3 flex-col items-center gap-1 hidden md:flex">
-              <img src={companyLogo} alt={companyName} className="h-10 w-auto max-w-[80px] rounded object-contain" />
+              <img src={companyLogo} alt={companyName} className="h-10 w-auto max-w-[80px] rounded-lg object-contain" />
               <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{companyName}</span>
             </div>
           )}
@@ -145,15 +148,29 @@ const EventListCard = ({ event, onLocationClick }: EventListCardProps) => {
             )}
           </div>
 
-          {/* Bottom row: organizer + actions */}
+          {/* Bottom row: agent avatar OR company logo + actions */}
           <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
             <div className="flex items-center gap-2">
-              {event.companies?.logo_url && (
-                <img src={event.companies.logo_url} alt="" className="h-7 w-7 rounded-full border border-border object-cover" />
+              {/* Agent: circular avatar (like properties) */}
+              {agentAvatar ? (
+                <>
+                  <Avatar className="h-8 w-8 border-2 border-border shadow-sm">
+                    <AvatarImage src={agentAvatar} alt={agentName} className="object-cover" />
+                    <AvatarFallback className="text-xs">{agentName?.charAt(0) || 'A'}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{agentName}</span>
+                </>
+              ) : companyLogo ? (
+                <>
+                  {/* Company: rectangular logo */}
+                  <img src={companyLogo} alt={companyName} className="h-7 w-auto max-w-[60px] rounded-lg border border-border object-contain" />
+                  <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{companyName}</span>
+                </>
+              ) : (
+                <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">
+                  {companyName || event.organizer}
+                </span>
               )}
-              <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">
-                {companyName || event.organizer}
-              </span>
             </div>
             <div className="flex items-center gap-0">
               <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>

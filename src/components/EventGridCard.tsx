@@ -63,7 +63,7 @@ const EventGridCard = ({ event }: EventGridCardProps) => {
             <span>{currentImage + 1}/{images.length}</span>
           </div>
 
-          {/* Featured / Premium icon — top-left */}
+          {/* Featured / Premium icons — top-left */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {event.display_on_homepage && (
               <Badge className="bg-amber-500 hover:bg-amber-500 text-white border-0 text-[10px] uppercase font-bold gap-1">
@@ -87,13 +87,14 @@ const EventGridCard = ({ event }: EventGridCardProps) => {
 
         {/* Content */}
         <div className="p-4">
-          {/* Price Row */}
+          {/* Price + Company Logo Row */}
           <div className="flex items-center justify-between mb-1">
             <div className="text-lg font-bold text-foreground">
               {event.price ? `${event.currency || 'USD'} ${event.price.toLocaleString()}` : 'Free Entry'}
             </div>
+            {/* Company logo: rectangular with object-contain */}
             {companyLogo && (
-              <img src={companyLogo} alt="" className="h-7 w-auto max-w-[60px] object-contain" />
+              <img src={companyLogo} alt="" className="h-7 w-auto max-w-[60px] rounded-lg object-contain" />
             )}
           </div>
 
