@@ -3,6 +3,7 @@ import {
   Search, SlidersHorizontal, ChevronRight,
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
 } from 'lucide-react';
+import AmenitiesViewAllDialog from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -142,22 +143,42 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
             selected={local.propertyAges}
             onToggle={(v) => toggleArray('propertyAges', v)}
           />
-          <FilterDropdown
-            label="Exterior Amenities"
-            icon={TreePine}
-            options={fo["exterior_amenities"] || []}
-            selected={local.exteriorAmenities}
-            onToggle={(v) => toggleArray('exteriorAmenities', v)}
-            searchable
-          />
-          <FilterDropdown
-            label="Interior Amenities"
-            icon={Lamp}
-            options={fo["interior_amenities"] || []}
-            selected={local.interiorAmenities}
-            onToggle={(v) => toggleArray('interiorAmenities', v)}
-            searchable
-          />
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <FilterDropdown
+                label="Exterior Amenities"
+                icon={TreePine}
+                options={fo["exterior_amenities"] || []}
+                selected={local.exteriorAmenities}
+                onToggle={(v) => toggleArray('exteriorAmenities', v)}
+                searchable
+              />
+            </div>
+            <AmenitiesViewAllDialog
+              type="exterior"
+              options={fo["exterior_amenities"] || []}
+              selected={local.exteriorAmenities}
+              onToggle={(v) => toggleArray('exteriorAmenities', v)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <FilterDropdown
+                label="Interior Amenities"
+                icon={Lamp}
+                options={fo["interior_amenities"] || []}
+                selected={local.interiorAmenities}
+                onToggle={(v) => toggleArray('interiorAmenities', v)}
+                searchable
+              />
+            </div>
+            <AmenitiesViewAllDialog
+              type="interior"
+              options={fo["interior_amenities"] || []}
+              selected={local.interiorAmenities}
+              onToggle={(v) => toggleArray('interiorAmenities', v)}
+            />
+          </div>
         </div>
 
         {/* Apply button */}

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import AmenitiesViewAllDialog from "@/components/AmenitiesViewAllDialog";
 
 /* ─── Options aligned with front-end search filters ─── */
 
@@ -495,22 +496,42 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">Amenities</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <MultiSelectDropdown
-              label="Interior Amenities"
-              icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
-              options={filterOpts["interior_amenities"] || []}
-              selected={form.interior_amenities}
-              onToggle={(val) => toggleArrayField("interior_amenities", val)}
-              searchable
-            />
-            <MultiSelectDropdown
-              label="Exterior Amenities"
-              icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
-              options={filterOpts["exterior_amenities"] || []}
-              selected={form.exterior_amenities}
-              onToggle={(val) => toggleArrayField("exterior_amenities", val)}
-              searchable
-            />
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <MultiSelectDropdown
+                  label="Interior Amenities"
+                  icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
+                  options={filterOpts["interior_amenities"] || []}
+                  selected={form.interior_amenities}
+                  onToggle={(val) => toggleArrayField("interior_amenities", val)}
+                  searchable
+                />
+              </div>
+              <AmenitiesViewAllDialog
+                type="interior"
+                options={filterOpts["interior_amenities"] || []}
+                selected={form.interior_amenities}
+                onToggle={(val) => toggleArrayField("interior_amenities", val)}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <MultiSelectDropdown
+                  label="Exterior Amenities"
+                  icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
+                  options={filterOpts["exterior_amenities"] || []}
+                  selected={form.exterior_amenities}
+                  onToggle={(val) => toggleArrayField("exterior_amenities", val)}
+                  searchable
+                />
+              </div>
+              <AmenitiesViewAllDialog
+                type="exterior"
+                options={filterOpts["exterior_amenities"] || []}
+                selected={form.exterior_amenities}
+                onToggle={(val) => toggleArrayField("exterior_amenities", val)}
+              />
+            </div>
           </div>
         </section>
 
