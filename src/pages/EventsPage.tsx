@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
   ChevronDown, CalendarDays, Loader2,
@@ -19,16 +19,28 @@ import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
 
 const EventsPage = () => {
   const { options: fo } = useFilterOptions('search');
-  const eventTypes = ['All', ...(fo['event_types'] || [])];
+  const eventTypes = fo['event_types'] || [];
+  const routeLocation = useLocation();
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEventType, setSelectedEventType] = useState('All');
+  const [selectedEventType, setSelectedEventType] = useState('');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
   const [keyword, setKeyword] = useState('');
+
+  // Reset all filters when navigating to /events (e.g. clicking nav link)
+  useEffect(() => {
+    setKeyword('');
+    setSelectedEventType('');
+    setDateRange({});
+    setLocation({});
+    setSortBy('newest');
+    setCurrentPage(1);
+    setCommittedParams({ sortBy: 'newest', page: 1, pageSize: LIST_ITEMS });
+  }, [routeLocation.key]);
 
   const GRID_ITEMS = 15;
   const LIST_ITEMS = 12;
@@ -53,7 +65,7 @@ const EventsPage = () => {
       district: location.district,
       neighborhood: location.neighborhood,
       keyword: keyword.trim() || undefined,
-      eventType: selectedEventType !== 'All' ? selectedEventType : undefined,
+      eventType: selectedEventType || undefined,
       dateFrom: dateRange.from?.toISOString(),
       dateTo: dateRange.to?.toISOString(),
       sortBy,
@@ -92,8 +104,8 @@ const EventsPage = () => {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
-                  <span className={selectedEventType === 'All' ? 'text-muted-foreground' : 'text-foreground'}>
-                    {selectedEventType === 'All' ? 'Event Type' : selectedEventType}
+                  <span className={!selectedEventType ? 'text-muted-foreground' : 'text-foreground'}>
+                    {selectedEventType || 'Event Type'}
                   </span>
                   <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
                 </button>
@@ -103,7 +115,7 @@ const EventsPage = () => {
                   {eventTypes.map((type) => (
                     <button
                       key={type}
-                      onClick={() => setSelectedEventType(type)}
+                      onClick={() => setSelectedEventType(prev => prev === type ? '' : type)}
                       className={`w-full text-left px-3 py-1.5 text-sm rounded-md transition-colors ${
                         selectedEventType === type
                           ? 'bg-primary text-primary-foreground'
