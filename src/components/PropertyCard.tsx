@@ -113,15 +113,6 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
           </button>
         </div>
 
-        {/* Company Logo */}
-        <div className="absolute bottom-2 right-2">
-          <img
-            src={property.agentLogo}
-            alt={property.agentName}
-            className="h-7 w-auto max-w-[60px] object-contain"
-          />
-        </div>
-
         {/* Tier badge + Ad tag — top left */}
         <div className="absolute top-2 left-2 flex flex-col gap-1">
           {property.listingTier === 'premium' && (
@@ -146,10 +137,17 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
 
       {/* Content */}
       <div className="p-4">
-        {/* Price */}
-        <div className="text-lg font-bold text-foreground mb-1">
-          {formatPrice(property.price)}
-          {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
+        {/* Price + Company Logo Row */}
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-lg font-bold text-foreground">
+            {formatPrice(property.price)}
+            {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
+          </div>
+          <img
+            src={property.agentLogo}
+            alt={property.agentName}
+            className="h-7 w-auto max-w-[60px] object-contain"
+          />
         </div>
 
         {/* Title */}
