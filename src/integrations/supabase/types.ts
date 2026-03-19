@@ -2040,6 +2040,29 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_projects_by_units: {
+        Args: {
+          p_amenities?: string[]
+          p_district?: string
+          p_keyword?: string
+          p_limit?: number
+          p_max_area?: number
+          p_max_price?: number
+          p_min_area?: number
+          p_min_price?: number
+          p_neighborhood?: string
+          p_offset?: number
+          p_project_status?: string
+          p_province?: string
+          p_rooms?: string[]
+          p_sort_by?: string
+          p_unit_types?: string[]
+        }
+        Returns: {
+          project_row: Json
+          total_count: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
