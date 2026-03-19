@@ -7,6 +7,9 @@ export async function toggleSaveProperty(propertyId: string): Promise<boolean | 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { toast.error('Please sign in first.'); return null; }
 
+  // Dispatch event early for instant header counter update
+  window.dispatchEvent(new Event('property-actions-changed'));
+
   const { data: existing } = await supabase
     .from('saved_properties')
     .select('id')
@@ -21,7 +24,7 @@ export async function toggleSaveProperty(propertyId: string): Promise<boolean | 
     return false;
   } else {
     const { error } = await supabase.from('saved_properties').insert({ user_id: user.id, property_id: propertyId });
-    if (error) { toast.error('Failed to save property'); return null; }
+    if (error) { toast.error('Failed to save property'); window.dispatchEvent(new Event('property-actions-changed')); return null; }
     toast.success('Property saved!');
     window.dispatchEvent(new Event('property-actions-changed'));
     return true;
