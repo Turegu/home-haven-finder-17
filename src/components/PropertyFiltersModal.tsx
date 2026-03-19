@@ -283,3 +283,55 @@ function FilterDropdown({
     </Popover>
   );
 }
+
+/* ─── Amenities row that opens full dialog on click ─── */
+
+function AmenitiesRowButton({
+  label,
+  icon: Icon,
+  type,
+  options,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  icon: LucideIcon;
+  type: 'exterior' | 'interior';
+  options: string[];
+  selected: string[];
+  onToggle: (v: string) => void;
+}) {
+  const hasSelected = selected.length > 0;
+
+  return (
+    <AmenitiesViewAllDialog
+      type={type}
+      options={options}
+      selected={selected}
+      onToggle={onToggle}
+      trigger={
+        <button
+          type="button"
+          className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
+            hasSelected
+              ? 'border-primary/40 bg-primary/5'
+              : 'border-border bg-background hover:border-primary/30 hover:bg-muted/40'
+          }`}
+        >
+          <span className="flex items-center gap-2.5">
+            <Icon className={`h-4 w-4 ${hasSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`font-medium ${hasSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {label}
+            </span>
+            {hasSelected && (
+              <Badge variant="default" className="h-5 min-w-[20px] px-1.5 flex items-center justify-center text-[10px] rounded-full">
+                {selected.length}
+              </Badge>
+            )}
+          </span>
+          <LayoutGrid className="h-4 w-4 text-primary" />
+        </button>
+      }
+    />
+  );
+}
