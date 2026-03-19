@@ -6,12 +6,14 @@ import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import LanguageSearchDropdown from '@/components/LanguageSearchDropdown';
 import { mockCompanies, mockAgents } from '@/data/mockAgents';
 import { supabase } from '@/integrations/supabase/client';
 
 const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('companies');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
 
   useEffect(() => {
