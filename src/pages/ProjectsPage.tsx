@@ -43,7 +43,8 @@ const ProjectsPage = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [projectStatus, setProjectStatus] = useState('');
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [exteriorAmenities, setExteriorAmenities] = useState<string[]>([]);
+  const [interiorAmenities, setInteriorAmenities] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [committedParams, setCommittedParams] = useState<ProjectSearchParams>({
