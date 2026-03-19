@@ -449,6 +449,7 @@ const BuyPage = () => {
                     areaUnit: p.area_unit ?? 'm²',
                     propertyType: p.property_type,
                   }))}
+                  focusListingId={focusListingId}
                 />
               )}
             </div>
