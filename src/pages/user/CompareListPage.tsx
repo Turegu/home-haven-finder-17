@@ -434,7 +434,10 @@ const CompareListPage = () => {
                 <div key={d.name} className="bg-card rounded-xl border border-border p-5 space-y-4">
                   <div className="flex items-center gap-2 border-b border-border pb-3">
                     <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS[i] }} />
-                    <h3 className="text-sm font-bold text-foreground truncate">{d.name}</h3>
+                    <h3 className="text-sm font-bold text-foreground truncate flex-1">{d.name}</h3>
+                    <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${d.dataSource === 'market' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                      {d.dataSource === 'market' ? '📊 Market Data' : '📐 Estimated'}
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-muted/50 rounded-lg p-3 text-center">
