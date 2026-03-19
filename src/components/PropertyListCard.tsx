@@ -259,7 +259,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
           {/* Bottom row: agent avatar + action buttons */}
           <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-            {/* Agent avatar */}
+            {/* Agent avatar + name */}
             <div className="flex items-center gap-2">
               {property.agentAvatar && (
                 <Avatar className="h-8 w-8 border-2 border-border shadow-sm">
@@ -267,6 +267,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                   <AvatarFallback className="text-xs">AG</AvatarFallback>
                 </Avatar>
               )}
+              <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{property.agentName}</span>
             </div>
             <div className="flex items-center gap-2">
               <Button
