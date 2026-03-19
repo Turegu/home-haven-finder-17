@@ -59,7 +59,16 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
             Commercial
           </button>
         </div>
-        <div className="overflow-y-auto max-h-[280px] p-1 space-y-0.5">
+        <div
+          className="overflow-y-auto max-h-[280px] p-1 space-y-0.5"
+          onWheel={(e) => {
+            const el = e.currentTarget;
+            if (el.scrollHeight <= el.clientHeight) return;
+            e.preventDefault();
+            e.stopPropagation();
+            el.scrollTop += e.deltaY;
+          }}
+        >
           {types.map((type) => (
             <button
               key={type}

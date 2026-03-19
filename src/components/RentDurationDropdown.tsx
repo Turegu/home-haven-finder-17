@@ -37,7 +37,16 @@ export default function RentDurationDropdown({ value, onChange }: RentDurationDr
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-44 p-0" align="start">
-        <div className="overflow-y-auto max-h-[280px] p-1 space-y-0.5">
+        <div
+          className="overflow-y-auto max-h-[280px] p-1 space-y-0.5"
+          onWheel={(e) => {
+            const el = e.currentTarget;
+            if (el.scrollHeight <= el.clientHeight) return;
+            e.preventDefault();
+            e.stopPropagation();
+            el.scrollTop += e.deltaY;
+          }}
+        >
           {durationOptions.map((opt) => (
             <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
               <Checkbox checked={value.includes(opt)} onCheckedChange={() => toggle(opt)} />
