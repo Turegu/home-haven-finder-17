@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, Camera, MapPin,
-  CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Star,
+  CalendarDays, Users, Phone, Mail, MessageCircle, Star,
   Home, Rocket, Bus, Gavel, Store, Mic
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
