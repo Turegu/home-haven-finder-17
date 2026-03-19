@@ -142,20 +142,24 @@ const PropertyCard = ({ property }: PropertyCardProps) => {
 
       {/* Content */}
       <div className="p-4">
+        {/* Price */}
         <div className="text-lg font-bold text-foreground mb-1">
           {formatPrice(property.price)}
           {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
         </div>
 
+        {/* Title */}
         <h3 className="text-sm font-medium text-foreground/90 mb-2 line-clamp-1">
           {property.title}
         </h3>
 
+        {/* Location */}
         <div className="flex items-center gap-1 text-muted-foreground text-xs mb-3">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
           <span className="line-clamp-1">{property.location}</span>
         </div>
 
+        {/* Specs Row */}
         <div className="flex items-center gap-3 pt-3 border-t border-border">
           <SpecItem icon={<Building className="h-3.5 w-3.5" />} label={property.type} />
           <SpecItem icon={<Maximize className="h-3.5 w-3.5" />} label={`${property.area} ${property.areaUnit}`} />
