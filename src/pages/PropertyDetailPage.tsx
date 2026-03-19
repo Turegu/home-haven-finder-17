@@ -78,7 +78,7 @@ const PropertyDetailPage = () => {
           orientation: p.property_orientation ? [p.property_orientation] : [],
           listingId: p.listing_id || '',
           listingDate: p.created_at?.slice(0, 10) || '',
-          listingType: p.property_purpose as 'buy' | 'rent' || 'buy',
+          listingType: (p.property_purpose || 'buy') as 'buy',
           images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
