@@ -86,9 +86,22 @@ const Header = () => {
     });
   };
 
+  const fetchNotifications = async (uid: string) => {
+    const { data, count } = await supabase
+      .from("user_notifications")
+      .select("id, title, message, notification_type, is_read, created_at, source_company_id, property_id", { count: "exact" })
+      .eq("user_id", uid)
+      .eq("is_read", false)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    setNotifications(data || []);
+    setUnreadCount(count || 0);
+  };
+
   useEffect(() => {
     if (!currentUser?.id) return;
     fetchCounts(currentUser.id);
+    fetchNotifications(currentUser.id);
   }, [currentUser?.id]);
 
   // Listen for property action changes to refresh counts
