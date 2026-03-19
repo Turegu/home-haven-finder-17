@@ -59,6 +59,7 @@ export async function toggleCompareProperty(propertyId: string): Promise<boolean
     const { error } = await supabase.from('property_comparisons').insert({ user_id: user.id, property_id: propertyId });
     if (error) { toast.error('Failed to add to compare'); return null; }
     toast.success('Added to compare list!');
+    window.dispatchEvent(new Event('property-actions-changed'));
     return true;
   }
 }
