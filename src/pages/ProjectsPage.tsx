@@ -96,7 +96,7 @@ const ProjectsPage = () => {
   if (allAmenities.length > 0) selectedBadges['Amenities'] = allAmenities;
 
   const hasBadges = Object.keys(selectedBadges).length > 0;
-  const moreFilterCount = (projectStatus && projectStatus !== 'Any' ? 1 : 0) + allAmenities.length;
+  const moreFilterCount = allAmenities.length;
 
   return (
     <div className="min-h-screen bg-background">
