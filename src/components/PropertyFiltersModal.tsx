@@ -3,7 +3,7 @@ import {
   Search, SlidersHorizontal, ChevronRight,
   Building2, Car, Sofa, Calendar, TreePine, Lamp, LayoutGrid,
 } from 'lucide-react';
-import { getIcon } from '@/components/AmenitiesViewAllDialog';
+import AmenitiesViewAllDialog from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
