@@ -358,13 +358,13 @@ const BuyPage = () => {
               Save Search
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
-              <button onClick={() => { setViewMode('grid'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />
               </button>
-              <button onClick={() => { setViewMode('list'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('list'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <List className="h-4 w-4" />
               </button>
-              <button onClick={() => { setViewMode('map'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('map'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <Map className="h-4 w-4" />
               </button>
             </div>
