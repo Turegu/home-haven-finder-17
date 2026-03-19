@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import {
-  Search, SlidersHorizontal, ChevronRight,
-  Building2, Car, Sofa, Calendar, TreePine, Lamp, LayoutGrid,
+  Search, SlidersHorizontal, ChevronRight, Check,
+  Building2, Car, Sofa, Calendar, TreePine, Lamp,
 } from 'lucide-react';
-import AmenitiesViewAllDialog from '@/components/AmenitiesViewAllDialog';
+import { getIcon } from '@/components/AmenitiesViewAllDialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
