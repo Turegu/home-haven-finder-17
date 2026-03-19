@@ -62,7 +62,8 @@ async function fetchEvents(params: EventSearchParams) {
   if (dateFrom) query = query.gte('event_date', dateFrom);
   if (dateTo) query = query.lte('event_date', dateTo);
 
-  // Sort
+  // Sort — featured (display_on_homepage) always first, then user sort
+  query = query.order('display_on_homepage', { ascending: false });
   if (sortBy === 'date_asc') query = query.order('event_date', { ascending: true });
   else if (sortBy === 'date_desc') query = query.order('event_date', { ascending: false });
   else query = query.order('created_at', { ascending: false });
