@@ -4,13 +4,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 import {
-  ExternalLink, Landmark, Search, Calculator, ChevronDown,
-  DollarSign, Percent, Calendar, ArrowRight, Check, Building2
+  ExternalLink, Landmark, Search, Calculator,
+  DollarSign, Percent, Calendar, Check
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 interface Bank {
   id: string;
