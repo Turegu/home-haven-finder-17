@@ -59,6 +59,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_phone", salesPhone),
       saveSetting("sales_whatsapp", salesWhatsapp),
       saveSetting("sales_email", salesEmail),
+      saveSetting("sales_address", salesAddress),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
