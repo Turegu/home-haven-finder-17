@@ -52,7 +52,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
     e.stopPropagation();
     const prev = isFavorited;
     setIsFavorited(!prev);
-    const result = await toggleSaveProperty(property.id);
+    const result = await toggleSaveProperty(property.id, queryClient);
     if (result === null) setIsFavorited(prev);
   };
 
