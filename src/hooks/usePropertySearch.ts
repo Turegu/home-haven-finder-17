@@ -49,12 +49,21 @@ export interface PropertyResult {
   interior_amenities: string[] | null;
   exterior_amenities: string[] | null;
   advertising_tags: string[] | null;
+  property_classification: string | null;
   created_at: string;
   company_id: string | null;
   agent_id: string | null;
   display_on_homepage: boolean;
   property_status: string;
   pin_location: string | null;
+  agents?: {
+    name: string;
+    avatar_url: string | null;
+  } | null;
+  companies?: {
+    name: string;
+    logo_url: string | null;
+  } | null;
 }
 
 export function usePropertySearch(params: PropertySearchParams) {
@@ -63,7 +72,7 @@ export function usePropertySearch(params: PropertySearchParams) {
     queryFn: async () => {
       let query = supabase
         .from("properties")
-        .select("*", { count: "exact" })
+        .select("*, agents(name, avatar_url), companies(name, logo_url)", { count: "exact" })
         .eq("status", "active")
         .eq("property_purpose", params.propertyPurpose === "rent" ? "rent" : "buy");
 

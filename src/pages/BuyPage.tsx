@@ -225,6 +225,10 @@ const BuyPage = () => {
 
   // Map DB results to card-compatible shape
   function toCardProp(p: typeof allProperties[number]) {
+    const tierMap: Record<string, 'premium' | 'featured' | 'standard'> = {
+      premium: 'premium',
+      featured: 'featured',
+    };
     return {
       id: p.id,
       title: p.title,
@@ -238,10 +242,11 @@ const BuyPage = () => {
       bedrooms: p.bedrooms ?? 0,
       bathrooms: p.bathrooms ?? 0,
       images: (p.images && p.images.length > 0) ? p.images : ['/placeholder.svg'],
-      agentLogo: '',
-      agentName: '',
+      agentLogo: (p as any).companies?.logo_url ?? '',
+      agentName: (p as any).agents?.name ?? (p as any).companies?.name ?? '',
+      agentAvatar: (p as any).agents?.avatar_url ?? '',
       isFeatured: p.display_on_homepage,
-      listingTier: 'standard' as const,
+      listingTier: tierMap[p.property_classification ?? ''] ?? 'standard' as const,
       listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
       advertisingTags: p.advertising_tags ?? [],
     };
