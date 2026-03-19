@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ChevronLeft, ChevronRight, Camera, MapPin,
-  CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Star, Crown
+  CalendarDays, Clock, Users, Phone, Mail, MessageCircle, Star
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
