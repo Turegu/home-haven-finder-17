@@ -57,7 +57,7 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
             />
           </div>
         </div>
-        <ScrollArea className="max-h-[280px]">
+        <ScrollArea>
           <div className="p-1 space-y-0.5">
             {filtered.map((opt) => (
               <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
