@@ -195,41 +195,52 @@ const CompareListPage = () => {
     { metric: "Overall", ...Object.fromEntries(scores.map(s => [s.name, s.overall])) },
   ] : [];
 
-  // Clean AI text: remove SCORES and WINNER lines for display
-  const cleanedAiText = aiResult
-    .split('\n')
-    .filter(line => !line.startsWith("SCORES|") && !line.startsWith("WINNER|"))
-    .join('\n');
+  // No need to pre-filter - renderMarkdownLine handles SCORES/WINNER lines
 
   const renderMarkdownLine = (line: string, i: number) => {
-    if (line.startsWith('### ')) return <h3 key={i} className="text-sm font-semibold mt-4 mb-1 text-foreground flex items-center gap-2"><BarChart3 className="h-4 w-4 text-primary" />{line.slice(4)}</h3>;
+    // Skip structural data lines
+    if (line.startsWith("SCORES|") || line.startsWith("WINNER|")) return null;
+    
+    if (line.startsWith('### ')) {
+      return <h3 key={i} className="text-sm font-bold mt-5 mb-2 text-foreground flex items-center gap-2 bg-muted/50 px-3 py-2 rounded-lg"><Home className="h-4 w-4 text-primary" />{line.slice(4)}</h3>;
+    }
     if (line.startsWith('## ')) {
       const text = line.slice(3);
       let icon = <TrendingUp className="h-5 w-5 text-primary" />;
       if (text.toLowerCase().includes('price')) icon = <DollarSign className="h-5 w-5 text-primary" />;
       if (text.toLowerCase().includes('rental')) icon = <Home className="h-5 w-5 text-primary" />;
       if (text.toLowerCase().includes('pros') || text.toLowerCase().includes('cons')) icon = <ThumbsUp className="h-5 w-5 text-primary" />;
-      if (text.toLowerCase().includes('recommendation') || text.toLowerCase().includes('winner')) icon = <Trophy className="h-5 w-5 text-primary" />;
+      if (text.toLowerCase().includes('verdict') || text.toLowerCase().includes('recommendation') || text.toLowerCase().includes('winner')) icon = <Trophy className="h-5 w-5 text-primary" />;
       if (text.toLowerCase().includes('score')) icon = <Star className="h-5 w-5 text-primary" />;
       return <h2 key={i} className="text-base font-bold mt-6 mb-2 text-foreground flex items-center gap-2 border-b border-border pb-2">{icon}{text}</h2>;
     }
     if (line.startsWith('# ')) return <h2 key={i} className="text-lg font-bold mt-4 mb-2 text-foreground">{line.slice(2)}</h2>;
-    if (line.startsWith('- **Pro') || line.startsWith('* **Pro') || (line.startsWith('- ') && line.toLowerCase().includes('pro'))) {
-      return <p key={i} className="ml-4 text-sm text-foreground/90 flex items-start gap-2 my-0.5"><ThumbsUp className="h-3.5 w-3.5 text-green-500 mt-0.5 shrink-0" /><span>{line.replace(/^[-*]\s*/, '').replace(/\*\*/g, '')}</span></p>;
+    
+    // Pro items (✅ or **Pro**)
+    if (line.includes('✅')) {
+      return <p key={i} className="ml-4 text-sm text-foreground/90 flex items-start gap-2 my-1"><ThumbsUp className="h-4 w-4 text-green-500 mt-0.5 shrink-0" /><span>{line.replace(/^[-*]\s*/, '').replace('✅ ', '').replace('✅', '').replace(/\*\*/g, '')}</span></p>;
     }
-    if (line.startsWith('- **Con') || line.startsWith('* **Con') || (line.startsWith('- ') && line.toLowerCase().includes('con'))) {
-      return <p key={i} className="ml-4 text-sm text-foreground/90 flex items-start gap-2 my-0.5"><ThumbsDown className="h-3.5 w-3.5 text-red-400 mt-0.5 shrink-0" /><span>{line.replace(/^[-*]\s*/, '').replace(/\*\*/g, '')}</span></p>;
+    // Con items (❌ or **Con**)
+    if (line.includes('❌')) {
+      return <p key={i} className="ml-4 text-sm text-foreground/90 flex items-start gap-2 my-1"><ThumbsDown className="h-4 w-4 text-red-400 mt-0.5 shrink-0" /><span>{line.replace(/^[-*]\s*/, '').replace('❌ ', '').replace('❌', '').replace(/\*\*/g, '')}</span></p>;
     }
-    if (line.startsWith('- ') || line.startsWith('* ')) return <p key={i} className="ml-4 text-sm text-foreground/90 flex items-start gap-2 my-0.5"><span className="text-primary mt-0.5">•</span><span>{line.slice(2)}</span></p>;
-    if (line.startsWith('**') && line.endsWith('**')) return <p key={i} className="font-semibold text-sm mt-2">{line.replace(/\*\*/g, '')}</p>;
+    
+    if (line.startsWith('- ') || line.startsWith('* ')) {
+      const content = line.slice(2);
+      return <p key={i} className="ml-4 text-sm text-foreground/90 flex items-start gap-2 my-1"><span className="text-primary mt-0.5 shrink-0">•</span><span>{renderInlineBold(content)}</span></p>;
+    }
     if (line.trim() === '') return <div key={i} className="h-2" />;
-    // Bold inline
-    const parts = line.split(/(\*\*[^*]+\*\*)/g);
-    return <p key={i} className="text-sm text-foreground/90 my-0.5">{parts.map((part, j) =>
+    // Regular paragraph with inline bold
+    return <p key={i} className="text-sm text-foreground/90 my-0.5">{renderInlineBold(line)}</p>;
+  };
+
+  const renderInlineBold = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, j) =>
       part.startsWith('**') && part.endsWith('**')
-        ? <strong key={j} className="text-foreground">{part.slice(2, -2)}</strong>
+        ? <strong key={j} className="text-foreground font-semibold">{part.slice(2, -2)}</strong>
         : part
-    )}</p>;
+    );
   };
 
   return (
@@ -434,11 +445,23 @@ const CompareListPage = () => {
                   </div>
                 </div>
               )}
+              {/* Winner Banner */}
+              {winner && !aiLoading && (
+                <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 flex items-center gap-3">
+                  <div className="bg-primary rounded-full p-2">
+                    <Trophy className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Best Investment Pick</p>
+                    <p className="text-lg font-bold text-foreground">{winner}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Rendered AI text */}
-              {cleanedAiText && (
+              {aiResult && (
                 <div className="bg-card rounded-lg border border-border p-5">
-                  {cleanedAiText.split('\n').map(renderMarkdownLine)}
+                  {aiResult.split('\n').map(renderMarkdownLine)}
                 </div>
               )}
             </div>
