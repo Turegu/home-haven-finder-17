@@ -29,7 +29,8 @@ const ProjectsPage = () => {
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
   const projectStatuses = [...(fo["project_statuses"] || []), 'Any'];
-  const projectAmenities = [...(fo["exterior_amenities"] || []), ...(fo["proximity"] || [])];
+  const extAmenityOptions = fo["exterior_amenities"] || [];
+  const intAmenityOptions = fo["interior_amenities"] || [];
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [sortBy, setSortBy] = useState('newest');
