@@ -43,7 +43,7 @@ interface PropertyFiltersModalProps {
   onClearAll?: () => void;
 }
 
-export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
+export default function PropertyFiltersModal({ filters, onFiltersChange, onClearAll }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
   const [amenitiesOpen, setAmenitiesOpen] = useState(false);
   const [amenitySearch, setAmenitySearch] = useState('');
