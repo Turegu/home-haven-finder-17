@@ -306,7 +306,7 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
               <div className="w-px h-5 bg-border" />
               <button
                 className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEmailDialogOpen(true); }}
               >
                 <Mail className="h-4 w-4" />
                 Email
