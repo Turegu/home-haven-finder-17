@@ -271,6 +271,8 @@ const CompanyProjectEditPage = () => {
         project_status: data.project_status || "new",
         interior_amenities: (data as any).interior_amenities || [],
         exterior_amenities: (data as any).exterior_amenities || [],
+        advertising_tags: (data as any).advertising_tags || [],
+        property_classification: (data as any).property_classification || "",
         province: (data as any).province || "", town: (data as any).town || "",
         neighbourhood: (data as any).neighbourhood || "", pin_location: (data as any).pin_location || "",
         location: data.location || "",
