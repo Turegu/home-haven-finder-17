@@ -471,7 +471,7 @@ const PropertyDetailPage = () => {
                   <img
                     src={property.companyLogo}
                     alt={property.agentCompany}
-                    className="h-14 w-24 rounded-lg object-cover border border-border group-hover:border-primary transition-colors"
+                    className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity"
                   />
                   <div>
                     <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>

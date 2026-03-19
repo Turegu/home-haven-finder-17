@@ -105,7 +105,7 @@ const AgentDashboardPage = () => {
             {company && (
               <div className="flex items-center gap-2 mt-0.5">
                 {company.logo_url && (
-                  <img src={company.logo_url} alt={company.name} className="h-4 w-4 rounded object-cover" />
+                  <img src={company.logo_url} alt={company.name} className="h-4 w-auto max-w-[40px] rounded object-contain" />
                 )}
                 <p className="text-sm text-muted-foreground">{company.name}</p>
               </div>

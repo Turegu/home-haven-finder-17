@@ -192,7 +192,7 @@ const AgentsPage = () => {
                   <div className="p-5 relative">
                     <div className="absolute -top-8 left-5">
                       {company.logo_url ? (
-                        <img src={company.logo_url} alt={company.name} className="w-16 h-16 rounded-lg border-2 border-background object-cover shadow-sm" />
+                        <img src={company.logo_url} alt={company.name} className="h-16 w-auto max-w-[80px] rounded-lg border-2 border-background object-contain shadow-sm bg-white" />
                       ) : (
                         <div className="w-16 h-16 rounded-lg border-2 border-background bg-primary/10 flex items-center justify-center text-primary font-bold text-xl shadow-sm">
                           {company.name.charAt(0)}

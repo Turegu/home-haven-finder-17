@@ -311,7 +311,7 @@ const CompanyProfilePage = () => {
               <div className="flex items-center gap-4">
                 {form.logo_url ? (
                   <div className="relative">
-                    <img src={form.logo_url} alt="Logo" className="w-20 h-20 rounded-lg object-cover border border-border" />
+                    <img src={form.logo_url} alt="Logo" className="h-20 w-auto max-w-[120px] rounded-lg object-contain border border-border" />
                     <button onClick={() => updateField("logo_url", "")} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-0.5"><X className="h-3 w-3" /></button>
                   </div>
                 ) : (

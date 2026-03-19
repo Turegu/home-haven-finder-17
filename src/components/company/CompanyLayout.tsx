@@ -99,7 +99,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
           </div>
           <div className="flex items-center gap-3">
             {companyLogo ? (
-              <img src={companyLogo} alt={companyName} className="h-9 w-9 rounded-lg object-cover border border-border" />
+              <img src={companyLogo} alt={companyName} className="h-9 w-auto max-w-[60px] rounded-lg object-contain" />
             ) : (
               <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
                 {companyName?.charAt(0) || "C"}
