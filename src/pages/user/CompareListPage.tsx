@@ -55,10 +55,14 @@ const CompareListPage = () => {
     if (!user) return;
     const { data } = await supabase
       .from("property_comparisons")
-      .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces)")
+      .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces, province, town, neighbourhood, property_purpose)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }) as any;
-    setItems((data || []).map((d: any) => ({ ...d, property: d.properties })));
+    const mappedItems: CompareItem[] = (data || []).map((d: any) => ({ ...d, property: d.properties }));
+    setItems(mappedItems);
+
+    // Fetch real rental market data for each property's area
+    await fetchRentalData(mappedItems);
     setLoading(false);
   };
 
