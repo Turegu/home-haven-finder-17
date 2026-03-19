@@ -294,30 +294,30 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
               )}
               <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{property.agentName}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs gap-1"
+            <div className="flex items-center gap-0">
+              <button
+                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <Phone className="h-3.5 w-3.5" /> Call
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 text-xs gap-1"
+                <Phone className="h-4 w-4" />
+                Call
+              </button>
+              <div className="w-px h-5 bg-border" />
+              <button
+                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <Mail className="h-3.5 w-3.5" /> Email
-              </Button>
-              <Button
-                size="sm"
-                className="h-8 text-xs gap-1 bg-primary hover:bg-primary/90"
+                <Mail className="h-4 w-4" />
+                Email
+              </button>
+              <div className="w-px h-5 bg-border" />
+              <button
+                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
-              </Button>
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </button>
             </div>
           </div>
         </div>
