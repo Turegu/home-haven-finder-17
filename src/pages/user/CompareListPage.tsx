@@ -447,9 +447,9 @@ const CompareListPage = () => {
               )}
 
               {/* Rendered AI text */}
-              {cleanedAiText && (
+              {aiResult && (
                 <div className="bg-card rounded-lg border border-border p-5">
-                  {cleanedAiText.split('\n').map(renderMarkdownLine)}
+                  {aiResult.split('\n').map(renderMarkdownLine)}
                 </div>
               )}
             </div>
