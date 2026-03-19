@@ -17,7 +17,7 @@ import MarketTrends from '@/components/MarketTrends';
 import ROICalculator from '@/components/ROICalculator';
 import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
-import { mockProperties } from '@/data/mockProperties';
+import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 
 const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
@@ -38,6 +38,7 @@ const PropertyDetailPage = () => {
   const [property, setProperty] = useState(mockPropertyDetail);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -85,6 +86,39 @@ const PropertyDetailPage = () => {
         });
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+
+        // Fetch similar properties
+        const { data: similar } = await supabase
+          .from('properties')
+          .select('*, agents(name, avatar_url), companies(name, logo_url)')
+          .eq('status', 'active')
+          .eq('property_type', p.property_type)
+          .neq('id', p.id)
+          .limit(3);
+        if (similar) {
+          setSimilarProperties(similar.map((s: any) => ({
+            id: s.id,
+            title: s.title,
+            price: s.price ?? 0,
+            currency: s.currency ?? 'USD',
+            location: s.location || [s.neighbourhood, s.town, s.province].filter(Boolean).join(', ') || 'N/A',
+            city: s.town ?? '',
+            type: s.property_type,
+            area: s.area ?? 0,
+            areaUnit: s.area_unit ?? 'm²',
+            bedrooms: s.bedrooms ?? 0,
+            bathrooms: s.bathrooms ?? 0,
+            images: (s.images?.length > 0) ? s.images : ['/placeholder.svg'],
+            agentLogo: s.companies?.logo_url ?? '',
+            agentName: s.agents?.name ?? '',
+            agentAvatar: s.agents?.avatar_url ?? '',
+            companyName: s.companies?.name ?? '',
+            isFeatured: s.display_on_homepage,
+            listingTier: 'standard' as const,
+            listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+            advertisingTags: s.advertising_tags ?? [],
+          })));
+        }
       }
     };
     fetchProperty();
@@ -510,7 +544,7 @@ const PropertyDetailPage = () => {
         <section className="mt-12">
           <h2 className="text-xl font-bold text-foreground mb-6">Similar Properties</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProperties.slice(0, 3).map((p) => (
+            {similarProperties.map((p) => (
               <Link key={p.id} to={`/property/${p.id}`}>
                 <PropertyCard property={p} />
               </Link>

@@ -4,8 +4,10 @@ import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
 import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
-import { mockProperties, mockProjects } from '@/data/mockProperties';
+import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CmsContent {
   hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
@@ -20,6 +22,40 @@ const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
+
+  const { data: featuredProperties = [] } = useQuery({
+    queryKey: ['featured-properties'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('properties')
+        .select('*, agents(name, avatar_url), companies(name, logo_url)')
+        .eq('status', 'active')
+        .eq('display_on_homepage', true)
+        .limit(6);
+      return (data || []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        price: p.price ?? 0,
+        currency: p.currency ?? 'USD',
+        location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
+        city: p.town ?? '',
+        type: p.property_type,
+        area: p.area ?? 0,
+        areaUnit: p.area_unit ?? 'm²',
+        bedrooms: p.bedrooms ?? 0,
+        bathrooms: p.bathrooms ?? 0,
+        images: (p.images?.length > 0) ? p.images : ['/placeholder.svg'],
+        agentLogo: p.companies?.logo_url ?? '',
+        agentName: p.agents?.name ?? '',
+        agentAvatar: p.agents?.avatar_url ?? '',
+        companyName: p.companies?.name ?? '',
+        isFeatured: true,
+        listingTier: 'standard' as const,
+        listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+        advertisingTags: p.advertising_tags ?? [],
+      }));
+    },
+  });
 
   const hero = cms.hero || {};
   const secondBanner = cms.second_banner || {};
@@ -71,7 +107,7 @@ const Index = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockProperties.filter(p => p.isFeatured).map((property) => (
+          {featuredProperties.map((property) => (
             <Link key={property.id} to={`/property/${property.id}`}>
               <PropertyCard property={property} />
             </Link>
