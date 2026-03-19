@@ -16,7 +16,7 @@ interface PropertyListCardProps {
   onLocationClick?: (propertyId: string) => void;
 }
 
-const PropertyListCard = ({ property }: PropertyListCardProps) => {
+const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
