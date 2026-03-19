@@ -213,6 +213,19 @@ const Header = () => {
     setUnreadCount(0);
   };
 
+  const removeSavedProperty = async (id: string) => {
+    await supabase.from("saved_properties").delete().eq("id", id);
+    setSavedItems(prev => prev.filter(s => s.id !== id));
+    setCounts(prev => ({ ...prev, savedProperties: Math.max(0, prev.savedProperties - 1) }));
+    window.dispatchEvent(new Event('property-actions-changed'));
+  };
+
+  const removeCompareItem = async (id: string) => {
+    await supabase.from("property_comparisons").delete().eq("id", id);
+    setCompareItems(prev => prev.filter(c => c.id !== id));
+    setCounts(prev => ({ ...prev, compare: Math.max(0, prev.compare - 1) }));
+    window.dispatchEvent(new Event('property-actions-changed'));
+
   const timeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
