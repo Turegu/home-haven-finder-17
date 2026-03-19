@@ -17,7 +17,7 @@ import MarketTrends from '@/components/MarketTrends';
 import ROICalculator from '@/components/ROICalculator';
 import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
-import { mockProperties } from '@/data/mockProperties';
+import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 
 const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
