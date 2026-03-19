@@ -23,6 +23,40 @@ const Index = () => {
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
 
+  const { data: featuredProperties = [] } = useQuery({
+    queryKey: ['featured-properties'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('properties')
+        .select('*, agents(name, avatar_url), companies(name, logo_url)')
+        .eq('status', 'active')
+        .eq('display_on_homepage', true)
+        .limit(6);
+      return (data || []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        price: p.price ?? 0,
+        currency: p.currency ?? 'USD',
+        location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
+        city: p.town ?? '',
+        type: p.property_type,
+        area: p.area ?? 0,
+        areaUnit: p.area_unit ?? 'm²',
+        bedrooms: p.bedrooms ?? 0,
+        bathrooms: p.bathrooms ?? 0,
+        images: (p.images?.length > 0) ? p.images : ['/placeholder.svg'],
+        agentLogo: p.companies?.logo_url ?? '',
+        agentName: p.agents?.name ?? '',
+        agentAvatar: p.agents?.avatar_url ?? '',
+        companyName: p.companies?.name ?? '',
+        isFeatured: true,
+        listingTier: 'standard' as const,
+        listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+        advertisingTags: p.advertising_tags ?? [],
+      }));
+    },
+  });
+
   const hero = cms.hero || {};
   const secondBanner = cms.second_banner || {};
   const fp = cms.featured_properties || {};
