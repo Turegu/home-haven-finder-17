@@ -70,9 +70,9 @@ const Index = () => {
       <Header />
 
       {/* Hero Banner */}
-      <section className="relative w-full">
+      <section className="container mx-auto px-4 pt-4">
         {hero.link_url ? (
-          <a href={hero.link_url} target="_blank" rel="noopener noreferrer" className="block relative">
+          <a href={hero.link_url} target="_blank" rel="noopener noreferrer" className="block">
             <HeroBannerContent hero={hero} isMain />
           </a>
         ) : (
