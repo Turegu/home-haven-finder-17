@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart, Layers, Phone, Mail, MessageCircle,
@@ -7,25 +7,24 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Property } from '@/data/mockProperties';
-import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
+import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {
   property: Property;
+  isSaved?: boolean;
+  isCompared?: boolean;
   onLocationClick?: (propertyId: string) => void;
 }
 
-const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) => {
+const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, onLocationClick }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [isCompared, setIsCompared] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(isSaved);
+  const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-
-  useEffect(() => {
-    checkIfSaved(property.id).then(setIsFavorited);
-    checkIfCompared(property.id).then(setIsCompared);
-  }, [property.id]);
+  const queryClient = useQueryClient();
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,10 +41,10 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
   const handleCompare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const prev = isCompared;
-    setIsCompared(!prev);
-    const result = await toggleCompareProperty(property.id);
-    if (result === null) setIsCompared(prev);
+    const prev = isComparedLocal;
+    setIsComparedLocal(!prev);
+    const result = await toggleCompareProperty(property.id, queryClient);
+    if (result === null) setIsComparedLocal(prev);
   };
 
   const handleFavorite = async (e: React.MouseEvent) => {
@@ -53,7 +52,7 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
     e.stopPropagation();
     const prev = isFavorited;
     setIsFavorited(!prev);
-    const result = await toggleSaveProperty(property.id);
+    const result = await toggleSaveProperty(property.id, queryClient);
     if (result === null) setIsFavorited(prev);
   };
 
@@ -127,7 +126,7 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
               <div className="absolute top-2 right-2 flex items-center gap-1 lg:hidden">
                 <button
                   onClick={handleCompare}
-                  className={`p-1.5 rounded-full transition-colors ${isCompared ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
+                  className={`p-1.5 rounded-full transition-colors ${isComparedLocal ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
                   aria-label="Compare"
                 >
                   <Layers className="h-3.5 w-3.5" />
@@ -195,7 +194,7 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
               <div className="absolute top-2 right-2 flex items-center gap-1">
                 <button
                   onClick={handleCompare}
-                  className={`p-1.5 rounded-full transition-colors ${isCompared ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
+                  className={`p-1.5 rounded-full transition-colors ${isComparedLocal ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
                   aria-label="Compare"
                 >
                   <Layers className="h-3.5 w-3.5" />
@@ -351,6 +350,8 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
       />
     </Link>
   );
-};
+});
+
+PropertyListCard.displayName = 'PropertyListCard';
 
 export default PropertyListCard;

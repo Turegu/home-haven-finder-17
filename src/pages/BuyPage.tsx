@@ -24,6 +24,7 @@ import PropertyFiltersModal from '@/components/PropertyFiltersModal';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
 import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
+import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
@@ -136,6 +137,8 @@ const BuyPage = () => {
 
   // Query
   const { data, isLoading, isFetching } = usePropertySearch(committedParams);
+  const { data: savedIds } = useSavedPropertyIds();
+  const { data: comparedIds } = useComparedPropertyIds();
   const allProperties = data?.properties ?? [];
   const totalCount = data?.total ?? 0;
 
@@ -395,7 +398,7 @@ const BuyPage = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {chunk.map((property) => (
                             <Link key={property.id} to={`/property/${property.id}`}>
-                              <PropertyCard property={toCardProp(property)} />
+                              <PropertyCard property={toCardProp(property)} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} />
                             </Link>
                           ))}
                         </div>
@@ -416,7 +419,7 @@ const BuyPage = () => {
                     return (
                       <div key={chunkIdx} className="space-y-6">
                         {chunk.map((property) => (
-                          <PropertyListCard key={property.id} property={toCardProp(property)} onLocationClick={(id) => { setFocusListingId(id); setViewMode('map'); }} />
+                          <PropertyListCard key={property.id} property={toCardProp(property)} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} onLocationClick={(id) => { setFocusListingId(id); setViewMode('map'); }} />
                         ))}
                         {chunkIdx < Math.ceil(allProperties.length / 4) - 1 && (
                           <div className="my-6">

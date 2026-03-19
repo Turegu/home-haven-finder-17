@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { memo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Banner {
@@ -21,11 +22,10 @@ interface BannerDisplayProps {
   className?: string;
 }
 
-const BannerDisplay = ({ pageName, bannerType, position, className = "" }: BannerDisplayProps) => {
-  const [banner, setBanner] = useState<Banner | null>(null);
-
-  useEffect(() => {
-    const fetchBanner = async () => {
+const BannerDisplay = memo(({ pageName, bannerType, position, className = "" }: BannerDisplayProps) => {
+  const { data: banner } = useQuery({
+    queryKey: ["banner", pageName, bannerType, position ?? "any"],
+    queryFn: async () => {
       let query = supabase
         .from("banners")
         .select("*")
@@ -33,21 +33,20 @@ const BannerDisplay = ({ pageName, bannerType, position, className = "" }: Banne
         .eq("banner_type", bannerType)
         .eq("status", "active");
 
-      if (position) {
-        query = query.eq("page_position", position);
-      }
+      if (position) query = query.eq("page_position", position);
 
       const { data } = await query.limit(1);
-      if (data && data.length > 0) {
-        const b = data[0] as Banner;
-        const now = new Date();
-        if (b.start_date && new Date(b.start_date) > now) return;
-        if (b.end_date && new Date(b.end_date) < now) return;
-        if (b.image_url || b.banner_text) setBanner(b);
-      }
-    };
-    fetchBanner();
-  }, [pageName, bannerType, position]);
+      if (!data || data.length === 0) return null;
+
+      const b = data[0] as Banner;
+      const now = new Date();
+      if (b.start_date && new Date(b.start_date) > now) return null;
+      if (b.end_date && new Date(b.end_date) < now) return null;
+      if (!b.image_url && !b.banner_text) return null;
+      return b;
+    },
+    staleTime: 5 * 60 * 1000, // 5 min cache
+  });
 
   if (!banner) return null;
 
@@ -57,6 +56,7 @@ const BannerDisplay = ({ pageName, bannerType, position, className = "" }: Banne
         <img
           src={banner.image_url}
           alt={banner.name}
+          loading="lazy"
           className={`w-full h-auto object-cover ${
             bannerType === "horizontal"
               ? "max-h-[120px] sm:max-h-[160px] md:max-h-[206px]"
@@ -89,6 +89,8 @@ const BannerDisplay = ({ pageName, bannerType, position, className = "" }: Banne
       )}
     </div>
   );
-};
+});
+
+BannerDisplay.displayName = "BannerDisplay";
 
 export default BannerDisplay;

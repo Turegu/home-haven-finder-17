@@ -6,6 +6,7 @@ import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
 import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
+import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -22,6 +23,8 @@ const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
   const { data: locations = [] } = useFeaturedLocations();
   const { data: partners = [] } = usePartners();
+  const { data: savedIds } = useSavedPropertyIds();
+  const { data: comparedIds } = useComparedPropertyIds();
 
   const { data: featuredProperties = [] } = useQuery({
     queryKey: ['featured-properties'],
@@ -109,7 +112,7 @@ const Index = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProperties.map((property) => (
             <Link key={property.id} to={`/property/${property.id}`}>
-              <PropertyCard property={property} />
+              <PropertyCard property={property} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} />
             </Link>
           ))}
         </div>
