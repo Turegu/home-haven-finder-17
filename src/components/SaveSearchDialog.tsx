@@ -7,6 +7,8 @@ import { Bookmark, Loader2, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
+const MAX_SAVED_SEARCHES = 3;
+
 interface SaveSearchDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,6 +44,25 @@ const SaveSearchDialog = ({
     }
 
     setSaving(true);
+
+    // Check max saved searches
+    const { count, error: countErr } = await supabase
+      .from('saved_searches')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    if (countErr) {
+      toast.error('Failed to check saved searches.');
+      setSaving(false);
+      return;
+    }
+
+    if ((count ?? 0) >= MAX_SAVED_SEARCHES) {
+      toast.error(`You can save a maximum of ${MAX_SAVED_SEARCHES} searches. Please delete one first.`);
+      setSaving(false);
+      return;
+    }
+
     const { error } = await supabase.from('saved_searches').insert({
       user_id: user.id,
       title: searchName.trim(),
@@ -55,7 +76,7 @@ const SaveSearchDialog = ({
       return;
     }
 
-    toast.success('Search saved!', { description: 'Visit Saved Searches to manage your alerts.' });
+    toast.success('Search saved!', { description: 'Visit Saved Searches in your dashboard to manage your alerts.' });
     setSearchName('');
     onOpenChange(false);
   };
@@ -74,7 +95,6 @@ const SaveSearchDialog = ({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          {/* Search name input */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Search Name</label>
             <Input
@@ -86,7 +106,6 @@ const SaveSearchDialog = ({
             />
           </div>
 
-          {/* Filter summary */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" />
@@ -94,16 +113,14 @@ const SaveSearchDialog = ({
             </label>
 
             {!hasAnyFilter ? (
-              <p className="text-sm text-muted-foreground italic">No filters selected — this will save a broad search.</p>
+              <p className="text-sm text-muted-foreground italic">No filters selected.</p>
             ) : (
               <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2 max-h-[200px] overflow-y-auto">
-                {/* Type */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Type:</span>
                   <Badge variant="secondary" className="text-xs capitalize">{searchType}</Badge>
                 </div>
 
-                {/* Location */}
                 {locationParts.length > 0 && (
                   <div className="flex items-start gap-2">
                     <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Location:</span>
@@ -111,7 +128,6 @@ const SaveSearchDialog = ({
                   </div>
                 )}
 
-                {/* Keyword */}
                 {keyword && (
                   <div className="flex items-start gap-2">
                     <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Keyword:</span>
@@ -119,7 +135,6 @@ const SaveSearchDialog = ({
                   </div>
                 )}
 
-                {/* Other filters */}
                 {Object.entries(selectedFilters).map(([key, values]) => (
                   <div key={key} className="flex items-start gap-2">
                     <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{key}:</span>
@@ -132,6 +147,8 @@ const SaveSearchDialog = ({
                 ))}
               </div>
             )}
+
+            <p className="text-xs text-muted-foreground">Maximum {MAX_SAVED_SEARCHES} saved searches allowed.</p>
           </div>
         </div>
 
