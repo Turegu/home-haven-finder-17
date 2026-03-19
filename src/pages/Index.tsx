@@ -238,10 +238,15 @@ const Index = () => {
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   return (
-    <div className={`relative w-full ${isMain ? "min-h-[420px] md:min-h-[520px]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden`}>
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${hero?.image_url || defaultBg})` }} />
+    <div className={`relative w-full ${isMain ? "aspect-[21/9] md:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}>
+      <img
+        src={hero?.image_url || defaultBg}
+        alt={hero?.title || "Banner"}
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="lazy"
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
-      <div className="relative z-10 text-center px-4 pb-10 pt-20">
+      <div className="relative z-10 text-center px-4 pb-8 pt-16">
         <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
           {hero?.title || "Your Property, Our Priority"}
         </h1>
