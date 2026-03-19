@@ -5,7 +5,8 @@ import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import {
   Trash2, MapPin, Sparkles, Loader2, TrendingUp, DollarSign,
-  Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star
+  Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star,
+  Building, Percent, CalendarDays, Plane
 } from "lucide-react";
 import { toast } from "sonner";
 import {
