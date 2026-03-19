@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
@@ -18,6 +18,7 @@ import ROICalculator from '@/components/ROICalculator';
 import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import { mockProperties } from '@/data/mockProperties';
+import { supabase } from '@/integrations/supabase/client';
 
 const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
@@ -32,9 +33,69 @@ const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; l
 );
 
 const PropertyDetailPage = () => {
-  const { id: _id } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const property = mockPropertyDetail;
+  const [property, setProperty] = useState(mockPropertyDetail);
+  const [agentData, setAgentData] = useState<{
+    id: string; name: string; designation: string | null; avatar_url: string | null;
+    languages: string[] | null; companies: { id: string; name: string; logo_url: string | null; company_type: string | null } | null;
+  } | null>(null);
+  const [companyData, setCompanyData] = useState<{
+    id: string; name: string; logo_url: string | null; company_type: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProperty = async () => {
+      const { data } = await supabase
+        .from("properties")
+        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type)), companies(id, name, logo_url, company_type)")
+        .eq("id", id)
+        .maybeSingle();
+      if (data) {
+        const p = data as any;
+        setProperty({
+          ...mockPropertyDetail,
+          id: p.id,
+          title: p.title || mockPropertyDetail.title,
+          price: p.price || mockPropertyDetail.price,
+          currency: p.currency || 'USD',
+          location: p.location || mockPropertyDetail.location,
+          city: p.province || mockPropertyDetail.city,
+          type: p.property_type || mockPropertyDetail.type,
+          area: p.area || mockPropertyDetail.area,
+          areaUnit: p.area_unit || 'm²',
+          bedrooms: p.bedrooms ?? mockPropertyDetail.bedrooms,
+          bathrooms: p.bathrooms ?? mockPropertyDetail.bathrooms,
+          parkingSpaces: p.parking_spaces ?? 0,
+          floorLevel: p.floor_level || '—',
+          propertyAge: p.property_age || '—',
+          titleDeed: p.title_deed || '—',
+          propertyStatus: p.property_status || 'New',
+          furniture: p.furniture || '—',
+          orientation: p.property_orientation ? [p.property_orientation] : [],
+          listingId: p.listing_id || '',
+          listingDate: p.created_at?.slice(0, 10) || '',
+          listingType: p.property_purpose as 'buy' | 'rent' || 'buy',
+          images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
+          description: p.description || mockPropertyDetail.description,
+          interiorAmenities: p.interior_amenities || [],
+          exteriorAmenities: p.exterior_amenities || [],
+          rooms: p.rooms || String(p.bedrooms ?? ''),
+          agentName: p.agents?.name || p.companies?.name || mockPropertyDetail.agentName,
+          agentLogo: p.agents?.avatar_url || mockPropertyDetail.agentLogo,
+          agentDesignation: p.agents?.designation || null,
+          agentLanguages: p.agents?.languages || [],
+          agentCompany: p.companies?.name || p.agents?.companies?.name || '',
+          companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
+        });
+        if (p.agents) setAgentData(p.agents);
+        if (p.companies) setCompanyData(p.companies);
+        else if (p.agents?.companies) setCompanyData(p.agents.companies);
+      }
+    };
+    fetchProperty();
+  }, [id]);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
