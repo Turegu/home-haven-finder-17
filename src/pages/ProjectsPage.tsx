@@ -77,7 +77,7 @@ const ProjectsPage = () => {
       maxArea: maxArea || undefined,
       rooms: rooms.length > 0 ? rooms : undefined,
       projectStatus: projectStatus || undefined,
-      amenities: selectedAmenities.length > 0 ? selectedAmenities : undefined,
+      amenities: [...exteriorAmenities, ...interiorAmenities].length > 0 ? [...exteriorAmenities, ...interiorAmenities] : undefined,
       sortBy,
       page: 1,
       pageSize: 21,
