@@ -419,7 +419,7 @@ const BuyPage = () => {
                     return (
                       <div key={chunkIdx} className="space-y-6">
                         {chunk.map((property) => (
-                          <PropertyListCard key={property.id} property={toCardProp(property)} onLocationClick={(id) => { setFocusListingId(id); setViewMode('map'); }} />
+                          <PropertyListCard key={property.id} property={toCardProp(property)} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} onLocationClick={(id) => { setFocusListingId(id); setViewMode('map'); }} />
                         ))}
                         {chunkIdx < Math.ceil(allProperties.length / 4) - 1 && (
                           <div className="my-6">
