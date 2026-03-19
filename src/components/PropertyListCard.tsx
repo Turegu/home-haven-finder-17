@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {
   property: Property;
@@ -19,6 +20,7 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -304,7 +306,7 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
               <div className="w-px h-5 bg-border" />
               <button
                 className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEmailDialogOpen(true); }}
               >
                 <Mail className="h-4 w-4" />
                 Email
@@ -321,6 +323,27 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
           </div>
         </div>
       </div>
+
+      <ContactCompanyDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        property={{
+          id: property.id,
+          title: property.title,
+          location: property.location,
+          type: property.type,
+          area: property.area,
+          areaUnit: property.areaUnit,
+          bathrooms: property.bathrooms,
+          bedrooms: property.bedrooms,
+          price: property.price,
+          currency: property.currency,
+          images: property.images,
+        }}
+        companyId={null}
+        agentId={null}
+        companyName={property.companyName}
+      />
     </Link>
   );
 };

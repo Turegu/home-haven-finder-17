@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -226,13 +226,30 @@ function FitBounds({ positions }: { positions: [number, number][] }) {
   return null;
 }
 
+// Component to auto-open a specific marker's popup
+function FocusMarker({ focusId, markerRefs }: { focusId: string | null; markerRefs: React.MutableRefObject<Record<string, L.Marker>> }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!focusId) return;
+    const marker = markerRefs.current[focusId];
+    if (marker) {
+      const latlng = marker.getLatLng();
+      map.setView(latlng, 12, { animate: true });
+      setTimeout(() => marker.openPopup(), 400);
+    }
+  }, [focusId, map, markerRefs]);
+  return null;
+}
+
 interface ListingMapViewProps {
   listings: MapListing[];
   className?: string;
+  focusListingId?: string | null;
 }
 
-const ListingMapView = ({ listings, className = '' }: ListingMapViewProps) => {
+const ListingMapView = ({ listings, className = '', focusListingId = null }: ListingMapViewProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const markerRefs = useRef<Record<string, L.Marker>>({});
 
   const listingsWithCoords = useMemo(() =>
     listings.map(l => ({
@@ -260,11 +277,13 @@ const ListingMapView = ({ listings, className = '' }: ListingMapViewProps) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <FitBounds positions={positions} />
+        <FocusMarker focusId={focusListingId} markerRefs={markerRefs} />
         {listingsWithCoords.map((listing) => (
           <Marker
             key={listing.id}
             position={listing.coords}
             icon={createPriceIcon(listing.price, listing.currency)}
+            ref={(ref) => { if (ref) markerRefs.current[listing.id] = ref; }}
             eventHandlers={{
               click: () => setSelectedId(listing.id === selectedId ? null : listing.id),
             }}

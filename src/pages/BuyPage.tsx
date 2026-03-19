@@ -37,6 +37,7 @@ const BuyPage = () => {
   const isRent = routerLocation.pathname === '/rent' || searchParams.get('propertyPurpose') === 'rent';
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
+  const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
@@ -357,13 +358,13 @@ const BuyPage = () => {
               Save Search
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
-              <button onClick={() => { setViewMode('grid'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <LayoutGrid className="h-4 w-4" />
               </button>
-              <button onClick={() => { setViewMode('list'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('list'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <List className="h-4 w-4" />
               </button>
-              <button onClick={() => { setViewMode('map'); setCurrentPage(1); }} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
+              <button onClick={() => { setViewMode('map'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'map' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
                 <Map className="h-4 w-4" />
               </button>
             </div>
@@ -415,7 +416,7 @@ const BuyPage = () => {
                     return (
                       <div key={chunkIdx} className="space-y-6">
                         {chunk.map((property) => (
-                          <PropertyListCard key={property.id} property={toCardProp(property)} onLocationClick={() => { setViewMode('map'); }} />
+                          <PropertyListCard key={property.id} property={toCardProp(property)} onLocationClick={(id) => { setFocusListingId(id); setViewMode('map'); }} />
                         ))}
                         {chunkIdx < Math.ceil(allProperties.length / 4) - 1 && (
                           <div className="my-6">
@@ -448,6 +449,7 @@ const BuyPage = () => {
                     areaUnit: p.area_unit ?? 'm²',
                     propertyType: p.property_type,
                   }))}
+                  focusListingId={focusListingId}
                 />
               )}
             </div>
