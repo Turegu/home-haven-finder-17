@@ -229,6 +229,8 @@ const CompanyProjectEditPage = () => {
     project_status: "new",
     interior_amenities: [] as string[],
     exterior_amenities: [] as string[],
+    advertising_tags: [] as string[],
+    property_classification: "",
     province: "", town: "", neighbourhood: "", pin_location: "",
     location: "", video_link: "", view_360_link: "",
   });
