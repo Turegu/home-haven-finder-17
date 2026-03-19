@@ -6,12 +6,14 @@ import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import LanguageSearchDropdown from '@/components/LanguageSearchDropdown';
 import { mockCompanies, mockAgents } from '@/data/mockAgents';
 import { supabase } from '@/integrations/supabase/client';
 
 const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('companies');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
 
   useEffect(() => {
@@ -80,14 +82,11 @@ const AgentsPage = () => {
           <div className="flex-1 w-full">
             <Input placeholder="Enter Search Area, City, Address" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border-border" />
           </div>
-          <div className="border border-border rounded-lg px-3 py-2 w-full md:w-40">
-            <select className="bg-transparent text-sm outline-none w-full text-foreground">
-              <option>Languages</option>
-              <option>English</option>
-              <option>Turkish</option>
-              <option>Arabic</option>
-            </select>
-          </div>
+          <LanguageSearchDropdown
+            selected={selectedLanguages}
+            onChange={setSelectedLanguages}
+            className="w-full md:w-48"
+          />
           <Button className="w-full md:w-auto">
             <Search className="h-4 w-4 mr-1" /> Search
           </Button>
