@@ -104,8 +104,8 @@ const EventsPage = () => {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
-                  <span className={selectedEventType === 'All' ? 'text-muted-foreground' : 'text-foreground'}>
-                    {selectedEventType === 'All' ? 'Event Type' : selectedEventType}
+                  <span className={!selectedEventType ? 'text-muted-foreground' : 'text-foreground'}>
+                    {selectedEventType || 'Event Type'}
                   </span>
                   <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
                 </button>
