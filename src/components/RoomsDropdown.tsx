@@ -1,7 +1,9 @@
-import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, Search } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 
 interface RoomsDropdownProps {
@@ -13,6 +15,12 @@ interface RoomsDropdownProps {
 export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: RoomsDropdownProps) {
   const { options: fo } = useFilterOptions("search");
   const roomOptions = fo["rooms"] || [];
+  const [search, setSearch] = useState("");
+
+  const filtered = search
+    ? roomOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    : roomOptions;
+
   function toggle(opt: string) {
     if (value.includes(opt)) {
       onChange(value.filter(v => v !== opt));
@@ -36,15 +44,29 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
           <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1" align="start">
-        <div className="space-y-0.5">
-          {roomOptions.map((opt) => (
-            <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
-              <Checkbox checked={value.includes(opt)} onCheckedChange={() => toggle(opt)} />
-              <span className="text-sm text-foreground">{opt}</span>
-            </label>
-          ))}
+      <PopoverContent className="w-48 p-0" align="start">
+        <div className="p-2 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search rooms..."
+              className="w-full h-7 pl-7 pr-2 rounded border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+            />
+          </div>
         </div>
+        <ScrollArea className="max-h-[280px]">
+          <div className="p-1 space-y-0.5">
+            {filtered.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer py-1.5 px-2 rounded hover:bg-muted transition-colors">
+                <Checkbox checked={value.includes(opt)} onCheckedChange={() => toggle(opt)} />
+                <span className="text-sm text-foreground">{opt}</span>
+              </label>
+            ))}
+          </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );
