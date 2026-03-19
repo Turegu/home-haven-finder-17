@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
 import { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  Bookmark, ChevronLeft, ChevronRight, Loader2
+  ChevronLeft, ChevronRight, Loader2, Bookmark
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -22,6 +21,7 @@ import BathroomsDropdown from '@/components/BathroomsDropdown';
 import RentDurationDropdown from '@/components/RentDurationDropdown';
 import PropertyFiltersModal from '@/components/PropertyFiltersModal';
 import { SelectedFilterBadges } from '@/components/SearchFilters';
+import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
@@ -59,6 +59,7 @@ const BuyPage = () => {
   const [bathrooms, setBathrooms] = useState<string[]>([]);
   const [rentDuration, setRentDuration] = useState<string[]>([]);
   const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
+  const [saveSearchOpen, setSaveSearchOpen] = useState(false);
 
   // Search params that trigger the query (committed on Search click)
   const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
@@ -334,7 +335,7 @@ const BuyPage = () => {
               <option value="area_desc">Area: Largest First</option>
             </select>
             <button
-              onClick={() => toast.success('Search saved! You\'ll be notified of new matches.', { description: 'Visit Saved Searches to manage your alerts.' })}
+              onClick={() => setSaveSearchOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
@@ -482,6 +483,16 @@ const BuyPage = () => {
       </div>
 
       <Footer />
+
+      <SaveSearchDialog
+        open={saveSearchOpen}
+        onOpenChange={setSaveSearchOpen}
+        searchParams={committedParams as unknown as Record<string, unknown>}
+        selectedFilters={selectedBadges}
+        searchType={isRent ? 'rent' : 'buy'}
+        location={location}
+        keyword={keyword}
+      />
     </div>
   );
 };
