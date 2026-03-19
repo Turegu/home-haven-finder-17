@@ -106,7 +106,22 @@ const HeroSearch = () => {
             ) : (
               <RentDurationDropdown value={rentDuration} onChange={setRentDuration} />
             )}
-            <PropertyFiltersModal filters={moreFilters} onFiltersChange={setMoreFilters} />
+            <PropertyFiltersModal
+              filters={moreFilters}
+              onFiltersChange={setMoreFilters}
+              onClearAll={() => {
+                setLocation({});
+                setKeyword('');
+                setPropertyTypes([]);
+                setMinPrice('');
+                setMaxPrice('');
+                setMinArea('');
+                setMaxArea('');
+                setRooms([]);
+                setBathrooms([]);
+                setRentDuration([]);
+              }}
+            />
           </div>
         </div>
       </div>

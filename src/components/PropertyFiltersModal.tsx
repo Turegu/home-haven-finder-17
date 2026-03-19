@@ -40,9 +40,10 @@ export const emptyMoreFilters: PropertyMoreFilters = {
 interface PropertyFiltersModalProps {
   filters: PropertyMoreFilters;
   onFiltersChange: (filters: PropertyMoreFilters) => void;
+  onClearAll?: () => void;
 }
 
-export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
+export default function PropertyFiltersModal({ filters, onFiltersChange, onClearAll }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
   const [amenitiesOpen, setAmenitiesOpen] = useState(false);
   const [amenitySearch, setAmenitySearch] = useState('');
@@ -74,6 +75,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
 
   function clearAll() {
     setLocal(emptyMoreFilters);
+    onClearAll?.();
   }
 
   function handleApply() {
