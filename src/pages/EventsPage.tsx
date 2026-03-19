@@ -19,16 +19,28 @@ import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
 
 const EventsPage = () => {
   const { options: fo } = useFilterOptions('search');
-  const eventTypes = ['All', ...(fo['event_types'] || [])];
+  const eventTypes = fo['event_types'] || [];
+  const routeLocation = useLocation();
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEventType, setSelectedEventType] = useState('All');
+  const [selectedEventType, setSelectedEventType] = useState('');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
   const [keyword, setKeyword] = useState('');
+
+  // Reset all filters when navigating to /events (e.g. clicking nav link)
+  useEffect(() => {
+    setKeyword('');
+    setSelectedEventType('');
+    setDateRange({});
+    setLocation({});
+    setSortBy('newest');
+    setCurrentPage(1);
+    setCommittedParams({ sortBy: 'newest', page: 1, pageSize: LIST_ITEMS });
+  }, [routeLocation.key]);
 
   const GRID_ITEMS = 15;
   const LIST_ITEMS = 12;
