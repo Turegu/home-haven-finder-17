@@ -176,6 +176,8 @@ export default function PropertyFiltersModal({ filters, onFiltersChange }: Prope
 
 /* ─── Unified filter dropdown (with optional search) ─── */
 
+const MODAL_VISIBLE_COUNT = 8;
+
 function FilterDropdown({
   label,
   icon: Icon,
@@ -192,14 +194,18 @@ function FilterDropdown({
   searchable?: boolean;
 }) {
   const [search, setSearch] = useState('');
+  const [expanded, setExpanded] = useState(false);
   const filtered = search
     ? options.filter(o => o.toLowerCase().includes(search.toLowerCase()))
     : options;
 
+  const showAll = search.length > 0 || expanded;
+  const visible = showAll ? filtered : filtered.slice(0, MODAL_VISIBLE_COUNT);
+  const hasMore = !search && filtered.length > MODAL_VISIBLE_COUNT;
   const hasSelected = selected.length > 0;
 
   return (
-    <Popover>
+    <Popover onOpenChange={() => { setExpanded(false); setSearch(''); }}>
       <PopoverTrigger asChild>
         <button
           className={`group flex items-center justify-between w-full px-3.5 py-3 text-sm rounded-lg border transition-all duration-150 ${
@@ -223,7 +229,6 @@ function FilterDropdown({
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-0" align="start" sideOffset={6}>
-        {/* Search input (always shown for searchable, optional for short lists) */}
         {searchable && (
           <div className="p-2.5 border-b border-border">
             <div className="relative">
@@ -239,34 +244,44 @@ function FilterDropdown({
           </div>
         )}
 
-        <ScrollArea>
-          <div className="p-1.5 space-y-0.5">
-            {filtered.length === 0 && (
-              <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
-            )}
-            {filtered.map((opt) => {
-              const isChecked = selected.includes(opt);
-              return (
-                <label
-                  key={opt}
-                  className={`flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-md transition-colors ${
-                    isChecked ? 'bg-primary/5' : 'hover:bg-muted'
-                  }`}
-                >
-                  <Checkbox
-                    checked={isChecked}
-                    onCheckedChange={() => onToggle(opt)}
-                  />
-                  <span className={`text-sm ${isChecked ? 'text-foreground font-medium' : 'text-foreground'}`}>
-                    {opt}
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-        </ScrollArea>
+        <div className="p-1.5 space-y-0.5">
+          {filtered.length === 0 && (
+            <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
+          )}
+          {visible.map((opt) => {
+            const isChecked = selected.includes(opt);
+            return (
+              <label
+                key={opt}
+                className={`flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-md transition-colors ${
+                  isChecked ? 'bg-primary/5' : 'hover:bg-muted'
+                }`}
+              >
+                <Checkbox
+                  checked={isChecked}
+                  onCheckedChange={() => onToggle(opt)}
+                />
+                <span className={`text-sm ${isChecked ? 'text-foreground font-medium' : 'text-foreground'}`}>
+                  {opt}
+                </span>
+              </label>
+            );
+          })}
+        </div>
 
-        {/* Quick summary footer */}
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="flex items-center justify-center gap-1 w-full py-2 text-xs font-medium text-primary hover:bg-muted/50 border-t border-border transition-colors"
+          >
+            {expanded ? (
+              <>Show Less <ChevronUp className="h-3 w-3" /></>
+            ) : (
+              <>Show More ({filtered.length - MODAL_VISIBLE_COUNT}) <ChevronDown className="h-3 w-3" /></>
+            )}
+          </button>
+        )}
+
         {selected.length > 0 && (
           <div className="px-3 py-2 border-t border-border bg-muted/30">
             <p className="text-xs text-muted-foreground">
