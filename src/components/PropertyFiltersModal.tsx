@@ -44,6 +44,8 @@ interface PropertyFiltersModalProps {
 
 export default function PropertyFiltersModal({ filters, onFiltersChange }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
+  const [amenitiesOpen, setAmenitiesOpen] = useState(false);
+  const [amenitySearch, setAmenitySearch] = useState('');
   const [local, setLocal] = useState<PropertyMoreFilters>(filters);
   const { options: fo } = useFilterOptions("search");
 
