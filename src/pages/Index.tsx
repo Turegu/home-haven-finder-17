@@ -6,6 +6,7 @@ import PropertyCard from '@/components/PropertyCard';
 import Footer from '@/components/Footer';
 import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
+import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
