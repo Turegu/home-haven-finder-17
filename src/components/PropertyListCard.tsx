@@ -206,9 +206,9 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 </button>
               </div>
 
-              {/* Advertising tag — lower left of right thumbnail */}
+              {/* Advertising tag — lower right of right thumbnail */}
               {property.advertisingTags && property.advertisingTags.length > 0 && (
-                <div className="absolute bottom-2 left-2">
+                <div className="absolute bottom-2 right-2">
                   <Badge
                     className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} hover:${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white border-0 gap-1 text-[10px] uppercase font-bold shadow-md`}
                   >
