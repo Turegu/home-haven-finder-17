@@ -295,29 +295,24 @@ const PropertyListCard = ({ property, onLocationClick }: PropertyListCardProps) 
               )}
               <span className="text-xs text-muted-foreground hidden sm:inline max-w-[120px] truncate">{property.agentName}</span>
             </div>
-            <div className="flex items-center gap-0">
+            <div className="flex items-center gap-2">
               <button
-                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
+                className="h-9 w-9 rounded-md bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <Phone className="h-4 w-4" />
-                Call
+                <Phone className="h-4 w-4 text-primary-foreground" fill="currentColor" />
               </button>
-              <div className="w-px h-5 bg-border" />
               <button
-                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
+                className="h-9 w-9 rounded-md bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEmailDialogOpen(true); }}
               >
-                <Mail className="h-4 w-4" />
-                Email
+                <Mail className="h-4 w-4 text-primary-foreground" fill="currentColor" />
               </button>
-              <div className="w-px h-5 bg-border" />
               <button
-                className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
+                className="h-9 w-9 rounded-md bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
+                <MessageCircle className="h-4 w-4 text-primary-foreground" fill="currentColor" />
               </button>
             </div>
           </div>
