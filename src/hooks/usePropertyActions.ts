@@ -42,6 +42,7 @@ export async function toggleCompareProperty(propertyId: string): Promise<boolean
   if (existing) {
     await supabase.from('property_comparisons').delete().eq('id', existing.id);
     toast.success('Removed from compare list');
+    window.dispatchEvent(new Event('property-actions-changed'));
     return false;
   } else {
     // Check max
