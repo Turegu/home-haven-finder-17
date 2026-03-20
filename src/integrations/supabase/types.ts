@@ -1745,6 +1745,53 @@ export type Database = {
           },
         ]
       }
+      property_reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          property_id: string
+          reason: string
+          reporter_email: string | null
+          reporter_phone: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          property_id: string
+          reason: string
+          reporter_email?: string | null
+          reporter_phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          property_id?: string
+          reason?: string
+          reporter_email?: string | null
+          reporter_phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_reports_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_types: {
         Row: {
           created_at: string
