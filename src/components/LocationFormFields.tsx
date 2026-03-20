@@ -91,13 +91,6 @@ const LocationFormFields = ({
   }, [province, town]);
 
   // Auto-populate pin location when dropdowns change
-  const _expectedLocation = useMemo(() => {
-    const parts: string[] = [];
-    if (neighbourhood) parts.push(neighbourhood);
-    if (town) parts.push(town);
-    if (province) parts.push(province);
-    return parts.join(", ");
-  }, [province, town, neighbourhood]);
 
   // Auto-populate pin location when dropdowns change
   const handleProvinceChange = useCallback((v: string) => {
