@@ -251,16 +251,6 @@ const EventDetailPage = () => {
                 </p>
               )}
 
-              {/* Company logo */}
-              {event.companyLogo && (
-                <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
-                  <img src={event.companyLogo} alt={event.agentCompany} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
-                  <div className="text-center">
-                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{event.agentCompany}</h4>
-                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
-                  </div>
-                </Link>
-              )}
 
               {!event.price && (
                 <div className="bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-center mb-4">
