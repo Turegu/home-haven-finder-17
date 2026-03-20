@@ -88,8 +88,6 @@ const EventDetailPage = () => {
 
   const mediaTabs = [
     { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'plans', label: 'Plans', icon: Images },
-    { id: '360', label: '360 View', icon: Globe },
     { id: 'location', label: 'Location', icon: MapPin },
     { id: 'street', label: 'Street View', icon: PersonStanding },
     { id: 'video', label: 'Video', icon: Video },
