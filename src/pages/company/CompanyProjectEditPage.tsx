@@ -208,6 +208,8 @@ const CompanyProjectEditPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [logoUrl, setLogoUrl] = useState("");
+  const [developerLogoUrl, setDeveloperLogoUrl] = useState("");
+  const [isDifferentDeveloper, setIsDifferentDeveloper] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
