@@ -166,13 +166,25 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
               <MapPin className="h-3 w-3 text-primary flex-shrink-0" />
               <span className="line-clamp-2">{property.location}</span>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
-              <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
-              {property.floorLevel && <span className="flex items-center gap-1">≡ {property.floorLevel}</span>}
-              <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {property.area} {property.areaUnit}</span>
-              <span className="flex items-center gap-1"><Bath className="h-3 w-3" /> {property.bathrooms}</span>
-              <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {property.rooms || property.bedrooms}</span>
-            </div>
+            {listingType === 'property' && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
+                <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
+                {property.floorLevel && <span className="flex items-center gap-1">≡ {property.floorLevel}</span>}
+                <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {property.area} {property.areaUnit}</span>
+                <span className="flex items-center gap-1"><Bath className="h-3 w-3" /> {property.bathrooms}</span>
+                <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {property.rooms || property.bedrooms}</span>
+              </div>
+            )}
+            {listingType === 'project' && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
+                <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
+              </div>
+            )}
+            {listingType === 'event' && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
+                <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
+              </div>
+            )}
             <p className="font-bold text-foreground text-sm mt-1.5">{formatPrice(property.price, property.currency)}</p>
           </div>
         </div>
