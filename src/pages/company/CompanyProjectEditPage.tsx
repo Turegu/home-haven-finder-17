@@ -283,6 +283,9 @@ const CompanyProjectEditPage = () => {
       setImages(data.images || []);
       setPlanFiles((data as any).plans || []);
       setLogoUrl((data as any).logo_url || "");
+      const devLogo = (data as any).developer_logo_url || "";
+      setDeveloperLogoUrl(devLogo);
+      setIsDifferentDeveloper(!!devLogo);
       setPdfUrl((data as any).pdf_catalogue_url || "");
       // Fetch units for existing project
       fetchUnits(id as string);
