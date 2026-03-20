@@ -41,6 +41,9 @@ const SavedPropertiesPage = () => {
     if (error) { toast.error("Failed to remove"); return; }
     setItems(p => p.filter(i => i.id !== id));
     queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
+    queryClient.invalidateQueries({ queryKey: ['header-counts'] });
+    queryClient.invalidateQueries({ queryKey: ['header-saved-items'] });
     window.dispatchEvent(new Event('property-actions-changed'));
     toast.success("Removed from saved");
   };
