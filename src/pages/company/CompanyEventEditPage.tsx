@@ -139,6 +139,7 @@ const CompanyEventEditPage = () => {
         description: d.description || "",
         event_type: d.event_type || "open_house",
         event_date: d.event_date ? new Date(d.event_date).toISOString().slice(0, 16) : "",
+        event_end_date: d.event_end_date ? new Date(d.event_end_date).toISOString().slice(0, 16) : "",
         entry_type: d.entry_type || "open_invitation",
         price: d.price?.toString() || "",
         currency: d.currency || "USD",
