@@ -143,7 +143,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
         return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
       });
 
-      const query = `[out:json][timeout:18];(${nodeParts.join('')});out body 20;`;
+      const query = `[out:json][timeout:12];(${nodeParts.join('')});out body 10;`;
 
       const { data, error } = await supabase.functions.invoke('nearby-places-proxy', {
         body: { query },
