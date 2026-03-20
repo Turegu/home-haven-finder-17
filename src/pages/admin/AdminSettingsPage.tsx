@@ -139,6 +139,31 @@ const AdminSettingsPage = () => {
           </Button>
         </div>
 
+        {/* Map Provider */}
+        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Globe className="h-5 w-5" /> Map Provider
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Choose which map service to display on listing pages.
+          </p>
+          <div className="space-y-2">
+            <Label>Active Map Provider</Label>
+            <Select value={mapProvider} onValueChange={setMapProvider}>
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="google">Google Maps</SelectItem>
+                <SelectItem value="leaflet">Leaflet (OpenStreetMap)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>Google Maps provides satellite imagery and Street View. Leaflet uses free OpenStreetMap tiles with no API costs.</span>
+          </div>
+        </div>
         {/* Login Email */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Login Email</h2>
