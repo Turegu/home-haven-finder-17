@@ -41,6 +41,7 @@ const emptyPropertyState = {
   companyLogo: null as string | null,
   agentDesignation: null as string | null,
   agentLanguages: [] as string[],
+  hasAgent: false,
 };
 
 const PropertyDetailPage = () => {
