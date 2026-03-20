@@ -100,6 +100,8 @@ interface PropertyFiltersModalProps {
   onFiltersChange: (filters: PropertyMoreFilters) => void;
   basicFilters?: BasicFilters;
   onBasicFiltersChange?: (filters: BasicFilters) => void;
+  rangeFilters?: RangeFilters;
+  onRangeFiltersChange?: (filters: RangeFilters) => void;
   onClearAll?: () => void;
   isRent?: boolean;
 }
@@ -107,6 +109,7 @@ interface PropertyFiltersModalProps {
 export default function PropertyFiltersModal({
   filters, onFiltersChange,
   basicFilters, onBasicFiltersChange,
+  rangeFilters, onRangeFiltersChange,
   onClearAll, isRent,
 }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
@@ -114,6 +117,7 @@ export default function PropertyFiltersModal({
   const [search, setSearch] = useState('');
   const [localMore, setLocalMore] = useState<PropertyMoreFilters>(filters);
   const [localBasic, setLocalBasic] = useState<BasicFilters>(basicFilters ?? emptyBasicFilters);
+  const [localRange, setLocalRange] = useState<RangeFilters>(rangeFilters ?? emptyRangeFilters);
   const { options: fo } = useFilterOptions("search");
 
   // Combine property type lists into a virtual key
