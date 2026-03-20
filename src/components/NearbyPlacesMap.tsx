@@ -95,18 +95,23 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
     if (!cat) return;
 
     try {
-      // Build Overpass query
-      const radius = 2000; // 2km
-      const tagParts = cat.osmTags.split('|').map(part => {
-        if (part.includes('~')) {
-          const [key, val] = part.split('~');
-          return `node[${key}${val}](around:${radius},${lat},${lng});`;
+      const radius = 2000;
+      // Split on top-level | that separates different tag filters (key~"val1|val2"|otherkey~"val3")
+      // Each segment is like: amenity~"school|university|kindergarten" or highway~"bus_stop"
+      const segments = cat.osmTags.split(/\|(?=[a-z])/).map(s => s.trim()).filter(Boolean);
+      const nodeParts = segments.map(seg => {
+        const tildeIdx = seg.indexOf('~');
+        if (tildeIdx === -1) return '';
+        const key = seg.substring(0, tildeIdx);
+        const rawVal = seg.substring(tildeIdx + 1).replace(/"/g, '');
+        // rawVal may be "school|university|kindergarten" or just "cafe" or "."
+        if (rawVal === '.') {
+          return `node[${key}](around:${radius},${lat},${lng});`;
         }
-        return '';
+        return `node[${key}~"${rawVal}"](around:${radius},${lat},${lng});`;
       }).filter(Boolean);
 
-      // Simpler approach: single combined query
-      const query = `[out:json][timeout:10];(${tagParts.join('')});out body 20;`;
+      const query = `[out:json][timeout:10];(${nodeParts.join('')});out body 20;`;
 
       const res = await fetch('https://overpass-api.de/api/interpreter', {
         method: 'POST',
