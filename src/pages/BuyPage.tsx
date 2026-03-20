@@ -4,7 +4,7 @@ import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMo
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  ChevronLeft, ChevronRight, Loader2, Bookmark
+  ChevronLeft, ChevronRight, Loader2, Bookmark, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
