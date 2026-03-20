@@ -41,6 +41,7 @@ const emptyPropertyState = {
   companyLogo: null as string | null,
   agentDesignation: null as string | null,
   agentLanguages: [] as string[],
+  hasAgent: false,
 };
 
 const PropertyDetailPage = () => {
@@ -91,12 +92,13 @@ const PropertyDetailPage = () => {
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
           exteriorAmenities: p.exterior_amenities || [],
-          agentName: p.agents?.name || p.companies?.name || '',
+          agentName: p.agents?.name || '',
           agentLogo: p.agents?.avatar_url || '',
           agentDesignation: p.agents?.designation || null,
           agentLanguages: p.agents?.languages || [],
           agentCompany: p.companies?.name || p.agents?.companies?.name || '',
           companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
+          hasAgent: !!p.agents,
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
@@ -489,50 +491,78 @@ const PropertyDetailPage = () => {
           {/* Sidebar - Agent Card */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              {/* Agent info — links to agent profile */}
-              <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
-                {property.agentLogo ? (
-                  <img
-                    src={property.agentLogo}
-                    alt={property.agentName}
-                    className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
-                  />
-                ) : (
-                  <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
-                    <Building className="h-10 w-10 text-muted-foreground" />
-                  </div>
-                )}
-                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName || 'Loading...'}</h3>
-                {property.agentDesignation && (
-                  <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
-                )}
-              </Link>
+              {property.hasAgent ? (
+                <>
+                  {/* Agent info — links to agent profile */}
+                  <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
+                    {property.agentLogo ? (
+                      <img
+                        src={property.agentLogo}
+                        alt={property.agentName}
+                        className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
+                      />
+                    ) : (
+                      <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                        <Building className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                    )}
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName || 'Loading...'}</h3>
+                    {property.agentDesignation && (
+                      <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
+                    )}
+                  </Link>
 
-              <Button variant="outline" className="w-full mb-3 gap-2">
-                <UserPlus className="h-4 w-4" />
-                Follow
-              </Button>
+                  <Button variant="outline" className="w-full mb-3 gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Follow
+                  </Button>
 
-              {property.agentLanguages && property.agentLanguages.length > 0 && (
-                <p className="text-xs text-muted-foreground text-center mb-4">
-                  <span className="font-medium text-foreground">Speaks:</span>{' '}
-                  {property.agentLanguages.join(', ')}
-                </p>
-              )}
+                  {property.agentLanguages && property.agentLanguages.length > 0 && (
+                    <p className="text-xs text-muted-foreground text-center mb-4">
+                      <span className="font-medium text-foreground">Speaks:</span>{' '}
+                      {property.agentLanguages.join(', ')}
+                    </p>
+                  )}
 
-              {/* Company logo — links to company profile */}
-              {property.companyLogo && (
-                <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
-                  <img
-                    src={property.companyLogo}
-                    alt={property.agentCompany}
-                    className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity"
-                  />
-                  <div className="text-center">
-                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
-                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
-                  </div>
-                </Link>
+                  {/* Company logo — links to company profile */}
+                  {property.companyLogo && (
+                    <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
+                      <img
+                        src={property.companyLogo}
+                        alt={property.agentCompany}
+                        className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity"
+                      />
+                      <div className="text-center">
+                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
+                        <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                      </div>
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* No agent — show company info as primary */}
+                  <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="block text-center mb-4 group">
+                    {property.companyLogo ? (
+                      <img
+                        src={property.companyLogo}
+                        alt={property.agentCompany}
+                        className="h-32 w-32 rounded-lg object-contain border-2 border-border mx-auto mb-3 p-2 group-hover:border-primary transition-colors"
+                      />
+                    ) : (
+                      <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                        <Building className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                    )}
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentCompany || 'Company'}</h3>
+                    <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
+                  </Link>
+
+                  <Button variant="outline" className="w-full mb-3 gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Follow
+                  </Button>
+                </>
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
