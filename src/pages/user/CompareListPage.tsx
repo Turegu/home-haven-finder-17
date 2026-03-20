@@ -142,6 +142,7 @@ const CompareListPage = () => {
     const { error } = await supabase.from("property_comparisons").delete().eq("id", id);
     if (error) { toast.error("Failed to remove"); return; }
     setItems(p => p.filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
     toast.success("Removed from compare list");
   };
@@ -154,6 +155,7 @@ const CompareListPage = () => {
     setAiResult("");
     setScores([]);
     setWinner("");
+    queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
     toast.success("Compare list cleared");
   };
