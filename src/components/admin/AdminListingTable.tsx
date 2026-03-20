@@ -202,7 +202,14 @@ const AdminListingTable = ({
                   </td>
                   {columns.map((col) => (
                     <td key={col.key} className="p-3 text-foreground">
-                      {renderCell(item, col.key)}
+                      <span className="flex items-center gap-1.5">
+                        {renderCell(item, col.key)}
+                        {col.key === "title" && item.display_on_homepage && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full shrink-0" title="Displayed on Homepage">
+                            <Home className="h-3 w-3" /> Homepage
+                          </span>
+                        )}
+                      </span>
                     </td>
                   ))}
                   <td className="p-3 text-center">{statusBadge(item.status)}</td>
