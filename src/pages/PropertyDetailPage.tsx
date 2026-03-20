@@ -282,7 +282,7 @@ const PropertyDetailPage = () => {
       </div>
 
       {/* Media Gallery — swaps between photos, map, etc. */}
-      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
+      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-visible">
         {/* Photos — default view */}
         <div className={activeTab === 'photos' ? 'h-full' : 'hidden'}>
           <div className="flex h-full">
