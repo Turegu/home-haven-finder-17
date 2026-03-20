@@ -8,6 +8,7 @@ import {
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -134,7 +135,7 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
-        setPinLocation(parsePinLocation(p.pin_location));
+        setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
 
         // Fetch similar properties
         const { data: similar } = await supabase

@@ -13,6 +13,7 @@ import NearbyPlacesMap from '@/components/NearbyPlacesMap';
 import StreetView from '@/components/StreetView';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
+import { getCoordsFromLocation } from '@/lib/mapConstants';
 
 const EventDetailPage = () => {
   const { id } = useParams();
@@ -74,13 +75,15 @@ const EventDetailPage = () => {
   }, [id]);
 
   const pinLocation = useMemo(() => {
-    if (!event?.pinLocation) return null;
-    try {
-      const parts = event.pinLocation.split(',').map(Number);
-      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
-    } catch {}
+    if (event?.pinLocation) {
+      try {
+        const parts = event.pinLocation.split(',').map(Number);
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
+      } catch {}
+    }
+    if (event?.location) return getCoordsFromLocation(event.location);
     return null;
-  }, [event?.pinLocation]);
+  }, [event?.pinLocation, event?.location]);
 
   if (loading || !event) {
     return (
