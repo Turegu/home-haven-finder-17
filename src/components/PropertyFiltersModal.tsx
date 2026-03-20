@@ -464,7 +464,7 @@ export default function PropertyFiltersModal({
             className="px-8 h-10 rounded-lg font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 transition-all duration-200"
           >
             <Check className="h-4 w-4 mr-2" />
-            Done
+            Apply
           </Button>
         </div>
       </DialogContent>
