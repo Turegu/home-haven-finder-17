@@ -802,6 +802,13 @@ const PropertyDetailPage = () => {
         companyName={property.agentCompany}
       />
 
+      <ReportPropertyDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        propertyId={property.id}
+        propertyTitle={property.title}
+      />
+
       <Footer />
     </div>
   );
