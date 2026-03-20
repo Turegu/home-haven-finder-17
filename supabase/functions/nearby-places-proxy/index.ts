@@ -34,11 +34,11 @@ const capRadius = (query: string, maxRadius: number) => {
 };
 
 function buildQueryVariants(originalQuery: string): QueryVariant[] {
-  const trimmed = originalQuery.trim();
+  const trimmed = capRadius(originalQuery.trim(), 4000);
 
   const fallbackQuery = replaceOutLimit(
-    replaceAroundRadius(replaceQueryTimeout(trimmed, 8), 1200),
-    25,
+    replaceAroundRadius(replaceQueryTimeout(trimmed, 10), 2000),
+    15,
   );
 
   return [
@@ -50,7 +50,7 @@ function buildQueryVariants(originalQuery: string): QueryVariant[] {
     {
       name: "fallback_compact",
       query: fallbackQuery,
-      requestTimeoutMs: 12000,
+      requestTimeoutMs: 14000,
     },
   ];
 }
