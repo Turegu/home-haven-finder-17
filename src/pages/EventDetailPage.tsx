@@ -184,10 +184,10 @@ const EventDetailPage = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
                 <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
-                <OverviewItem icon={Timer} label="Time" value={formatTime(event.date)} />
+                <OverviewItem icon={Timer} label="Time" value={`From ${formatTime(event.date)}${event.endDate ? ` To ${formatTime(event.endDate)}` : ''}`} />
                 <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
-                <OverviewItem icon={Ticket} label="Entry" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
-                <OverviewItem icon={DollarSign} label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
+                <OverviewItem icon={Ticket} label="Admission" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
+                <OverviewItem icon={DollarSign} label="Ticket Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
               </div>
               {event.pdfCatalogueUrl && (
                 <a

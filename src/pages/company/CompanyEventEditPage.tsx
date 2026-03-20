@@ -295,9 +295,15 @@ const CompanyEventEditPage = () => {
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Event Date
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time
               </Label>
               <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> End Date & Time
+              </Label>
+              <Input type="datetime-local" value={form.event_end_date} onChange={(e) => updateField("event_end_date", e.target.value)} className="bg-secondary/50" />
             </div>
             <FormSelect
               label="Currency"
