@@ -15,6 +15,7 @@ interface NearbyPlace {
   lat: number;
   lng: number;
   category: string;
+  subtype?: string;
   distance?: number;
   walkTime?: number;
   driveTime?: number;
@@ -164,12 +165,17 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
           const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
           const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
 
+          // Extract human-readable subtype from OSM tags
+          const rawType = el.tags?.amenity || el.tags?.shop || el.tags?.leisure || el.tags?.railway || el.tags?.highway || el.tags?.office || el.tags?.public_transport || '';
+          const subtype = rawType.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+
           return {
             id: String(el.id),
             name: el.tags.name,
             lat: el.lat,
             lng: el.lon,
             category: categoryKey,
+            subtype: subtype || undefined,
             distance: Math.round(dist * 1000),
             walkTime: Math.max(1, Math.round((dist / 5) * 60)),
             driveTime: Math.max(1, Math.round((dist / 40) * 60)),
@@ -324,8 +330,13 @@ const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace;
   const map = useMap();
   return (
   <div className="w-[220px] p-0">
-    <div className="flex items-start justify-between gap-2 mb-2">
-      <h4 className="text-sm font-semibold text-foreground leading-tight">{place.name}</h4>
+    <div className="flex items-start justify-between gap-2 mb-1">
+      <div>
+        <h4 className="text-sm font-semibold text-foreground leading-tight">{place.name}</h4>
+        {place.subtype && (
+          <span className="text-[11px] text-muted-foreground font-light">{place.subtype}</span>
+        )}
+      </div>
       <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); map.closePopup(); onClose(); }} className="text-muted-foreground hover:text-foreground shrink-0 mt-0.5 cursor-pointer z-50">
         <X className="h-3.5 w-3.5" />
       </button>
