@@ -115,7 +115,7 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
       <div className="p-4">
         <div className="flex items-center justify-between mb-1">
           <div className="text-lg font-bold text-foreground">
-            {formatPrice(property.price)}
+            {formatPrice(property.price, property.currency)}
             {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
           </div>
           <img src={property.agentLogo} alt={property.agentName} className="h-7 w-auto max-w-[60px] object-contain" />

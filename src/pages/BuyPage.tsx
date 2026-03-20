@@ -532,17 +532,32 @@ const BuyPage = () => {
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <Button
-                key={page}
-                variant={page === currentPage ? 'default' : 'outline'}
-                size="sm"
-                className="h-9 w-9 p-0"
-                onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              >
-                {page}
-              </Button>
-            ))}
+            {(() => {
+              const pages: (number | string)[] = [];
+              const delta = 2;
+              const left = Math.max(2, currentPage - delta);
+              const right = Math.min(totalPages - 1, currentPage + delta);
+              pages.push(1);
+              if (left > 2) pages.push('...');
+              for (let i = left; i <= right; i++) pages.push(i);
+              if (right < totalPages - 1) pages.push('...');
+              if (totalPages > 1) pages.push(totalPages);
+              return pages.map((page, idx) =>
+                typeof page === 'string' ? (
+                  <span key={`ellipsis-${idx}`} className="h-9 w-9 flex items-center justify-center text-muted-foreground text-sm">…</span>
+                ) : (
+                  <Button
+                    key={page}
+                    variant={page === currentPage ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-9 w-9 p-0"
+                    onClick={() => { setCurrentPage(page); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  >
+                    {page}
+                  </Button>
+                )
+              );
+            })()}
             <Button
               variant="outline"
               size="icon"

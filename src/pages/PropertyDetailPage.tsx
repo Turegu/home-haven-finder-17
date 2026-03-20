@@ -248,7 +248,7 @@ const PropertyDetailPage = () => {
         <div className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
-          <Link to={`/${property.propertyPurpose === 'rent' ? 'buy' : 'buy'}?purpose=${property.propertyPurpose || 'buy'}`} className="hover:text-foreground transition-colors">
+          <Link to={`/${property.propertyPurpose === 'rent' ? 'rent' : 'buy'}`} className="hover:text-foreground transition-colors">
             {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
           </Link>
           {property.province && (
