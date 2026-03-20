@@ -16,6 +16,7 @@ import NearbyPlacesMap from '@/components/NearbyPlacesMap';
 import StreetView from '@/components/StreetView';
 import defaultProjectLogo from '@/assets/default-project-logo.png';
 import { supabase } from '@/integrations/supabase/client';
+import { getCoordsFromLocation } from '@/lib/mapConstants';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
