@@ -1,9 +1,10 @@
 import { ArrowRight, MapPin, ExternalLink } from 'lucide-react';
 import FeaturedProjectCard from '@/components/FeaturedProjectCard';
+import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
-import PropertyCard from '@/components/PropertyCard';
+
 import Footer from '@/components/Footer';
 import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
@@ -133,7 +134,7 @@ const Index = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProperties.map((property) => (
             <Link key={property.id} to={`/property/${property.id}`}>
-              <PropertyCard property={property} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} />
+              <FeaturedPropertyCard property={property} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} />
             </Link>
           ))}
         </div>
