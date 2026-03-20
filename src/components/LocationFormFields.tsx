@@ -90,8 +90,8 @@ const LocationFormFields = ({
     });
   }, [province, town]);
 
-  // Build the expected location string from dropdowns
-  const expectedLocation = useMemo(() => {
+  // Auto-populate pin location when dropdowns change
+  const _expectedLocation = useMemo(() => {
     const parts: string[] = [];
     if (neighbourhood) parts.push(neighbourhood);
     if (town) parts.push(town);
