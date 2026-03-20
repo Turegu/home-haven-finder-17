@@ -261,7 +261,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
             <Marker
               key={place.id}
               position={[place.lat, place.lng]}
-              icon={createPOIIcon(activeCat?.color || '#666', selectedPlace?.id === place.id)}
+              icon={createPOIIcon(activeCat?.color || '#666', selectedPlace?.id === place.id, activeCategory || undefined)}
               eventHandlers={{
                 click: () => setSelectedPlace(place),
               }}
