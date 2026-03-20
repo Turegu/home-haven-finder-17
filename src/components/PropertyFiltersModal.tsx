@@ -40,11 +40,25 @@ export interface BasicFilters {
   rentDuration: string[];
 }
 
+export interface RangeFilters {
+  minPrice: string;
+  maxPrice: string;
+  minArea: string;
+  maxArea: string;
+}
+
 export const emptyBasicFilters: BasicFilters = {
   propertyTypes: [],
   rooms: [],
   bathrooms: [],
   rentDuration: [],
+};
+
+export const emptyRangeFilters: RangeFilters = {
+  minPrice: '',
+  maxPrice: '',
+  minArea: '',
+  maxArea: '',
 };
 
 /* ─── Tab definitions ─── */
@@ -54,18 +68,19 @@ interface FilterTab {
   label: string;
   icon: React.ElementType;
   section: 'essential' | 'advanced';
-  // for essential tabs, reference BasicFilters key
   basicKey?: keyof BasicFilters;
-  // for advanced tabs, reference PropertyMoreFilters key
   filterKey?: keyof PropertyMoreFilters;
   optionKey: string;
-  type: 'simple' | 'amenity';
+  type: 'simple' | 'amenity' | 'range';
   amenityType?: 'interior' | 'exterior';
+  rangeKey?: 'price' | 'area';
 }
 
 const FILTER_TABS: FilterTab[] = [
   // Essential
   { key: 'type', label: 'Property Type', icon: Home, section: 'essential', basicKey: 'propertyTypes', optionKey: '_property_types_combined', type: 'simple' },
+  { key: 'price', label: 'Price', icon: DollarSign, section: 'essential', optionKey: '', type: 'range', rangeKey: 'price' },
+  { key: 'area', label: 'Area', icon: Ruler, section: 'essential', optionKey: '', type: 'range', rangeKey: 'area' },
   { key: 'rooms', label: 'Rooms', icon: BedDouble, section: 'essential', basicKey: 'rooms', optionKey: 'rooms', type: 'simple' },
   { key: 'bathrooms', label: 'Bathrooms', icon: Bath, section: 'essential', basicKey: 'bathrooms', optionKey: 'bathrooms', type: 'simple' },
   { key: 'rentDuration', label: 'Rent Duration', icon: Clock, section: 'essential', basicKey: 'rentDuration', optionKey: 'rent_duration', type: 'simple' },
@@ -85,6 +100,8 @@ interface PropertyFiltersModalProps {
   onFiltersChange: (filters: PropertyMoreFilters) => void;
   basicFilters?: BasicFilters;
   onBasicFiltersChange?: (filters: BasicFilters) => void;
+  rangeFilters?: RangeFilters;
+  onRangeFiltersChange?: (filters: RangeFilters) => void;
   onClearAll?: () => void;
   isRent?: boolean;
 }
@@ -92,6 +109,7 @@ interface PropertyFiltersModalProps {
 export default function PropertyFiltersModal({
   filters, onFiltersChange,
   basicFilters, onBasicFiltersChange,
+  rangeFilters, onRangeFiltersChange,
   onClearAll, isRent,
 }: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
@@ -99,6 +117,7 @@ export default function PropertyFiltersModal({
   const [search, setSearch] = useState('');
   const [localMore, setLocalMore] = useState<PropertyMoreFilters>(filters);
   const [localBasic, setLocalBasic] = useState<BasicFilters>(basicFilters ?? emptyBasicFilters);
+  const [localRange, setLocalRange] = useState<RangeFilters>(rangeFilters ?? emptyRangeFilters);
   const { options: fo } = useFilterOptions("search");
 
   // Combine property type lists into a virtual key
@@ -114,9 +133,10 @@ export default function PropertyFiltersModal({
     if (open) {
       setLocalMore(filters);
       setLocalBasic(basicFilters ?? emptyBasicFilters);
+      setLocalRange(rangeFilters ?? emptyRangeFilters);
       setSearch('');
     }
-  }, [open, filters, basicFilters]);
+  }, [open, filters, basicFilters, rangeFilters]);
 
   // Visible tabs: hide rentDuration if not rent mode
   const visibleTabs = FILTER_TABS.filter(t => {
@@ -129,6 +149,8 @@ export default function PropertyFiltersModal({
 
   // Count helpers
   function getTabCount(tab: FilterTab): number {
+    if (tab.type === 'range' && tab.rangeKey === 'price') return (localRange.minPrice || localRange.maxPrice) ? 1 : 0;
+    if (tab.type === 'range' && tab.rangeKey === 'area') return (localRange.minArea || localRange.maxArea) ? 1 : 0;
     if (tab.section === 'essential' && tab.basicKey) return localBasic[tab.basicKey].length;
     if (tab.section === 'advanced' && tab.filterKey) return localMore[tab.filterKey].length;
     return 0;
@@ -137,10 +159,14 @@ export default function PropertyFiltersModal({
   const totalActiveCount = visibleTabs.reduce((s, t) => s + getTabCount(t), 0);
   const committedCount = (() => {
     const b = basicFilters ?? emptyBasicFilters;
+    const r = rangeFilters ?? emptyRangeFilters;
     const m = filters;
-    return b.propertyTypes.length + b.rooms.length + b.bathrooms.length + b.rentDuration.length +
+    let c = b.propertyTypes.length + b.rooms.length + b.bathrooms.length + b.rentDuration.length +
       m.floorLevels.length + m.parkingSpaces.length + m.furniture.length + m.propertyAges.length +
       m.exteriorAmenities.length + m.interiorAmenities.length;
+    if (r.minPrice || r.maxPrice) c++;
+    if (r.minArea || r.maxArea) c++;
+    return c;
   })();
 
   function toggleValue(tab: FilterTab, value: string) {
@@ -170,14 +196,17 @@ export default function PropertyFiltersModal({
   function clearAll() {
     setLocalMore(emptyMoreFilters);
     setLocalBasic(emptyBasicFilters);
+    setLocalRange(emptyRangeFilters);
     onFiltersChange(emptyMoreFilters);
     onBasicFiltersChange?.(emptyBasicFilters);
+    onRangeFiltersChange?.(emptyRangeFilters);
     onClearAll?.();
   }
 
   function handleApply() {
     onFiltersChange(localMore);
     onBasicFiltersChange?.(localBasic);
+    onRangeFiltersChange?.(localRange);
     setOpen(false);
   }
 
@@ -297,7 +326,7 @@ export default function PropertyFiltersModal({
           </div>
         </div>
 
-        {/* Options grid */}
+        {/* Options content */}
         <div className="overflow-hidden px-6 py-4">
           <div
             className="overflow-y-auto h-[38vh] -mx-1 px-1 scrollbar-thin"
@@ -307,47 +336,111 @@ export default function PropertyFiltersModal({
               e.stopPropagation();
             }}
           >
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              {filteredOptions.length === 0 && (
-                <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground">
-                  <Search className="h-8 w-8 mb-3 opacity-30" />
-                  <p className="text-sm font-medium">No options found</p>
-                  <p className="text-xs mt-1 opacity-70">Try a different search term</p>
-                </div>
-              )}
-              {filteredOptions.map((opt) => {
-                const checked = isChecked(currentTab, opt);
-                const IconComp = currentTab.type === 'amenity'
-                  ? getIcon(opt, currentTab.amenityType!)
-                  : currentTab.icon;
-                return (
-                  <label
-                    key={opt}
-                    className={`
-                      group flex items-center gap-2.5 cursor-pointer py-3 px-3.5 rounded-xl border
-                      transition-all duration-200 ease-out select-none
-                      active:scale-[0.97]
-                      ${checked
-                        ? 'border-primary/50 bg-primary/6 shadow-sm shadow-primary/10'
-                        : 'border-border/80 hover:border-primary/25 hover:bg-muted/50 hover:shadow-sm'
-                      }
-                    `}
-                  >
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={() => toggleValue(currentTab, opt)}
-                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            {/* Range inputs for Price / Area */}
+            {currentTab.type === 'range' && currentTab.rangeKey === 'price' && (
+              <div className="flex flex-col items-center justify-center h-full gap-6 py-8">
+                <DollarSign className="h-10 w-10 text-primary/30" />
+                <p className="text-sm font-medium text-muted-foreground">Set your price range</p>
+                <div className="flex items-center gap-3 w-full max-w-sm">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Min Price</label>
+                    <input
+                      type="number"
+                      value={localRange.minPrice}
+                      onChange={(e) => setLocalRange({ ...localRange, minPrice: e.target.value })}
+                      placeholder="0"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                     />
-                    {currentTab.type === 'amenity' && (
-                      <IconComp className={`h-4 w-4 shrink-0 transition-colors ${checked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
-                    )}
-                    <span className={`text-sm leading-tight transition-colors ${checked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
-                      {opt}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
+                  </div>
+                  <span className="text-muted-foreground mt-5">—</span>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Max Price</label>
+                    <input
+                      type="number"
+                      value={localRange.maxPrice}
+                      onChange={(e) => setLocalRange({ ...localRange, maxPrice: e.target.value })}
+                      placeholder="Any"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {currentTab.type === 'range' && currentTab.rangeKey === 'area' && (
+              <div className="flex flex-col items-center justify-center h-full gap-6 py-8">
+                <Ruler className="h-10 w-10 text-primary/30" />
+                <p className="text-sm font-medium text-muted-foreground">Set your area range (m²)</p>
+                <div className="flex items-center gap-3 w-full max-w-sm">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Min Area</label>
+                    <input
+                      type="number"
+                      value={localRange.minArea}
+                      onChange={(e) => setLocalRange({ ...localRange, minArea: e.target.value })}
+                      placeholder="0"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                  <span className="text-muted-foreground mt-5">—</span>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Max Area</label>
+                    <input
+                      type="number"
+                      value={localRange.maxArea}
+                      onChange={(e) => setLocalRange({ ...localRange, maxArea: e.target.value })}
+                      placeholder="Any"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Checkbox grid for non-range tabs */}
+            {currentTab.type !== 'range' && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {filteredOptions.length === 0 && (
+                  <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground">
+                    <Search className="h-8 w-8 mb-3 opacity-30" />
+                    <p className="text-sm font-medium">No options found</p>
+                    <p className="text-xs mt-1 opacity-70">Try a different search term</p>
+                  </div>
+                )}
+                {filteredOptions.map((opt) => {
+                  const checked = isChecked(currentTab, opt);
+                  const IconComp = currentTab.type === 'amenity'
+                    ? getIcon(opt, currentTab.amenityType!)
+                    : currentTab.icon;
+                  return (
+                    <label
+                      key={opt}
+                      className={`
+                        group flex items-center gap-2.5 cursor-pointer py-3 px-3.5 rounded-xl border
+                        transition-all duration-200 ease-out select-none
+                        active:scale-[0.97]
+                        ${checked
+                          ? 'border-primary/50 bg-primary/6 shadow-sm shadow-primary/10'
+                          : 'border-border/80 hover:border-primary/25 hover:bg-muted/50 hover:shadow-sm'
+                        }
+                      `}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggleValue(currentTab, opt)}
+                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {currentTab.type === 'amenity' && (
+                        <IconComp className={`h-4 w-4 shrink-0 transition-colors ${checked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
+                      )}
+                      <span className={`text-sm leading-tight transition-colors ${checked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
+                        {opt}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 

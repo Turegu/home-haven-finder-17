@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { type PropertyMoreFilters, type BasicFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
+import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
@@ -295,6 +295,13 @@ const BuyPage = () => {
                 setRooms(bf.rooms);
                 setBathrooms(bf.bathrooms);
                 setRentDuration(bf.rentDuration);
+              }}
+              rangeFilters={{ minPrice, maxPrice, minArea, maxArea }}
+              onRangeFiltersChange={(rf: RangeFilters) => {
+                setMinPrice(rf.minPrice);
+                setMaxPrice(rf.maxPrice);
+                setMinArea(rf.minArea);
+                setMaxArea(rf.maxArea);
               }}
               onClearAll={resetAllFilters}
               isRent={isRent}
