@@ -134,6 +134,7 @@ const PropertyDetailPage = () => {
           })));
         }
       }
+      setLoading(false);
     };
     fetchProperty();
   }, [id]);
