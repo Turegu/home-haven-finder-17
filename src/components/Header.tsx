@@ -109,30 +109,26 @@ const Header = () => {
   }, [openDropdown]);
   const markNotificationRead = async (notifId: string) => {
     await supabase.from("user_notifications").update({ is_read: true }).eq("id", notifId);
-    setNotifications(prev => prev.filter(n => n.id !== notifId));
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    queryClient.invalidateQueries({ queryKey: ['header-notifications'] });
   };
 
   const markAllRead = async () => {
     if (!currentUser?.id) return;
     await supabase.from("user_notifications").update({ is_read: true }).eq("user_id", currentUser.id).eq("is_read", false);
-    setNotifications([]);
-    setUnreadCount(0);
+    queryClient.invalidateQueries({ queryKey: ['header-notifications'] });
   };
 
   const removeSavedProperty = async (id: string) => {
     await supabase.from("saved_properties").delete().eq("id", id);
-    setSavedItems(prev => prev.filter(s => s.id !== id));
-    setCounts(prev => ({ ...prev, savedProperties: Math.max(0, prev.savedProperties - 1) }));
     queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
+    invalidateHeaderData();
     window.dispatchEvent(new Event('property-actions-changed'));
   };
 
   const removeCompareItem = async (id: string) => {
     await supabase.from("property_comparisons").delete().eq("id", id);
-    setCompareItems(prev => prev.filter(c => c.id !== id));
-    setCounts(prev => ({ ...prev, compare: Math.max(0, prev.compare - 1) }));
     queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
+    invalidateHeaderData();
     window.dispatchEvent(new Event('property-actions-changed'));
   };
 
