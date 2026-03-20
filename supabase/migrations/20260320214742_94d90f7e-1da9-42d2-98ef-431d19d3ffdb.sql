@@ -1,0 +1,1 @@
+ALTER TABLE public.projects ADD COLUMN developer_logo_url text DEFAULT NULL;

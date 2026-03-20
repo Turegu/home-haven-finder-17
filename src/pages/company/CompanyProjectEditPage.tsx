@@ -208,6 +208,8 @@ const CompanyProjectEditPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [logoUrl, setLogoUrl] = useState("");
+  const [developerLogoUrl, setDeveloperLogoUrl] = useState("");
+  const [isDifferentDeveloper, setIsDifferentDeveloper] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
@@ -281,6 +283,9 @@ const CompanyProjectEditPage = () => {
       setImages(data.images || []);
       setPlanFiles((data as any).plans || []);
       setLogoUrl((data as any).logo_url || "");
+      const devLogo = (data as any).developer_logo_url || "";
+      setDeveloperLogoUrl(devLogo);
+      setIsDifferentDeveloper(!!devLogo);
       setPdfUrl((data as any).pdf_catalogue_url || "");
       // Fetch units for existing project
       fetchUnits(id as string);
@@ -322,6 +327,12 @@ const CompanyProjectEditPage = () => {
     if (!e.target.files?.[0]) return;
     const urls = await uploadFiles(e.target.files, "project-logos");
     if (urls[0]) setLogoUrl(urls[0]);
+  };
+
+  const handleDeveloperLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    const urls = await uploadFiles(e.target.files, "project-logos");
+    if (urls[0]) setDeveloperLogoUrl(urls[0]);
   };
 
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -450,6 +461,7 @@ const CompanyProjectEditPage = () => {
       location: form.location || null,
       video_link: form.video_link || null, view_360_link: form.view_360_link || null,
       images, plans: planFiles, logo_url: logoUrl || null,
+      developer_logo_url: isDifferentDeveloper ? (developerLogoUrl || null) : null,
       pdf_catalogue_url: pdfUrl || null, company_id: companyId,
       status: publishStatus,
     };
@@ -729,6 +741,49 @@ const CompanyProjectEditPage = () => {
                 <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
               </label>
             </div>
+          </div>
+
+          {/* Developer Logo */}
+          <div className="space-y-3 mb-6 p-4 rounded-lg border border-border/60 bg-muted/30">
+            <div className="flex items-center gap-3">
+              <Checkbox
+                checked={isDifferentDeveloper}
+                onCheckedChange={(checked) => {
+                  setIsDifferentDeveloper(!!checked);
+                  if (!checked) setDeveloperLogoUrl("");
+                }}
+              />
+              <Label className="text-foreground font-medium cursor-pointer" onClick={() => {
+                setIsDifferentDeveloper(!isDifferentDeveloper);
+                if (isDifferentDeveloper) setDeveloperLogoUrl("");
+              }}>
+                Developer is a different company
+              </Label>
+            </div>
+            <p className="text-xs text-muted-foreground ml-7">
+              Enable this if the project developer is different from your company. You can upload a separate logo for the developer.
+            </p>
+            {isDifferentDeveloper && (
+              <div className="flex items-center gap-4 ml-7 mt-2">
+                {developerLogoUrl ? (
+                  <div className="relative">
+                    <img src={developerLogoUrl} alt="Developer Logo" className="w-16 h-16 rounded-lg object-contain border border-border bg-white p-1" />
+                    <button type="button" onClick={() => setDeveloperLogoUrl("")}
+                      className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-lg border border-dashed border-border flex items-center justify-center bg-muted/50">
+                    <Building2 className="h-6 w-6 text-muted-foreground/40" />
+                  </div>
+                )}
+                <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
+                  <Upload className="h-4 w-4 inline mr-2" />Upload Developer Logo
+                  <input type="file" accept="image/*" onChange={handleDeveloperLogoUpload} className="hidden" />
+                </label>
+              </div>
+            )}
           </div>
 
           {/* Images */}
