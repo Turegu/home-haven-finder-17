@@ -139,19 +139,26 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [prefetchingCount, setPrefetchingCount] = useState(0);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const prefetchedRef = useRef(false);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
   }, []);
 
-  const fetchNearbyPlaces = useCallback(async (categoryKey: string) => {
-    if (loadingCategory === categoryKey) return;
-    if (places[categoryKey] && !loadErrors[categoryKey]) return;
+  const fetchNearbyPlaces = useCallback(async (categoryKey: string, silent = false) => {
+    if (!silent && loadingCategory === categoryKey) return;
 
-    setLoadingCategory(categoryKey);
+    if (!silent) setLoadingCategory(categoryKey);
+    else setPrefetchingCount(prev => prev + 1);
+
     const cat = categories.find(c => c.key === categoryKey);
-    if (!cat) { setLoadingCategory(null); return; }
+    if (!cat) {
+      if (!silent) setLoadingCategory(null);
+      else setPrefetchingCount(prev => prev - 1);
+      return;
+    }
 
     try {
       const radius = 3000;
@@ -196,13 +203,29 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
       setPlaces(prev => ({ ...prev, [categoryKey]: results }));
       setLoadErrors(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
     } catch (err) {
-      console.error('Failed to fetch nearby places:', err);
-      setLoadErrors(prev => ({ ...prev, [categoryKey]: 'Could not load nearby places. Tap again to retry.' }));
-      setPlaces(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
+      if (!silent) {
+        console.error('Failed to fetch nearby places:', err);
+        setLoadErrors(prev => ({ ...prev, [categoryKey]: 'Could not load nearby places. Tap again to retry.' }));
+        setPlaces(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
+      }
     } finally {
-      setLoadingCategory(null);
+      if (!silent) setLoadingCategory(null);
+      else setPrefetchingCount(prev => prev - 1);
     }
-  }, [lat, lng, places, loadErrors, loadingCategory]);
+  }, [lat, lng, loadingCategory]);
+
+  // Prefetch all categories in background on mount
+  useEffect(() => {
+    if (prefetchedRef.current) return;
+    prefetchedRef.current = true;
+
+    // Stagger requests to avoid overwhelming the proxy
+    categories.forEach((cat, i) => {
+      setTimeout(() => {
+        fetchNearbyPlaces(cat.key, true);
+      }, i * 300); // 300ms stagger between each
+    });
+  }, [fetchNearbyPlaces]);
 
   const handleCategoryClick = (key: string) => {
     if (activeCategory === key) {
