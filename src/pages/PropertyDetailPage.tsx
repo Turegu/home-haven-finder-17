@@ -222,6 +222,14 @@ const PropertyDetailPage = () => {
               Location coordinates are unavailable for this listing.
             </div>
           )
+        ) : activeTab === 'street' ? (
+          pinLocation ? (
+            <MapillaryStreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+              Location coordinates are unavailable for this listing.
+            </div>
+          )
         ) : (
           <>
             <div className="flex h-full">
