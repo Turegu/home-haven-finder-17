@@ -24,6 +24,7 @@ interface NearbyPlacesMapProps {
   lat: number;
   lng: number;
   propertyTitle?: string;
+  embedded?: boolean;
 }
 
 type PlaceCategory = {
