@@ -37,6 +37,7 @@ const GRID_ITEMS = 15;
 const LIST_ITEMS = 21;
 
 const ProjectsPage = () => {
+  const [searchParams] = useSearchParams();
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
   const projectStatuses = fo["project_statuses"] || [];
@@ -46,7 +47,11 @@ const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
-  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
+  });
   const [keyword, setKeyword] = useState('');
   const [selectedUnitTypes, setSelectedUnitTypes] = useState<string[]>([]);
   const [minArea, setMinArea] = useState('');
