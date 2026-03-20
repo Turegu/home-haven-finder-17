@@ -299,11 +299,13 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
   );
 };
 
-const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace; onClose: () => void; categoryColor: string }) => (
+const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace; onClose: () => void; categoryColor: string }) => {
+  const map = useMap();
+  return (
   <div className="w-[220px] p-0">
     <div className="flex items-start justify-between gap-2 mb-2">
       <h4 className="text-sm font-semibold text-foreground leading-tight">{place.name}</h4>
-      <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="text-muted-foreground hover:text-foreground shrink-0 mt-0.5">
+      <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); map.closePopup(); onClose(); }} className="text-muted-foreground hover:text-foreground shrink-0 mt-0.5 cursor-pointer z-50">
         <X className="h-3.5 w-3.5" />
       </button>
     </div>
@@ -331,5 +333,6 @@ const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace;
     </div>
   </div>
 );
+};
 
 export default NearbyPlacesMap;
