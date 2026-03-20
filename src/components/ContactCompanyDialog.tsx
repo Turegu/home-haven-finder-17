@@ -35,10 +35,15 @@ interface ContactCompanyDialogProps {
   listingType?: 'property' | 'project' | 'event';
 }
 
-const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName }: ContactCompanyDialogProps) => {
+const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property' }: ContactCompanyDialogProps) => {
+  const defaultMessages: Record<string, string> = {
+    property: 'Hi!, I am interested in your property please contact me.',
+    project: 'Hi!, I am interested in your project please contact me.',
+    event: 'Hi!, I am interested in your event please contact me.',
+  };
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [message, setMessage] = useState('Hi!, I am interested in your property please contact me.');
+  const [message, setMessage] = useState(defaultMessages[listingType]);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
