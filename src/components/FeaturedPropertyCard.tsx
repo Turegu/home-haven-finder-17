@@ -129,7 +129,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
 
           {/* Price */}
           <p className="text-xl font-bold text-white tracking-tight">
-            {formatPrice(property.price)}
+            {formatPrice(property.price, property.currency)}
             {property.listingType === 'rent' && <span className="text-sm font-normal text-white/60">/mo</span>}
           </p>
 
