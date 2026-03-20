@@ -59,9 +59,14 @@ async function fetchEvents(params: EventSearchParams) {
   if (district) query = query.eq('town', district);
   if (neighborhood) query = query.eq('neighbourhood', neighborhood);
   if (keyword) {
-    const kw = `%${keyword}%`;
-    const kwNorm = `%${turkishNormalize(keyword)}%`;
-    query = query.or(`title.ilike.${kw},title.ilike.${kwNorm},location.ilike.${kw},location.ilike.${kwNorm},town.ilike.${kw},town.ilike.${kwNorm},province.ilike.${kw},province.ilike.${kwNorm}`);
+    const { data: matchIds } = await supabase.rpc("search_event_ids_by_keyword", {
+      p_keyword: keyword.trim(),
+    });
+    if (matchIds && matchIds.length > 0) {
+      query = query.in("id", matchIds.map((r: { event_id: string }) => r.event_id));
+    } else {
+      query = query.in("id", ["00000000-0000-0000-0000-000000000000"]);
+    }
   }
   if (eventType && eventType !== 'All') query = query.eq('event_type', eventType);
   if (dateFrom) query = query.gte('event_date', dateFrom);
