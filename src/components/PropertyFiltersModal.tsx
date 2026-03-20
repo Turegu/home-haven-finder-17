@@ -159,10 +159,14 @@ export default function PropertyFiltersModal({
   const totalActiveCount = visibleTabs.reduce((s, t) => s + getTabCount(t), 0);
   const committedCount = (() => {
     const b = basicFilters ?? emptyBasicFilters;
+    const r = rangeFilters ?? emptyRangeFilters;
     const m = filters;
-    return b.propertyTypes.length + b.rooms.length + b.bathrooms.length + b.rentDuration.length +
+    let c = b.propertyTypes.length + b.rooms.length + b.bathrooms.length + b.rentDuration.length +
       m.floorLevels.length + m.parkingSpaces.length + m.furniture.length + m.propertyAges.length +
       m.exteriorAmenities.length + m.interiorAmenities.length;
+    if (r.minPrice || r.maxPrice) c++;
+    if (r.minArea || r.maxArea) c++;
+    return c;
   })();
 
   function toggleValue(tab: FilterTab, value: string) {
