@@ -45,8 +45,8 @@ const FILTER_TABS: FilterTab[] = [
   { key: 'parking', label: 'Parking', icon: Car, filterKey: 'parkingSpaces', optionKey: 'parking', type: 'simple' },
   { key: 'furniture', label: 'Furniture', icon: Sofa, filterKey: 'furniture', optionKey: 'furniture', type: 'simple' },
   { key: 'age', label: 'Property Age', icon: Calendar, filterKey: 'propertyAges', optionKey: 'property_age', type: 'simple' },
-  { key: 'interior', label: 'Interior', icon: Lamp, filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
-  { key: 'exterior', label: 'Exterior', icon: TreePine, filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
+  { key: 'interior', label: 'Interior Amenities', icon: Lamp, filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
+  { key: 'exterior', label: 'Exterior Amenities', icon: TreePine, filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
 ];
 
 interface PropertyFiltersModalProps {
@@ -188,9 +188,9 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         </div>
 
         {/* Options grid */}
-        <div className="flex-1 overflow-hidden px-6 pb-2">
+        <div className="overflow-hidden px-6 pb-2">
           <div
-            className="overflow-y-auto h-full max-h-[40vh] -mx-1 px-1"
+            className="overflow-y-auto h-[40vh] -mx-1 px-1"
             onWheel={(e) => {
               const el = e.currentTarget;
               if (el.scrollHeight <= el.clientHeight) return;
