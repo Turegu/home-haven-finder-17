@@ -165,12 +165,17 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
           const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
           const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
 
+          // Extract human-readable subtype from OSM tags
+          const rawType = el.tags?.amenity || el.tags?.shop || el.tags?.leisure || el.tags?.railway || el.tags?.highway || el.tags?.office || el.tags?.public_transport || '';
+          const subtype = rawType.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+
           return {
             id: String(el.id),
             name: el.tags.name,
             lat: el.lat,
             lng: el.lon,
             category: categoryKey,
+            subtype: subtype || undefined,
             distance: Math.round(dist * 1000),
             walkTime: Math.max(1, Math.round((dist / 5) * 60)),
             driveTime: Math.max(1, Math.round((dist / 40) * 60)),
