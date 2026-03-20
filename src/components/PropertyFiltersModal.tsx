@@ -149,6 +149,8 @@ export default function PropertyFiltersModal({
 
   // Count helpers
   function getTabCount(tab: FilterTab): number {
+    if (tab.type === 'range' && tab.rangeKey === 'price') return (localRange.minPrice || localRange.maxPrice) ? 1 : 0;
+    if (tab.type === 'range' && tab.rangeKey === 'area') return (localRange.minArea || localRange.maxArea) ? 1 : 0;
     if (tab.section === 'essential' && tab.basicKey) return localBasic[tab.basicKey].length;
     if (tab.section === 'advanced' && tab.filterKey) return localMore[tab.filterKey].length;
     return 0;
