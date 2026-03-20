@@ -241,14 +241,14 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     prefetchedRef.current = true;
 
     const prefetchSequentially = async () => {
-      for (let i = 0; i < categories.length; i += 2) {
+      for (let i = 0; i < categories.length; i += 4) {
         if (!mountedRef.current) return;
-        const batch = categories.slice(i, i + 2);
+        const batch = categories.slice(i, i + 4);
         await Promise.allSettled(
           batch.map(cat => fetchNearbyPlaces(cat.key, true))
         );
-        if (i + 2 < categories.length && mountedRef.current) {
-          await new Promise(r => setTimeout(r, 800));
+        if (i + 4 < categories.length && mountedRef.current) {
+          await new Promise(r => setTimeout(r, 150));
         }
       }
     };
