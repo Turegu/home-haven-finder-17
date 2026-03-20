@@ -101,8 +101,14 @@ export default function PropertyFiltersModal({
   const [localBasic, setLocalBasic] = useState<BasicFilters>(basicFilters ?? emptyBasicFilters);
   const { options: fo } = useFilterOptions("search");
 
-  // Also fetch property types, rooms, bathrooms from their own tables
-  const { options: foProperty } = useFilterOptions("property");
+  // Combine property type lists into a virtual key
+  const allOptions: Record<string, string[]> = {
+    ...fo,
+    '_property_types_combined': [
+      ...(fo['residential_property_types'] || []),
+      ...(fo['commercial_property_types'] || []),
+    ],
+  };
 
   useEffect(() => {
     if (open) {
