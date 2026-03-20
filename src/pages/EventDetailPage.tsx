@@ -169,16 +169,18 @@ const EventDetailPage = () => {
               </div>
             </div>
 
-            {/* Event Details */}
+            {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Event Details</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <DetailItem label="Event Type" value={event.eventType} />
-                <DetailItem label="Date" value={formatDate(event.date)} />
-                <DetailItem label="Location" value={event.location} />
-                <DetailItem label="City" value={event.city} />
-                <DetailItem label="Organizer" value={event.organizer} />
-                <DetailItem label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free / Open Invitation'} />
+                <OverviewItem icon={Hash} label="Listing ID" value={event.listingId} />
+                <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
+                <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
+                <OverviewItem icon={MapPin} label="Location" value={event.location} />
+                <OverviewItem icon={Building} label="City" value={event.city} />
+                <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
+                <OverviewItem icon={Ticket} label="Entry" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
+                <OverviewItem icon={DollarSign} label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
               </div>
             </div>
 
