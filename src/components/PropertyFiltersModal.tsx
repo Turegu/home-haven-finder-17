@@ -122,7 +122,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl shadow-2xl border-0">
         {/* Header */}
-        <div className="relative px-6 pt-6 pb-5 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent">
+        <div className="relative px-6 pr-14 pt-6 pb-5 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <div className="flex items-center gap-3">
