@@ -313,12 +313,10 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
     </div>
   );
 
-  if (embedded) {
-    return mapContent;
-  }
+  if (embedded) return mapContent;
 
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden">
+    <div className="bg-card rounded-xl border border-border overflow-hidden" style={{ height: 400 }}>
       {mapContent}
     </div>
   );
