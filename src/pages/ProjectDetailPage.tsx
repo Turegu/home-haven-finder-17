@@ -81,6 +81,15 @@ const ProjectDetailPage = () => {
     fetchProject();
   }, [id]);
 
+  const pinLocation = useMemo(() => {
+    if (!project?.pinLocation) return null;
+    try {
+      const parts = project.pinLocation.split(',').map(Number);
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
+    } catch {}
+    return null;
+  }, [project?.pinLocation]);
+
   if (loading || !project) {
     return (
       <div className="min-h-screen bg-background">
@@ -94,15 +103,6 @@ const ProjectDetailPage = () => {
   const images = project.images;
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
-
-  const pinLocation = useMemo(() => {
-    if (!project.pinLocation) return null;
-    try {
-      const parts = project.pinLocation.split(',').map(Number);
-      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
-    } catch {}
-    return null;
-  }, [project.pinLocation]);
 
   const projectLogo = project.logoUrl || defaultProjectLogo;
 
