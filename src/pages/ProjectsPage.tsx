@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,

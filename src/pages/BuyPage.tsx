@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy } from 'react';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
