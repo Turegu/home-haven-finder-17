@@ -200,6 +200,16 @@ const PropertyDetailPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      {/* Breadcrumb */}
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
+          <Link to="/" className="hover:text-foreground">Home</Link>
+          <span>/</span>
+          <Link to="/buy" className="hover:text-foreground">Buy</Link>
+          <span>/</span>
+          <span className="text-foreground">{property.title}</span>
+        </div>
+      </div>
 
       {/* Media Gallery — swaps between photos, map, etc. */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
