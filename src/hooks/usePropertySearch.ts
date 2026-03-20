@@ -81,10 +81,17 @@ export function usePropertySearch(params: PropertySearchParams) {
       if (params.district) query = query.eq("town", params.district);
       if (params.neighborhood) query = query.eq("neighbourhood", params.neighborhood);
 
-      // Keyword search on title/location
+      // Keyword search — accent-insensitive via DB function
       if (params.keyword?.trim()) {
-        const kw = `%${params.keyword.trim()}%`;
-        query = query.or(`title.ilike.${kw},location.ilike.${kw},neighbourhood.ilike.${kw},town.ilike.${kw},province.ilike.${kw}`);
+        const { data: matchIds } = await supabase.rpc("search_property_ids_by_keyword", {
+          p_keyword: params.keyword.trim(),
+        });
+        if (matchIds && matchIds.length > 0) {
+          query = query.in("id", matchIds.map((r: { property_id: string }) => r.property_id));
+        } else {
+          // No matches — return empty
+          query = query.in("id", ["00000000-0000-0000-0000-000000000000"]);
+        }
       }
 
       // Property types

@@ -2049,6 +2049,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_event_ids_by_keyword: {
+        Args: { p_keyword: string }
+        Returns: {
+          event_id: string
+        }[]
+      }
       search_projects_by_units: {
         Args: {
           p_amenities?: string[]
@@ -2071,6 +2077,17 @@ export type Database = {
           project_row: Json
           total_count: number
         }[]
+      }
+      search_property_ids_by_keyword: {
+        Args: { p_keyword: string }
+        Returns: {
+          property_id: string
+        }[]
+      }
+      unaccent: { Args: { "": string }; Returns: string }
+      unaccent_match: {
+        Args: { haystack: string; needle: string }
+        Returns: boolean
       }
     }
     Enums: {
