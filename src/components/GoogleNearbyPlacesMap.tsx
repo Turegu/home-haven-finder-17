@@ -215,16 +215,26 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
   }, [lat, lng, loadingCategory]);
 
   // Prefetch all categories in background on mount
+  // Prefetch all categories sequentially (2 at a time) to avoid overwhelming Overpass
   useEffect(() => {
     if (prefetchedRef.current) return;
     prefetchedRef.current = true;
 
-    // Stagger requests to avoid overwhelming the proxy
-    categories.forEach((cat, i) => {
-      setTimeout(() => {
-        fetchNearbyPlaces(cat.key, true);
-      }, i * 300); // 300ms stagger between each
-    });
+    const prefetchSequentially = async () => {
+      // Process in batches of 2 with delay between batches
+      for (let i = 0; i < categories.length; i += 2) {
+        const batch = categories.slice(i, i + 2);
+        await Promise.allSettled(
+          batch.map(cat => fetchNearbyPlaces(cat.key, true))
+        );
+        // Wait 800ms between batches to let Overpass breathe
+        if (i + 2 < categories.length) {
+          await new Promise(r => setTimeout(r, 800));
+        }
+      }
+    };
+
+    prefetchSequentially();
   }, [fetchNearbyPlaces]);
 
   const handleCategoryClick = (key: string) => {
