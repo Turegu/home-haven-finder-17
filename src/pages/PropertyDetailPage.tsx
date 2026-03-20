@@ -215,7 +215,7 @@ const PropertyDetailPage = () => {
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
         {activeTab === 'location' ? (
           pinLocation ? (
-            <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
+            <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} embedded />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
               Location coordinates are unavailable for this listing.
