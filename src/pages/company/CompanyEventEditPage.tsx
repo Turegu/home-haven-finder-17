@@ -161,6 +161,7 @@ const CompanyEventEditPage = () => {
       setImages(d.images || []);
       setPdfUrl(d.pdf_catalogue_url || "");
       setLogoUrl(d.logo_url || "");
+      setSelectedAgentId(d.agent_id || "");
     };
     fetchEvent();
   }, [isEdit, id]);
