@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Globe, Video,
-  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash
+  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash, FileDown, Timer
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
