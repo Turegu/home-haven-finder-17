@@ -46,6 +46,21 @@ const emptyPropertyState = {
   hasAgent: false,
 };
 
+const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
+  if (typeof value !== 'string') return null;
+
+  const matches = value.match(/-?\d+(?:\.\d+)?/g);
+  if (!matches || matches.length < 2) return null;
+
+  const lat = Number.parseFloat(matches[0]);
+  const lng = Number.parseFloat(matches[1]);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+
+  return { lat, lng };
+};
+
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -60,6 +75,8 @@ const PropertyDetailPage = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    setPinLocation(null);
+
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
@@ -105,14 +122,7 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
-
-        // Parse pin_location "lat,lng"
-        if (p.pin_location) {
-          const parts = p.pin_location.split(',').map((s: string) => parseFloat(s.trim()));
-          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-            setPinLocation({ lat: parts[0], lng: parts[1] });
-          }
-        }
+        setPinLocation(parsePinLocation(p.pin_location));
 
         // Fetch similar properties
         const { data: similar } = await supabase
@@ -182,6 +192,19 @@ const PropertyDetailPage = () => {
     { id: 'street', label: 'Street View', icon: PersonStanding },
     { id: 'video', label: 'Video', icon: Video },
   ];
+
+  const handleMediaTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+
+    if (tabId === 'location') {
+      const locationSection = document.getElementById('location-nearby-section');
+      if (locationSection) {
+        locationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        toast.error('Location map is unavailable for this listing.');
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -293,7 +316,7 @@ const PropertyDetailPage = () => {
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleMediaTabClick(tab.id)}
                       className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
@@ -419,12 +442,16 @@ const PropertyDetailPage = () => {
             </div>
 
             {/* Nearby Places Map */}
-            {pinLocation && (
-              <div>
-                <h2 className="text-lg font-bold text-foreground mb-4">Location & Nearby</h2>
+            <div id="location-nearby-section">
+              <h2 className="text-lg font-bold text-foreground mb-4">Location & Nearby</h2>
+              {pinLocation ? (
                 <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
-              </div>
-            )}
+              ) : (
+                <div className="bg-card rounded-xl border border-border p-4 text-sm text-muted-foreground">
+                  Location coordinates are unavailable for this listing.
+                </div>
+              )}
+            </div>
 
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
