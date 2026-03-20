@@ -19,6 +19,7 @@ const AREA_UNITS = [
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { data: languages = [] } = useLanguages();
