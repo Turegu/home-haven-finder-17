@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
   GraduationCap, HeartPulse, TreePine, Briefcase, ShoppingCart, ShoppingBag,
-  Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin, Maximize, Minimize
+  Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin, Maximize, Minimize,
+  Cross
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import 'leaflet/dist/leaflet.css';
