@@ -248,7 +248,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
       <div className="relative flex-1 min-h-0">
         <MapContainer
           center={[lat, lng]}
-          zoom={15}
+          zoom={14}
           style={{ height: '100%', width: '100%' }}
           zoomControl
         >
