@@ -304,13 +304,10 @@ export default function PropertyFiltersModal({
         </div>
 
         {/* Category tags with sections */}
-        <div className="px-6 py-3.5 border-b border-border/60 bg-muted/20 space-y-3">
+        <div className="px-6 py-3 border-b border-border/60 bg-muted/20 space-y-2.5">
           {/* Essential filters */}
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2">Essential</p>
-            <div className="flex flex-wrap gap-2">
-              {essentialTabs.map(renderTabButton)}
-            </div>
+          <div className="flex flex-wrap gap-2">
+            {essentialTabs.map(renderTabButton)}
           </div>
 
           {/* Divider */}
