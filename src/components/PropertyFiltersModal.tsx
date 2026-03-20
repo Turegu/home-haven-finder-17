@@ -188,9 +188,9 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         </div>
 
         {/* Options grid */}
-        <div className="flex-1 overflow-hidden px-6 pb-2">
+        <div className="overflow-hidden px-6 pb-2">
           <div
-            className="overflow-y-auto h-full max-h-[40vh] -mx-1 px-1"
+            className="overflow-y-auto h-[40vh] -mx-1 px-1"
             onWheel={(e) => {
               const el = e.currentTarget;
               if (el.scrollHeight <= el.clientHeight) return;
