@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 interface CompanyLayoutProps {
   children: React.ReactNode;
@@ -30,33 +31,35 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [companyName, setCompanyName] = useState("");
-  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+  const { data: companyData } = useQuery({
+    queryKey: ['company-layout-auth'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         navigate("/company/login");
-        return;
+        return null;
       }
       const { data: company } = await supabase
         .from("companies")
         .select("name, logo_url")
-        .eq("owner_user_id", user.id)
+        .eq("owner_user_id", session.user.id)
         .limit(1)
         .maybeSingle();
       if (!company) {
         await supabase.auth.signOut();
         toast.error("No company associated with this account");
         navigate("/company/login");
-        return;
+        return null;
       }
-      setCompanyName(company.name);
-      setCompanyLogo(company.logo_url);
-    };
-    checkAuth();
-  }, [navigate]);
+      return company;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const companyName = companyData?.name || "";
+  const companyLogo = companyData?.logo_url || null;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

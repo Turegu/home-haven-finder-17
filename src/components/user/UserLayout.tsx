@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -27,45 +28,64 @@ const UserLayout = ({ children }: UserLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [displayName, setDisplayName] = useState("");
-  const [counts, setCounts] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+  // Use getSession (memory) instead of getUser (network)
+  const { data: authUser } = useQuery({
+    queryKey: ['user-layout-auth'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         navigate("/login");
-        return;
+        return null;
       }
-      const { data: profile } = await supabase
+      return session.user;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ['user-layout-profile', authUser?.id],
+    queryFn: async () => {
+      const { data } = await supabase
         .from("profiles")
         .select("display_name, first_name, last_name")
-        .eq("user_id", user.id)
+        .eq("user_id", authUser!.id)
         .limit(1)
         .maybeSingle();
-      setDisplayName(profile?.display_name || profile?.first_name || user.email || "User");
+      return data;
+    },
+    enabled: !!authUser?.id,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      // Fetch counts in parallel
+  const displayName = profile?.display_name || profile?.first_name || authUser?.email || "User";
+
+  const { data: counts = {} } = useQuery({
+    queryKey: ['user-layout-counts', authUser?.id],
+    queryFn: async () => {
+      const uid = authUser!.id;
       const [saved, searches, compare, followed, notifications, contacted] = await Promise.all([
-        supabase.from("saved_properties").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("saved_searches").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("property_comparisons").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("agent_followers").select("id", { count: "exact", head: true }).eq("user_id", user.id),
-        supabase.from("user_notifications").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false),
-        supabase.from("user_inquiries").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("saved_properties").select("id", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("saved_searches").select("id", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("property_comparisons").select("id", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("agent_followers").select("id", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("user_notifications").select("id", { count: "exact", head: true }).eq("user_id", uid).eq("is_read", false),
+        supabase.from("user_inquiries").select("id", { count: "exact", head: true }).eq("user_id", uid),
       ]);
-
-      setCounts({
+      return {
         saved: saved.count || 0,
         searches: searches.count || 0,
         compare: compare.count || 0,
         followed: followed.count || 0,
         notifications: notifications.count || 0,
         contacted: contacted.count || 0,
-      });
-    };
-    checkAuth();
-  }, [navigate]);
+      } as Record<string, number>;
+    },
+    enabled: !!authUser?.id,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

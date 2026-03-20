@@ -40,16 +40,12 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userEmail, setUserEmail] = useState<string>("");
 
+  // Use getSession (reads from memory) instead of getUser (network call)
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/admin/login");
-        return;
-      }
-      setUserEmail(user.email || "");
-    };
-    getUser();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate("/admin/login");
+      else setUserEmail(session.user.email || "");
+    });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) navigate("/admin/login");
