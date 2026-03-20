@@ -148,11 +148,15 @@ const Header = () => {
     fetchCompareItems(currentUser.id);
   }, [currentUser?.id]);
 
-  // Listen for property action changes to refresh counts
+  // Listen for property action changes to refresh counts, saved items, and compare items
   useEffect(() => {
     if (!currentUser?.id) return;
     const uid = currentUser.id;
-    const handler = () => fetchCounts(uid);
+    const handler = () => {
+      fetchCounts(uid);
+      fetchSavedItems(uid);
+      fetchCompareItems(uid);
+    };
     window.addEventListener('property-actions-changed', handler);
     return () => window.removeEventListener('property-actions-changed', handler);
   }, [currentUser?.id]);

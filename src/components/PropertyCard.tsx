@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Building, ChevronLeft, ChevronRight, Camera, Crown, Star, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,6 +16,10 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
   const [isFavorited, setIsFavorited] = useState(isSaved);
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const queryClient = useQueryClient();
+
+  // Sync local state when prop changes (e.g. after query refetch)
+  useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
+  useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
