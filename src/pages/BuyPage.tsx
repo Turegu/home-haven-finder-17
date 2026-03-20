@@ -296,6 +296,13 @@ const BuyPage = () => {
                 setBathrooms(bf.bathrooms);
                 setRentDuration(bf.rentDuration);
               }}
+              rangeFilters={{ minPrice, maxPrice, minArea, maxArea }}
+              onRangeFiltersChange={(rf: RangeFilters) => {
+                setMinPrice(rf.minPrice);
+                setMaxPrice(rf.maxPrice);
+                setMinArea(rf.minArea);
+                setMaxArea(rf.maxArea);
+              }}
               onClearAll={resetAllFilters}
               isRent={isRent}
             />
