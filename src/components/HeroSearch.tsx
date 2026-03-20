@@ -85,9 +85,14 @@ const HeroSearch = () => {
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 placeholder="Enter Search Area, City, Address"
-                className="w-full h-10 px-4 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                className="w-full h-10 px-4 pr-8 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
+              {keyword && (
+                <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
               <Search className="h-4 w-4 mr-1.5" />
