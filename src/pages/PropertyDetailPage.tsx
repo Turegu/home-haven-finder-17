@@ -8,6 +8,7 @@ import {
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import NearbyPlacesMap from '@/components/NearbyPlacesMap';
+import MapillaryStreetView from '@/components/MapillaryStreetView';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -216,6 +217,14 @@ const PropertyDetailPage = () => {
         {activeTab === 'location' ? (
           pinLocation ? (
             <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} embedded />
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+              Location coordinates are unavailable for this listing.
+            </div>
+          )
+        ) : activeTab === 'street' ? (
+          pinLocation ? (
+            <MapillaryStreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
               Location coordinates are unavailable for this listing.
