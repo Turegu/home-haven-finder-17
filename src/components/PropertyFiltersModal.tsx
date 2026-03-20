@@ -68,13 +68,12 @@ interface FilterTab {
   label: string;
   icon: React.ElementType;
   section: 'essential' | 'advanced';
-  // for essential tabs, reference BasicFilters key
   basicKey?: keyof BasicFilters;
-  // for advanced tabs, reference PropertyMoreFilters key
   filterKey?: keyof PropertyMoreFilters;
   optionKey: string;
-  type: 'simple' | 'amenity';
+  type: 'simple' | 'amenity' | 'range';
   amenityType?: 'interior' | 'exterior';
+  rangeKey?: 'price' | 'area';
 }
 
 const FILTER_TABS: FilterTab[] = [
