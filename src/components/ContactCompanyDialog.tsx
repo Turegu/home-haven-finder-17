@@ -84,12 +84,10 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
     }
     setSending(true);
     try {
-      // Save inquiry to user_inquiries if logged in
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from('user_inquiries').insert({
+        const inquiryData: any = {
           user_id: user.id,
-          property_id: property.id,
           company_id: companyId,
           agent_id: agentId,
           inquiry_type: 'email',
@@ -97,20 +95,24 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           email: email.trim(),
           phone: phone.trim() || null,
           message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
-        });
+        };
+        if (listingType === 'property') inquiryData.property_id = property.id;
+        else if (listingType === 'project') inquiryData.project_id = property.id;
+        await supabase.from('user_inquiries').insert(inquiryData);
       }
 
-      // Also insert into company_inbox so the company sees it
       if (companyId) {
-        await supabase.from('company_inbox').insert({
+        const inboxData: any = {
           company_id: companyId,
-          property_id: property.id,
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
           message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
-          inbox_type: 'property_inquiry',
-        });
+          inbox_type: `${listingType}_inquiry`,
+        };
+        if (listingType === 'property') inboxData.property_id = property.id;
+        else if (listingType === 'project') inboxData.project_id = property.id;
+        await supabase.from('company_inbox').insert(inboxData);
       }
 
       setSent(true);
