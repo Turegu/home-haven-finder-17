@@ -56,6 +56,7 @@ const EventDetailPage = () => {
           agentLanguages: e.agents?.languages || [],
           agentCompany: e.companies?.name || e.agents?.companies?.name || '',
           companyLogo: e.companies?.logo_url || e.agents?.companies?.logo_url || null,
+          pdfCatalogueUrl: e.pdf_catalogue_url || null,
         });
         setRealAgentId(e.agents?.id || null);
         setRealCompanyId(e.companies?.id || e.agents?.companies?.id || null);
