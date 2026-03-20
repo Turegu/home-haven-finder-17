@@ -329,6 +329,12 @@ const CompanyProjectEditPage = () => {
     if (urls[0]) setLogoUrl(urls[0]);
   };
 
+  const handleDeveloperLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    const urls = await uploadFiles(e.target.files, "project-logos");
+    if (urls[0]) setDeveloperLogoUrl(urls[0]);
+  };
+
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     const urls = await uploadFiles(e.target.files, "project-catalogues");
