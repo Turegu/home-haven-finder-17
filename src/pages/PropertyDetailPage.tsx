@@ -55,6 +55,7 @@ const PropertyDetailPage = () => {
 
   useEffect(() => {
     if (!id) return;
+    setLoading(true);
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
