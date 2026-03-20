@@ -104,7 +104,7 @@ function createPOIIcon(color: string, isHighlighted: boolean, categoryKey?: stri
 function FlyToCenter({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
   useEffect(() => {
-    map.setView([lat, lng], 15, { animate: true });
+    map.setView([lat, lng], 14, { animate: true });
   }, [lat, lng, map]);
   return null;
 }
@@ -248,7 +248,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
       <div className="relative flex-1 min-h-0">
         <MapContainer
           center={[lat, lng]}
-          zoom={15}
+          zoom={14}
           style={{ height: '100%', width: '100%' }}
           zoomControl
         >
