@@ -193,6 +193,19 @@ const PropertyDetailPage = () => {
     { id: 'video', label: 'Video', icon: Video },
   ];
 
+  const handleMediaTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+
+    if (tabId === 'location') {
+      const locationSection = document.getElementById('location-nearby-section');
+      if (locationSection) {
+        locationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        toast.error('Location map is unavailable for this listing.');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
