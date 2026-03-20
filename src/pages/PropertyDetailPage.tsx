@@ -91,13 +91,13 @@ const PropertyDetailPage = () => {
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
           exteriorAmenities: p.exterior_amenities || [],
-          agentName: p.agents?.name || p.companies?.name || mockPropertyDetail.agentName,
-          agentLogo: p.agents?.avatar_url || mockPropertyDetail.agentLogo,
+          agentName: p.agents?.name || p.companies?.name || '',
+          agentLogo: p.agents?.avatar_url || '',
           agentDesignation: p.agents?.designation || null,
           agentLanguages: p.agents?.languages || [],
           agentCompany: p.companies?.name || p.agents?.companies?.name || '',
           companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
-        });
+        }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
 
