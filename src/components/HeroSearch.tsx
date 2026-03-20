@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LocationPicker from '@/components/LocationPicker';
 import PropertyTypeDropdown from '@/components/PropertyTypeDropdown';
