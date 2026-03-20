@@ -235,7 +235,10 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     }
     setActiveCategory(key);
     setSelectedPlace(null);
-    void fetchNearbyPlaces(key);
+    // Only fetch if not already prefetched
+    if (!places[key]) {
+      void fetchNearbyPlaces(key);
+    }
   };
 
   const activePlaces = activeCategory ? (places[activeCategory] || []) : [];
