@@ -18,6 +18,7 @@ const AdminSettingsPage = () => {
   const [salesWhatsapp, setSalesWhatsapp] = useState("");
   const [salesEmail, setSalesEmail] = useState("");
   const [salesAddress, setSalesAddress] = useState("");
+  const [mapProvider, setMapProvider] = useState("google");
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
