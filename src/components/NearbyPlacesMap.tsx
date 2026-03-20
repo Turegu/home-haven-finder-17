@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
-  GraduationCap, HeartPulse, TreePine, Briefcase, ShoppingCart, ShoppingBag,
+  GraduationCap, HeartPulse, TreePine, ShoppingCart, ShoppingBag,
   Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin, Maximize, Minimize,
   Cross
 } from 'lucide-react';
