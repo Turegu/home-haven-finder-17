@@ -81,10 +81,17 @@ export function usePropertySearch(params: PropertySearchParams) {
       if (params.district) query = query.eq("town", params.district);
       if (params.neighborhood) query = query.eq("neighbourhood", params.neighborhood);
 
-      // Keyword search on title/location
+      // Keyword search on title/location (accent-insensitive via dual search)
       if (params.keyword?.trim()) {
         const kw = `%${params.keyword.trim()}%`;
-        query = query.or(`title.ilike.${kw},location.ilike.${kw},neighbourhood.ilike.${kw},town.ilike.${kw},province.ilike.${kw}`);
+        const kwNorm = `%${turkishNormalize(params.keyword.trim())}%`;
+        // Search with both original and normalized versions
+        const fields = ['title', 'location', 'neighbourhood', 'town', 'province'];
+        const conditions = fields.flatMap(f => [
+          `${f}.ilike.${kw}`,
+          `${f}.ilike.${kwNorm}`,
+        ]);
+        query = query.or(conditions.join(','));
       }
 
       // Property types
