@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Trash2, Search } from "lucide-react";
@@ -15,6 +16,7 @@ interface SavedSearch {
 }
 
 const SavedSearchesPage = () => {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<SavedSearch[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,6 +38,7 @@ const SavedSearchesPage = () => {
     const { error } = await supabase.from("saved_searches").delete().eq("id", id);
     if (error) { toast.error("Failed to delete"); return; }
     setItems(p => p.filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     toast.success("Search deleted");
   };
 
