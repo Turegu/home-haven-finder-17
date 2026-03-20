@@ -1439,6 +1439,7 @@ export type Database = {
           currency: string | null
           description: string | null
           developer: string | null
+          developer_logo_url: string | null
           display_on_homepage: boolean
           exterior_amenities: string[] | null
           id: string
@@ -1479,6 +1480,7 @@ export type Database = {
           currency?: string | null
           description?: string | null
           developer?: string | null
+          developer_logo_url?: string | null
           display_on_homepage?: boolean
           exterior_amenities?: string[] | null
           id?: string
@@ -1519,6 +1521,7 @@ export type Database = {
           currency?: string | null
           description?: string | null
           developer?: string | null
+          developer_logo_url?: string | null
           display_on_homepage?: boolean
           exterior_amenities?: string[] | null
           id?: string
