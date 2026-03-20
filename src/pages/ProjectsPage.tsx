@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
