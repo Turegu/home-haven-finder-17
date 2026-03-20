@@ -96,20 +96,16 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
 
     try {
       const radius = 2000;
-      // Split on top-level | that separates different tag filters (key~"val1|val2"|otherkey~"val3")
-      // Each segment is like: amenity~"school|university|kindergarten" or highway~"bus_stop"
-      const segments = cat.osmTags.split(/\|(?=[a-z])/).map(s => s.trim()).filter(Boolean);
-      const nodeParts = segments.map(seg => {
-        const tildeIdx = seg.indexOf('~');
-        if (tildeIdx === -1) return '';
-        const key = seg.substring(0, tildeIdx);
-        const rawVal = seg.substring(tildeIdx + 1).replace(/"/g, '');
-        // rawVal may be "school|university|kindergarten" or just "cafe" or "."
-        if (rawVal === '.') {
-          return `node[${key}](around:${radius},${lat},${lng});`;
+      const nodeParts = cat.osmQueries.map(q => {
+        const tildeIdx = q.indexOf('~');
+        if (tildeIdx === -1) {
+          // Simple tag like "office"
+          return `node[${q}](around:${radius},${lat},${lng});`;
         }
-        return `node[${key}~"${rawVal}"](around:${radius},${lat},${lng});`;
-      }).filter(Boolean);
+        const key = q.substring(0, tildeIdx);
+        const rawVal = q.substring(tildeIdx + 1);
+        return `node[${key}${rawVal}](around:${radius},${lat},${lng});`;
+      });
 
       const query = `[out:json][timeout:10];(${nodeParts.join('')});out body 20;`;
 
