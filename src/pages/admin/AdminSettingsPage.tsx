@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin } from "lucide-react";
+import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
 
 const AdminSettingsPage = () => {
@@ -17,6 +18,7 @@ const AdminSettingsPage = () => {
   const [salesWhatsapp, setSalesWhatsapp] = useState("");
   const [salesEmail, setSalesEmail] = useState("");
   const [salesAddress, setSalesAddress] = useState("");
+  const [mapProvider, setMapProvider] = useState("google");
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
@@ -35,6 +37,7 @@ const AdminSettingsPage = () => {
         setSalesWhatsapp(map.sales_whatsapp || "");
         setSalesEmail(map.sales_email || "");
         setSalesAddress(map.sales_address || "");
+        setMapProvider(map.map_provider || "google");
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
@@ -60,6 +63,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_whatsapp", salesWhatsapp),
       saveSetting("sales_email", salesEmail),
       saveSetting("sales_address", salesAddress),
+      saveSetting("map_provider", mapProvider),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
@@ -135,6 +139,31 @@ const AdminSettingsPage = () => {
           </Button>
         </div>
 
+        {/* Map Provider */}
+        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Globe className="h-5 w-5" /> Map Provider
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Choose which map service to display on listing pages.
+          </p>
+          <div className="space-y-2">
+            <Label>Active Map Provider</Label>
+            <Select value={mapProvider} onValueChange={setMapProvider}>
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="google">Google Maps</SelectItem>
+                <SelectItem value="leaflet">Leaflet (OpenStreetMap)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>Google Maps provides satellite imagery and Street View. Leaflet uses free OpenStreetMap tiles with no API costs.</span>
+          </div>
+        </div>
         {/* Login Email */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">Login Email</h2>
