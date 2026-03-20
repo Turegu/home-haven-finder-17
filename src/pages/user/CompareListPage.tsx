@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +44,7 @@ const CHART_COLORS = [
 ];
 
 const CompareListPage = () => {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<CompareItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiResult, setAiResult] = useState("");
@@ -140,6 +142,7 @@ const CompareListPage = () => {
     const { error } = await supabase.from("property_comparisons").delete().eq("id", id);
     if (error) { toast.error("Failed to remove"); return; }
     setItems(p => p.filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
     toast.success("Removed from compare list");
   };
@@ -152,6 +155,7 @@ const CompareListPage = () => {
     setAiResult("");
     setScores([]);
     setWinner("");
+    queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
     toast.success("Compare list cleared");
   };

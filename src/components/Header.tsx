@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguages, useCurrencies } from '@/hooks/useAppData';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AREA_UNITS = [
   { label: 'Meter Sq. (m²)', value: 'm²' },
@@ -18,6 +19,7 @@ const AREA_UNITS = [
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { data: languages = [] } = useLanguages();
@@ -221,6 +223,7 @@ const Header = () => {
     await supabase.from("saved_properties").delete().eq("id", id);
     setSavedItems(prev => prev.filter(s => s.id !== id));
     setCounts(prev => ({ ...prev, savedProperties: Math.max(0, prev.savedProperties - 1) }));
+    queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
   };
 
@@ -228,6 +231,7 @@ const Header = () => {
     await supabase.from("property_comparisons").delete().eq("id", id);
     setCompareItems(prev => prev.filter(c => c.id !== id));
     setCounts(prev => ({ ...prev, compare: Math.max(0, prev.compare - 1) }));
+    queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
   };
 

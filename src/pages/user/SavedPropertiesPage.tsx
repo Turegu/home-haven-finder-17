@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Trash2, MapPin } from "lucide-react";
@@ -17,18 +18,19 @@ interface SavedProperty {
 }
 
 const SavedPropertiesPage = () => {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<SavedProperty[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setLoading(false); return; }
     const { data } = await supabase
       .from("saved_properties")
-      .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms)")
+      .select("id, property_id, created_at, properties(title, price, currency, images, location, rooms)")
       .eq("user_id", user.id)
-      .order("created_at", { ascending: false }) as any;
-    setItems((data || []).map((d: any) => ({ ...d, property: d.properties })));
+      .order("created_at", { ascending: false });
+    setItems((data ?? []).map((d: any) => ({ id: d.id, property_id: d.property_id, created_at: d.created_at, property: d.properties })));
     setLoading(false);
   };
 
@@ -38,6 +40,8 @@ const SavedPropertiesPage = () => {
     const { error } = await supabase.from("saved_properties").delete().eq("id", id);
     if (error) { toast.error("Failed to remove"); return; }
     setItems(p => p.filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
+    window.dispatchEvent(new Event('property-actions-changed'));
     toast.success("Removed from saved");
   };
 
