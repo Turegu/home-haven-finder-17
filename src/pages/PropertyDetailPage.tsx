@@ -33,10 +33,21 @@ const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; l
   </div>
 );
 
+const emptyPropertyState = {
+  ...mockPropertyDetail,
+  agentLogo: '',
+  agentName: '',
+  agentCompany: '',
+  companyLogo: null as string | null,
+  agentDesignation: null as string | null,
+  agentLanguages: [] as string[],
+};
+
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [property, setProperty] = useState(mockPropertyDetail);
+  const [property, setProperty] = useState(emptyPropertyState);
+  const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
@@ -44,6 +55,7 @@ const PropertyDetailPage = () => {
 
   useEffect(() => {
     if (!id) return;
+    setLoading(true);
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
@@ -52,8 +64,8 @@ const PropertyDetailPage = () => {
         .maybeSingle();
       if (data) {
         const p = data as any;
-        setProperty({
-          ...mockPropertyDetail,
+        setProperty((prev) => ({
+          ...prev,
           id: p.id,
           title: p.title || mockPropertyDetail.title,
           price: p.price || mockPropertyDetail.price,
@@ -79,13 +91,13 @@ const PropertyDetailPage = () => {
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
           exteriorAmenities: p.exterior_amenities || [],
-          agentName: p.agents?.name || p.companies?.name || mockPropertyDetail.agentName,
-          agentLogo: p.agents?.avatar_url || mockPropertyDetail.agentLogo,
+          agentName: p.agents?.name || p.companies?.name || '',
+          agentLogo: p.agents?.avatar_url || '',
           agentDesignation: p.agents?.designation || null,
           agentLanguages: p.agents?.languages || [],
           agentCompany: p.companies?.name || p.agents?.companies?.name || '',
           companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
-        });
+        }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
 
@@ -122,6 +134,7 @@ const PropertyDetailPage = () => {
           })));
         }
       }
+      setLoading(false);
     };
     fetchProperty();
   }, [id]);
@@ -478,12 +491,18 @@ const PropertyDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
               {/* Agent info — links to agent profile */}
               <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
-                <img
-                  src={property.agentLogo}
-                  alt={property.agentName}
-                  className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
-                />
-                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName}</h3>
+                {property.agentLogo ? (
+                  <img
+                    src={property.agentLogo}
+                    alt={property.agentName}
+                    className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors"
+                  />
+                ) : (
+                  <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                    <Building className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                )}
+                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName || 'Loading...'}</h3>
                 {property.agentDesignation && (
                   <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
                 )}
