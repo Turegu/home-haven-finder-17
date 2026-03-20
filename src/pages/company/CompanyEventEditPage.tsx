@@ -391,12 +391,13 @@ const CompanyEventEditPage = () => {
           <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Event Logo" />
           <p className="text-xs text-muted-foreground mb-4">Upload a custom logo for this event. If none is uploaded, a default logo based on the event type will be used.</p>
           <div className="flex items-center gap-4">
-            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
-              <img
-                src={logoUrl || getEventLogo(null, form.event_type)}
-                alt="Event logo"
-                className="w-full h-full object-contain bg-muted/20 p-1"
-              />
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border flex items-center justify-center bg-muted/20">
+              {logoUrl ? (
+                <img src={logoUrl} alt="Event logo" className="w-full h-full object-contain p-1" />
+              ) : (() => {
+                const TypeIcon = getEventTypeIcon(form.event_type);
+                return <TypeIcon className="h-8 w-8 text-foreground" />;
+              })()}
               {logoUrl && (
                 <button type="button" onClick={() => setLogoUrl("")}
                   className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5">
