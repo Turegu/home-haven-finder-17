@@ -79,6 +79,8 @@ interface FilterTab {
 const FILTER_TABS: FilterTab[] = [
   // Essential
   { key: 'type', label: 'Property Type', icon: Home, section: 'essential', basicKey: 'propertyTypes', optionKey: '_property_types_combined', type: 'simple' },
+  { key: 'price', label: 'Price', icon: DollarSign, section: 'essential', optionKey: '', type: 'range', rangeKey: 'price' },
+  { key: 'area', label: 'Area', icon: Ruler, section: 'essential', optionKey: '', type: 'range', rangeKey: 'area' },
   { key: 'rooms', label: 'Rooms', icon: BedDouble, section: 'essential', basicKey: 'rooms', optionKey: 'rooms', type: 'simple' },
   { key: 'bathrooms', label: 'Bathrooms', icon: Bath, section: 'essential', basicKey: 'bathrooms', optionKey: 'bathrooms', type: 'simple' },
   { key: 'rentDuration', label: 'Rent Duration', icon: Clock, section: 'essential', basicKey: 'rentDuration', optionKey: 'rent_duration', type: 'simple' },
