@@ -91,6 +91,8 @@ const CompanyEventEditPage = () => {
   const eventTypes = (filterOpts["event_types"] || []).map(t => ({ value: t.toLowerCase().replace(/[\s\/]+/g, '_'), label: t }));
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [agents, setAgents] = useState<{ id: string; name: string }[]>([]);
+  const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [pdfUrl, setPdfUrl] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
@@ -123,7 +125,12 @@ const CompanyEventEditPage = () => {
       if (!user) return;
       const { data: company } = await supabase
         .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) setCompanyId(company.id);
+      if (company) {
+        setCompanyId(company.id);
+        const { data: agentData } = await supabase
+          .from("agents").select("id, name").eq("company_id", company.id).eq("status", "active");
+        setAgents(agentData || []);
+      }
     };
     init();
   }, []);
@@ -154,6 +161,7 @@ const CompanyEventEditPage = () => {
       setImages(d.images || []);
       setPdfUrl(d.pdf_catalogue_url || "");
       setLogoUrl(d.logo_url || "");
+      setSelectedAgentId(d.agent_id || "");
     };
     fetchEvent();
   }, [isEdit, id]);
@@ -213,6 +221,7 @@ const CompanyEventEditPage = () => {
       logo_url: logoUrl || null,
       images,
       company_id: companyId,
+      agent_id: selectedAgentId && selectedAgentId !== "none" ? selectedAgentId : null,
       status: publishStatus,
     };
 
@@ -271,6 +280,22 @@ const CompanyEventEditPage = () => {
                   <Users className="h-3.5 w-3.5 text-muted-foreground" /> Organizer
                 </Label>
                 <Input value={form.organizer} onChange={(e) => updateField("organizer", e.target.value)} className="bg-secondary/50" placeholder="Organizer name" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-muted-foreground" /> Assign Agent
+                </Label>
+                <Select value={selectedAgentId || "none"} onValueChange={(v) => setSelectedAgentId(v === "none" ? "" : v)}>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select an agent (optional)" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Agent</SelectItem>
+                    {agents.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
