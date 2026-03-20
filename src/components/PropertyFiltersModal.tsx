@@ -322,7 +322,7 @@ export default function PropertyFiltersModal({
           </div>
         </div>
 
-        {/* Options grid */}
+        {/* Options content */}
         <div className="overflow-hidden px-6 py-4">
           <div
             className="overflow-y-auto h-[38vh] -mx-1 px-1 scrollbar-thin"
@@ -332,42 +332,111 @@ export default function PropertyFiltersModal({
               e.stopPropagation();
             }}
           >
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              {filteredOptions.length === 0 && (
-                <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground">
-                  <Search className="h-8 w-8 mb-3 opacity-30" />
-                  <p className="text-sm font-medium">No options found</p>
-                  <p className="text-xs mt-1 opacity-70">Try a different search term</p>
-                </div>
-              )}
-              {filteredOptions.map((opt) => {
-                const checked = isChecked(currentTab, opt);
-                const IconComp = currentTab.type === 'amenity'
-                  ? getIcon(opt, currentTab.amenityType!)
-                  : currentTab.icon;
-                return (
-                  <label
-                    key={opt}
-                    className={`
-                      group flex items-center gap-2.5 cursor-pointer py-3 px-3.5 rounded-xl border
-                      transition-all duration-200 ease-out select-none
-                      active:scale-[0.97]
-                      ${checked
-                        ? 'border-primary/50 bg-primary/6 shadow-sm shadow-primary/10'
-                        : 'border-border/80 hover:border-primary/25 hover:bg-muted/50 hover:shadow-sm'
-                      }
-                    `}
-                  >
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={() => toggleValue(currentTab, opt)}
-                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            {/* Range inputs for Price / Area */}
+            {currentTab.type === 'range' && currentTab.rangeKey === 'price' && (
+              <div className="flex flex-col items-center justify-center h-full gap-6 py-8">
+                <DollarSign className="h-10 w-10 text-primary/30" />
+                <p className="text-sm font-medium text-muted-foreground">Set your price range</p>
+                <div className="flex items-center gap-3 w-full max-w-sm">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Min Price</label>
+                    <input
+                      type="number"
+                      value={localRange.minPrice}
+                      onChange={(e) => setLocalRange({ ...localRange, minPrice: e.target.value })}
+                      placeholder="0"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                     />
-                    {currentTab.type === 'amenity' && (
-                      <IconComp className={`h-4 w-4 shrink-0 transition-colors ${checked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
-                    )}
-                    <span className={`text-sm leading-tight transition-colors ${checked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
-                      {opt}
+                  </div>
+                  <span className="text-muted-foreground mt-5">—</span>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Max Price</label>
+                    <input
+                      type="number"
+                      value={localRange.maxPrice}
+                      onChange={(e) => setLocalRange({ ...localRange, maxPrice: e.target.value })}
+                      placeholder="Any"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {currentTab.type === 'range' && currentTab.rangeKey === 'area' && (
+              <div className="flex flex-col items-center justify-center h-full gap-6 py-8">
+                <Ruler className="h-10 w-10 text-primary/30" />
+                <p className="text-sm font-medium text-muted-foreground">Set your area range (m²)</p>
+                <div className="flex items-center gap-3 w-full max-w-sm">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Min Area</label>
+                    <input
+                      type="number"
+                      value={localRange.minArea}
+                      onChange={(e) => setLocalRange({ ...localRange, minArea: e.target.value })}
+                      placeholder="0"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                  <span className="text-muted-foreground mt-5">—</span>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1 block">Max Area</label>
+                    <input
+                      type="number"
+                      value={localRange.maxArea}
+                      onChange={(e) => setLocalRange({ ...localRange, maxArea: e.target.value })}
+                      placeholder="Any"
+                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Checkbox grid for non-range tabs */}
+            {currentTab.type !== 'range' && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {filteredOptions.length === 0 && (
+                  <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground">
+                    <Search className="h-8 w-8 mb-3 opacity-30" />
+                    <p className="text-sm font-medium">No options found</p>
+                    <p className="text-xs mt-1 opacity-70">Try a different search term</p>
+                  </div>
+                )}
+                {filteredOptions.map((opt) => {
+                  const checked = isChecked(currentTab, opt);
+                  const IconComp = currentTab.type === 'amenity'
+                    ? getIcon(opt, currentTab.amenityType!)
+                    : currentTab.icon;
+                  return (
+                    <label
+                      key={opt}
+                      className={`
+                        group flex items-center gap-2.5 cursor-pointer py-3 px-3.5 rounded-xl border
+                        transition-all duration-200 ease-out select-none
+                        active:scale-[0.97]
+                        ${checked
+                          ? 'border-primary/50 bg-primary/6 shadow-sm shadow-primary/10'
+                          : 'border-border/80 hover:border-primary/25 hover:bg-muted/50 hover:shadow-sm'
+                        }
+                      `}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggleValue(currentTab, opt)}
+                        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {currentTab.type === 'amenity' && (
+                        <IconComp className={`h-4 w-4 shrink-0 transition-colors ${checked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
+                      )}
+                      <span className={`text-sm leading-tight transition-colors ${checked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
+                        {opt}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
                     </span>
                   </label>
                 );
