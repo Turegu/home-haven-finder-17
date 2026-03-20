@@ -437,11 +437,6 @@ export default function PropertyFiltersModal({
                 })}
               </div>
             )}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
           </div>
         </div>
 
