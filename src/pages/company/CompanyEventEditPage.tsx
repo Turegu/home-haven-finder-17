@@ -102,6 +102,7 @@ const CompanyEventEditPage = () => {
     description: "",
     event_type: "open_house",
     event_date: "",
+    event_end_date: "",
     entry_type: "open_invitation" as "open_invitation" | "paid",
     price: "",
     currency: "USD",
