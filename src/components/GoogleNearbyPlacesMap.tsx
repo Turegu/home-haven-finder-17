@@ -381,6 +381,10 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     </div>
   );
 
+  if (isFullscreen) {
+    return createPortal(mapContent, document.body);
+  }
+
   if (embedded) return mapContent;
 
   return (
