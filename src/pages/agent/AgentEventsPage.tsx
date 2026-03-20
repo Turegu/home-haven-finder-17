@@ -34,7 +34,7 @@ const AgentEventsPage = () => {
   }, [sortOrder]);
 
   const filtered = events.filter((e) =>
-    e.title.toLowerCase().includes(search.toLowerCase()) || e.listing_id.includes(search)
+    e.title?.toLowerCase().includes(search.toLowerCase()) || e.listing_id?.includes(search)
   );
 
   return (

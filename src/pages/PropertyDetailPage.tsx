@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
@@ -188,11 +188,18 @@ const PropertyDetailPage = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [loanValues, setLoanValues] = useState({
-    propertyValue: property.price,
+    propertyValue: 0,
     loanPeriod: 20,
     interestRate: 5,
     downPayment: 20,
   });
+
+  // Sync loan calculator with fetched property price
+  useEffect(() => {
+    if (property.price > 0) {
+      setLoanValues(prev => ({ ...prev, propertyValue: property.price }));
+    }
+  }, [property.price]);
 
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % property.images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + property.images.length) % property.images.length);
@@ -241,7 +248,7 @@ const PropertyDetailPage = () => {
         <div className="flex items-center gap-1 text-xs text-muted-foreground flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
-          <Link to={`/${property.propertyPurpose === 'rent' ? 'buy' : 'buy'}?purpose=${property.propertyPurpose || 'buy'}`} className="hover:text-foreground transition-colors">
+          <Link to={`/${property.propertyPurpose === 'rent' ? 'rent' : 'buy'}`} className="hover:text-foreground transition-colors">
             {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
           </Link>
           {property.province && (

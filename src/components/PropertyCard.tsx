@@ -49,10 +49,11 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
     if (result === null) setIsFavorited(prev);
   };
 
-  const formatPrice = (price: number) => {
-    if (price >= 1000000) return `$${(price / 1000000).toFixed(1)}M`;
-    if (price >= 1000) return `$${(price / 1000).toFixed(0)}K`;
-    return `$${price.toLocaleString()}`;
+  const formatPrice = (price: number, currency?: string) => {
+    const sym = currency && currency !== 'USD' ? currency : '$';
+    if (price >= 1000000) return `${sym}${(price / 1000000).toFixed(1)}M`;
+    if (price >= 1000) return `${sym}${(price / 1000).toFixed(0)}K`;
+    return `${sym}${price.toLocaleString()}`;
   };
 
   const tagColorMap: Record<string, string> = {
@@ -114,7 +115,7 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
       <div className="p-4">
         <div className="flex items-center justify-between mb-1">
           <div className="text-lg font-bold text-foreground">
-            {formatPrice(property.price)}
+            {formatPrice(property.price, property.currency)}
             {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/mo</span>}
           </div>
           <img src={property.agentLogo} alt={property.agentName} className="h-7 w-auto max-w-[60px] object-contain" />

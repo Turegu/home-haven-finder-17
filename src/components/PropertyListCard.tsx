@@ -233,7 +233,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
           {/* Price bar below thumbnails */}
           <div className="bg-foreground px-3 py-1.5 flex items-center justify-between">
             <span className="text-base font-bold text-background">
-              $ {property.price.toLocaleString()}
+              {property.currency && property.currency !== 'USD' ? property.currency + ' ' : '$ '}{property.price.toLocaleString()}
               {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
             </span>
           </div>
