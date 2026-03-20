@@ -115,7 +115,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
           </div>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 min-h-0 p-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30">
           {mainLinks.map(renderLink)}
           <Separator className="my-2" />
           {renderLink(settingsLink)}
