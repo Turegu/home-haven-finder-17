@@ -68,6 +68,7 @@ const AdminCrudsPage = lazy(() => import("./pages/admin/AdminCrudsPage.tsx"));
 const AdminFiltersPage = lazy(() => import("./pages/admin/AdminFiltersPage.tsx"));
 const AdminLocationsPage = lazy(() => import("./pages/admin/AdminLocationsPage.tsx"));
 const AdminEmailPreviewPage = lazy(() => import("./pages/admin/AdminEmailPreviewPage.tsx"));
+const AdminReportsPage = lazy(() => import("./pages/admin/AdminReportsPage.tsx"));
 
 // Company pages
 const CompanyLoginPage = lazy(() => import("./pages/company/CompanyLoginPage.tsx"));
@@ -189,6 +190,7 @@ const App = () => (
             <Route path="/admin/filters" element={<AdminFiltersPage />} />
             <Route path="/admin/locations" element={<AdminLocationsPage />} />
             <Route path="/admin/email-templates" element={<AdminEmailPreviewPage />} />
+            <Route path="/admin/reports" element={<AdminReportsPage />} />
 
             {/* Company */}
             <Route path="/company/login" element={<CompanyLoginPage />} />

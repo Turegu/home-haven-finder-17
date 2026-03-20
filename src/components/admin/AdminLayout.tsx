@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ const sidebarItems = [
   { label: "FAQs Management", icon: HelpCircle, path: "/admin/faqs" },
   { label: "Language Management", icon: Languages, path: "/admin/languages" },
   { label: "Currency Management", icon: Coins, path: "/admin/currencies" },
-  { label: "Reports", icon: BarChart3, path: "/admin/reports" },
+  { label: "Property Reports", icon: Flag, path: "/admin/reports" },
   { label: "CMS", icon: FileText, path: "/admin/cms" },
   { label: "CRUDs", icon: ListChecks, path: "/admin/cruds" },
   { label: "Filters", icon: SlidersHorizontal, path: "/admin/filters" },

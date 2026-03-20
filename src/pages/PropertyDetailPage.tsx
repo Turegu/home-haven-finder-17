@@ -19,6 +19,7 @@ import { mockPropertyDetail } from '@/data/mockDetails';
 import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
+import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 
 // Lazy-load heavy below-the-fold components
 const NearbyPlacesMap = lazy(() => import('@/components/NearbyPlacesMap'));
@@ -82,6 +83,7 @@ const PropertyDetailPage = () => {
   const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -384,7 +386,7 @@ const PropertyDetailPage = () => {
           <button onClick={() => window.print()} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Print">
             <Printer className="h-4 w-4" />
           </button>
-          <button onClick={() => toast.success('Thank you for your report. We will review this listing.')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Report this listing">
+          <button onClick={() => setReportDialogOpen(true)} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Report this listing">
             <Flag className="h-4 w-4" />
           </button>
         </div>
@@ -798,6 +800,13 @@ const PropertyDetailPage = () => {
         companyId={realCompanyId}
         agentId={realAgentId}
         companyName={property.agentCompany}
+      />
+
+      <ReportPropertyDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        propertyId={property.id}
+        propertyTitle={property.title}
       />
 
       <Footer />
