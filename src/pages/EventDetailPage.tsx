@@ -52,12 +52,13 @@ const EventDetailPage = () => {
           listingDate: e.created_at?.slice(0, 10) || '',
           images: e.images && e.images.length > 0 ? e.images : ['/placeholder.svg'],
           description: e.description || '',
-          agentName: e.agents?.name || e.companies?.name || '',
+          agentName: e.agents?.name || '',
           agentLogo: e.agents?.avatar_url || '',
           agentDesignation: e.agents?.designation || null,
           agentLanguages: e.agents?.languages || [],
           agentCompany: e.companies?.name || e.agents?.companies?.name || '',
           companyLogo: e.companies?.logo_url || e.agents?.companies?.logo_url || null,
+          hasAgent: !!e.agents,
           pdfCatalogueUrl: e.pdf_catalogue_url || null,
         });
         setRealAgentId(e.agents?.id || null);
