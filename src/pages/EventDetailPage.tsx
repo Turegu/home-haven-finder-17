@@ -87,6 +87,13 @@ const EventDetailPage = () => {
     } catch { return dateStr; }
   };
 
+  const formatTime = (dateStr: string) => {
+    if (!dateStr) return '—';
+    try {
+      return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    } catch { return '—'; }
+  };
+
   const mediaTabs = [
     { id: 'photos', label: 'Photos', icon: Camera },
     { id: 'location', label: 'Location', icon: MapPin },
