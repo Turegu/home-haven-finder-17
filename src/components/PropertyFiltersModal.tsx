@@ -192,14 +192,17 @@ export default function PropertyFiltersModal({
   function clearAll() {
     setLocalMore(emptyMoreFilters);
     setLocalBasic(emptyBasicFilters);
+    setLocalRange(emptyRangeFilters);
     onFiltersChange(emptyMoreFilters);
     onBasicFiltersChange?.(emptyBasicFilters);
+    onRangeFiltersChange?.(emptyRangeFilters);
     onClearAll?.();
   }
 
   function handleApply() {
     onFiltersChange(localMore);
     onBasicFiltersChange?.(localBasic);
+    onRangeFiltersChange?.(localRange);
     setOpen(false);
   }
 
