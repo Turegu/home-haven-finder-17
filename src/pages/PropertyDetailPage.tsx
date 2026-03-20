@@ -380,15 +380,16 @@ const PropertyDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-start justify-between gap-4 mb-1">
                 <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
-                <div className="flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border shrink-0">
+                <div className="flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border shrink-0">
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => handleMediaTabClick(tab.id)}
-                      className={`p-2 rounded-md transition-all active:scale-95 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
+                      className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-all active:scale-95 text-xs font-medium ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
-                      <tab.icon className="h-4 w-4" />
+                      <tab.icon className="h-3.5 w-3.5" />
+                      <span className="hidden xl:inline">{tab.label}</span>
                     </button>
                   ))}
                 </div>
