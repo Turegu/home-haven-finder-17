@@ -9,7 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
-import { getEventLogo } from '@/data/eventTypes';
+import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
 
 const EventDetailPage = () => {
