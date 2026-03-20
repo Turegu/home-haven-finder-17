@@ -21,6 +21,7 @@ const EventsPage = () => {
   const { options: fo } = useFilterOptions('search');
   const eventTypes = fo['event_types'] || [];
   const routeLocation = useLocation();
+  const [searchParams] = useSearchParams();
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [focusListingId, setFocusListingId] = useState<string | null>(null);
@@ -28,18 +29,25 @@ const EventsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEventType, setSelectedEventType] = useState('');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
-  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
+  });
   const [keyword, setKeyword] = useState('');
 
   // Reset all filters when navigating to /events (e.g. clicking nav link)
   useEffect(() => {
+    const p = searchParams.get('province') || undefined;
+    const d = searchParams.get('district') || undefined;
+    const n = searchParams.get('neighborhood') || undefined;
     setKeyword('');
     setSelectedEventType('');
     setDateRange({});
-    setLocation({});
+    setLocation({ province: p, district: d, neighborhood: n });
     setSortBy('newest');
     setCurrentPage(1);
-    setCommittedParams({ sortBy: 'newest', page: 1, pageSize: LIST_ITEMS });
+    setCommittedParams({ sortBy: 'newest', page: 1, pageSize: LIST_ITEMS, province: p, district: d, neighborhood: n });
   }, [routeLocation.key]);
 
   const GRID_ITEMS = 15;
@@ -50,6 +58,9 @@ const EventsPage = () => {
     sortBy: 'newest',
     page: 1,
     pageSize: LIST_ITEMS,
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
   });
 
   useEffect(() => { document.title = 'Events | Turegu'; }, []);
