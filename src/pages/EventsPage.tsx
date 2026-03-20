@@ -170,10 +170,44 @@ const EventsPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span>{'>'}</span>
-          <span className="text-primary font-medium">Events</span>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4 flex-wrap">
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          {!location.province ? (
+            <span className="text-foreground font-medium">Events</span>
+          ) : (
+            <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+          )}
+          {location.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.district ? (
+                <span className="text-foreground font-medium">{location.province} Events</span>
+              ) : (
+                <Link to={`/events?province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                  {location.province} Events
+                </Link>
+              )}
+            </>
+          )}
+          {location.district && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.neighborhood ? (
+                <span className="text-foreground font-medium">{location.district} Events</span>
+              ) : (
+                <Link to={`/events?province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                  {location.district} Events
+                </Link>
+              )}
+            </>
+          )}
+          {location.neighborhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <span className="text-foreground font-medium">{location.neighborhood} Events</span>
+            </>
+          )}
         </div>
 
         {/* Results Header */}

@@ -343,10 +343,44 @@ const BuyPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span>{'>'}</span>
-          <span className="text-primary font-medium">{isRent ? 'Rent' : 'Buy'}</span>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4 flex-wrap">
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          {!location.province ? (
+            <span className="text-foreground font-medium">{isRent ? 'For Rent' : 'For Sale'}</span>
+          ) : (
+            <Link to={`/buy?purpose=${isRent ? 'rent' : 'buy'}`} className="hover:text-foreground transition-colors">{isRent ? 'For Rent' : 'For Sale'}</Link>
+          )}
+          {location.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.district ? (
+                <span className="text-foreground font-medium">{location.province} {isRent ? 'For Rent' : 'For Sale'}</span>
+              ) : (
+                <Link to={`/buy?purpose=${isRent ? 'rent' : 'buy'}&province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                  {location.province} {isRent ? 'For Rent' : 'For Sale'}
+                </Link>
+              )}
+            </>
+          )}
+          {location.district && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.neighborhood ? (
+                <span className="text-foreground font-medium">{location.district} {isRent ? 'For Rent' : 'For Sale'}</span>
+              ) : (
+                <Link to={`/buy?purpose=${isRent ? 'rent' : 'buy'}&province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                  {location.district} {isRent ? 'For Rent' : 'For Sale'}
+                </Link>
+              )}
+            </>
+          )}
+          {location.neighborhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <span className="text-foreground font-medium">{location.neighborhood} {isRent ? 'For Rent' : 'For Sale'}</span>
+            </>
+          )}
         </div>
 
         {/* Results Header */}
