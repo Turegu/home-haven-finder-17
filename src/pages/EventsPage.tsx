@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
@@ -11,7 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import LocationPicker from '@/components/LocationPicker';
-import ListingMapView from '@/components/ListingMapView';
+const ListingMapView = lazy(() => import('@/components/ListingMapView'));
 import EventListCard from '@/components/EventListCard';
 import EventGridCard from '@/components/EventGridCard';
 import { useFilterOptions } from '@/hooks/useFilterOptions';

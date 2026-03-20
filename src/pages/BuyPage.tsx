@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy } from 'react';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
@@ -12,7 +12,7 @@ import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyListCard from '@/components/PropertyListCard';
 import BannerDisplay from '@/components/BannerDisplay';
-import ListingMapView from '@/components/ListingMapView';
+const ListingMapView = lazy(() => import('@/components/ListingMapView'));
 import LocationPicker from '@/components/LocationPicker';
 import PropertyTypeDropdown from '@/components/PropertyTypeDropdown';
 import PriceDropdown from '@/components/PriceDropdown';

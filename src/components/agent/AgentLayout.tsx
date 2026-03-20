@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 interface AgentLayoutProps {
   children: React.ReactNode;
@@ -29,33 +30,35 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [agentName, setAgentName] = useState("");
-  const [agentAvatar, setAgentAvatar] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+  const { data: agentData } = useQuery({
+    queryKey: ['agent-layout-auth'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         navigate("/agent/login");
-        return;
+        return null;
       }
       const { data: agent } = await supabase
         .from("agents")
         .select("name, avatar_url")
-        .eq("user_id", user.id)
+        .eq("user_id", session.user.id)
         .limit(1)
         .maybeSingle();
       if (!agent) {
         await supabase.auth.signOut();
         toast.error("No agent account found");
         navigate("/agent/login");
-        return;
+        return null;
       }
-      setAgentName(agent.name);
-      setAgentAvatar(agent.avatar_url);
-    };
-    checkAuth();
-  }, [navigate]);
+      return agent;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const agentName = agentData?.name || "";
+  const agentAvatar = agentData?.avatar_url || null;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
