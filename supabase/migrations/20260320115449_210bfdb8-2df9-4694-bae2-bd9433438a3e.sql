@@ -1,0 +1,1 @@
+DELETE FROM properties WHERE pin_location IS NULL OR pin_location = '';
