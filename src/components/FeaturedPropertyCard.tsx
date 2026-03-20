@@ -48,10 +48,11 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
     if (result === null) setIsComparedLocal(prev);
   };
 
-  const formatPrice = (price: number) => {
-    if (price >= 1000000) return `$${(price / 1000000).toFixed(1)}M`;
-    if (price >= 1000) return `$${(price / 1000).toFixed(0)}K`;
-    return `$${price.toLocaleString()}`;
+  const formatPrice = (price: number, currency?: string) => {
+    const sym = currency && currency !== 'USD' ? currency + ' ' : '$';
+    if (price >= 1000000) return `${sym}${(price / 1000000).toFixed(1)}M`;
+    if (price >= 1000) return `${sym}${(price / 1000).toFixed(0)}K`;
+    return `${sym}${price.toLocaleString()}`;
   };
 
   const tagColorMap: Record<string, string> = {
