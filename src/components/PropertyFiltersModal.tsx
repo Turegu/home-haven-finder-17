@@ -40,11 +40,25 @@ export interface BasicFilters {
   rentDuration: string[];
 }
 
+export interface RangeFilters {
+  minPrice: string;
+  maxPrice: string;
+  minArea: string;
+  maxArea: string;
+}
+
 export const emptyBasicFilters: BasicFilters = {
   propertyTypes: [],
   rooms: [],
   bathrooms: [],
   rentDuration: [],
+};
+
+export const emptyRangeFilters: RangeFilters = {
+  minPrice: '',
+  maxPrice: '',
+  minArea: '',
+  maxArea: '',
 };
 
 /* ─── Tab definitions ─── */
