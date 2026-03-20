@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
-  GraduationCap, HeartPulse, TreePine, Briefcase, ShoppingCart, ShoppingBag,
+  GraduationCap, HeartPulse, TreePine, ShoppingCart, ShoppingBag,
   Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin, Maximize, Minimize,
   Cross
 } from 'lucide-react';
@@ -43,29 +43,27 @@ const categorySvgPaths: Record<string, string> = {
   health: '<path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"/><path d="M22 10c0 .6-.5 1-1 1h-2l-3.4-3.4a.8.8 0 0 0-1.2 0L12 10"/>',
   pharmacy: '<path d="M3 3h18v18H3z"/><path d="M12 8v8"/><path d="M8 12h8"/>',
   park: '<path d="M17 22v-2"/><path d="M9 18h6.5l2.14-7.78a.5.5 0 0 0-.86-.46l-1.25 1.5a.5.5 0 0 1-.78 0L12 8l-2.75 3.26a.5.5 0 0 1-.78 0l-1.25-1.5a.5.5 0 0 0-.86.46L8.5 18"/><path d="M7 22v-2"/>',
-  business: '<rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
   market: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
   shopping: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
   worship: '<path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/><path d="M12 9v4"/><path d="M12 17v5"/><path d="M9 17h6"/>',
   restaurant: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
   cafe: '<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/>',
   gym: '<path d="M6.5 6.5 17.5 17.5M7 12l5 5M12 7l5 5M4.5 8.5l1-1M3.5 9.5l1-1M13.5 19.5l1-1M14.5 18.5l1-1M20.5 15.5l-1 1M19.5 14.5l-1 1M10.5 4.5l-1 1M9.5 5.5l-1 1"/>',
-  commute: '<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>',
+  transport: '<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>',
 };
 
 const categories: PlaceCategory[] = [
-  { key: 'education', label: 'Education', icon: GraduationCap, color: '#2563eb', osmQueries: ['amenity~"school|university|kindergarten|college"'] },
-  { key: 'health', label: 'Health', icon: HeartPulse, color: '#dc2626', osmQueries: ['amenity~"hospital|clinic|dentist|doctors"'] },
+  { key: 'education', label: 'Education', icon: GraduationCap, color: '#2563eb', osmQueries: ['amenity~"school|university"'] },
+  { key: 'health', label: 'Health', icon: HeartPulse, color: '#dc2626', osmQueries: ['amenity~"hospital|clinic"'] },
   { key: 'pharmacy', label: 'Pharmacy', icon: Cross, color: '#16a34a', osmQueries: ['amenity~"pharmacy"'] },
-  { key: 'park', label: 'Park', icon: TreePine, color: '#15803d', osmQueries: ['leisure~"park|garden|playground"'] },
-  { key: 'business', label: 'Business', icon: Briefcase, color: '#ea580c', osmQueries: ['office'] },
-  { key: 'market', label: 'Market', icon: ShoppingCart, color: '#65a30d', osmQueries: ['shop~"supermarket|convenience|grocery|greengrocer"'] },
-  { key: 'shopping', label: 'Shopping', icon: ShoppingBag, color: '#7c3aed', osmQueries: ['shop~"mall|department_store|clothes|electronics"'] },
+  { key: 'park', label: 'Park', icon: TreePine, color: '#15803d', osmQueries: ['leisure~"park|garden"'] },
+  { key: 'market', label: 'Market', icon: ShoppingCart, color: '#65a30d', osmQueries: ['shop~"supermarket|grocery"'] },
+  { key: 'shopping', label: 'Shopping', icon: ShoppingBag, color: '#7c3aed', osmQueries: ['shop~"mall|department_store"'] },
   { key: 'worship', label: 'Worship', icon: Church, color: '#0891b2', osmQueries: ['amenity~"place_of_worship"'] },
   { key: 'restaurant', label: 'Restaurant', icon: UtensilsCrossed, color: '#be185d', osmQueries: ['amenity~"restaurant|fast_food"'] },
   { key: 'cafe', label: 'Cafe', icon: Coffee, color: '#92400e', osmQueries: ['amenity~"cafe"'] },
   { key: 'gym', label: 'Gym', icon: Dumbbell, color: '#4f46e5', osmQueries: ['leisure~"fitness_centre|sports_centre"'] },
-  { key: 'commute', label: 'Commute', icon: Bus, color: '#0d9488', osmQueries: ['railway~"station|halt|tram_stop"', 'highway~"bus_stop"', 'amenity~"bus_station"'] },
+  { key: 'transport', label: 'Transport', icon: Bus, color: '#0d9488', osmQueries: ['railway~"station|halt"', 'amenity~"bus_station"'] },
 ];
 
 function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -144,7 +142,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
         return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
       });
 
-      const query = `[out:json][timeout:18];(${nodeParts.join('')});out body 20;`;
+      const query = `[out:json][timeout:12];(${nodeParts.join('')});out body 10;`;
 
       const { data, error } = await supabase.functions.invoke('nearby-places-proxy', {
         body: { query },
