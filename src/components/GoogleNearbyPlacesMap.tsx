@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, memo } from 'react';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api';
 import {
   GraduationCap, HeartPulse, TreePine, ShoppingCart, ShoppingBag,
@@ -6,8 +6,7 @@ import {
   Cross
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCtQx-V0yQ2CDvqjL89-AX2X1u5ZOpbvzQ';
+import { GOOGLE_MAPS_API_KEY } from '@/lib/mapConstants';
 
 interface NearbyPlace {
   id: string;
@@ -59,7 +58,7 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-const PropertyMarker = ({ lat, lng, title }: { lat: number; lng: number; title: string }) => (
+const PropertyMarker = memo(({ lat, lng, title }: { lat: number; lng: number; title: string }) => (
   <OverlayViewF position={{ lat, lng }} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}>
     <div className="transform -translate-x-1/2 -translate-y-full" title={title}>
       <div className="w-10 h-10 rounded-full rounded-bl-none bg-primary flex items-center justify-center rotate-[-45deg] shadow-lg border-[3px] border-white">
@@ -67,9 +66,10 @@ const PropertyMarker = ({ lat, lng, title }: { lat: number; lng: number; title: 
       </div>
     </div>
   </OverlayViewF>
-);
+));
+PropertyMarker.displayName = 'PropertyMarker';
 
-const POIMarker = ({ place, color, isSelected, onClick, categoryIcon: CategoryIcon }: {
+const POIMarker = memo(({ place, color, isSelected, onClick, categoryIcon: CategoryIcon }: {
   place: NearbyPlace;
   color: string;
   isSelected: boolean;
@@ -90,9 +90,10 @@ const POIMarker = ({ place, color, isSelected, onClick, categoryIcon: CategoryIc
       </div>
     </div>
   </OverlayViewF>
-);
+));
+POIMarker.displayName = 'POIMarker';
 
-const PlaceInfoCard = ({ place, onClose, categoryColor }: { place: NearbyPlace; onClose: () => void; categoryColor: string }) => (
+const PlaceInfoCard = memo(({ place, onClose, categoryColor }: { place: NearbyPlace; onClose: () => void; categoryColor: string }) => (
   <OverlayViewF position={{ lat: place.lat, lng: place.lng }} mapPaneName={OverlayView.FLOAT_PANE}>
     <div className="transform -translate-x-1/2 -translate-y-[calc(100%+20px)]">
       <div className="w-[220px] bg-card rounded-lg border border-border shadow-xl p-3">
@@ -129,7 +130,34 @@ const PlaceInfoCard = ({ place, onClose, categoryColor }: { place: NearbyPlace; 
       <div className="w-3 h-3 bg-card border-b border-r border-border rotate-45 mx-auto -mt-1.5" />
     </div>
   </OverlayViewF>
-);
+));
+PlaceInfoCard.displayName = 'PlaceInfoCard';
+
+function parseOverpassElements(data: any): any[] {
+  if (Array.isArray(data?.elements)) return data.elements;
+  if (Array.isArray(data?.data?.elements)) return data.data.elements;
+  return [];
+}
+
+function mapElementToPlace(el: any, lat: number, lng: number, categoryKey: string): NearbyPlace {
+  const dist = haversineDistance(lat, lng, el.lat, el.lon);
+  const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
+  const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
+  const rawType = el.tags?.amenity || el.tags?.shop || el.tags?.leisure || el.tags?.railway || el.tags?.highway || el.tags?.office || el.tags?.public_transport || '';
+  const subtype = rawType.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+  return {
+    id: String(el.id),
+    name: el.tags.name,
+    lat: el.lat,
+    lng: el.lon,
+    category: categoryKey,
+    subtype: subtype || undefined,
+    distance: Math.round(dist * 1000),
+    walkTime: Math.max(1, Math.round((dist / 5) * 60)),
+    driveTime: Math.max(1, Math.round((dist / 40) * 60)),
+    rating: Number.isFinite(parsedRating) ? parsedRating : Math.min(5, fallbackRating),
+  };
+}
 
 const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNearbyPlacesMapProps) => {
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY });
@@ -139,24 +167,32 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [_prefetchingCount, setPrefetchingCount] = useState(0);
   const mapRef = useRef<google.maps.Map | null>(null);
   const prefetchedRef = useRef(false);
+  const mountedRef = useRef(true);
+  // Track in-flight fetches to prevent duplicate requests
+  const inFlightRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
   }, []);
 
   const fetchNearbyPlaces = useCallback(async (categoryKey: string, silent = false) => {
-    if (!silent && loadingCategory === categoryKey) return;
+    // Prevent duplicate in-flight requests
+    if (inFlightRef.current.has(categoryKey)) return;
+    inFlightRef.current.add(categoryKey);
 
     if (!silent) setLoadingCategory(categoryKey);
-    else setPrefetchingCount(prev => prev + 1);
 
     const cat = categories.find(c => c.key === categoryKey);
     if (!cat) {
+      inFlightRef.current.delete(categoryKey);
       if (!silent) setLoadingCategory(null);
-      else setPrefetchingCount(prev => prev - 1);
       return;
     }
 
@@ -174,61 +210,44 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
       const { data, error } = await supabase.functions.invoke('nearby-places-proxy', { body: { query } });
       if (error) throw new Error(error.message || 'Nearby places request failed');
 
-      const elements = Array.isArray(data?.elements) ? data.elements : Array.isArray(data?.data?.elements) ? data.data.elements : [];
+      // Guard against unmounted updates
+      if (!mountedRef.current) return;
 
+      const elements = parseOverpassElements(data);
       const results: NearbyPlace[] = elements
         .filter((el: any) => el?.lat && el?.lon && el?.tags?.name)
-        .map((el: any) => {
-          const dist = haversineDistance(lat, lng, el.lat, el.lon);
-          const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
-          const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
-          const rawType = el.tags?.amenity || el.tags?.shop || el.tags?.leisure || el.tags?.railway || el.tags?.highway || el.tags?.office || el.tags?.public_transport || '';
-          const subtype = rawType.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-          return {
-            id: String(el.id),
-            name: el.tags.name,
-            lat: el.lat,
-            lng: el.lon,
-            category: categoryKey,
-            subtype: subtype || undefined,
-            distance: Math.round(dist * 1000),
-            walkTime: Math.max(1, Math.round((dist / 5) * 60)),
-            driveTime: Math.max(1, Math.round((dist / 40) * 60)),
-            rating: Number.isFinite(parsedRating) ? parsedRating : Math.min(5, fallbackRating),
-          };
-        })
+        .map((el: any) => mapElementToPlace(el, lat, lng, categoryKey))
         .sort((a: NearbyPlace, b: NearbyPlace) => (a.distance || 0) - (b.distance || 0))
         .slice(0, 15);
 
       setPlaces(prev => ({ ...prev, [categoryKey]: results }));
       setLoadErrors(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
     } catch (err) {
+      if (!mountedRef.current) return;
       if (!silent) {
         console.error('Failed to fetch nearby places:', err);
         setLoadErrors(prev => ({ ...prev, [categoryKey]: 'Could not load nearby places. Tap again to retry.' }));
         setPlaces(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
       }
     } finally {
-      if (!silent) setLoadingCategory(null);
-      else setPrefetchingCount(prev => prev - 1);
+      inFlightRef.current.delete(categoryKey);
+      if (mountedRef.current && !silent) setLoadingCategory(null);
     }
-  }, [lat, lng, loadingCategory]);
+  }, [lat, lng]);
 
-  // Prefetch all categories in background on mount
   // Prefetch all categories sequentially (2 at a time) to avoid overwhelming Overpass
   useEffect(() => {
     if (prefetchedRef.current) return;
     prefetchedRef.current = true;
 
     const prefetchSequentially = async () => {
-      // Process in batches of 2 with delay between batches
       for (let i = 0; i < categories.length; i += 2) {
+        if (!mountedRef.current) return;
         const batch = categories.slice(i, i + 2);
         await Promise.allSettled(
           batch.map(cat => fetchNearbyPlaces(cat.key, true))
         );
-        // Wait 800ms between batches to let Overpass breathe
-        if (i + 2 < categories.length) {
+        if (i + 2 < categories.length && mountedRef.current) {
           await new Promise(r => setTimeout(r, 800));
         }
       }
@@ -237,19 +256,26 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     prefetchSequentially();
   }, [fetchNearbyPlaces]);
 
-  const handleCategoryClick = (key: string) => {
-    if (activeCategory === key) {
-      setActiveCategory(null);
+  const handleCategoryClick = useCallback((key: string) => {
+    setActiveCategory(prev => {
+      if (prev === key) {
+        setSelectedPlace(null);
+        return null;
+      }
       setSelectedPlace(null);
-      return;
-    }
-    setActiveCategory(key);
-    setSelectedPlace(null);
-    // Only fetch if not already prefetched
-    if (!places[key]) {
+      return key;
+    });
+    // Only fetch if not already prefetched and not in-flight
+    if (!places[key] && !inFlightRef.current.has(key)) {
       void fetchNearbyPlaces(key);
     }
-  };
+  }, [places, fetchNearbyPlaces]);
+
+  const handlePlaceClick = useCallback((place: NearbyPlace) => {
+    setSelectedPlace(prev => prev?.id === place.id ? null : place);
+  }, []);
+
+  const clearSelection = useCallback(() => setSelectedPlace(null), []);
 
   const activePlaces = activeCategory ? (places[activeCategory] || []) : [];
   const activeCat = categories.find(c => c.key === activeCategory);
@@ -293,7 +319,7 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
           center={{ lat, lng }}
           zoom={14}
           onLoad={onLoad}
-          onClick={() => setSelectedPlace(null)}
+          onClick={clearSelection}
           options={{
             mapTypeControl: true,
             mapTypeControlOptions: { position: google.maps.ControlPosition.TOP_RIGHT },
@@ -313,7 +339,7 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
               place={place}
               color={activeCat?.color || '#666'}
               isSelected={selectedPlace?.id === place.id}
-              onClick={() => setSelectedPlace(place.id === selectedPlace?.id ? null : place)}
+              onClick={() => handlePlaceClick(place)}
               categoryIcon={activeCat?.icon || MapPin}
             />
           ))}
@@ -321,7 +347,7 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
           {selectedPlace && (
             <PlaceInfoCard
               place={selectedPlace}
-              onClose={() => setSelectedPlace(null)}
+              onClose={clearSelection}
               categoryColor={activeCat?.color || '#666'}
             />
           )}
