@@ -15,6 +15,7 @@ interface NearbyPlace {
   lat: number;
   lng: number;
   category: string;
+  subtype?: string;
   distance?: number;
   walkTime?: number;
   driveTime?: number;
