@@ -438,17 +438,6 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Nearby Places Map */}
-            <div id="location-nearby-section">
-              <h2 className="text-lg font-bold text-foreground mb-4">Location & Nearby</h2>
-              {pinLocation ? (
-                <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
-              ) : (
-                <div className="bg-card rounded-xl border border-border p-4 text-sm text-muted-foreground">
-                  Location coordinates are unavailable for this listing.
-                </div>
-              )}
-            </div>
 
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
