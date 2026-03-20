@@ -19,6 +19,7 @@ import { mockPropertyDetail } from '@/data/mockDetails';
 import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
+import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 
 // Lazy-load heavy below-the-fold components
 const NearbyPlacesMap = lazy(() => import('@/components/NearbyPlacesMap'));
