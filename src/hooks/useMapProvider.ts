@@ -11,9 +11,10 @@ export function useMapProvider() {
         .from("admin_settings")
         .select("setting_value")
         .eq("setting_key", "map_provider")
-        .limit(1);
-      return ((data?.[0] as any)?.setting_value as MapProvider) || "google";
+        .maybeSingle();
+      return (data?.setting_value as MapProvider) || "google";
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 min — rarely changes
+    gcTime: 30 * 60 * 1000,
   });
 }
