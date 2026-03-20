@@ -11,6 +11,37 @@ const OVERPASS_URLS = [
   "https://overpass.private.coffee/api/interpreter",
 ];
 
+// ── In-memory cache ──────────────────────────────────────────────
+// Key: rounded query string, Value: { data, timestamp }
+const cache = new Map<string, { data: unknown; ts: number }>();
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const MAX_CACHE_ENTRIES = 500;
+
+function getCacheKey(query: string): string {
+  // Round coordinates in the query to ~500m grid so nearby properties share cache
+  return query.replace(/(-?\d+\.\d{2})\d*/g, "$1");
+}
+
+function getFromCache(key: string): unknown | null {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCache(key: string, data: unknown) {
+  // Evict oldest entries if cache is full
+  if (cache.size >= MAX_CACHE_ENTRIES) {
+    const firstKey = cache.keys().next().value;
+    if (firstKey) cache.delete(firstKey);
+  }
+  cache.set(key, { data, ts: Date.now() });
+}
+
+// ── Query helpers ────────────────────────────────────────────────
 type QueryVariant = {
   name: string;
   query: string;
@@ -93,6 +124,17 @@ serve(async (req) => {
       });
     }
 
+    // ── Check cache first ──────────────────────────────────────
+    const cacheKey = getCacheKey(query);
+    const cached = getFromCache(cacheKey);
+    if (cached) {
+      return new Response(JSON.stringify(cached), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "HIT" },
+      });
+    }
+
+    // ── Fetch from Overpass ────────────────────────────────────
     const queryVariants = buildQueryVariants(query);
     let lastError = "Overpass request failed";
     let lastStatus = 502;
@@ -118,9 +160,12 @@ serve(async (req) => {
             continue;
           }
 
+          // ── Store in cache ─────────────────────────────────
+          setCache(cacheKey, data);
+
           return new Response(JSON.stringify(data), {
             status: 200,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "MISS" },
           });
         } catch (error) {
           lastStatus = 504;
