@@ -26,6 +26,10 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  // Sync local state when prop changes (e.g. after query refetch)
+  useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
+  useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
+
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
