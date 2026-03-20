@@ -17,6 +17,10 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const queryClient = useQueryClient();
 
+  // Sync local state when prop changes (e.g. after query refetch)
+  useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
+  useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
+
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentImage((prev) => (prev + 1) % property.images.length);
