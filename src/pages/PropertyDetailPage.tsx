@@ -106,6 +106,14 @@ const PropertyDetailPage = () => {
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
 
+        // Parse pin_location "lat,lng"
+        if (p.pin_location) {
+          const parts = p.pin_location.split(',').map((s: string) => parseFloat(s.trim()));
+          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+            setPinLocation({ lat: parts[0], lng: parts[1] });
+          }
+        }
+
         // Fetch similar properties
         const { data: similar } = await supabase
           .from('properties')
