@@ -51,6 +51,10 @@ const emptyPropertyState = {
   plans: [] as string[],
   videoLink: '',
   view360Link: '',
+  province: '',
+  town: '',
+  neighbourhood: '',
+  propertyPurpose: 'buy',
 };
 
 const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
