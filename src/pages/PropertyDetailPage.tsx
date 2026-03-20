@@ -389,7 +389,7 @@ const PropertyDetailPage = () => {
                       className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md transition-all active:scale-95 min-w-[3rem] ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
-                      <tab.icon className="h-3.5 w-3.5" />
+                      <tab.icon className="h-4.5 w-4.5" />
                       <span className="text-[10px] leading-tight font-medium">{tab.label}</span>
                     </button>
                   ))}
