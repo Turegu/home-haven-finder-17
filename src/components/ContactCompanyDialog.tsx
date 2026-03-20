@@ -54,6 +54,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
     if (open) {
       setSent(false);
       setMessage(defaultMessages[listingType]);
+      const loadUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setEmail(user.email || '');
@@ -70,7 +71,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       };
       loadUser();
     }
-  }, [open]);
+  }, [open, listingType]);
 
   const handleSend = async () => {
     if (!fullName.trim() || !email.trim()) {
