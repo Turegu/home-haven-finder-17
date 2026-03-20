@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguages, useCurrencies } from '@/hooks/useAppData';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AREA_UNITS = [
   { label: 'Meter Sq. (m²)', value: 'm²' },
