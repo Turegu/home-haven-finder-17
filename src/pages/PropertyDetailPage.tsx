@@ -316,7 +316,7 @@ const PropertyDetailPage = () => {
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => handleMediaTabClick(tab.id)}
                       className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
