@@ -302,15 +302,6 @@ const PropertyDetailPage = () => {
       )}
 
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 flex-wrap">
-          <Link to="/" className="hover:text-foreground">Home</Link>
-          <span>/</span>
-          <Link to="/buy" className="hover:text-foreground">Buy</Link>
-          <span>/</span>
-          <span className="text-foreground">{property.title}</span>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
