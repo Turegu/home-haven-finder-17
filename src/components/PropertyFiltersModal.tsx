@@ -175,13 +175,13 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
               >
                 <Icon className="h-3.5 w-3.5" />
                 {tab.label}
-                {count > 0 && (
-                  <span className={`ml-0.5 text-[10px] font-semibold h-4 min-w-[16px] px-1 rounded-full inline-flex items-center justify-center ${
-                    isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary text-primary-foreground'
-                  }`}>
-                    {count}
-                  </span>
-                )}
+                <span className={`text-[10px] font-semibold h-4 min-w-[16px] px-1 rounded-full inline-flex items-center justify-center ${
+                  count > 0
+                    ? isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary text-primary-foreground'
+                    : 'opacity-0'
+                }`}>
+                  {count || 0}
+                </span>
               </button>
             );
           })}
