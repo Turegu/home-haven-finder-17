@@ -8,17 +8,16 @@ const corsHeaders = {
 const OVERPASS_URLS = [
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
   "https://overpass.private.coffee/api/interpreter",
 ];
 
 // ── In-memory cache ──────────────────────────────────────────────
-// Key: rounded query string, Value: { data, timestamp }
 const cache = new Map<string, { data: unknown; ts: number }>();
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 const MAX_CACHE_ENTRIES = 500;
 
 function getCacheKey(query: string): string {
-  // Round coordinates in the query to ~500m grid so nearby properties share cache
   return query.replace(/(-?\d+\.\d{2})\d*/g, "$1");
 }
 
@@ -33,7 +32,6 @@ function getFromCache(key: string): unknown | null {
 }
 
 function setCache(key: string, data: unknown) {
-  // Evict oldest entries if cache is full
   if (cache.size >= MAX_CACHE_ENTRIES) {
     const firstKey = cache.keys().next().value;
     if (firstKey) cache.delete(firstKey);
@@ -42,20 +40,8 @@ function setCache(key: string, data: unknown) {
 }
 
 // ── Query helpers ────────────────────────────────────────────────
-type QueryVariant = {
-  name: string;
-  query: string;
-  requestTimeoutMs: number;
-};
-
 const replaceQueryTimeout = (query: string, seconds: number) =>
   query.replace(/\[timeout:\d+\]/, `[timeout:${seconds}]`);
-
-const replaceAroundRadius = (query: string, radius: number) =>
-  query.replace(/around:\d+/g, `around:${radius}`);
-
-const replaceOutLimit = (query: string, limit: number) =>
-  query.replace(/out body\s+\d+;/, `out body ${limit};`);
 
 const capRadius = (query: string, maxRadius: number) => {
   return query.replace(/around:(\d+)/g, (_match, r) => {
@@ -64,41 +50,42 @@ const capRadius = (query: string, maxRadius: number) => {
   });
 };
 
-function buildQueryVariants(originalQuery: string): QueryVariant[] {
-  const trimmed = capRadius(originalQuery.trim(), 3000);
-
-  const fallbackQuery = replaceOutLimit(
-    replaceAroundRadius(replaceQueryTimeout(trimmed, 10), 2000),
-    15,
-  );
-
-  return [
-    {
-      name: "primary",
-      query: replaceQueryTimeout(trimmed, 18),
-      requestTimeoutMs: 22000,
-    },
-    {
-      name: "fallback_compact",
-      query: fallbackQuery,
-      requestTimeoutMs: 14000,
-    },
-  ];
-}
-
-async function requestOverpass(url: string, query: string, timeoutMs: number): Promise<Response> {
+// Race all Overpass URLs concurrently — first successful response wins
+async function fetchFromOverpass(query: string, timeoutMs: number): Promise<{ data: unknown } | { error: string }> {
+  const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 15);
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  const overallTimeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    return await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `data=${encodeURIComponent(query)}`,
-      signal: controller.signal,
+    // Launch requests to all endpoints concurrently
+    const racePromises = OVERPASS_URLS.map(async (url) => {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `data=${encodeURIComponent(prepared)}`,
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${url} returned ${res.status}: ${text.slice(0, 200)}`);
+      }
+
+      const text = await res.text();
+      const data = JSON.parse(text);
+      return data;
     });
+
+    // Use Promise.any — resolves with the first success
+    const data = await Promise.any(racePromises);
+    return { data };
+  } catch (err) {
+    if (err instanceof AggregateError) {
+      return { error: err.errors.map((e: Error) => e.message).join(" | ") };
+    }
+    return { error: err instanceof Error ? err.message : "Unknown error" };
   } finally {
-    clearTimeout(timeout);
+    clearTimeout(overallTimeout);
   }
 }
 
@@ -134,54 +121,22 @@ serve(async (req) => {
       });
     }
 
-    // ── Fetch from Overpass ────────────────────────────────────
-    const queryVariants = buildQueryVariants(query);
-    let lastError = "Overpass request failed";
-    let lastStatus = 502;
+    // ── Fetch from Overpass (race all endpoints) ───────────────
+    const result = await fetchFromOverpass(query, 25000);
 
-    for (const variant of queryVariants) {
-      for (const overpassUrl of OVERPASS_URLS) {
-        try {
-          const response = await requestOverpass(overpassUrl, variant.query, variant.requestTimeoutMs);
-          const responseText = await response.text();
-
-          if (!response.ok) {
-            lastStatus = response.status;
-            lastError = `${variant.name} ${overpassUrl}: ${responseText.slice(0, 300)}`;
-            continue;
-          }
-
-          let data;
-          try {
-            data = JSON.parse(responseText);
-          } catch {
-            lastStatus = 502;
-            lastError = `${variant.name} ${overpassUrl}: Invalid Overpass response`;
-            continue;
-          }
-
-          // ── Store in cache ─────────────────────────────────
-          setCache(cacheKey, data);
-
-          return new Response(JSON.stringify(data), {
-            status: 200,
-            headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "MISS" },
-          });
-        } catch (error) {
-          lastStatus = 504;
-          const message = error instanceof Error ? error.message : "Unknown proxy error";
-          lastError = `${variant.name} ${overpassUrl}: ${message}`;
-        }
-      }
+    if ("error" in result) {
+      return new Response(
+        JSON.stringify({ error: "Overpass request failed", details: result.error }),
+        { status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
-    return new Response(
-      JSON.stringify({ error: "Overpass request failed", details: lastError }),
-      {
-        status: lastStatus,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    setCache(cacheKey, result.data);
+
+    return new Response(JSON.stringify(result.data), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "MISS" },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown proxy error";
     return new Response(JSON.stringify({ error: message }), {
