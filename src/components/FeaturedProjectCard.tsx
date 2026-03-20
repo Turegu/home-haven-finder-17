@@ -47,10 +47,19 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
 
         {/* Bottom overlaid content */}
         <div className="absolute bottom-0 inset-x-0 p-5 flex flex-col gap-3">
-          {/* Developer */}
-          <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
-            {project.developer}
-          </span>
+          {/* Developer with logo */}
+          <div className="flex items-center gap-2">
+            {project.developerLogo ? (
+              <img src={project.developerLogo} alt={project.developer} className="h-5 w-5 rounded object-contain bg-white/20" />
+            ) : (
+              <div className="h-5 w-5 rounded bg-white/15 flex items-center justify-center">
+                <Building className="h-3 w-3 text-white/70" />
+              </div>
+            )}
+            <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
+              {project.developer}
+            </span>
+          </div>
 
           {/* Title */}
           <h3 className="font-display text-xl font-semibold text-white leading-tight tracking-tight text-wrap-balance">
