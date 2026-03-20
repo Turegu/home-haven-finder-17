@@ -62,6 +62,8 @@ const EventDetailPage = () => {
           companyLogo: e.companies?.logo_url || e.agents?.companies?.logo_url || null,
           hasAgent: !!e.agents,
           pdfCatalogueUrl: e.pdf_catalogue_url || null,
+          videoLink: e.video_link || '',
+          pinLocation: e.pin_location || null,
         });
         setRealAgentId(e.agents?.id || null);
         setRealCompanyId(e.companies?.id || e.agents?.companies?.id || null);
