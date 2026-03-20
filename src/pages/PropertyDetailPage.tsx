@@ -195,15 +195,6 @@ const PropertyDetailPage = () => {
 
   const handleMediaTabClick = (tabId: string) => {
     setActiveTab(tabId);
-
-    if (tabId === 'location') {
-      const locationSection = document.getElementById('location-nearby-section');
-      if (locationSection) {
-        locationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        toast.error('Location map is unavailable for this listing.');
-      }
-    }
   };
 
   return (
