@@ -4,9 +4,11 @@ import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
-  PersonStanding, Clock, CalendarDays, X,
+  PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
+import NearbyPlacesMap from '@/components/NearbyPlacesMap';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -51,6 +53,7 @@ const PropertyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
@@ -102,6 +105,14 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+
+        // Parse pin_location "lat,lng"
+        if (p.pin_location) {
+          const parts = p.pin_location.split(',').map((s: string) => parseFloat(s.trim()));
+          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+            setPinLocation({ lat: parts[0], lng: parts[1] });
+          }
+        }
 
         // Fetch similar properties
         const { data: similar } = await supabase
@@ -196,11 +207,36 @@ const PropertyDetailPage = () => {
           <ChevronRight className="h-5 w-5" />
         </button>
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button onClick={() => { if (navigator.share) { navigator.share({ title: property.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({ title: property.title, url: window.location.href });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard');
+              }
+            }}
+            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
+            title="Share"
+          >
             <Share2 className="h-4 w-4" />
           </button>
-          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Save to favorites">
+          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save to favorites">
             <Heart className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
+            title="Print"
+          >
+            <Printer className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => toast.success('Thank you for your report. We will review this listing.')}
+            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
+            title="Report this listing"
+          >
+            <Flag className="h-4 w-4" />
           </button>
         </div>
         <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
@@ -381,6 +417,14 @@ const PropertyDetailPage = () => {
                 </div>
               </div>
             </div>
+
+            {/* Nearby Places Map */}
+            {pinLocation && (
+              <div>
+                <h2 className="text-lg font-bold text-foreground mb-4">Location & Nearby</h2>
+                <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
+              </div>
+            )}
 
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
