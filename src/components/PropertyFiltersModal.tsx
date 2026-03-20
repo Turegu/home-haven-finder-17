@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   Search, SlidersHorizontal, Check, X,
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
+  Home, BedDouble, Bath, DollarSign, Ruler, Clock,
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
+
+/* ─── Types ─── */
 
 export interface PropertyMoreFilters {
   floorLevels: string[];
@@ -30,82 +33,193 @@ export const emptyMoreFilters: PropertyMoreFilters = {
   interiorAmenities: [],
 };
 
+export interface BasicFilters {
+  propertyTypes: string[];
+  rooms: string[];
+  bathrooms: string[];
+  rentDuration: string[];
+}
+
+export const emptyBasicFilters: BasicFilters = {
+  propertyTypes: [],
+  rooms: [],
+  bathrooms: [],
+  rentDuration: [],
+};
+
+/* ─── Tab definitions ─── */
+
 interface FilterTab {
   key: string;
   label: string;
   icon: React.ElementType;
-  filterKey: keyof PropertyMoreFilters;
+  section: 'essential' | 'advanced';
+  // for essential tabs, reference BasicFilters key
+  basicKey?: keyof BasicFilters;
+  // for advanced tabs, reference PropertyMoreFilters key
+  filterKey?: keyof PropertyMoreFilters;
   optionKey: string;
   type: 'simple' | 'amenity';
   amenityType?: 'interior' | 'exterior';
 }
 
 const FILTER_TABS: FilterTab[] = [
-  { key: 'floor', label: 'Floor Level', icon: Building2, filterKey: 'floorLevels', optionKey: 'floor_level', type: 'simple' },
-  { key: 'parking', label: 'Parking', icon: Car, filterKey: 'parkingSpaces', optionKey: 'parking', type: 'simple' },
-  { key: 'furniture', label: 'Furniture', icon: Sofa, filterKey: 'furniture', optionKey: 'furniture', type: 'simple' },
-  { key: 'age', label: 'Property Age', icon: Calendar, filterKey: 'propertyAges', optionKey: 'property_age', type: 'simple' },
-  { key: 'interior', label: 'Interior Amenities', icon: Lamp, filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
-  { key: 'exterior', label: 'Exterior Amenities', icon: TreePine, filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
+  // Essential
+  { key: 'type', label: 'Property Type', icon: Home, section: 'essential', basicKey: 'propertyTypes', optionKey: 'property_type', type: 'simple' },
+  { key: 'rooms', label: 'Rooms', icon: BedDouble, section: 'essential', basicKey: 'rooms', optionKey: 'rooms', type: 'simple' },
+  { key: 'bathrooms', label: 'Bathrooms', icon: Bath, section: 'essential', basicKey: 'bathrooms', optionKey: 'bathrooms', type: 'simple' },
+  { key: 'rentDuration', label: 'Rent Duration', icon: Clock, section: 'essential', basicKey: 'rentDuration', optionKey: 'rent_duration', type: 'simple' },
+  // Advanced
+  { key: 'floor', label: 'Floor Level', icon: Building2, section: 'advanced', filterKey: 'floorLevels', optionKey: 'floor_level', type: 'simple' },
+  { key: 'parking', label: 'Parking', icon: Car, section: 'advanced', filterKey: 'parkingSpaces', optionKey: 'parking', type: 'simple' },
+  { key: 'furniture', label: 'Furniture', icon: Sofa, section: 'advanced', filterKey: 'furniture', optionKey: 'furniture', type: 'simple' },
+  { key: 'age', label: 'Property Age', icon: Calendar, section: 'advanced', filterKey: 'propertyAges', optionKey: 'property_age', type: 'simple' },
+  { key: 'interior', label: 'Interior Amenities', icon: Lamp, section: 'advanced', filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
+  { key: 'exterior', label: 'Exterior Amenities', icon: TreePine, section: 'advanced', filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
 ];
+
+/* ─── Props ─── */
 
 interface PropertyFiltersModalProps {
   filters: PropertyMoreFilters;
   onFiltersChange: (filters: PropertyMoreFilters) => void;
+  basicFilters?: BasicFilters;
+  onBasicFiltersChange?: (filters: BasicFilters) => void;
   onClearAll?: () => void;
+  isRent?: boolean;
 }
 
-export default function PropertyFiltersModal({ filters, onFiltersChange, onClearAll }: PropertyFiltersModalProps) {
+export default function PropertyFiltersModal({
+  filters, onFiltersChange,
+  basicFilters, onBasicFiltersChange,
+  onClearAll, isRent,
+}: PropertyFiltersModalProps) {
   const [open, setOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('floor');
+  const [activeTab, setActiveTab] = useState('type');
   const [search, setSearch] = useState('');
-  const [local, setLocal] = useState<PropertyMoreFilters>(filters);
+  const [localMore, setLocalMore] = useState<PropertyMoreFilters>(filters);
+  const [localBasic, setLocalBasic] = useState<BasicFilters>(basicFilters ?? emptyBasicFilters);
   const { options: fo } = useFilterOptions("search");
+
+  // Also fetch property types, rooms, bathrooms from their own tables
+  const { options: foProperty } = useFilterOptions("property");
 
   useEffect(() => {
     if (open) {
-      setLocal(filters);
+      setLocalMore(filters);
+      setLocalBasic(basicFilters ?? emptyBasicFilters);
       setSearch('');
     }
-  }, [open, filters]);
+  }, [open, filters, basicFilters]);
 
-  const activeCount =
-    filters.floorLevels.length + filters.parkingSpaces.length +
-    filters.furniture.length + filters.propertyAges.length +
-    filters.exteriorAmenities.length + filters.interiorAmenities.length;
+  // Visible tabs: hide rentDuration if not rent mode
+  const visibleTabs = FILTER_TABS.filter(t => {
+    if (t.key === 'rentDuration' && !isRent) return false;
+    return true;
+  });
 
-  const localCount =
-    local.floorLevels.length + local.parkingSpaces.length +
-    local.furniture.length + local.propertyAges.length +
-    local.exteriorAmenities.length + local.interiorAmenities.length;
+  const essentialTabs = visibleTabs.filter(t => t.section === 'essential');
+  const advancedTabs = visibleTabs.filter(t => t.section === 'advanced');
 
-  function toggleArray(key: keyof PropertyMoreFilters, value: string) {
-    const current = local[key];
-    const updated = current.includes(value)
-      ? current.filter(v => v !== value)
-      : [...current, value];
-    setLocal({ ...local, [key]: updated });
+  // Count helpers
+  function getTabCount(tab: FilterTab): number {
+    if (tab.section === 'essential' && tab.basicKey) return localBasic[tab.basicKey].length;
+    if (tab.section === 'advanced' && tab.filterKey) return localMore[tab.filterKey].length;
+    return 0;
+  }
+
+  const totalActiveCount = visibleTabs.reduce((s, t) => s + getTabCount(t), 0);
+  const committedCount = (() => {
+    const b = basicFilters ?? emptyBasicFilters;
+    const m = filters;
+    return b.propertyTypes.length + b.rooms.length + b.bathrooms.length + b.rentDuration.length +
+      m.floorLevels.length + m.parkingSpaces.length + m.furniture.length + m.propertyAges.length +
+      m.exteriorAmenities.length + m.interiorAmenities.length;
+  })();
+
+  function toggleValue(tab: FilterTab, value: string) {
+    if (tab.section === 'essential' && tab.basicKey) {
+      const key = tab.basicKey;
+      const current = localBasic[key];
+      const updated = current.includes(value)
+        ? current.filter(v => v !== value)
+        : [...current, value];
+      setLocalBasic({ ...localBasic, [key]: updated });
+    } else if (tab.section === 'advanced' && tab.filterKey) {
+      const key = tab.filterKey;
+      const current = localMore[key];
+      const updated = current.includes(value)
+        ? current.filter(v => v !== value)
+        : [...current, value];
+      setLocalMore({ ...localMore, [key]: updated });
+    }
+  }
+
+  function isChecked(tab: FilterTab, value: string): boolean {
+    if (tab.section === 'essential' && tab.basicKey) return localBasic[tab.basicKey].includes(value);
+    if (tab.section === 'advanced' && tab.filterKey) return localMore[tab.filterKey].includes(value);
+    return false;
   }
 
   function clearAll() {
-    const cleared = emptyMoreFilters;
-    setLocal(cleared);
-    onFiltersChange(cleared);
+    setLocalMore(emptyMoreFilters);
+    setLocalBasic(emptyBasicFilters);
+    onFiltersChange(emptyMoreFilters);
+    onBasicFiltersChange?.(emptyBasicFilters);
     onClearAll?.();
   }
 
   function handleApply() {
-    onFiltersChange(local);
+    onFiltersChange(localMore);
+    onBasicFiltersChange?.(localBasic);
     setOpen(false);
   }
 
-  const currentTab = FILTER_TABS.find(t => t.key === activeTab)!;
-  const rawOptions = fo[currentTab.optionKey] || [];
+  // Get options for current tab
+  const currentTab = visibleTabs.find(t => t.key === activeTab) ?? visibleTabs[0];
+  // Essential tabs use foProperty, advanced use fo
+  const allOptions = { ...fo, ...foProperty };
+  const rawOptions = allOptions[currentTab.optionKey] || [];
   const filteredOptions = search
     ? rawOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
     : rawOptions;
 
-  const totalOptions = FILTER_TABS.reduce((sum, t) => sum + (fo[t.optionKey]?.length || 0), 0);
+  function renderTabButton(tab: FilterTab) {
+    const count = getTabCount(tab);
+    const isActive = activeTab === tab.key;
+    const Icon = tab.icon;
+    return (
+      <button
+        key={tab.key}
+        onClick={() => { setActiveTab(tab.key); setSearch(''); }}
+        className={`
+          inline-flex items-center gap-2 pl-3 pr-3.5 py-2 text-[13px] font-medium rounded-lg
+          transition-all duration-200 ease-out
+          ${isActive
+            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-[1.02]'
+            : count > 0
+              ? 'bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 hover:shadow-sm'
+              : 'bg-background text-muted-foreground border border-border hover:border-primary/30 hover:text-foreground hover:bg-background hover:shadow-sm'
+          }
+        `}
+      >
+        <Icon className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : ''}`} />
+        {tab.label}
+        <span className={`
+          text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-md
+          inline-flex items-center justify-center leading-none
+          ${count > 0
+            ? isActive
+              ? 'bg-primary-foreground/25 text-primary-foreground'
+              : 'bg-primary text-primary-foreground'
+            : 'opacity-0'
+          }
+        `}>
+          {count || 0}
+        </span>
+      </button>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -113,9 +227,9 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground">
           <SlidersHorizontal className="h-4 w-4" />
           Filters
-          {activeCount > 0 && (
+          {committedCount > 0 && (
             <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
-              {activeCount}
+              {committedCount}
             </Badge>
           )}
         </button>
@@ -129,13 +243,13 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
                 <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
                   <SlidersHorizontal className="h-[18px] w-[18px] text-primary" />
                 </div>
-                <span className="text-lg font-semibold tracking-tight">Filters</span>
+                <span className="text-lg font-semibold tracking-tight">All Filters</span>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={clearAll}
-                className={`text-xs rounded-lg gap-1.5 border-border hover:border-destructive/40 hover:bg-destructive/5 hover:text-destructive transition-all ${localCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`text-xs rounded-lg gap-1.5 border-border hover:border-destructive/40 hover:bg-destructive/5 hover:text-destructive transition-all ${totalActiveCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
                 <X className="h-3 w-3" />
                 Clear All
@@ -156,50 +270,33 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
           </div>
         </div>
 
-        {/* Category tags */}
-        <div className="px-6 py-3.5 flex flex-wrap gap-2 border-b border-border/60 bg-muted/20">
-          {FILTER_TABS.map((tab) => {
-            const count = local[tab.filterKey].length;
-            const isActive = activeTab === tab.key;
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => { setActiveTab(tab.key); setSearch(''); }}
-                className={`
-                  inline-flex items-center gap-2 pl-3 pr-3.5 py-2 text-[13px] font-medium rounded-lg
-                  transition-all duration-200 ease-out
-                  ${isActive
-                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-[1.02]'
-                    : count > 0
-                      ? 'bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 hover:shadow-sm'
-                      : 'bg-background text-muted-foreground border border-border hover:border-primary/30 hover:text-foreground hover:bg-background hover:shadow-sm'
-                  }
-                `}
-              >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : ''}`} />
-                {tab.label}
-                <span className={`
-                  text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-md
-                  inline-flex items-center justify-center leading-none
-                  ${count > 0
-                    ? isActive
-                      ? 'bg-primary-foreground/25 text-primary-foreground'
-                      : 'bg-primary text-primary-foreground'
-                    : 'opacity-0'
-                  }
-                `}>
-                  {count || 0}
-                </span>
-              </button>
-            );
-          })}
+        {/* Category tags with sections */}
+        <div className="px-6 py-3.5 border-b border-border/60 bg-muted/20 space-y-3">
+          {/* Essential filters */}
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2">Essential</p>
+            <div className="flex flex-wrap gap-2">
+              {essentialTabs.map(renderTabButton)}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Advanced</span>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+          </div>
+
+          {/* Advanced filters */}
+          <div className="flex flex-wrap gap-2">
+            {advancedTabs.map(renderTabButton)}
+          </div>
         </div>
 
         {/* Options grid */}
         <div className="overflow-hidden px-6 py-4">
           <div
-            className="overflow-y-auto h-[40vh] -mx-1 px-1 scrollbar-thin"
+            className="overflow-y-auto h-[38vh] -mx-1 px-1 scrollbar-thin"
             onWheel={(e) => {
               const el = e.currentTarget;
               if (el.scrollHeight <= el.clientHeight) return;
@@ -215,7 +312,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
                 </div>
               )}
               {filteredOptions.map((opt) => {
-                const isChecked = local[currentTab.filterKey].includes(opt);
+                const checked = isChecked(currentTab, opt);
                 const IconComp = currentTab.type === 'amenity'
                   ? getIcon(opt, currentTab.amenityType!)
                   : currentTab.icon;
@@ -226,21 +323,21 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
                       group flex items-center gap-2.5 cursor-pointer py-3 px-3.5 rounded-xl border
                       transition-all duration-200 ease-out select-none
                       active:scale-[0.97]
-                      ${isChecked
+                      ${checked
                         ? 'border-primary/50 bg-primary/6 shadow-sm shadow-primary/10'
                         : 'border-border/80 hover:border-primary/25 hover:bg-muted/50 hover:shadow-sm'
                       }
                     `}
                   >
                     <Checkbox
-                      checked={isChecked}
-                      onCheckedChange={() => toggleArray(currentTab.filterKey, opt)}
+                      checked={checked}
+                      onCheckedChange={() => toggleValue(currentTab, opt)}
                       className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     {currentTab.type === 'amenity' && (
-                      <IconComp className={`h-4 w-4 shrink-0 transition-colors ${isChecked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
+                      <IconComp className={`h-4 w-4 shrink-0 transition-colors ${checked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
                     )}
-                    <span className={`text-sm leading-tight transition-colors ${isChecked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
+                    <span className={`text-sm leading-tight transition-colors ${checked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
                       {opt}
                     </span>
                   </label>
