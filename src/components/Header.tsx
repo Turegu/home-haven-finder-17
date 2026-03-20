@@ -223,6 +223,7 @@ const Header = () => {
     await supabase.from("saved_properties").delete().eq("id", id);
     setSavedItems(prev => prev.filter(s => s.id !== id));
     setCounts(prev => ({ ...prev, savedProperties: Math.max(0, prev.savedProperties - 1) }));
+    queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
   };
 
@@ -230,6 +231,7 @@ const Header = () => {
     await supabase.from("property_comparisons").delete().eq("id", id);
     setCompareItems(prev => prev.filter(c => c.id !== id));
     setCounts(prev => ({ ...prev, compare: Math.max(0, prev.compare - 1) }));
+    queryClient.invalidateQueries({ queryKey: ['compared-property-ids'] });
     window.dispatchEvent(new Event('property-actions-changed'));
   };
 
