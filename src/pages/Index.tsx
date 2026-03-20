@@ -4,7 +4,7 @@ import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
-import PropertyCard from '@/components/PropertyCard';
+
 import Footer from '@/components/Footer';
 import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
