@@ -33,10 +33,21 @@ const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; l
   </div>
 );
 
+const emptyPropertyState = {
+  ...mockPropertyDetail,
+  agentLogo: '',
+  agentName: '',
+  agentCompany: '',
+  companyLogo: null as string | null,
+  agentDesignation: null as string | null,
+  agentLanguages: [] as string[],
+};
+
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [property, setProperty] = useState(mockPropertyDetail);
+  const [property, setProperty] = useState(emptyPropertyState);
+  const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
