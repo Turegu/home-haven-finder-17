@@ -34,7 +34,7 @@ const capRadius = (query: string, maxRadius: number) => {
 };
 
 function buildQueryVariants(originalQuery: string): QueryVariant[] {
-  const trimmed = capRadius(originalQuery.trim(), 4000);
+  const trimmed = capRadius(originalQuery.trim(), 3000);
 
   const fallbackQuery = replaceOutLimit(
     replaceAroundRadius(replaceQueryTimeout(trimmed, 10), 2000),
