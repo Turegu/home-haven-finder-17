@@ -153,7 +153,7 @@ const EventDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3">
-                  <img src={getEventLogo(event.organizerLogo, event.eventType)} alt={event.eventType} className="h-10 w-10 rounded-lg object-contain bg-muted/30 p-0.5 flex-shrink-0" />
+                  <img src={getEventLogo(null, event.eventType)} alt={event.eventType} className="h-10 w-10 rounded-lg object-contain bg-muted/30 p-0.5 flex-shrink-0" />
                   <h1 className="text-xl font-bold text-foreground">{event.title}</h1>
                 </div>
                 <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
