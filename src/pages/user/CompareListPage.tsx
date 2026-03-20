@@ -44,6 +44,7 @@ const CHART_COLORS = [
 ];
 
 const CompareListPage = () => {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<CompareItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiResult, setAiResult] = useState("");
