@@ -8,7 +8,6 @@ const corsHeaders = {
 const OVERPASS_URLS = [
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
-  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
   "https://overpass.private.coffee/api/interpreter",
 ];
 
@@ -50,15 +49,16 @@ const capRadius = (query: string, maxRadius: number) => {
   });
 };
 
-// Race all Overpass URLs concurrently — first successful response wins
-async function fetchFromOverpass(query: string, timeoutMs: number): Promise<{ data: unknown } | { error: string }> {
+// Try endpoints sequentially — first success wins, avoids hammering all at once
+async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Promise<{ data: unknown } | { error: string }> {
   const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 15);
-  const controller = new AbortController();
-  const overallTimeout = setTimeout(() => controller.abort(), timeoutMs);
+  const errors: string[] = [];
 
-  try {
-    // Launch requests to all endpoints concurrently
-    const racePromises = OVERPASS_URLS.map(async (url) => {
+  for (const url of OVERPASS_URLS) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), perRequestTimeoutMs);
+
+    try {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -68,25 +68,22 @@ async function fetchFromOverpass(query: string, timeoutMs: number): Promise<{ da
 
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(`${url} returned ${res.status}: ${text.slice(0, 200)}`);
+        errors.push(`${url} returned ${res.status}: ${text.slice(0, 120)}`);
+        continue;
       }
 
       const text = await res.text();
       const data = JSON.parse(text);
-      return data;
-    });
-
-    // Use Promise.any — resolves with the first success
-    const data = await Promise.any(racePromises);
-    return { data };
-  } catch (err) {
-    if (err instanceof AggregateError) {
-      return { error: err.errors.map((e: Error) => e.message).join(" | ") };
+      return { data };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      errors.push(`${url}: ${msg}`);
+    } finally {
+      clearTimeout(timeout);
     }
-    return { error: err instanceof Error ? err.message : "Unknown error" };
-  } finally {
-    clearTimeout(overallTimeout);
   }
+
+  return { error: errors.join(" | ") };
 }
 
 serve(async (req) => {
