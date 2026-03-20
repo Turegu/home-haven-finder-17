@@ -198,6 +198,7 @@ const CompanyEventEditPage = () => {
       description: form.description || null,
       event_type: form.event_type,
       event_date: form.event_date ? new Date(form.event_date).toISOString() : null,
+      event_end_date: form.event_end_date ? new Date(form.event_end_date).toISOString() : null,
       entry_type: form.entry_type,
       price: form.entry_type === "paid" && form.price ? parseFloat(form.price) : null,
       currency: form.currency,
