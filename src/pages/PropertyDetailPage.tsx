@@ -198,11 +198,36 @@ const PropertyDetailPage = () => {
           <ChevronRight className="h-5 w-5" />
         </button>
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button onClick={() => { if (navigator.share) { navigator.share({ title: property.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share">
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({ title: property.title, url: window.location.href });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard');
+              }
+            }}
+            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
+            title="Share"
+          >
             <Share2 className="h-4 w-4" />
           </button>
-          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Save to favorites">
+          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save to favorites">
             <Heart className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
+            title="Print"
+          >
+            <Printer className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => toast.success('Thank you for your report. We will review this listing.')}
+            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
+            title="Report this listing"
+          >
+            <Flag className="h-4 w-4" />
           </button>
         </div>
         <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
