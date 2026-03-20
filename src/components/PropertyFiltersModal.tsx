@@ -129,30 +129,21 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
                 <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
                   <SlidersHorizontal className="h-[18px] w-[18px] text-primary" />
                 </div>
-                <div>
-                  <span className="text-lg font-semibold tracking-tight">Filters</span>
-                  {localCount > 0 && (
-                    <span className="ml-2.5 text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                      {localCount} active
-                    </span>
-                  )}
-                </div>
+                <span className="text-lg font-semibold tracking-tight">Filters</span>
               </div>
-              {localCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearAll}
-                  className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg gap-1"
-                >
-                  <X className="h-3 w-3" />
-                  Clear All
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearAll}
+                className={`text-xs rounded-lg gap-1.5 border-border hover:border-destructive/40 hover:bg-destructive/5 hover:text-destructive transition-all ${localCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+              >
+                <X className="h-3 w-3" />
+                Clear All
+              </Button>
             </DialogTitle>
           </DialogHeader>
 
-          {/* Search — integrated into header area */}
+          {/* Search */}
           <div className="relative mt-4">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -260,13 +251,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border/60 bg-muted/20">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-primary">{localCount}</span>
-            <span className="mx-1">of</span>
-            <span className="font-medium">{totalOptions}</span>
-            <span className="ml-1">selected</span>
-          </p>
+        <div className="flex items-center justify-end px-6 py-4 border-t border-border/60 bg-muted/20">
           <Button
             onClick={handleApply}
             className="px-8 h-10 rounded-lg font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 transition-all duration-200"
