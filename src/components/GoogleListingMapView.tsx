@@ -1,30 +1,9 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import type { MapListing } from './LeafletListingMapView';
-
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCtQx-V0yQ2CDvqjL89-AX2X1u5ZOpbvzQ';
-
-// City coordinate lookup
-const cityCoords: Record<string, { lat: number; lng: number }> = {
-  'dubai': { lat: 25.2048, lng: 55.2708 },
-  'istanbul': { lat: 41.0082, lng: 28.9784 },
-  'abu dhabi': { lat: 24.4539, lng: 54.3773 },
-  'ankara': { lat: 39.9334, lng: 32.8597 },
-  'sharjah': { lat: 25.3462, lng: 55.4211 },
-  'antalya': { lat: 36.8969, lng: 30.7133 },
-  'nevşehir': { lat: 38.6244, lng: 34.7239 },
-  'gaziantep': { lat: 37.0662, lng: 37.3833 },
-};
-
-function getCityFromLocation(location: string): { lat: number; lng: number } {
-  const lower = location.toLowerCase();
-  for (const [city, coords] of Object.entries(cityCoords)) {
-    if (lower.includes(city)) return coords;
-  }
-  return { lat: 39.0 + Math.random() * 2, lng: 32.0 + Math.random() * 4 };
-}
+import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation } from '@/lib/mapConstants';
 
 function formatPrice(price: number | null, currency: string) {
   if (!price) return 'Contact for Price';
