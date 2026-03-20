@@ -8,6 +8,7 @@ import {
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
