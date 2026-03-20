@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-  Search, SlidersHorizontal, Check,
+  Search, SlidersHorizontal, Check, X,
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
@@ -120,43 +120,53 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
           )}
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl shadow-2xl border-0">
         {/* Header */}
-        <DialogHeader className="px-6 pt-5 pb-4 border-b border-border">
-          <DialogTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-5 w-5 text-primary" />
-              <span className="text-lg">Filters</span>
+        <div className="relative px-6 pt-6 pb-5 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <SlidersHorizontal className="h-[18px] w-[18px] text-primary" />
+                </div>
+                <div>
+                  <span className="text-lg font-semibold tracking-tight">Filters</span>
+                  {localCount > 0 && (
+                    <span className="ml-2.5 text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                      {localCount} active
+                    </span>
+                  )}
+                </div>
+              </div>
               {localCount > 0 && (
-                <Badge variant="default" className="text-[11px] px-2 py-0.5 rounded-full">
-                  {localCount}
-                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAll}
+                  className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg gap-1"
+                >
+                  <X className="h-3 w-3" />
+                  Clear All
+                </Button>
               )}
-            </div>
-            {localCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10">
-                Clear All
-              </Button>
-            )}
-          </DialogTitle>
-        </DialogHeader>
+            </DialogTitle>
+          </DialogHeader>
 
-        {/* Search */}
-        <div className="px-6 pt-4 pb-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          {/* Search — integrated into header area */}
+          <div className="relative mt-4">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search filters..."
-              className="w-full h-9 pl-9 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+              className="w-full h-10 pl-10 pr-4 rounded-lg border border-border bg-background/80 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-muted-foreground transition-all"
             />
           </div>
         </div>
 
         {/* Category tags */}
-        <div className="px-6 py-2 flex flex-wrap gap-2">
+        <div className="px-6 py-3.5 flex flex-wrap gap-2 border-b border-border/60 bg-muted/20">
           {FILTER_TABS.map((tab) => {
             const count = local[tab.filterKey].length;
             const isActive = activeTab === tab.key;
@@ -165,21 +175,29 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
               <button
                 key={tab.key}
                 onClick={() => { setActiveTab(tab.key); setSearch(''); }}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border transition-all duration-150 ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground border-primary'
+                className={`
+                  inline-flex items-center gap-2 pl-3 pr-3.5 py-2 text-[13px] font-medium rounded-lg
+                  transition-all duration-200 ease-out
+                  ${isActive
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-[1.02]'
                     : count > 0
-                      ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20'
-                      : 'bg-background text-muted-foreground border-border hover:border-primary/30 hover:text-foreground'
-                }`}
+                      ? 'bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 hover:shadow-sm'
+                      : 'bg-background text-muted-foreground border border-border hover:border-primary/30 hover:text-foreground hover:bg-background hover:shadow-sm'
+                  }
+                `}
               >
-                <Icon className="h-3.5 w-3.5" />
+                <Icon className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : ''}`} />
                 {tab.label}
-                <span className={`text-[10px] font-semibold h-4 min-w-[16px] px-1 rounded-full inline-flex items-center justify-center ${
-                  count > 0
-                    ? isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-primary text-primary-foreground'
+                <span className={`
+                  text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-md
+                  inline-flex items-center justify-center leading-none
+                  ${count > 0
+                    ? isActive
+                      ? 'bg-primary-foreground/25 text-primary-foreground'
+                      : 'bg-primary text-primary-foreground'
                     : 'opacity-0'
-                }`}>
+                  }
+                `}>
                   {count || 0}
                 </span>
               </button>
@@ -188,18 +206,22 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         </div>
 
         {/* Options grid */}
-        <div className="overflow-hidden px-6 pb-2">
+        <div className="overflow-hidden px-6 py-4">
           <div
-            className="overflow-y-auto h-[40vh] -mx-1 px-1"
+            className="overflow-y-auto h-[40vh] -mx-1 px-1 scrollbar-thin"
             onWheel={(e) => {
               const el = e.currentTarget;
               if (el.scrollHeight <= el.clientHeight) return;
               e.stopPropagation();
             }}
           >
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {filteredOptions.length === 0 && (
-                <p className="col-span-full text-sm text-muted-foreground text-center py-8">No options found</p>
+                <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground">
+                  <Search className="h-8 w-8 mb-3 opacity-30" />
+                  <p className="text-sm font-medium">No options found</p>
+                  <p className="text-xs mt-1 opacity-70">Try a different search term</p>
+                </div>
               )}
               {filteredOptions.map((opt) => {
                 const isChecked = local[currentTab.filterKey].includes(opt);
@@ -209,20 +231,25 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
                 return (
                   <label
                     key={opt}
-                    className={`flex items-center gap-2.5 cursor-pointer py-2.5 px-3 rounded-lg border transition-all duration-150 ${
-                      isChecked
-                        ? 'border-primary/40 bg-primary/5'
-                        : 'border-border hover:border-primary/20 hover:bg-muted/40'
-                    }`}
+                    className={`
+                      group flex items-center gap-2.5 cursor-pointer py-3 px-3.5 rounded-xl border
+                      transition-all duration-200 ease-out select-none
+                      active:scale-[0.97]
+                      ${isChecked
+                        ? 'border-primary/50 bg-primary/6 shadow-sm shadow-primary/10'
+                        : 'border-border/80 hover:border-primary/25 hover:bg-muted/50 hover:shadow-sm'
+                      }
+                    `}
                   >
                     <Checkbox
                       checked={isChecked}
                       onCheckedChange={() => toggleArray(currentTab.filterKey, opt)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
                     {currentTab.type === 'amenity' && (
-                      <IconComp className={`h-4 w-4 shrink-0 ${isChecked ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <IconComp className={`h-4 w-4 shrink-0 transition-colors ${isChecked ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground/60'}`} />
                     )}
-                    <span className={`text-sm leading-tight ${isChecked ? 'text-foreground font-medium' : 'text-foreground'}`}>
+                    <span className={`text-sm leading-tight transition-colors ${isChecked ? 'text-foreground font-medium' : 'text-foreground/80 group-hover:text-foreground'}`}>
                       {opt}
                     </span>
                   </label>
@@ -233,12 +260,18 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border/60 bg-muted/20">
           <p className="text-sm text-muted-foreground">
-            <span className="font-medium text-primary">{localCount}</span> of {totalOptions} selected
+            <span className="font-semibold text-primary">{localCount}</span>
+            <span className="mx-1">of</span>
+            <span className="font-medium">{totalOptions}</span>
+            <span className="ml-1">selected</span>
           </p>
-          <Button onClick={handleApply} className="px-6">
-            <Check className="h-4 w-4 mr-1.5" />
+          <Button
+            onClick={handleApply}
+            className="px-8 h-10 rounded-lg font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 transition-all duration-200"
+          >
+            <Check className="h-4 w-4 mr-2" />
             Done
           </Button>
         </div>
