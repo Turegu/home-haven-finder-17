@@ -220,11 +220,45 @@ const PropertyDetailPage = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
-          <Link to="/" className="hover:text-foreground">Home</Link>
-          <span>/</span>
-          <Link to="/buy" className="hover:text-foreground">Buy</Link>
-          <span>/</span>
-          <span className="text-foreground">{property.title}</span>
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-4 w-4" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          <Link to={`/${property.propertyPurpose === 'rent' ? 'buy' : 'buy'}?purpose=${property.propertyPurpose || 'buy'}`} className="hover:text-foreground transition-colors">
+            {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+          </Link>
+          {property.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}`} className="hover:text-foreground transition-colors">
+                {property.province} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+              </Link>
+            </>
+          )}
+          {property.province && property.type && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&type=${encodeURIComponent(property.type)}`} className="hover:text-foreground transition-colors">
+                {property.province} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'} {property.type}
+              </Link>
+            </>
+          )}
+          {property.town && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&town=${encodeURIComponent(property.town)}`} className="hover:text-foreground transition-colors">
+                {property.town} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+              </Link>
+            </>
+          )}
+          {property.neighbourhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&town=${encodeURIComponent(property.town)}&neighbourhood=${encodeURIComponent(property.neighbourhood)}`} className="hover:text-foreground transition-colors">
+                {property.neighbourhood} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+              </Link>
+            </>
+          )}
+          <span className="text-muted-foreground/50">&gt;</span>
+          <span className="text-foreground font-medium">{property.title}</span>
         </div>
       </div>
 

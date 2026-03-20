@@ -231,9 +231,35 @@ const ProjectDetailPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 flex-wrap">
-          <Link to="/" className="hover:text-foreground">Home</Link><span>/</span>
-          <Link to="/projects" className="hover:text-foreground">Projects</Link><span>/</span>
-          <span className="text-foreground">{project.title}</span>
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-4 w-4" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+          {project.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/projects?province=${encodeURIComponent(project.province)}`} className="hover:text-foreground transition-colors">
+                {project.province} Projects
+              </Link>
+            </>
+          )}
+          {project.town && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/projects?province=${encodeURIComponent(project.province)}&town=${encodeURIComponent(project.town)}`} className="hover:text-foreground transition-colors">
+                {project.town} Projects
+              </Link>
+            </>
+          )}
+          {project.neighbourhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/projects?province=${encodeURIComponent(project.province)}&town=${encodeURIComponent(project.town)}&neighbourhood=${encodeURIComponent(project.neighbourhood)}`} className="hover:text-foreground transition-colors">
+                {project.neighbourhood} Projects
+              </Link>
+            </>
+          )}
+          <span className="text-muted-foreground/50">&gt;</span>
+          <span className="text-foreground font-medium">{project.title}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
