@@ -26,17 +26,17 @@ interface NearbyPlacesMapProps {
 }
 
 const categories = [
-  { key: 'education', label: 'Education', icon: GraduationCap, color: '#dc2626', osmTags: 'amenity~"school|university|kindergarten|college"' },
-  { key: 'health', label: 'Health', icon: HeartPulse, color: '#2563eb', osmTags: 'amenity~"hospital|clinic|pharmacy|dentist|doctors"' },
-  { key: 'park', label: 'Park', icon: TreePine, color: '#16a34a', osmTags: 'leisure~"park|garden|playground"' },
-  { key: 'business', label: 'Business', icon: Briefcase, color: '#ea580c', osmTags: 'office~"."' },
-  { key: 'market', label: 'Market', icon: ShoppingCart, color: '#65a30d', osmTags: 'shop~"supermarket|convenience|grocery|greengrocer"' },
-  { key: 'mall', label: 'Mall', icon: ShoppingBag, color: '#7c3aed', osmTags: 'shop~"mall|department_store"' },
-  { key: 'worship', label: 'Worship', icon: Church, color: '#0891b2', osmTags: 'amenity~"place_of_worship"' },
-  { key: 'restaurant', label: 'Restaurant', icon: UtensilsCrossed, color: '#be185d', osmTags: 'amenity~"restaurant|fast_food"' },
-  { key: 'cafe', label: 'Cafe', icon: Coffee, color: '#92400e', osmTags: 'amenity~"cafe"' },
-  { key: 'gym', label: 'Gym', icon: Dumbbell, color: '#4f46e5', osmTags: 'leisure~"fitness_centre|sports_centre"' },
-  { key: 'commute', label: 'Commute', icon: Bus, color: '#0d9488', osmTags: 'amenity~"bus_station"|highway~"bus_stop"|railway~"station|halt"' },
+  { key: 'education', label: 'Education', icon: GraduationCap, color: '#dc2626', osmQueries: ['amenity~"school|university|kindergarten|college"'] },
+  { key: 'health', label: 'Health', icon: HeartPulse, color: '#2563eb', osmQueries: ['amenity~"hospital|clinic|pharmacy|dentist|doctors"'] },
+  { key: 'park', label: 'Park', icon: TreePine, color: '#16a34a', osmQueries: ['leisure~"park|garden|playground"'] },
+  { key: 'business', label: 'Business', icon: Briefcase, color: '#ea580c', osmQueries: ['office'] },
+  { key: 'market', label: 'Market', icon: ShoppingCart, color: '#65a30d', osmQueries: ['shop~"supermarket|convenience|grocery|greengrocer"'] },
+  { key: 'mall', label: 'Mall', icon: ShoppingBag, color: '#7c3aed', osmQueries: ['shop~"mall|department_store"'] },
+  { key: 'worship', label: 'Worship', icon: Church, color: '#0891b2', osmQueries: ['amenity~"place_of_worship"'] },
+  { key: 'restaurant', label: 'Restaurant', icon: UtensilsCrossed, color: '#be185d', osmQueries: ['amenity~"restaurant|fast_food"'] },
+  { key: 'cafe', label: 'Cafe', icon: Coffee, color: '#92400e', osmQueries: ['amenity~"cafe"'] },
+  { key: 'gym', label: 'Gym', icon: Dumbbell, color: '#4f46e5', osmQueries: ['leisure~"fitness_centre|sports_centre"'] },
+  { key: 'commute', label: 'Commute', icon: Bus, color: '#0d9488', osmQueries: ['amenity~"bus_station"', 'highway~"bus_stop"', 'railway~"station|halt"'] },
 ];
 
 function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
