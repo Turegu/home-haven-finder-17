@@ -125,7 +125,12 @@ const CompanyEventEditPage = () => {
       if (!user) return;
       const { data: company } = await supabase
         .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) setCompanyId(company.id);
+      if (company) {
+        setCompanyId(company.id);
+        const { data: agentData } = await supabase
+          .from("agents").select("id, name").eq("company_id", company.id).eq("status", "active");
+        setAgents(agentData || []);
+      }
     };
     init();
   }, []);
