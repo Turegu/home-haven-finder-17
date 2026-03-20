@@ -104,7 +104,7 @@ function createPOIIcon(color: string, isHighlighted: boolean, categoryKey?: stri
 function FlyToCenter({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
   useEffect(() => {
-    map.setView([lat, lng], 15, { animate: true });
+    map.setView([lat, lng], 14, { animate: true });
   }, [lat, lng, map]);
   return null;
 }
