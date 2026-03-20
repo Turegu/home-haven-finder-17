@@ -5,6 +5,7 @@ import {
   GraduationCap, HeartPulse, TreePine, Briefcase, ShoppingCart, ShoppingBag,
   Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import 'leaflet/dist/leaflet.css';
 
 interface NearbyPlace {
@@ -25,7 +26,15 @@ interface NearbyPlacesMapProps {
   propertyTitle?: string;
 }
 
-const categories = [
+type PlaceCategory = {
+  key: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  osmQueries: string[];
+};
+
+const categories: PlaceCategory[] = [
   { key: 'education', label: 'Education', icon: GraduationCap, color: '#dc2626', osmQueries: ['amenity~"school|university|kindergarten|college"'] },
   { key: 'health', label: 'Health', icon: HeartPulse, color: '#2563eb', osmQueries: ['amenity~"hospital|clinic|pharmacy|dentist|doctors"'] },
   { key: 'park', label: 'Park', icon: TreePine, color: '#16a34a', osmQueries: ['leisure~"park|garden|playground"'] },
@@ -84,77 +93,101 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
   const [places, setPlaces] = useState<Record<string, NearbyPlace[]>>({});
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
+  const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
 
   const propertyIcon = useMemo(() => createPropertyIcon(), []);
 
   const fetchNearbyPlaces = useCallback(async (categoryKey: string) => {
-    if (places[categoryKey]) return;
+    if (loadingCategory === categoryKey) return;
+    if (places[categoryKey] && !loadErrors[categoryKey]) return;
 
     setLoadingCategory(categoryKey);
     const cat = categories.find(c => c.key === categoryKey);
-    if (!cat) return;
+    if (!cat) {
+      setLoadingCategory(null);
+      return;
+    }
 
     try {
       const radius = 2000;
       const nodeParts = cat.osmQueries.map(q => {
         const tildeIdx = q.indexOf('~');
         if (tildeIdx === -1) {
-          // Simple key existence query like "office"
           return `node[${q}](around:${radius},${lat},${lng});`;
         }
         const key = q.substring(0, tildeIdx);
-        const rawVal = q.substring(tildeIdx + 1); // already includes quotes when needed
+        const rawVal = q.substring(tildeIdx + 1);
         return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
       });
 
-      const query = `[out:json][timeout:10];(${nodeParts.join('')});out body 20;`;
+      const query = `[out:json][timeout:12];(${nodeParts.join('')});out body 40;`;
 
-      const res = await fetch('https://overpass-api.de/api/interpreter', {
-        method: 'POST',
-        body: `data=${encodeURIComponent(query)}`,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      const { data, error } = await supabase.functions.invoke('nearby-places-proxy', {
+        body: { query },
       });
 
-      if (!res.ok) throw new Error('Overpass API error');
-      const data = await res.json();
+      if (error) throw new Error(error.message || 'Nearby places request failed');
 
-      const results: NearbyPlace[] = (data.elements || [])
-        .filter((el: any) => el.lat && el.lon && el.tags?.name)
+      const elements = Array.isArray(data?.elements)
+        ? data.elements
+        : Array.isArray(data?.data?.elements)
+          ? data.data.elements
+          : [];
+
+      const results: NearbyPlace[] = elements
+        .filter((el: any) => el?.lat && el?.lon && el?.tags?.name)
         .map((el: any) => {
           const dist = haversineDistance(lat, lng, el.lat, el.lon);
+          const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
+          const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
+
           return {
             id: String(el.id),
             name: el.tags.name,
             lat: el.lat,
             lng: el.lon,
             category: categoryKey,
-            distance: Math.round(dist * 1000), // meters
-            walkTime: Math.round((dist / 5) * 60), // ~5km/h walk
-            driveTime: Math.max(1, Math.round((dist / 40) * 60)), // ~40km/h drive
-            rating: el.tags['rating'] ? parseFloat(el.tags['rating']) : (3.5 + Math.random() * 1.5), // Simulated rating
+            distance: Math.round(dist * 1000),
+            walkTime: Math.max(1, Math.round((dist / 5) * 60)),
+            driveTime: Math.max(1, Math.round((dist / 40) * 60)),
+            rating: Number.isFinite(parsedRating) ? parsedRating : Math.min(5, fallbackRating),
           };
         })
         .sort((a: NearbyPlace, b: NearbyPlace) => (a.distance || 0) - (b.distance || 0))
         .slice(0, 15);
 
       setPlaces(prev => ({ ...prev, [categoryKey]: results }));
+      setLoadErrors(prev => {
+        const next = { ...prev };
+        delete next[categoryKey];
+        return next;
+      });
     } catch (err) {
       console.error('Failed to fetch nearby places:', err);
-      setPlaces(prev => ({ ...prev, [categoryKey]: [] }));
+      setLoadErrors(prev => ({
+        ...prev,
+        [categoryKey]: 'Could not load nearby places. Tap again to retry.',
+      }));
+      setPlaces(prev => {
+        const next = { ...prev };
+        delete next[categoryKey];
+        return next;
+      });
     } finally {
       setLoadingCategory(null);
     }
-  }, [lat, lng, places]);
+  }, [lat, lng, places, loadErrors, loadingCategory]);
 
   const handleCategoryClick = (key: string) => {
     if (activeCategory === key) {
       setActiveCategory(null);
       setSelectedPlace(null);
-    } else {
-      setActiveCategory(key);
-      setSelectedPlace(null);
-      fetchNearbyPlaces(key);
+      return;
     }
+
+    setActiveCategory(key);
+    setSelectedPlace(null);
+    void fetchNearbyPlaces(key);
   };
 
   const activePlaces = activeCategory ? (places[activeCategory] || []) : [];
@@ -162,13 +195,12 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
 
   return (
     <div className="bg-card rounded-xl border border-border overflow-hidden">
-      {/* Map */}
       <div className="relative" style={{ height: '450px' }}>
         <MapContainer
           center={[lat, lng]}
           zoom={15}
           style={{ height: '100%', width: '100%' }}
-          zoomControl={true}
+          zoomControl
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -176,15 +208,13 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
           />
           <FlyToCenter lat={lat} lng={lng} />
 
-          {/* Property marker */}
           <Marker position={[lat, lng]} icon={propertyIcon}>
             <Popup>
               <div className="text-sm font-semibold p-1">{propertyTitle || 'This Property'}</div>
             </Popup>
           </Marker>
 
-          {/* Nearby place markers */}
-          {activePlaces.map(place => (
+          {activePlaces.map((place) => (
             <Marker
               key={place.id}
               position={[place.lat, place.lng]}
@@ -194,13 +224,16 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
               }}
             >
               <Popup closeButton={false} offset={[0, -8]}>
-                <PlacePopupCard place={place} onClose={() => setSelectedPlace(null)} categoryColor={activeCat?.color || '#666'} />
+                <PlacePopupCard
+                  place={place}
+                  onClose={() => setSelectedPlace(null)}
+                  categoryColor={activeCat?.color || '#666'}
+                />
               </Popup>
             </Marker>
           ))}
         </MapContainer>
 
-        {/* Loading overlay */}
         {loadingCategory && (
           <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px] flex items-center justify-center z-[1000] pointer-events-none">
             <div className="bg-card px-4 py-2 rounded-lg shadow-lg border border-border text-sm text-muted-foreground flex items-center gap-2">
@@ -211,9 +244,8 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
         )}
       </div>
 
-      {/* Category bar */}
       <div className="flex items-center gap-1 px-3 py-2.5 overflow-x-auto border-t border-border bg-muted/30 scrollbar-hide">
-        {categories.map(cat => {
+        {categories.map((cat) => {
           const isActive = activeCategory === cat.key;
           return (
             <button
@@ -232,11 +264,18 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
           );
         })}
       </div>
+
+      {activeCategory && !loadingCategory && loadErrors[activeCategory] && (
+        <div className="px-3 pb-3 text-xs text-destructive">{loadErrors[activeCategory]}</div>
+      )}
+
+      {activeCategory && !loadingCategory && !loadErrors[activeCategory] && activePlaces.length === 0 && (
+        <div className="px-3 pb-3 text-xs text-muted-foreground">No nearby places found within 2 km.</div>
+      )}
     </div>
   );
 };
 
-// Popup card for a nearby place
 const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace; onClose: () => void; categoryColor: string }) => (
   <div className="w-[220px] p-0">
     <div className="flex items-start justify-between gap-2 mb-2">
@@ -246,7 +285,6 @@ const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace;
       </button>
     </div>
 
-    {/* Rating */}
     {place.rating && (
       <div className="flex items-center gap-1 mb-2">
         <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
@@ -254,7 +292,6 @@ const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace;
       </div>
     )}
 
-    {/* Distance info */}
     <div className="space-y-1.5 text-xs text-muted-foreground">
       <div className="flex items-center gap-1.5">
         <MapPin className="h-3 w-3" style={{ color: categoryColor }} />
