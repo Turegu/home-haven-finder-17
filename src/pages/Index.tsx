@@ -99,26 +99,6 @@ const Index = () => {
         </section>
       )}
 
-      {/* Featured Properties */}
-      <section className="container mx-auto px-4 py-14">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-bold text-foreground">{fp.title || "Featured Properties"}</h2>
-            <p className="text-sm text-muted-foreground mt-1">{fp.tagline || "Handpicked properties for you"}</p>
-          </div>
-          <Link to="/buy" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-            View All <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProperties.map((property) => (
-            <Link key={property.id} to={`/property/${property.id}`}>
-              <PropertyCard property={property} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} />
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Featured Projects */}
       <section className="bg-muted/50">
         <div className="container mx-auto px-4 py-14">
@@ -136,6 +116,26 @@ const Index = () => {
               <FeaturedProjectCard key={project.id} project={project} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Featured Properties */}
+      <section className="container mx-auto px-4 py-14">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">{fp.title || "Featured Properties"}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{fp.tagline || "Handpicked properties for you"}</p>
+          </div>
+          <Link to="/buy" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            View All <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredProperties.map((property) => (
+            <Link key={property.id} to={`/property/${property.id}`}>
+              <PropertyCard property={property} isSaved={savedIds?.has(property.id)} isCompared={comparedIds?.has(property.id)} />
+            </Link>
+          ))}
         </div>
       </section>
 
