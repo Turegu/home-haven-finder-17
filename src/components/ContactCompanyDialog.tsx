@@ -32,6 +32,7 @@ interface ContactCompanyDialogProps {
   companyId: string | null;
   agentId: string | null;
   companyName?: string;
+  listingType?: 'property' | 'project' | 'event';
 }
 
 const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName }: ContactCompanyDialogProps) => {
