@@ -201,15 +201,15 @@ const EventDetailPage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Title Block */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-start justify-between gap-4 mb-3">
+              <div className="flex items-center justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3">
                   {(() => { const TypeIcon = getEventTypeIcon(event.eventType); return <div className="h-10 w-10 rounded-lg bg-muted/30 flex items-center justify-center flex-shrink-0"><TypeIcon className="h-5 w-5 text-foreground" /></div>; })()}
                   <h1 className="text-xl font-bold text-foreground">{event.title}</h1>
                 </div>
-                <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
+                <div className="hidden md:flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border">
                   {mediaTabs.map((tab) => (
-                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`} title={tab.label}>
-                      <tab.icon className="h-5 w-5" />
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`p-2 rounded-md transition-all active:scale-95 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`} title={tab.label}>
+                      <tab.icon className="h-4.5 w-4.5" />
                     </button>
                   ))}
                 </div>
