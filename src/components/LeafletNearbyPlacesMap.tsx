@@ -314,6 +314,10 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
     </div>
   );
 
+  if (isFullscreen) {
+    return createPortal(mapContent, document.body);
+  }
+
   if (embedded) return mapContent;
 
   return (
