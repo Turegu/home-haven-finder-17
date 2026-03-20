@@ -133,33 +133,7 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {mockProjects.map((project) => (
-              <div key={project.id} className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img src={project.image} alt={project.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-foreground/80 to-transparent p-4">
-                    <span className="text-[10px] font-bold uppercase bg-primary text-primary-foreground px-2 py-0.5 rounded">
-                      {project.completionDate}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{project.title}</h3>
-                  <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
-                    <MapPin className="h-3.5 w-3.5 text-primary" />
-                    <span>{project.location}</span>
-                  </div>
-                  <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <div>
-                      <p className="text-[10px] text-muted-foreground uppercase">Starting from</p>
-                      <p className="text-sm font-bold text-foreground">${project.priceFrom.toLocaleString()}</p>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Building className="h-3.5 w-3.5" />
-                      <span>{project.units} units</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <FeaturedProjectCard key={project.id} project={project} />
             ))}
           </div>
         </div>
