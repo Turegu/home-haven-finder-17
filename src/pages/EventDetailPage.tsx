@@ -13,6 +13,7 @@ import NearbyPlacesMap from '@/components/NearbyPlacesMap';
 import StreetView from '@/components/StreetView';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
+import { getCoordsFromLocation } from '@/lib/mapConstants';
 
 const EventDetailPage = () => {
   const { id } = useParams();
