@@ -224,8 +224,6 @@ const EventDetailPage = () => {
               <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
                 {event.agentLogo ? (
                   <img src={event.agentLogo} alt={event.agentName} className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors" />
-                ) : event.organizerLogo ? (
-                  <img src={event.organizerLogo} alt={event.organizer} className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors" />
                 ) : (
                   <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
                     <Building className="h-10 w-10 text-muted-foreground" />
@@ -235,6 +233,17 @@ const EventDetailPage = () => {
                 {event.agentDesignation && <p className="text-sm text-muted-foreground">{event.agentDesignation}</p>}
                 {!event.agentDesignation && <p className="text-sm text-muted-foreground">Event Organizer</p>}
               </Link>
+
+              {/* Company logo */}
+              {(event.companyLogo || event.organizerLogo) && (
+                <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
+                  <img src={event.companyLogo || event.organizerLogo} alt={event.agentCompany || event.organizer} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
+                  <div className="text-center">
+                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{event.agentCompany || event.organizer}</h4>
+                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                  </div>
+                </Link>
+              )}
 
               {event.agentLanguages && event.agentLanguages.length > 0 && (
                 <p className="text-xs text-muted-foreground text-center mb-4">
