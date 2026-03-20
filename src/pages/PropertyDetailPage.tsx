@@ -264,14 +264,16 @@ const PropertyDetailPage = () => {
           </button>
         </div>
 
-        {/* Media tabs — bottom-right overlay */}
-        <div className="absolute bottom-4 right-4 z-10 hidden md:flex items-center gap-1 bg-background/90 backdrop-blur-sm rounded-lg p-1 border border-border shadow-lg">
+      </div>
+
+      {/* Media tabs — persistent bar below gallery */}
+      <div className="w-full bg-card border-b border-border">
+        <div className="container mx-auto px-4 flex items-center gap-1 py-2 overflow-x-auto scrollbar-hide">
           {mediaTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => handleMediaTabClick(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-all text-xs font-medium ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
-              title={tab.label}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap shrink-0 active:scale-95 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
             >
               <tab.icon className="h-4 w-4" />
               {tab.label}
