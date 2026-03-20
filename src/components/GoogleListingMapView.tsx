@@ -116,7 +116,7 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
   const mapRef = useRef<google.maps.Map | null>(null);
 
   const listingsWithCoords = useMemo(() =>
-    listings.map(l => ({ ...l, coords: getCityFromLocation(l.location) })),
+    listings.map(l => ({ ...l, coords: getCoordsFromLocation(l.location) })),
     [listings]
   );
 
