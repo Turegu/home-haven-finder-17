@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
