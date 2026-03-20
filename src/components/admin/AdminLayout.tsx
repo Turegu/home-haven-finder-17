@@ -90,7 +90,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <nav className="flex-1 min-h-0 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30">
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.path ||
               (item.path !== "/admin" && location.pathname.startsWith(item.path));
