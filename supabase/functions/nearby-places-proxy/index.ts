@@ -8,11 +8,49 @@ const corsHeaders = {
 const OVERPASS_URLS = [
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
 ];
 
-async function requestOverpass(url: string, query: string): Promise<Response> {
+type QueryVariant = {
+  name: string;
+  query: string;
+  requestTimeoutMs: number;
+};
+
+const replaceQueryTimeout = (query: string, seconds: number) =>
+  query.replace(/\[timeout:\d+\]/, `[timeout:${seconds}]`);
+
+const replaceAroundRadius = (query: string, radius: number) =>
+  query.replace(/around:\d+/g, `around:${radius}`);
+
+const replaceOutLimit = (query: string, limit: number) =>
+  query.replace(/out body\s+\d+;/, `out body ${limit};`);
+
+function buildQueryVariants(originalQuery: string): QueryVariant[] {
+  const trimmed = originalQuery.trim();
+
+  const fallbackQuery = replaceOutLimit(
+    replaceAroundRadius(replaceQueryTimeout(trimmed, 8), 1200),
+    25,
+  );
+
+  return [
+    {
+      name: "primary",
+      query: replaceQueryTimeout(trimmed, 18),
+      requestTimeoutMs: 22000,
+    },
+    {
+      name: "fallback_compact",
+      query: fallbackQuery,
+      requestTimeoutMs: 12000,
+    },
+  ];
+}
+
+async function requestOverpass(url: string, query: string, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     return await fetch(url, {
@@ -48,36 +86,40 @@ serve(async (req) => {
       });
     }
 
+    const queryVariants = buildQueryVariants(query);
     let lastError = "Overpass request failed";
     let lastStatus = 502;
 
-    for (const overpassUrl of OVERPASS_URLS) {
-      try {
-        const response = await requestOverpass(overpassUrl, query);
-        const responseText = await response.text();
-
-        if (!response.ok) {
-          lastStatus = response.status;
-          lastError = responseText.slice(0, 500);
-          continue;
-        }
-
-        let data;
+    for (const variant of queryVariants) {
+      for (const overpassUrl of OVERPASS_URLS) {
         try {
-          data = JSON.parse(responseText);
-        } catch {
-          lastStatus = 502;
-          lastError = "Invalid Overpass response";
-          continue;
-        }
+          const response = await requestOverpass(overpassUrl, variant.query, variant.requestTimeoutMs);
+          const responseText = await response.text();
 
-        return new Response(JSON.stringify(data), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      } catch (error) {
-        lastStatus = 504;
-        lastError = error instanceof Error ? error.message : "Unknown proxy error";
+          if (!response.ok) {
+            lastStatus = response.status;
+            lastError = `${variant.name} ${overpassUrl}: ${responseText.slice(0, 300)}`;
+            continue;
+          }
+
+          let data;
+          try {
+            data = JSON.parse(responseText);
+          } catch {
+            lastStatus = 502;
+            lastError = `${variant.name} ${overpassUrl}: Invalid Overpass response`;
+            continue;
+          }
+
+          return new Response(JSON.stringify(data), {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        } catch (error) {
+          lastStatus = 504;
+          const message = error instanceof Error ? error.message : "Unknown proxy error";
+          lastError = `${variant.name} ${overpassUrl}: ${message}`;
+        }
       }
     }
 
