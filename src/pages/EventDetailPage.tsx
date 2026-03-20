@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
-  ChevronLeft, ChevronRight, Camera, Images, Globe, Video,
-  MessageCircle, PersonStanding, X, Building
+  ChevronLeft, ChevronRight, Camera, Globe, Video,
+  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -88,8 +88,6 @@ const EventDetailPage = () => {
 
   const mediaTabs = [
     { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'plans', label: 'Plans', icon: Images },
-    { id: '360', label: '360 View', icon: Globe },
     { id: 'location', label: 'Location', icon: MapPin },
     { id: 'street', label: 'Street View', icon: PersonStanding },
     { id: 'video', label: 'Video', icon: Video },
@@ -171,16 +169,18 @@ const EventDetailPage = () => {
               </div>
             </div>
 
-            {/* Event Details */}
+            {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Event Details</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <DetailItem label="Event Type" value={event.eventType} />
-                <DetailItem label="Date" value={formatDate(event.date)} />
-                <DetailItem label="Location" value={event.location} />
-                <DetailItem label="City" value={event.city} />
-                <DetailItem label="Organizer" value={event.organizer} />
-                <DetailItem label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free / Open Invitation'} />
+                <OverviewItem icon={Hash} label="Listing ID" value={event.listingId} />
+                <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
+                <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
+                <OverviewItem icon={MapPin} label="Location" value={event.location} />
+                <OverviewItem icon={Building} label="City" value={event.city} />
+                <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
+                <OverviewItem icon={Ticket} label="Entry" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
+                <OverviewItem icon={DollarSign} label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
               </div>
             </div>
 
@@ -284,10 +284,15 @@ const EventDetailPage = () => {
   );
 };
 
-const DetailItem = ({ label, value }: { label: string; value: string }) => (
-  <div>
-    <p className="text-muted-foreground text-xs">{label}</p>
-    <p className="font-medium text-foreground">{value}</p>
+const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
+  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+    <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <Icon className="h-4 w-4 text-primary" />
+    </div>
+    <div>
+      <p className="text-muted-foreground text-[11px] leading-tight">{label}</p>
+      <p className="font-semibold text-foreground text-sm">{value}</p>
+    </div>
   </div>
 );
 
