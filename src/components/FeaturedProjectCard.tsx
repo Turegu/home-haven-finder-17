@@ -1,4 +1,4 @@
-import { MapPin, Calendar, ArrowUpRight } from 'lucide-react';
+import { MapPin, Calendar, ArrowUpRight, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface FeaturedProjectCardProps {
@@ -10,6 +10,7 @@ interface FeaturedProjectCardProps {
     currency: string;
     image: string;
     developer: string;
+    developerLogo?: string;
     units: number;
     completionDate: string;
   };
@@ -22,7 +23,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
       className="group relative flex flex-col rounded-2xl overflow-hidden bg-card"
     >
       {/* Full image background */}
-      <div className="relative aspect-[3/4] overflow-hidden">
+      <div className="relative aspect-[4/5] overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
@@ -46,10 +47,19 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
 
         {/* Bottom overlaid content */}
         <div className="absolute bottom-0 inset-x-0 p-5 flex flex-col gap-3">
-          {/* Developer */}
-          <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
-            {project.developer}
-          </span>
+          {/* Developer with logo */}
+          <div className="flex items-center gap-2">
+            {project.developerLogo ? (
+              <img src={project.developerLogo} alt={project.developer} className="h-5 w-5 rounded object-contain bg-white/20" />
+            ) : (
+              <div className="h-5 w-5 rounded bg-white/15 flex items-center justify-center">
+                <Building className="h-3 w-3 text-white/70" />
+              </div>
+            )}
+            <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
+              {project.developer}
+            </span>
+          </div>
 
           {/* Title */}
           <h3 className="font-display text-xl font-semibold text-white leading-tight tracking-tight text-wrap-balance">
