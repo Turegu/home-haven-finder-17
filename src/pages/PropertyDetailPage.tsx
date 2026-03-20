@@ -386,7 +386,7 @@ const PropertyDetailPage = () => {
           <button onClick={() => window.print()} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Print">
             <Printer className="h-4 w-4" />
           </button>
-          <button onClick={() => toast.success('Thank you for your report. We will review this listing.')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Report this listing">
+          <button onClick={() => setReportDialogOpen(true)} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Report this listing">
             <Flag className="h-4 w-4" />
           </button>
         </div>
