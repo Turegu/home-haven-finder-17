@@ -187,7 +187,7 @@ const EventsPage = () => {
           {!location.province ? (
             <span className="text-foreground font-medium">Events</span>
           ) : (
-            <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+            <button onClick={() => { setLocation({}); setKeyword(''); setSelectedEventType(''); setDateRange({}); setCurrentPage(1); setCommittedParams({ sortBy, page: 1, pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS }); }} className="hover:text-foreground transition-colors">Events</button>
           )}
           {location.province && (
             <>
@@ -195,9 +195,9 @@ const EventsPage = () => {
               {!location.district ? (
                 <span className="text-foreground font-medium">{location.province} Events</span>
               ) : (
-                <Link to={`/events?province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                <button onClick={() => { setLocation({ province: location.province }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
                   {location.province} Events
-                </Link>
+                </button>
               )}
             </>
           )}
@@ -207,9 +207,9 @@ const EventsPage = () => {
               {!location.neighborhood ? (
                 <span className="text-foreground font-medium">{location.district} Events</span>
               ) : (
-                <Link to={`/events?province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                <button onClick={() => { setLocation({ province: location.province, district: location.district }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: location.district, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
                   {location.district} Events
-                </Link>
+                </button>
               )}
             </>
           )}

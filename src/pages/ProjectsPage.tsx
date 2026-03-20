@@ -419,7 +419,7 @@ const ProjectsPage = () => {
           {!location.province ? (
             <span className="text-foreground font-medium">Projects</span>
           ) : (
-            <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+            <button onClick={() => { setLocation({}); setKeyword(''); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: undefined, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">Projects</button>
           )}
           {location.province && (
             <>
@@ -427,9 +427,9 @@ const ProjectsPage = () => {
               {!location.district ? (
                 <span className="text-foreground font-medium">{location.province} Projects</span>
               ) : (
-                <Link to={`/projects?province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                <button onClick={() => { setLocation({ province: location.province }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
                   {location.province} Projects
-                </Link>
+                </button>
               )}
             </>
           )}
@@ -439,9 +439,9 @@ const ProjectsPage = () => {
               {!location.neighborhood ? (
                 <span className="text-foreground font-medium">{location.district} Projects</span>
               ) : (
-                <Link to={`/projects?province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                <button onClick={() => { setLocation({ province: location.province, district: location.district }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: location.district, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
                   {location.district} Projects
-                </Link>
+                </button>
               )}
             </>
           )}
