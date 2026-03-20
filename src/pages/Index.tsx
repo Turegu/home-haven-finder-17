@@ -28,7 +28,7 @@ const Index = () => {
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
 
-  const { data: featuredProperties = [] } = useQuery({
+  const { data: dbProperties = [] } = useQuery({
     queryKey: ['featured-properties'],
     queryFn: async () => {
       const { data } = await supabase
@@ -61,6 +61,32 @@ const Index = () => {
       }));
     },
   });
+
+  const sampleProperties = [
+    {
+      id: 'sample-1', title: 'Luxury Penthouse with Bosphorus View', price: 1850000, currency: 'USD',
+      location: 'Beşiktaş, Istanbul', city: 'Istanbul', type: 'Penthouse', area: 320, areaUnit: 'm²',
+      bedrooms: 4, bathrooms: 3, images: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=800&fit=crop'],
+      agentLogo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=40&fit=crop', agentName: 'Ayşe Kaya', agentAvatar: '', companyName: 'Prime Realty',
+      isFeatured: true, listingTier: 'premium' as const, listingType: 'buy' as const, advertisingTags: ['Hot Deal'],
+    },
+    {
+      id: 'sample-2', title: 'Modern Sea-View Apartment in JBR', price: 2200, currency: 'USD',
+      location: 'Jumeirah Beach Residence, Dubai', city: 'Dubai', type: 'Apartment', area: 145, areaUnit: 'm²',
+      bedrooms: 2, bathrooms: 2, images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&h=800&fit=crop'],
+      agentLogo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=40&fit=crop', agentName: 'Omar Hassan', agentAvatar: '', companyName: 'Gulf Estates',
+      isFeatured: true, listingTier: 'featured' as const, listingType: 'rent' as const, advertisingTags: [],
+    },
+    {
+      id: 'sample-3', title: 'Garden Villa in Al Reem Island', price: 980000, currency: 'USD',
+      location: 'Al Reem Island, Abu Dhabi', city: 'Abu Dhabi', type: 'Villa', area: 450, areaUnit: 'm²',
+      bedrooms: 5, bathrooms: 4, images: ['https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=800&fit=crop'],
+      agentLogo: '', agentName: '', agentAvatar: '', companyName: '',
+      isFeatured: true, listingTier: 'standard' as const, listingType: 'buy' as const, advertisingTags: ['New Launch'],
+    },
+  ];
+
+  const featuredProperties = dbProperties.length > 0 ? dbProperties : sampleProperties;
 
   const hero = cms.hero || {};
   const secondBanner = cms.second_banner || {};
