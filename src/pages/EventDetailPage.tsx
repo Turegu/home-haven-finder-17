@@ -181,15 +181,24 @@ const EventDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem icon={Hash} label="Listing ID" value={event.listingId} />
                 <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
                 <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
-                <OverviewItem icon={MapPin} label="Location" value={event.location} />
-                <OverviewItem icon={Building} label="City" value={event.city} />
+                <OverviewItem icon={Timer} label="Time" value={formatTime(event.date)} />
                 <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
                 <OverviewItem icon={Ticket} label="Entry" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
                 <OverviewItem icon={DollarSign} label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
               </div>
+              {event.pdfCatalogueUrl && (
+                <a
+                  href={event.pdfCatalogueUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  <FileDown className="h-4 w-4" />
+                  Download Brochure
+                </a>
+              )}
             </div>
 
             {/* Description */}
