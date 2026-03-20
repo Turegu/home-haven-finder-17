@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { AlertTriangle } from "lucide-react";
 
 interface NamePair { name: string; ar: string }
 
@@ -44,6 +45,7 @@ const LocationFormFields = ({
   const [loadingProvinces, setLoadingProvinces] = useState(false);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingNeighborhoods, setLoadingNeighborhoods] = useState(false);
+  const [manuallyEdited, setManuallyEdited] = useState(false);
 
   // Load provinces (cached)
   useEffect(() => {
@@ -88,16 +90,51 @@ const LocationFormFields = ({
     });
   }, [province, town]);
 
+  // Auto-populate pin location when dropdowns change
+
+  // Auto-populate pin location when dropdowns change
   const handleProvinceChange = useCallback((v: string) => {
     onProvinceChange(v);
     onTownChange("");
     onNeighbourhoodChange("");
-  }, [onProvinceChange, onTownChange, onNeighbourhoodChange]);
+    setManuallyEdited(false);
+    onPinLocationChange?.(v);
+  }, [onProvinceChange, onTownChange, onNeighbourhoodChange, onPinLocationChange]);
 
   const handleTownChange = useCallback((v: string) => {
     onTownChange(v);
     onNeighbourhoodChange("");
-  }, [onTownChange, onNeighbourhoodChange]);
+    setManuallyEdited(false);
+    // Auto-set pin to "Town, Province"
+    const loc = [v, province].filter(Boolean).join(", ");
+    onPinLocationChange?.(loc);
+  }, [onTownChange, onNeighbourhoodChange, onPinLocationChange, province]);
+
+  const handleNeighbourhoodChange = useCallback((v: string) => {
+    onNeighbourhoodChange(v);
+    setManuallyEdited(false);
+    // Auto-set pin to "Neighbourhood, Town, Province"
+    const loc = [v, town, province].filter(Boolean).join(", ");
+    onPinLocationChange?.(loc);
+  }, [onNeighbourhoodChange, onPinLocationChange, town, province]);
+
+  // Check if pin location mismatches the selected dropdown location
+  const mismatchWarning = useMemo(() => {
+    if (!pinLocation || !province || !manuallyEdited) return null;
+    const pinLower = pinLocation.toLowerCase();
+    const provinceLower = province.toLowerCase();
+    const townLower = town?.toLowerCase();
+
+    // Check if pin contains the province name
+    if (!pinLower.includes(provinceLower)) {
+      return `Pin location doesn't appear to be in ${province}. Please verify it matches your selected location.`;
+    }
+    // If town is selected, check if pin contains it
+    if (townLower && !pinLower.includes(townLower)) {
+      return `Pin location doesn't appear to be in ${town}, ${province}. Please verify it matches your selected location.`;
+    }
+    return null;
+  }, [pinLocation, province, town, manuallyEdited]);
 
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 gap-5 ${className}`}>
@@ -137,7 +174,7 @@ const LocationFormFields = ({
       {/* Neighbourhood */}
       <div className="space-y-2">
         <Label className="text-foreground font-medium">Neighbourhood</Label>
-        <Select value={neighbourhood} onValueChange={onNeighbourhoodChange} disabled={!town}>
+        <Select value={neighbourhood} onValueChange={handleNeighbourhoodChange} disabled={!town}>
           <SelectTrigger className="bg-secondary/50">
             <SelectValue placeholder={
               !town ? "Select city/town first" :
@@ -158,10 +195,21 @@ const LocationFormFields = ({
           <Label className="text-foreground font-medium">Pin Location</Label>
           <Input
             value={pinLocation}
-            onChange={(e) => onPinLocationChange?.(e.target.value)}
+            onChange={(e) => {
+              setManuallyEdited(true);
+              onPinLocationChange?.(e.target.value);
+            }}
             className="bg-secondary/50"
-            placeholder="e.g. Istanbul, Turkey"
+            placeholder="Auto-filled from location — adjust if needed"
           />
+        </div>
+      )}
+
+      {/* Mismatch Warning */}
+      {mismatchWarning && (
+        <div className="md:col-span-2 flex items-start gap-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 rounded-lg px-3.5 py-2.5 text-sm">
+          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{mismatchWarning}</span>
         </div>
       )}
 
@@ -179,7 +227,7 @@ const LocationFormFields = ({
             />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-              Enter pin location to show map
+              Select a location above to show map
             </div>
           )}
         </div>
