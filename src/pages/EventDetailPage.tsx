@@ -225,35 +225,50 @@ const EventDetailPage = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              {/* Agent / Organizer info */}
-              <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
-                {event.agentLogo ? (
-                  <img src={event.agentLogo} alt={event.agentName} className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors" />
-                ) : (
-                  <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
-                    <Building className="h-10 w-10 text-muted-foreground" />
-                  </div>
-                )}
-                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{event.agentName || event.organizer || '—'}</h3>
-                {event.agentDesignation && <p className="text-sm text-muted-foreground">{event.agentDesignation}</p>}
-                {!event.agentDesignation && <p className="text-sm text-muted-foreground">Event Organizer</p>}
-              </Link>
+              {event.hasAgent ? (
+                <>
+                  <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
+                    {event.agentLogo ? (
+                      <img src={event.agentLogo} alt={event.agentName} className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors" />
+                    ) : (
+                      <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                        <Building className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                    )}
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{event.agentName}</h3>
+                    {event.agentDesignation && <p className="text-sm text-muted-foreground">{event.agentDesignation}</p>}
+                  </Link>
 
-              {/* Company logo */}
-              {(event.companyLogo || event.organizerLogo) && (
-                <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
-                  <img src={event.companyLogo || event.organizerLogo} alt={event.agentCompany || event.organizer} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
-                  <div className="text-center">
-                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{event.agentCompany || event.organizer}</h4>
-                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
-                  </div>
-                </Link>
-              )}
+                  {event.agentLanguages && event.agentLanguages.length > 0 && (
+                    <p className="text-xs text-muted-foreground text-center mb-4">
+                      <span className="font-medium text-foreground">Speaks:</span> {event.agentLanguages.join(', ')}
+                    </p>
+                  )}
 
-              {event.agentLanguages && event.agentLanguages.length > 0 && (
-                <p className="text-xs text-muted-foreground text-center mb-4">
-                  <span className="font-medium text-foreground">Speaks:</span> {event.agentLanguages.join(', ')}
-                </p>
+                  {(event.companyLogo || event.organizerLogo) && (
+                    <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
+                      <img src={event.companyLogo || event.organizerLogo} alt={event.agentCompany || event.organizer} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
+                      <div className="text-center">
+                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{event.agentCompany || event.organizer}</h4>
+                        <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                      </div>
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="block text-center mb-4 group">
+                    {(event.companyLogo || event.organizerLogo) ? (
+                      <img src={event.companyLogo || event.organizerLogo} alt={event.agentCompany || event.organizer} className="h-32 w-32 rounded-lg object-contain border-2 border-border mx-auto mb-3 p-2 group-hover:border-primary transition-colors" />
+                    ) : (
+                      <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                        <Building className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                    )}
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{event.agentCompany || event.organizer || 'Company'}</h3>
+                    <p className="text-sm text-muted-foreground">Event Organizer</p>
+                  </Link>
+                </>
               )}
 
 

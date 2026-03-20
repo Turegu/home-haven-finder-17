@@ -251,34 +251,54 @@ const ProjectDetailPage = () => {
           {/* Sidebar - Agent Card */}
           <div className="space-y-6">
             <div className="bg-card rounded-xl border border-border p-6 sticky top-[120px]">
-              <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
-                {project.agentLogo ? (
-                  <img src={project.agentLogo} alt={project.agentName} className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors" />
-                ) : (
-                  <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
-                    <Building className="h-10 w-10 text-muted-foreground" />
-                  </div>
-                )}
-                <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentName || '—'}</h3>
-                {project.agentDesignation && <p className="text-sm text-muted-foreground">{project.agentDesignation}</p>}
-              </Link>
+              {project.hasAgent ? (
+                <>
+                  <Link to={realAgentId ? `/agents/${realAgentId}` : '#'} className="block text-center mb-4 group">
+                    {project.agentLogo ? (
+                      <img src={project.agentLogo} alt={project.agentName} className="h-32 w-32 rounded-lg object-cover border-2 border-border mx-auto mb-3 group-hover:border-primary transition-colors" />
+                    ) : (
+                      <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                        <Building className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                    )}
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentName || '—'}</h3>
+                    {project.agentDesignation && <p className="text-sm text-muted-foreground">{project.agentDesignation}</p>}
+                  </Link>
 
-              <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
+                  <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
 
-              {project.agentLanguages && project.agentLanguages.length > 0 && (
-                <p className="text-xs text-muted-foreground text-center mb-4">
-                  <span className="font-medium text-foreground">Speaks:</span> {project.agentLanguages.join(', ')}
-                </p>
-              )}
+                  {project.agentLanguages && project.agentLanguages.length > 0 && (
+                    <p className="text-xs text-muted-foreground text-center mb-4">
+                      <span className="font-medium text-foreground">Speaks:</span> {project.agentLanguages.join(', ')}
+                    </p>
+                  )}
 
-              {project.companyLogo && (
-                <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
-                  <img src={project.companyLogo} alt={project.agentCompany} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
-                  <div className="text-center">
-                    <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{project.agentCompany}</h4>
-                    <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
-                  </div>
-                </Link>
+                  {project.companyLogo && (
+                    <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="flex flex-col items-center gap-2 py-4 border-t border-border group">
+                      <img src={project.companyLogo} alt={project.agentCompany} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
+                      <div className="text-center">
+                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{project.agentCompany}</h4>
+                        <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                      </div>
+                    </Link>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Link to={realCompanyId ? `/company/${realCompanyId}` : '#'} className="block text-center mb-4 group">
+                    {project.companyLogo ? (
+                      <img src={project.companyLogo} alt={project.agentCompany} className="h-32 w-32 rounded-lg object-contain border-2 border-border mx-auto mb-3 p-2 group-hover:border-primary transition-colors" />
+                    ) : (
+                      <div className="h-32 w-32 rounded-lg bg-muted border-2 border-border mx-auto mb-3 flex items-center justify-center">
+                        <Building className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                    )}
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentCompany || 'Company'}</h3>
+                    <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
+                  </Link>
+
+                  <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
+                </>
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
