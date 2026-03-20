@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
@@ -12,6 +12,8 @@ import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
 import ProjectUnits from '@/components/ProjectUnits';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
+import NearbyPlacesMap from '@/components/NearbyPlacesMap';
+import StreetView from '@/components/StreetView';
 import defaultProjectLogo from '@/assets/default-project-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 
