@@ -1,5 +1,6 @@
 import { ArrowRight, MapPin, ExternalLink } from 'lucide-react';
 import FeaturedProjectCard from '@/components/FeaturedProjectCard';
+import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
