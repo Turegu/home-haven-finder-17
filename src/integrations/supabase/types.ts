@@ -2073,6 +2073,10 @@ export type Database = {
         }[]
       }
       unaccent: { Args: { "": string }; Returns: string }
+      unaccent_match: {
+        Args: { haystack: string; needle: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
