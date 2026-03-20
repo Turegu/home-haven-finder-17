@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
@@ -313,12 +314,14 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
     </div>
   );
 
-  if (embedded) {
-    return mapContent;
+  if (isFullscreen) {
+    return createPortal(mapContent, document.body);
   }
 
+  if (embedded) return mapContent;
+
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden">
+    <div className="bg-card rounded-xl border border-border overflow-hidden" style={{ height: 400 }}>
       {mapContent}
     </div>
   );

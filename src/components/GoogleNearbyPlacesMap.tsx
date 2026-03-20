@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api';
 import {
   GraduationCap, HeartPulse, TreePine, ShoppingCart, ShoppingBag,
@@ -379,6 +380,10 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
       )}
     </div>
   );
+
+  if (isFullscreen) {
+    return createPortal(mapContent, document.body);
+  }
 
   if (embedded) return mapContent;
 
