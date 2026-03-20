@@ -251,13 +251,7 @@ export default function PropertyFiltersModal({ filters, onFiltersChange, onClear
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border/60 bg-muted/20">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-primary">{localCount}</span>
-            <span className="mx-1">of</span>
-            <span className="font-medium">{totalOptions}</span>
-            <span className="ml-1">selected</span>
-          </p>
+        <div className="flex items-center justify-end px-6 py-4 border-t border-border/60 bg-muted/20">
           <Button
             onClick={handleApply}
             className="px-8 h-10 rounded-lg font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 transition-all duration-200"
