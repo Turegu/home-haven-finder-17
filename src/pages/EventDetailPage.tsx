@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Globe, Video,
-  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash
+  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash, FileDown, Timer
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -56,6 +56,7 @@ const EventDetailPage = () => {
           agentLanguages: e.agents?.languages || [],
           agentCompany: e.companies?.name || e.agents?.companies?.name || '',
           companyLogo: e.companies?.logo_url || e.agents?.companies?.logo_url || null,
+          pdfCatalogueUrl: e.pdf_catalogue_url || null,
         });
         setRealAgentId(e.agents?.id || null);
         setRealCompanyId(e.companies?.id || e.agents?.companies?.id || null);
@@ -84,6 +85,13 @@ const EventDetailPage = () => {
     try {
       return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
     } catch { return dateStr; }
+  };
+
+  const formatTime = (dateStr: string) => {
+    if (!dateStr) return '—';
+    try {
+      return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    } catch { return '—'; }
   };
 
   const mediaTabs = [
@@ -173,15 +181,24 @@ const EventDetailPage = () => {
             <div className="bg-card rounded-xl border border-border p-6">
               <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem icon={Hash} label="Listing ID" value={event.listingId} />
                 <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
                 <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
-                <OverviewItem icon={MapPin} label="Location" value={event.location} />
-                <OverviewItem icon={Building} label="City" value={event.city} />
+                <OverviewItem icon={Timer} label="Time" value={formatTime(event.date)} />
                 <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
                 <OverviewItem icon={Ticket} label="Entry" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
                 <OverviewItem icon={DollarSign} label="Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
               </div>
+              {event.pdfCatalogueUrl && (
+                <a
+                  href={event.pdfCatalogueUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  <FileDown className="h-4 w-4" />
+                  Download Brochure
+                </a>
+              )}
             </div>
 
             {/* Description */}
