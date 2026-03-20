@@ -104,6 +104,9 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
               <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
             </span>
           )}
+          {property.agentLogo && (
+            <img src={property.agentLogo} alt={property.companyName} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
+          )}
         </div>
 
         {/* Top-right: actions */}
