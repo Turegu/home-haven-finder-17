@@ -53,6 +53,7 @@ const PropertyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
