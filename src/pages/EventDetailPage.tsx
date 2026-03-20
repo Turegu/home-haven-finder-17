@@ -196,9 +196,9 @@ const EventDetailPage = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 flex-wrap">
-          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-4 w-4" /></Link>
+      <div className="container mx-auto px-4 py-2">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-6 flex-wrap">
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
           <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
           {event.province && (
