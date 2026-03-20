@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
+import { getEventLogo } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
 
 const EventDetailPage = () => {
@@ -151,7 +152,10 @@ const EventDetailPage = () => {
             {/* Title Block */}
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-start justify-between gap-4 mb-3">
-                <h1 className="text-xl font-bold text-foreground">{event.title}</h1>
+                <div className="flex items-center gap-3">
+                  <img src={getEventLogo(event.organizerLogo, event.eventType)} alt={event.eventType} className="h-10 w-10 rounded-lg object-contain bg-muted/30 p-0.5 flex-shrink-0" />
+                  <h1 className="text-xl font-bold text-foreground">{event.title}</h1>
+                </div>
                 <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
                   {mediaTabs.map((tab) => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`} title={tab.label}>
