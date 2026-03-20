@@ -111,7 +111,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
     }
 
     try {
-      const radius = 4000;
+      const radius = 3000;
       const nodeParts = cat.osmQueries.map(q => {
         const tildeIdx = q.indexOf('~');
         if (tildeIdx === -1) {
