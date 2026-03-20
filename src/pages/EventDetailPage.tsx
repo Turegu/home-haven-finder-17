@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
-  ChevronLeft, ChevronRight, Camera, Globe, Video,
-  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash, FileDown, Timer
+  ChevronLeft, ChevronRight, Camera, Video, Home,
+  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, FileDown, Timer
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -45,6 +45,9 @@ const EventDetailPage = () => {
           currency: e.currency || 'USD',
           location: e.location || [e.neighbourhood, e.town, e.province].filter(Boolean).join(', ') || '',
           city: e.province || '',
+          province: e.province || '',
+          town: e.town || '',
+          neighbourhood: e.neighbourhood || '',
           eventType: e.event_type || '',
           entryType: e.entry_type || 'open_invitation',
           date: e.event_date || '',
@@ -195,9 +198,35 @@ const EventDetailPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6 flex-wrap">
-          <Link to="/" className="hover:text-foreground">Home</Link><span>/</span>
-          <Link to="/events" className="hover:text-foreground">Events</Link><span>/</span>
-          <span className="text-foreground">{event.title}</span>
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-4 w-4" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+          {event.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/events?province=${encodeURIComponent(event.province)}`} className="hover:text-foreground transition-colors">
+                {event.province} Events
+              </Link>
+            </>
+          )}
+          {event.town && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/events?province=${encodeURIComponent(event.province)}&town=${encodeURIComponent(event.town)}`} className="hover:text-foreground transition-colors">
+                {event.town} Events
+              </Link>
+            </>
+          )}
+          {event.neighbourhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <Link to={`/events?province=${encodeURIComponent(event.province)}&town=${encodeURIComponent(event.town)}&neighbourhood=${encodeURIComponent(event.neighbourhood)}`} className="hover:text-foreground transition-colors">
+                {event.neighbourhood} Events
+              </Link>
+            </>
+          )}
+          <span className="text-muted-foreground/50">&gt;</span>
+          <span className="text-foreground font-medium">{event.title}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
