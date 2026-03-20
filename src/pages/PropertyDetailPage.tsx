@@ -46,6 +46,21 @@ const emptyPropertyState = {
   hasAgent: false,
 };
 
+const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
+  if (typeof value !== 'string') return null;
+
+  const matches = value.match(/-?\d+(?:\.\d+)?/g);
+  if (!matches || matches.length < 2) return null;
+
+  const lat = Number.parseFloat(matches[0]);
+  const lng = Number.parseFloat(matches[1]);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) return null;
+
+  return { lat, lng };
+};
+
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
