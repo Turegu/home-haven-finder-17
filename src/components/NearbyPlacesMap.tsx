@@ -84,12 +84,15 @@ function createPropertyIcon() {
   });
 }
 
-function createPOIIcon(color: string, isHighlighted: boolean) {
+function createPOIIcon(color: string, isHighlighted: boolean, categoryKey?: string) {
   const size = isHighlighted ? 32 : 26;
+  const svgPath = categoryKey && categorySvgPaths[categoryKey]
+    ? categorySvgPaths[categoryKey]
+    : '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>';
   return L.divIcon({
     className: 'poi-marker',
     html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:2px solid white;transition:all 0.2s;">
-      <svg style="width:${size * 0.45}px;height:${size * 0.45}px;color:white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <svg style="width:${size * 0.45}px;height:${size * 0.45}px;color:white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>
     </div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
