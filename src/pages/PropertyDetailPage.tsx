@@ -64,7 +64,7 @@ const PropertyDetailPage = () => {
         .maybeSingle();
       if (data) {
         const p = data as any;
-        setProperty({
+        setProperty((prev) => ({
           ...mockPropertyDetail,
           id: p.id,
           title: p.title || mockPropertyDetail.title,
