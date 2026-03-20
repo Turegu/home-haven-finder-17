@@ -75,6 +75,8 @@ const PropertyDetailPage = () => {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+    setPinLocation(null);
+
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
@@ -120,14 +122,7 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
-
-        // Parse pin_location "lat,lng"
-        if (p.pin_location) {
-          const parts = p.pin_location.split(',').map((s: string) => parseFloat(s.trim()));
-          if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-            setPinLocation({ lat: parts[0], lng: parts[1] });
-          }
-        }
+        setPinLocation(parsePinLocation(p.pin_location));
 
         // Fetch similar properties
         const { data: similar } = await supabase
