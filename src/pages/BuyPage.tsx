@@ -349,7 +349,7 @@ const BuyPage = () => {
           {!location.province ? (
             <span className="text-foreground font-medium">{isRent ? 'For Rent' : 'For Sale'}</span>
           ) : (
-            <Link to={`/buy?purpose=${isRent ? 'rent' : 'buy'}`} className="hover:text-foreground transition-colors">{isRent ? 'For Rent' : 'For Sale'}</Link>
+            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 21 }); }} className="hover:text-foreground transition-colors">{isRent ? 'For Rent' : 'For Sale'}</button>
           )}
           {location.province && (
             <>
@@ -357,9 +357,9 @@ const BuyPage = () => {
               {!location.district ? (
                 <span className="text-foreground font-medium">{location.province} {isRent ? 'For Rent' : 'For Sale'}</span>
               ) : (
-                <Link to={`/buy?purpose=${isRent ? 'rent' : 'buy'}&province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                <button onClick={() => { const newLoc = { province: location.province }; setLocation(newLoc); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, ...newLoc, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
                   {location.province} {isRent ? 'For Rent' : 'For Sale'}
-                </Link>
+                </button>
               )}
             </>
           )}
@@ -369,9 +369,9 @@ const BuyPage = () => {
               {!location.neighborhood ? (
                 <span className="text-foreground font-medium">{location.district} {isRent ? 'For Rent' : 'For Sale'}</span>
               ) : (
-                <Link to={`/buy?purpose=${isRent ? 'rent' : 'buy'}&province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                <button onClick={() => { const newLoc = { province: location.province, district: location.district }; setLocation(newLoc); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, ...newLoc, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
                   {location.district} {isRent ? 'For Rent' : 'For Sale'}
-                </Link>
+                </button>
               )}
             </>
           )}
