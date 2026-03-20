@@ -99,12 +99,12 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
       const nodeParts = cat.osmQueries.map(q => {
         const tildeIdx = q.indexOf('~');
         if (tildeIdx === -1) {
-          // Simple tag like "office"
+          // Simple key existence query like "office"
           return `node[${q}](around:${radius},${lat},${lng});`;
         }
         const key = q.substring(0, tildeIdx);
-        const rawVal = q.substring(tildeIdx + 1);
-        return `node[${key}${rawVal}](around:${radius},${lat},${lng});`;
+        const rawVal = q.substring(tildeIdx + 1); // already includes quotes when needed
+        return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
       });
 
       const query = `[out:json][timeout:10];(${nodeParts.join('')});out body 20;`;
