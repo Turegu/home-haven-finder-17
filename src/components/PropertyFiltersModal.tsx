@@ -338,60 +338,76 @@ export default function PropertyFiltersModal({
           >
             {/* Range inputs for Price / Area */}
             {currentTab.type === 'range' && currentTab.rangeKey === 'price' && (
-              <div className="flex flex-col items-center justify-center h-full gap-6 py-8">
-                <DollarSign className="h-10 w-10 text-primary/30" />
-                <p className="text-sm font-medium text-muted-foreground">Set your price range</p>
-                <div className="flex items-center gap-3 w-full max-w-sm">
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1 block">Min Price</label>
-                    <input
-                      type="number"
-                      value={localRange.minPrice}
-                      onChange={(e) => setLocalRange({ ...localRange, minPrice: e.target.value })}
-                      placeholder="0"
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
-                    />
+              <div className="pt-6 pb-4 px-2">
+                <div className="rounded-2xl border border-border/60 bg-muted/20 p-6 max-w-md mx-auto">
+                  <div className="flex items-center gap-2.5 mb-5">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <DollarSign className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">Price Range</p>
                   </div>
-                  <span className="text-muted-foreground mt-5">—</span>
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1 block">Max Price</label>
-                    <input
-                      type="number"
-                      value={localRange.maxPrice}
-                      onChange={(e) => setLocalRange({ ...localRange, maxPrice: e.target.value })}
-                      placeholder="Any"
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
-                    />
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Minimum</label>
+                      <input
+                        type="number"
+                        value={localRange.minPrice}
+                        onChange={(e) => setLocalRange({ ...localRange, minPrice: e.target.value })}
+                        placeholder="0"
+                        className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                      />
+                    </div>
+                    <div className="pb-3">
+                      <div className="w-6 h-px bg-border" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Maximum</label>
+                      <input
+                        type="number"
+                        value={localRange.maxPrice}
+                        onChange={(e) => setLocalRange({ ...localRange, maxPrice: e.target.value })}
+                        placeholder="No limit"
+                        className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {currentTab.type === 'range' && currentTab.rangeKey === 'area' && (
-              <div className="flex flex-col items-center justify-center h-full gap-6 py-8">
-                <Ruler className="h-10 w-10 text-primary/30" />
-                <p className="text-sm font-medium text-muted-foreground">Set your area range (m²)</p>
-                <div className="flex items-center gap-3 w-full max-w-sm">
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1 block">Min Area</label>
-                    <input
-                      type="number"
-                      value={localRange.minArea}
-                      onChange={(e) => setLocalRange({ ...localRange, minArea: e.target.value })}
-                      placeholder="0"
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
-                    />
+              <div className="pt-6 pb-4 px-2">
+                <div className="rounded-2xl border border-border/60 bg-muted/20 p-6 max-w-md mx-auto">
+                  <div className="flex items-center gap-2.5 mb-5">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Ruler className="h-4 w-4 text-primary" />
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">Area Range <span className="text-muted-foreground font-normal">(m²)</span></p>
                   </div>
-                  <span className="text-muted-foreground mt-5">—</span>
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1 block">Max Area</label>
-                    <input
-                      type="number"
-                      value={localRange.maxArea}
-                      onChange={(e) => setLocalRange({ ...localRange, maxArea: e.target.value })}
-                      placeholder="Any"
-                      className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
-                    />
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Minimum</label>
+                      <input
+                        type="number"
+                        value={localRange.minArea}
+                        onChange={(e) => setLocalRange({ ...localRange, minArea: e.target.value })}
+                        placeholder="0"
+                        className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                      />
+                    </div>
+                    <div className="pb-3">
+                      <div className="w-6 h-px bg-border" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Maximum</label>
+                      <input
+                        type="number"
+                        value={localRange.maxArea}
+                        onChange={(e) => setLocalRange({ ...localRange, maxArea: e.target.value })}
+                        placeholder="No limit"
+                        className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
