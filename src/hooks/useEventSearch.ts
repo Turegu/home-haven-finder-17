@@ -58,7 +58,11 @@ async function fetchEvents(params: EventSearchParams) {
   if (province) query = query.eq('province', province);
   if (district) query = query.eq('town', district);
   if (neighborhood) query = query.eq('neighbourhood', neighborhood);
-  if (keyword) query = query.ilike('title', `%${keyword}%`);
+  if (keyword) {
+    const kw = `%${keyword}%`;
+    const kwNorm = `%${turkishNormalize(keyword)}%`;
+    query = query.or(`title.ilike.${kw},title.ilike.${kwNorm},location.ilike.${kw},location.ilike.${kwNorm},town.ilike.${kw},town.ilike.${kwNorm},province.ilike.${kw},province.ilike.${kwNorm}`);
+  }
   if (eventType && eventType !== 'All') query = query.eq('event_type', eventType);
   if (dateFrom) query = query.gte('event_date', dateFrom);
   if (dateTo) query = query.lte('event_date', dateTo);
