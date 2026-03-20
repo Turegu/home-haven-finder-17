@@ -38,6 +38,7 @@ const SavedSearchesPage = () => {
     const { error } = await supabase.from("saved_searches").delete().eq("id", id);
     if (error) { toast.error("Failed to delete"); return; }
     setItems(p => p.filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     toast.success("Search deleted");
   };
 
