@@ -11,6 +11,7 @@ import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppDat
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useMemo } from 'react';
 
 interface CmsContent {
   hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
@@ -88,6 +89,40 @@ const Index = () => {
 
   const featuredProperties = dbProperties.length > 0 ? dbProperties : sampleProperties;
 
+  // Fetch up to 12 featured projects, randomly show 3
+  const { data: allFeaturedProjects = [] } = useQuery({
+    queryKey: ['featured-projects-home'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('projects')
+        .select('id, title, location, min_price, currency, images, developer, min_units, completion_date, companies(logo_url)')
+        .eq('status', 'active')
+        .eq('display_on_homepage', true)
+        .limit(12);
+      return (data || []).map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        location: p.location || 'N/A',
+        priceFrom: p.min_price ?? 0,
+        currency: p.currency ?? 'USD',
+        image: p.images?.[0] || '/placeholder.svg',
+        developer: p.developer || '',
+        developerLogo: p.companies?.logo_url || '',
+        units: p.min_units ?? 0,
+        completionDate: p.completion_date || 'TBA',
+      }));
+    },
+  });
+
+  const displayedProjects = useMemo(() => {
+    if (allFeaturedProjects.length <= 3) return allFeaturedProjects;
+    const shuffled = [...allFeaturedProjects].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }, [allFeaturedProjects]);
+
+  // Fallback to mock if no DB projects
+  const featuredProjects = displayedProjects.length > 0 ? displayedProjects : mockProjects;
+
   const hero = cms.hero || {};
   const secondBanner = cms.second_banner || {};
   const fp = cms.featured_properties || {};
@@ -139,7 +174,7 @@ const Index = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {mockProjects.map((project) => (
+            {featuredProjects.map((project) => (
               <FeaturedProjectCard key={project.id} project={project} />
             ))}
           </div>
