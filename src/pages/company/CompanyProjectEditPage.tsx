@@ -461,6 +461,7 @@ const CompanyProjectEditPage = () => {
       location: form.location || null,
       video_link: form.video_link || null, view_360_link: form.view_360_link || null,
       images, plans: planFiles, logo_url: logoUrl || null,
+      developer_logo_url: isDifferentDeveloper ? (developerLogoUrl || null) : null,
       pdf_catalogue_url: pdfUrl || null, company_id: companyId,
       status: publishStatus,
     };
