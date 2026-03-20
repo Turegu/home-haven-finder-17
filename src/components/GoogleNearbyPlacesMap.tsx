@@ -139,7 +139,7 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [prefetchingCount, setPrefetchingCount] = useState(0);
+  const [_prefetchingCount, setPrefetchingCount] = useState(0);
   const mapRef = useRef<google.maps.Map | null>(null);
   const prefetchedRef = useRef(false);
 
