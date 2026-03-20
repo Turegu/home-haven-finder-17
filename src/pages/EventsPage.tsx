@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
   ChevronDown, CalendarDays, Loader2, X, Home,

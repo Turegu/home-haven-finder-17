@@ -73,6 +73,9 @@ const ProjectsPage = () => {
     sortBy: 'newest',
     page: 1,
     pageSize: LIST_ITEMS,
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
   });
 
   const { data, isLoading, isFetching } = useProjectSearch(committedParams);
