@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin } from "lucide-react";
+import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
 
 const AdminSettingsPage = () => {
