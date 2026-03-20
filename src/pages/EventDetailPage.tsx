@@ -73,6 +73,15 @@ const EventDetailPage = () => {
     fetchEvent();
   }, [id]);
 
+  const pinLocation = useMemo(() => {
+    if (!event?.pinLocation) return null;
+    try {
+      const parts = event.pinLocation.split(',').map(Number);
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
+    } catch {}
+    return null;
+  }, [event?.pinLocation]);
+
   if (loading || !event) {
     return (
       <div className="min-h-screen bg-background">
@@ -112,25 +121,61 @@ const EventDetailPage = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery */}
+      {/* Media Gallery */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        <div className="flex h-full">
-          {images.slice(currentImage, currentImage + 3).concat(
-            currentImage + 3 > images.length ? images.slice(0, (currentImage + 3) - images.length) : []
-          ).map((img: string, i: number) => (
-            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % images.length); setLightboxOpen(true); }}>
-              <img src={img} alt={`${event.title} ${i + 1}`} className="w-full h-full object-cover" />
+        {/* Photos */}
+        <div className={activeTab === 'photos' ? 'h-full' : 'hidden'}>
+          <div className="flex h-full">
+            {images.slice(currentImage, currentImage + 3).concat(
+              currentImage + 3 > images.length ? images.slice(0, (currentImage + 3) - images.length) : []
+            ).map((img: string, i: number) => (
+              <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % images.length); setLightboxOpen(true); }}>
+                <img src={img} alt={`${event.title} ${i + 1}`} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+          <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10"><ChevronLeft className="h-5 w-5" /></button>
+          <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10"><ChevronRight className="h-5 w-5" /></button>
+          <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
+            <Camera className="h-3.5 w-3.5" />{currentImage + 1}/{images.length}
+          </div>
+        </div>
+
+        {/* Location — mounted once */}
+        {pinLocation && (
+          <div className={activeTab === 'location' ? 'h-full' : 'hidden'}>
+            <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={event.title} embedded />
+          </div>
+        )}
+        {!pinLocation && activeTab === 'location' && (
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">Location coordinates are unavailable.</div>
+        )}
+
+        {/* Street View — mounted once */}
+        {pinLocation && (
+          <div className={activeTab === 'street' ? 'h-full' : 'hidden'}>
+            <StreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
+          </div>
+        )}
+        {!pinLocation && activeTab === 'street' && (
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">Location coordinates are unavailable.</div>
+        )}
+
+        {/* Video */}
+        <div className={activeTab === 'video' ? 'h-full' : 'hidden'}>
+          {event.videoLink ? (
+            <iframe src={event.videoLink.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} className="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="Event Video" />
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />No video available.</div>
             </div>
-          ))}
+          )}
         </div>
-        <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10"><ChevronLeft className="h-5 w-5" /></button>
-        <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10"><ChevronRight className="h-5 w-5" /></button>
+
+        {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button onClick={() => { if (navigator.share) { navigator.share({ title: event.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Share"><Share2 className="h-4 w-4" /></button>
-          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background" title="Save"><Heart className="h-4 w-4" /></button>
-        </div>
-        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
-          <Camera className="h-3.5 w-3.5" />{currentImage + 1}/{images.length}
+          <button onClick={() => { if (navigator.share) { navigator.share({ title: event.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Share"><Share2 className="h-4 w-4" /></button>
+          <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save"><Heart className="h-4 w-4" /></button>
         </div>
       </div>
 
