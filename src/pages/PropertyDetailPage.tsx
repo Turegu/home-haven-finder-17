@@ -83,6 +83,7 @@ const PropertyDetailPage = () => {
   const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
