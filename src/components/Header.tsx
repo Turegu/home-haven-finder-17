@@ -38,15 +38,15 @@ const Header = () => {
   const [selectedArea, setSelectedArea] = useState(AREA_UNITS[0]);
   const [openDropdown, setOpenDropdown] = useState<'lang' | 'currency' | 'area' | 'user' | 'notifications' | 'saved' | 'compare' | null>(null);
 
-  // Auth state
-  const [currentUser, setCurrentUser] = useState<{ id: string; email: string; displayName: string } | null>(null);
-
-  // Counts
-  const [counts, setCounts] = useState({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
-  const [notifications, setNotifications] = useState<{ id: string; title: string; message: string | null; notification_type: string; is_read: boolean; created_at: string; source_company_id: string | null; property_id: string | null }[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [savedItems, setSavedItems] = useState<{ id: string; property_id: string; title: string; price: number | null; currency: string | null; images: string[] | null; location: string | null; created_at: string }[]>([]);
-  const [compareItems, setCompareItems] = useState<{ id: string; property_id: string; title: string; price: number | null; currency: string | null; images: string[] | null; location: string | null; created_at: string }[]>([]);
+  // Auth + data via cached React Query hooks (no re-fetch on every page navigation)
+  const currentUser = useCurrentUser();
+  const { data: counts = { savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 } } = useHeaderCounts(currentUser?.id);
+  const { data: notifData } = useHeaderNotifications(currentUser?.id);
+  const notifications = notifData?.items || [];
+  const unreadCount = notifData?.unreadCount || 0;
+  const { data: savedItems = [] } = useHeaderSavedItems(currentUser?.id);
+  const { data: compareItems = [] } = useHeaderCompareItems(currentUser?.id);
+  const invalidateHeaderData = useInvalidateHeaderData();
 
   const langRef = useRef<HTMLDivElement>(null);
   const currRef = useRef<HTMLDivElement>(null);
@@ -56,120 +56,13 @@ const Header = () => {
   const savedRef = useRef<HTMLDivElement>(null);
   const compareRef = useRef<HTMLDivElement>(null);
 
-  // Check auth
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("display_name, first_name")
-          .eq("user_id", user.id)
-          .limit(1)
-          .maybeSingle();
-        setCurrentUser({
-          id: user.id,
-          email: user.email || "",
-          displayName: profile?.display_name || profile?.first_name || user.email?.split("@")[0] || "User",
-        });
-      } else {
-        setCurrentUser(null);
-        setCounts({ savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 });
-      }
-    };
-    checkUser();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkUser();
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Fetch counts when user changes or after property actions
-  const fetchCounts = async (uid: string) => {
-    const [sp, ss, cmp, fa] = await Promise.all([
-      supabase.from("saved_properties").select("*", { count: "exact", head: true }).eq("user_id", uid),
-      supabase.from("saved_searches").select("*", { count: "exact", head: true }).eq("user_id", uid),
-      supabase.from("property_comparisons").select("*", { count: "exact", head: true }).eq("user_id", uid),
-      supabase.from("agent_followers").select("*", { count: "exact", head: true }).eq("user_id", uid),
-    ]);
-    setCounts({
-      savedProperties: sp.count ?? 0,
-      savedSearches: ss.count ?? 0,
-      compare: cmp.count ?? 0,
-      followedAgents: fa.count ?? 0,
-    });
-  };
-
-  const fetchNotifications = async (uid: string) => {
-    const { data, count } = await supabase
-      .from("user_notifications")
-      .select("id, title, message, notification_type, is_read, created_at, source_company_id, property_id", { count: "exact" })
-      .eq("user_id", uid)
-      .eq("is_read", false)
-      .order("created_at", { ascending: false })
-      .limit(10);
-    setNotifications(data || []);
-    setUnreadCount(count || 0);
-  };
-
-  const fetchSavedItems = async (uid: string) => {
-    const { data } = await supabase
-      .from("saved_properties")
-      .select("id, property_id, created_at, properties:property_id(title, price, currency, images, location)")
-      .eq("user_id", uid)
-      .order("created_at", { ascending: false })
-      .limit(10);
-    setSavedItems((data || []).map((d: any) => ({
-      id: d.id,
-      property_id: d.property_id,
-      title: d.properties?.title || "Property",
-      price: d.properties?.price,
-      currency: d.properties?.currency,
-      images: d.properties?.images,
-      location: d.properties?.location,
-      created_at: d.created_at,
-    })));
-  };
-
-  const fetchCompareItems = async (uid: string) => {
-    const { data } = await supabase
-      .from("property_comparisons")
-      .select("id, property_id, created_at, properties:property_id(title, price, currency, images, location)")
-      .eq("user_id", uid)
-      .order("created_at", { ascending: false })
-      .limit(10);
-    setCompareItems((data || []).map((d: any) => ({
-      id: d.id,
-      property_id: d.property_id,
-      title: d.properties?.title || "Property",
-      price: d.properties?.price,
-      currency: d.properties?.currency,
-      images: d.properties?.images,
-      location: d.properties?.location,
-      created_at: d.created_at,
-    })));
-  };
-
+  // Listen for property action changes to refresh cached data
   useEffect(() => {
     if (!currentUser?.id) return;
-    fetchCounts(currentUser.id);
-    fetchNotifications(currentUser.id);
-    fetchSavedItems(currentUser.id);
-    fetchCompareItems(currentUser.id);
-  }, [currentUser?.id]);
-
-  // Listen for property action changes to refresh counts, saved items, and compare items
-  useEffect(() => {
-    if (!currentUser?.id) return;
-    const uid = currentUser.id;
-    const handler = () => {
-      fetchCounts(uid);
-      fetchSavedItems(uid);
-      fetchCompareItems(uid);
-    };
+    const handler = () => invalidateHeaderData();
     window.addEventListener('property-actions-changed', handler);
     return () => window.removeEventListener('property-actions-changed', handler);
-  }, [currentUser?.id]);
+  }, [currentUser?.id, invalidateHeaderData]);
 
   // Set defaults once data loads
   useEffect(() => {
