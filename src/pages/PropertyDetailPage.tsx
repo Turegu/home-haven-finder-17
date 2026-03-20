@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
@@ -7,8 +7,6 @@ import {
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
-import NearbyPlacesMap from '@/components/NearbyPlacesMap';
-import StreetView from '@/components/StreetView';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
@@ -16,13 +14,17 @@ import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
-import MarketTrends from '@/components/MarketTrends';
-import ROICalculator from '@/components/ROICalculator';
-import PriceTrendsChart from '@/components/PriceTrendsChart';
 import { mockPropertyDetail } from '@/data/mockDetails';
 import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
+
+// Lazy-load heavy below-the-fold components
+const NearbyPlacesMap = lazy(() => import('@/components/NearbyPlacesMap'));
+const StreetView = lazy(() => import('@/components/StreetView'));
+const MarketTrends = lazy(() => import('@/components/MarketTrends'));
+const ROICalculator = lazy(() => import('@/components/ROICalculator'));
+const PriceTrendsChart = lazy(() => import('@/components/PriceTrendsChart'));
 
 const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
