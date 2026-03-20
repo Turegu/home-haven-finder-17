@@ -333,5 +333,6 @@ const PlacePopupCard = ({ place, onClose, categoryColor }: { place: NearbyPlace;
     </div>
   </div>
 );
+};
 
 export default NearbyPlacesMap;
