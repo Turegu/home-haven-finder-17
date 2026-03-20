@@ -111,7 +111,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
     }
 
     try {
-      const radius = 2000;
+      const radius = 4000;
       const nodeParts = cat.osmQueries.map(q => {
         const tildeIdx = q.indexOf('~');
         if (tildeIdx === -1) {
@@ -122,7 +122,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
         return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
       });
 
-      const query = `[out:json][timeout:12];(${nodeParts.join('')});out body 40;`;
+      const query = `[out:json][timeout:18];(${nodeParts.join('')});out body 20;`;
 
       const { data, error } = await supabase.functions.invoke('nearby-places-proxy', {
         body: { query },
@@ -283,7 +283,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
         <div className="px-3 py-2 text-xs text-destructive bg-background shrink-0">{loadErrors[activeCategory]}</div>
       )}
       {activeCategory && !loadingCategory && !loadErrors[activeCategory] && activePlaces.length === 0 && (
-        <div className="px-3 py-2 text-xs text-muted-foreground bg-background shrink-0">No nearby places found within 2 km.</div>
+        <div className="px-3 py-2 text-xs text-muted-foreground bg-background shrink-0">No nearby places found within 4 km.</div>
       )}
     </div>
   );

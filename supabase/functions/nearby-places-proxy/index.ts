@@ -26,12 +26,19 @@ const replaceAroundRadius = (query: string, radius: number) =>
 const replaceOutLimit = (query: string, limit: number) =>
   query.replace(/out body\s+\d+;/, `out body ${limit};`);
 
+const capRadius = (query: string, maxRadius: number) => {
+  return query.replace(/around:(\d+)/g, (_match, r) => {
+    const val = parseInt(r, 10);
+    return `around:${Math.min(val, maxRadius)}`;
+  });
+};
+
 function buildQueryVariants(originalQuery: string): QueryVariant[] {
-  const trimmed = originalQuery.trim();
+  const trimmed = capRadius(originalQuery.trim(), 4000);
 
   const fallbackQuery = replaceOutLimit(
-    replaceAroundRadius(replaceQueryTimeout(trimmed, 8), 1200),
-    25,
+    replaceAroundRadius(replaceQueryTimeout(trimmed, 10), 2000),
+    15,
   );
 
   return [
@@ -43,7 +50,7 @@ function buildQueryVariants(originalQuery: string): QueryVariant[] {
     {
       name: "fallback_compact",
       query: fallbackQuery,
-      requestTimeoutMs: 12000,
+      requestTimeoutMs: 14000,
     },
   ];
 }
