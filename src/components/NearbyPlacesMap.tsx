@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
   GraduationCap, HeartPulse, TreePine, Briefcase, ShoppingCart, ShoppingBag,
-  Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin
+  Church, UtensilsCrossed, Coffee, Dumbbell, Bus, Star, Footprints, Car, X, MapPin, Maximize, Minimize
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import 'leaflet/dist/leaflet.css';
@@ -24,6 +24,7 @@ interface NearbyPlacesMapProps {
   lat: number;
   lng: number;
   propertyTitle?: string;
+  embedded?: boolean;
 }
 
 type PlaceCategory = {
@@ -88,12 +89,13 @@ function FlyToCenter({ lat, lng }: { lat: number; lng: number }) {
   return null;
 }
 
-const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
+const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapProps) => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [places, setPlaces] = useState<Record<string, NearbyPlace[]>>({});
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const propertyIcon = useMemo(() => createPropertyIcon(), []);
 
@@ -193,9 +195,32 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
   const activePlaces = activeCategory ? (places[activeCategory] || []) : [];
   const activeCat = categories.find(c => c.key === activeCategory);
 
-  return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden">
-      <div className="relative" style={{ height: '450px' }}>
+  const mapContent = (
+    <div className={`relative ${isFullscreen ? 'fixed inset-0 z-50 bg-background' : 'h-full'} flex flex-col`}>
+      {/* Category buttons - always visible */}
+      <div className="flex items-center gap-1 px-3 py-2 overflow-x-auto bg-background/95 backdrop-blur-sm border-b border-border scrollbar-hide z-[1001] shrink-0">
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat.key;
+          return (
+            <button
+              key={cat.key}
+              onClick={() => handleCategoryClick(cat.key)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 active:scale-95
+                ${isActive
+                  ? 'text-white shadow-md'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border hover:border-primary/30'
+                }`}
+              style={isActive ? { backgroundColor: cat.color } : undefined}
+            >
+              <cat.icon className="h-3.5 w-3.5" />
+              {cat.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Map */}
+      <div className="relative flex-1 min-h-0">
         <MapContainer
           center={[lat, lng]}
           zoom={15}
@@ -242,36 +267,34 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle }: NearbyPlacesMapProps) => {
             </div>
           </div>
         )}
+
+        {/* Fullscreen toggle */}
+        <button
+          onClick={() => setIsFullscreen(!isFullscreen)}
+          className="absolute top-3 right-3 z-[1001] bg-background/90 hover:bg-background p-2 rounded-lg shadow-md border border-border active:scale-95 transition-transform"
+          title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+        >
+          {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+        </button>
       </div>
 
-      <div className="flex items-center gap-1 px-3 py-2.5 overflow-x-auto border-t border-border bg-muted/30 scrollbar-hide">
-        {categories.map((cat) => {
-          const isActive = activeCategory === cat.key;
-          return (
-            <button
-              key={cat.key}
-              onClick={() => handleCategoryClick(cat.key)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0
-                ${isActive
-                  ? 'text-white shadow-md scale-105'
-                  : 'bg-background text-muted-foreground hover:bg-muted border border-border hover:border-primary/30'
-                }`}
-              style={isActive ? { backgroundColor: cat.color } : undefined}
-            >
-              <cat.icon className="h-3.5 w-3.5" />
-              {cat.label}
-            </button>
-          );
-        })}
-      </div>
-
+      {/* Error/empty messages */}
       {activeCategory && !loadingCategory && loadErrors[activeCategory] && (
-        <div className="px-3 pb-3 text-xs text-destructive">{loadErrors[activeCategory]}</div>
+        <div className="px-3 py-2 text-xs text-destructive bg-background shrink-0">{loadErrors[activeCategory]}</div>
       )}
-
       {activeCategory && !loadingCategory && !loadErrors[activeCategory] && activePlaces.length === 0 && (
-        <div className="px-3 pb-3 text-xs text-muted-foreground">No nearby places found within 2 km.</div>
+        <div className="px-3 py-2 text-xs text-muted-foreground bg-background shrink-0">No nearby places found within 2 km.</div>
       )}
+    </div>
+  );
+
+  if (embedded) {
+    return mapContent;
+  }
+
+  return (
+    <div className="bg-card rounded-xl border border-border overflow-hidden">
+      {mapContent}
     </div>
   );
 };
