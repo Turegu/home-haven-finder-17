@@ -118,6 +118,12 @@ const PropertyDetailPage = () => {
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
           exteriorAmenities: p.exterior_amenities || [],
+          plans: p.plans && p.plans.length > 0 ? p.plans : [
+            'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&h=800&fit=crop',
+            'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&h=800&fit=crop',
+          ],
+          videoLink: p.video_link || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+          view360Link: p.view_360_link || 'https://my.matterport.com/show/?m=SxQL3iGyvPk',
           agentName: p.agents?.name || '',
           agentLogo: p.agents?.avatar_url || '',
           agentDesignation: p.agents?.designation || null,
