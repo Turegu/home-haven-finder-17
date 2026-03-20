@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
-import ListingMapView from '@/components/ListingMapView';
+const ListingMapView = lazy(() => import('@/components/ListingMapView'));
 import LocationPicker from '@/components/LocationPicker';
 import AreaDropdown from '@/components/AreaDropdown';
 import RoomsDropdown from '@/components/RoomsDropdown';
