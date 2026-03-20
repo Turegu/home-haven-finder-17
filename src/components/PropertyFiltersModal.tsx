@@ -183,8 +183,6 @@ export default function PropertyFiltersModal({
 
   // Get options for current tab
   const currentTab = visibleTabs.find(t => t.key === activeTab) ?? visibleTabs[0];
-  // Essential tabs use foProperty, advanced use fo
-  const allOptions = { ...fo, ...foProperty };
   const rawOptions = allOptions[currentTab.optionKey] || [];
   const filteredOptions = search
     ? rawOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
