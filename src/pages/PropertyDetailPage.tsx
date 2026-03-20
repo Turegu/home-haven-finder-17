@@ -188,11 +188,18 @@ const PropertyDetailPage = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [loanValues, setLoanValues] = useState({
-    propertyValue: property.price,
+    propertyValue: 0,
     loanPeriod: 20,
     interestRate: 5,
     downPayment: 20,
   });
+
+  // Sync loan calculator with fetched property price
+  useEffect(() => {
+    if (property.price > 0) {
+      setLoanValues(prev => ({ ...prev, propertyValue: property.price }));
+    }
+  }, [property.price]);
 
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % property.images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + property.images.length) % property.images.length);
