@@ -53,7 +53,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   useEffect(() => {
     if (open) {
       setSent(false);
-      const loadUser = async () => {
+      setMessage(defaultMessages[listingType]);
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setEmail(user.email || '');
