@@ -2072,6 +2072,7 @@ export type Database = {
           total_count: number
         }[]
       }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
