@@ -267,7 +267,7 @@ export default function PropertyFiltersModal({
           )}
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl shadow-2xl border-0">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl shadow-2xl border-0">
         {/* Header */}
         <div className="relative px-6 pr-14 pt-6 pb-5 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent">
           <DialogHeader>
