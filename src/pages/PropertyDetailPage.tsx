@@ -418,6 +418,14 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Nearby Places Map */}
+            {pinLocation && (
+              <div>
+                <h2 className="text-lg font-bold text-foreground mb-4">Location & Nearby</h2>
+                <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
+              </div>
+            )}
+
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
               province={property.city || null}
