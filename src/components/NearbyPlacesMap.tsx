@@ -64,7 +64,7 @@ const categories: PlaceCategory[] = [
   { key: 'restaurant', label: 'Restaurant', icon: UtensilsCrossed, color: '#be185d', osmQueries: ['amenity~"restaurant|fast_food"'] },
   { key: 'cafe', label: 'Cafe', icon: Coffee, color: '#92400e', osmQueries: ['amenity~"cafe"'] },
   { key: 'gym', label: 'Gym', icon: Dumbbell, color: '#4f46e5', osmQueries: ['leisure~"fitness_centre|sports_centre"'] },
-  { key: 'commute', label: 'Commute', icon: Bus, color: '#0d9488', osmQueries: ['amenity~"bus_station"', 'highway~"bus_stop"', 'railway~"station|halt"'] },
+  { key: 'commute', label: 'Commute', icon: Bus, color: '#0d9488', osmQueries: ['railway~"station|halt|tram_stop|subway_entrance"', 'highway~"bus_stop"', 'amenity~"bus_station|ferry_terminal"', 'public_transport~"stop_position|platform|station"'] },
 ];
 
 function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
