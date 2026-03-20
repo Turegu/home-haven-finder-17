@@ -225,24 +225,34 @@ const PropertyDetailPage = () => {
 
       {/* Media Gallery — swaps between photos, map, etc. */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        {activeTab === 'location' ? (
-          pinLocation ? (
-            <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} embedded />
-          ) : (
-            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              Location coordinates are unavailable for this listing.
-            </div>
-          )
-        ) : activeTab === 'street' ? (
-          pinLocation ? (
-            <StreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
-          ) : (
-            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              Location coordinates are unavailable for this listing.
-            </div>
-          )
-        ) : activeTab === 'plans' ? (
-          property.plans.length > 0 ? (
+        {/* Photos — default view */}
+        <div className={activeTab === 'photos' ? 'h-full' : 'hidden'}>
+          <div className="flex h-full">
+            {property.images.slice(currentImage, currentImage + 3).concat(
+              currentImage + 3 > property.images.length
+                ? property.images.slice(0, (currentImage + 3) - property.images.length)
+                : []
+            ).map((img, i) => (
+              <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
+                <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+          <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
+            <ChevronRight className="h-5 w-5" />
+          </button>
+          <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
+            <Camera className="h-3.5 w-3.5" />
+            {currentImage + 1}/{property.images.length}
+          </div>
+        </div>
+
+        {/* Plans */}
+        <div className={activeTab === 'plans' ? 'h-full' : 'hidden'}>
+          {property.plans.length > 0 ? (
             <div className="flex h-full">
               {property.plans.map((plan, i) => (
                 <div key={i} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setLightboxOpen(true); }}>
@@ -252,31 +262,49 @@ const PropertyDetailPage = () => {
             </div>
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center">
-                <Images className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                No floor plans available for this listing.
-              </div>
+              <div className="text-center"><Images className="h-10 w-10 mx-auto mb-2 opacity-40" />No floor plans available for this listing.</div>
             </div>
-          )
-        ) : activeTab === '360' ? (
-          property.view360Link ? (
-            <iframe
-              src={property.view360Link}
-              className="w-full h-full border-0"
-              allow="fullscreen; vr"
-              allowFullScreen
-              title="360° Virtual Tour"
-            />
+          )}
+        </div>
+
+        {/* 360 View */}
+        <div className={activeTab === '360' ? 'h-full' : 'hidden'}>
+          {property.view360Link ? (
+            <iframe src={property.view360Link} className="w-full h-full border-0" allow="fullscreen; vr" allowFullScreen title="360° Virtual Tour" />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center">
-                <Globe className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                No 360° tour available for this listing.
-              </div>
+              <div className="text-center"><Globe className="h-10 w-10 mx-auto mb-2 opacity-40" />No 360° tour available for this listing.</div>
             </div>
-          )
-        ) : activeTab === 'video' ? (
-          property.videoLink ? (
+          )}
+        </div>
+
+        {/* Location — mounted once, stays alive */}
+        {pinLocation && (
+          <div className={activeTab === 'location' ? 'h-full' : 'hidden'}>
+            <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} embedded />
+          </div>
+        )}
+        {!pinLocation && activeTab === 'location' && (
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+            Location coordinates are unavailable for this listing.
+          </div>
+        )}
+
+        {/* Street View — mounted once, stays alive */}
+        {pinLocation && (
+          <div className={activeTab === 'street' ? 'h-full' : 'hidden'}>
+            <StreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
+          </div>
+        )}
+        {!pinLocation && activeTab === 'street' && (
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+            Location coordinates are unavailable for this listing.
+          </div>
+        )}
+
+        {/* Video */}
+        <div className={activeTab === 'video' ? 'h-full' : 'hidden'}>
+          {property.videoLink ? (
             <iframe
               src={property.videoLink.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
               className="w-full h-full border-0"
@@ -286,37 +314,10 @@ const PropertyDetailPage = () => {
             />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center">
-                <Video className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                No video available for this listing.
-              </div>
+              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />No video available for this listing.</div>
             </div>
-          )
-        ) : (
-          <>
-            <div className="flex h-full">
-              {property.images.slice(currentImage, currentImage + 3).concat(
-                currentImage + 3 > property.images.length
-                  ? property.images.slice(0, (currentImage + 3) - property.images.length)
-                  : []
-              ).map((img, i) => (
-                <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
-                  <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-            <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
-              <ChevronRight className="h-5 w-5" />
-            </button>
-            <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
-              <Camera className="h-3.5 w-3.5" />
-              {currentImage + 1}/{property.images.length}
-            </div>
-          </>
-        )}
+          )}
+        </div>
 
         {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
