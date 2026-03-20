@@ -47,6 +47,9 @@ const emptyPropertyState = {
   agentDesignation: null as string | null,
   agentLanguages: [] as string[],
   hasAgent: false,
+  plans: [] as string[],
+  videoLink: '',
+  view360Link: '',
 };
 
 const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
