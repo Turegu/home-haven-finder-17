@@ -133,9 +133,10 @@ export default function PropertyFiltersModal({
     if (open) {
       setLocalMore(filters);
       setLocalBasic(basicFilters ?? emptyBasicFilters);
+      setLocalRange(rangeFilters ?? emptyRangeFilters);
       setSearch('');
     }
-  }, [open, filters, basicFilters]);
+  }, [open, filters, basicFilters, rangeFilters]);
 
   // Visible tabs: hide rentDuration if not rent mode
   const visibleTabs = FILTER_TABS.filter(t => {
