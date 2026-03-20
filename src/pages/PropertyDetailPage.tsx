@@ -195,40 +195,49 @@ const PropertyDetailPage = () => {
 
   const handleMediaTabClick = (tabId: string) => {
     setActiveTab(tabId);
-
-    if (tabId === 'location') {
-      const locationSection = document.getElementById('location-nearby-section');
-      if (locationSection) {
-        locationSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        toast.error('Location map is unavailable for this listing.');
-      }
-    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Image Gallery — 3 side-by-side on desktop */}
+      {/* Media Gallery — swaps between photos, map, etc. */}
       <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
-        <div className="flex h-full">
-          {property.images.slice(currentImage, currentImage + 3).concat(
-            currentImage + 3 > property.images.length
-              ? property.images.slice(0, (currentImage + 3) - property.images.length)
-              : []
-          ).map((img, i) => (
-            <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
-              <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+        {activeTab === 'location' ? (
+          pinLocation ? (
+            <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
+          ) : (
+            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+              Location coordinates are unavailable for this listing.
             </div>
-          ))}
-        </div>
-        <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
-          <ChevronRight className="h-5 w-5" />
-        </button>
+          )
+        ) : (
+          <>
+            <div className="flex h-full">
+              {property.images.slice(currentImage, currentImage + 3).concat(
+                currentImage + 3 > property.images.length
+                  ? property.images.slice(0, (currentImage + 3) - property.images.length)
+                  : []
+              ).map((img, i) => (
+                <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
+                  <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+            <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button onClick={nextImage} className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
+              <ChevronRight className="h-5 w-5" />
+            </button>
+            <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
+              <Camera className="h-3.5 w-3.5" />
+              {currentImage + 1}/{property.images.length}
+            </div>
+          </>
+        )}
+
+        {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
           <button
             onClick={() => {
@@ -247,24 +256,27 @@ const PropertyDetailPage = () => {
           <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save to favorites">
             <Heart className="h-4 w-4" />
           </button>
-          <button
-            onClick={() => window.print()}
-            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
-            title="Print"
-          >
+          <button onClick={() => window.print()} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Print">
             <Printer className="h-4 w-4" />
           </button>
-          <button
-            onClick={() => toast.success('Thank you for your report. We will review this listing.')}
-            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
-            title="Report this listing"
-          >
+          <button onClick={() => toast.success('Thank you for your report. We will review this listing.')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Report this listing">
             <Flag className="h-4 w-4" />
           </button>
         </div>
-        <div className="absolute bottom-4 left-4 bg-foreground/60 text-white text-sm px-3 py-1 rounded-md flex items-center gap-1 z-10">
-          <Camera className="h-3.5 w-3.5" />
-          {currentImage + 1}/{property.images.length}
+
+        {/* Media tabs — bottom-right overlay */}
+        <div className="absolute bottom-4 right-4 z-10 hidden md:flex items-center gap-1 bg-background/90 backdrop-blur-sm rounded-lg p-1 border border-border shadow-lg">
+          {mediaTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleMediaTabClick(tab.id)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-md transition-all text-xs font-medium ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+              title={tab.label}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -307,23 +319,8 @@ const PropertyDetailPage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Title & Price Block */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-start justify-between gap-4 mb-1">
-                <div>
+              <div>
                   <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
-                </div>
-                {/* Media tabs */}
-                <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border">
-                  {mediaTabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => handleMediaTabClick(tab.id)}
-                      className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
-                      title={tab.label}
-                    >
-                      <tab.icon className="h-5 w-5" />
-                    </button>
-                  ))}
-                </div>
               </div>
 
               <p className="text-2xl font-bold text-primary mb-1">
@@ -441,17 +438,6 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
-            {/* Nearby Places Map */}
-            <div id="location-nearby-section">
-              <h2 className="text-lg font-bold text-foreground mb-4">Location & Nearby</h2>
-              {pinLocation ? (
-                <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} />
-              ) : (
-                <div className="bg-card rounded-xl border border-border p-4 text-sm text-muted-foreground">
-                  Location coordinates are unavailable for this listing.
-                </div>
-              )}
-            </div>
 
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
