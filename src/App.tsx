@@ -68,6 +68,7 @@ const AdminCrudsPage = lazy(() => import("./pages/admin/AdminCrudsPage.tsx"));
 const AdminFiltersPage = lazy(() => import("./pages/admin/AdminFiltersPage.tsx"));
 const AdminLocationsPage = lazy(() => import("./pages/admin/AdminLocationsPage.tsx"));
 const AdminEmailPreviewPage = lazy(() => import("./pages/admin/AdminEmailPreviewPage.tsx"));
+const AdminReportsPage = lazy(() => import("./pages/admin/AdminReportsPage.tsx"));
 
 // Company pages
 const CompanyLoginPage = lazy(() => import("./pages/company/CompanyLoginPage.tsx"));
