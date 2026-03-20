@@ -35,6 +35,21 @@ type PlaceCategory = {
   osmQueries: string[];
 };
 
+// SVG path data for map markers (24x24 viewBox)
+const categorySvgPaths: Record<string, string> = {
+  education: '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 8 3 12 0v-5"/>',
+  health: '<path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"/><path d="M22 10c0 .6-.5 1-1 1h-2l-3.4-3.4a.8.8 0 0 0-1.2 0L12 10"/>',
+  park: '<path d="M17 22v-2"/><path d="M9 18h6.5l2.14-7.78a.5.5 0 0 0-.86-.46l-1.25 1.5a.5.5 0 0 1-.78 0L12 8l-2.75 3.26a.5.5 0 0 1-.78 0l-1.25-1.5a.5.5 0 0 0-.86.46L8.5 18"/><path d="M7 22v-2"/>',
+  business: '<rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  market: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+  mall: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+  worship: '<path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/><path d="M12 9v4"/><path d="M12 17v5"/><path d="M9 17h6"/>',
+  restaurant: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  cafe: '<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/>',
+  gym: '<path d="M6.5 6.5 17.5 17.5M7 12l5 5M12 7l5 5M4.5 8.5l1-1M3.5 9.5l1-1M13.5 19.5l1-1M14.5 18.5l1-1M20.5 15.5l-1 1M19.5 14.5l-1 1M10.5 4.5l-1 1M9.5 5.5l-1 1"/>',
+  commute: '<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>',
+};
+
 const categories: PlaceCategory[] = [
   { key: 'education', label: 'Education', icon: GraduationCap, color: '#dc2626', osmQueries: ['amenity~"school|university|kindergarten|college"'] },
   { key: 'health', label: 'Health', icon: HeartPulse, color: '#2563eb', osmQueries: ['amenity~"hospital|clinic|pharmacy|dentist|doctors"'] },
@@ -69,12 +84,15 @@ function createPropertyIcon() {
   });
 }
 
-function createPOIIcon(color: string, isHighlighted: boolean) {
+function createPOIIcon(color: string, isHighlighted: boolean, categoryKey?: string) {
   const size = isHighlighted ? 32 : 26;
+  const svgPath = categoryKey && categorySvgPaths[categoryKey]
+    ? categorySvgPaths[categoryKey]
+    : '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>';
   return L.divIcon({
     className: 'poi-marker',
     html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:2px solid white;transition:all 0.2s;">
-      <svg style="width:${size * 0.45}px;height:${size * 0.45}px;color:white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <svg style="width:${size * 0.45}px;height:${size * 0.45}px;color:white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>
     </div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
@@ -243,7 +261,7 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
             <Marker
               key={place.id}
               position={[place.lat, place.lng]}
-              icon={createPOIIcon(activeCat?.color || '#666', selectedPlace?.id === place.id)}
+              icon={createPOIIcon(activeCat?.color || '#666', selectedPlace?.id === place.id, activeCategory || undefined)}
               eventHandlers={{
                 click: () => setSelectedPlace(place),
               }}
