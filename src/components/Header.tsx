@@ -602,7 +602,7 @@ const Header = () => {
                       onClick={() => setOpenDropdown(null)}
                       className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
                     >
-                      View Compare List
+                      Compare & Analyse
                     </Link>
                   </div>
                 </div>
