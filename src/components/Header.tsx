@@ -156,7 +156,6 @@ const Header = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setCurrentUser(null);
     setOpenDropdown(null);
     navigate("/");
   };
