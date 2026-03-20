@@ -65,7 +65,7 @@ const PropertyDetailPage = () => {
       if (data) {
         const p = data as any;
         setProperty((prev) => ({
-          ...mockPropertyDetail,
+          ...prev,
           id: p.id,
           title: p.title || mockPropertyDetail.title,
           price: p.price || mockPropertyDetail.price,
