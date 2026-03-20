@@ -165,10 +165,11 @@ const ProjectDetailPage = () => {
                       <h1 className="text-xl font-bold text-foreground">{project.title}</h1>
                       {project.tagline && <p className="text-sm text-muted-foreground italic mt-0.5">{project.tagline}</p>}
                     </div>
-                    <div className="hidden md:flex items-center gap-1 bg-muted/80 rounded-lg p-1 border border-border flex-shrink-0">
+                    <div className="hidden md:flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border flex-shrink-0">
                       {mediaTabs.map((tab) => (
-                        <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`p-2.5 rounded-md transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`} title={tab.label}>
-                          <tab.icon className="h-5 w-5" />
+                        <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-md transition-all text-xs font-medium ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`} title={tab.label}>
+                          <tab.icon className="h-3.5 w-3.5" />
+                          <span className="hidden xl:inline">{tab.label}</span>
                         </button>
                       ))}
                     </div>
