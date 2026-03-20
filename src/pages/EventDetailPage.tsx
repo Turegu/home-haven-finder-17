@@ -44,6 +44,7 @@ const EventDetailPage = () => {
           eventType: e.event_type || '',
           entryType: e.entry_type || 'open_invitation',
           date: e.event_date || '',
+          endDate: e.event_end_date || '',
           organizer: e.organizer || e.companies?.name || '',
           organizerLogo: e.logo_url || e.companies?.logo_url || '',
           listingId: e.listing_id || '',
