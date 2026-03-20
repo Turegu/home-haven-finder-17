@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
+import { type PropertyMoreFilters, type BasicFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
@@ -289,7 +289,15 @@ const BuyPage = () => {
             <PropertyFiltersModal
               filters={moreFilters}
               onFiltersChange={setMoreFilters}
+              basicFilters={{ propertyTypes, rooms, bathrooms, rentDuration }}
+              onBasicFiltersChange={(bf: BasicFilters) => {
+                setPropertyTypes(bf.propertyTypes);
+                setRooms(bf.rooms);
+                setBathrooms(bf.bathrooms);
+                setRentDuration(bf.rentDuration);
+              }}
               onClearAll={resetAllFilters}
+              isRent={isRent}
             />
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
               {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
