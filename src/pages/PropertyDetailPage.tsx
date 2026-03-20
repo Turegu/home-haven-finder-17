@@ -4,9 +4,11 @@ import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
-  PersonStanding, Clock, CalendarDays, X,
+  PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
+import NearbyPlacesMap from '@/components/NearbyPlacesMap';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
