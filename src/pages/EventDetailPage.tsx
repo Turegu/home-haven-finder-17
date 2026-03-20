@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
-  ChevronLeft, ChevronRight, Camera, Globe, Video,
-  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, Hash, FileDown, Timer
+  ChevronLeft, ChevronRight, Camera, Video, Home,
+  MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, FileDown, Timer
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
