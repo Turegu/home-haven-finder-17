@@ -742,6 +742,7 @@ export type Database = {
           display_on_homepage: boolean
           entry_type: string
           event_date: string | null
+          event_end_date: string | null
           event_type: string
           id: string
           images: string[] | null
@@ -769,6 +770,7 @@ export type Database = {
           display_on_homepage?: boolean
           entry_type?: string
           event_date?: string | null
+          event_end_date?: string | null
           event_type?: string
           id?: string
           images?: string[] | null
@@ -796,6 +798,7 @@ export type Database = {
           display_on_homepage?: boolean
           entry_type?: string
           event_date?: string | null
+          event_end_date?: string | null
           event_type?: string
           id?: string
           images?: string[] | null

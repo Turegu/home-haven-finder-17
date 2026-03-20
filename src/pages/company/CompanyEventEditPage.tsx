@@ -102,6 +102,7 @@ const CompanyEventEditPage = () => {
     description: "",
     event_type: "open_house",
     event_date: "",
+    event_end_date: "",
     entry_type: "open_invitation" as "open_invitation" | "paid",
     price: "",
     currency: "USD",
@@ -138,6 +139,7 @@ const CompanyEventEditPage = () => {
         description: d.description || "",
         event_type: d.event_type || "open_house",
         event_date: d.event_date ? new Date(d.event_date).toISOString().slice(0, 16) : "",
+        event_end_date: d.event_end_date ? new Date(d.event_end_date).toISOString().slice(0, 16) : "",
         entry_type: d.entry_type || "open_invitation",
         price: d.price?.toString() || "",
         currency: d.currency || "USD",
@@ -196,6 +198,7 @@ const CompanyEventEditPage = () => {
       description: form.description || null,
       event_type: form.event_type,
       event_date: form.event_date ? new Date(form.event_date).toISOString() : null,
+      event_end_date: form.event_end_date ? new Date(form.event_end_date).toISOString() : null,
       entry_type: form.entry_type,
       price: form.entry_type === "paid" && form.price ? parseFloat(form.price) : null,
       currency: form.currency,
@@ -292,9 +295,15 @@ const CompanyEventEditPage = () => {
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Event Date
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time
               </Label>
               <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className="bg-secondary/50" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> End Date & Time
+              </Label>
+              <Input type="datetime-local" value={form.event_end_date} onChange={(e) => updateField("event_end_date", e.target.value)} className="bg-secondary/50" />
             </div>
             <FormSelect
               label="Currency"
