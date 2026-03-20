@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
-import type { MapListing } from './ListingMapView';
+import type { MapListing } from './LeafletListingMapView';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCtQx-V0yQ2CDvqjL89-AX2X1u5ZOpbvzQ';
 
