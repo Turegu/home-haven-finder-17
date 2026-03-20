@@ -1,4 +1,4 @@
-import { MapPin, Calendar, ArrowUpRight } from 'lucide-react';
+import { MapPin, Calendar, ArrowUpRight, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface FeaturedProjectCardProps {
@@ -10,6 +10,7 @@ interface FeaturedProjectCardProps {
     currency: string;
     image: string;
     developer: string;
+    developerLogo?: string;
     units: number;
     completionDate: string;
   };
