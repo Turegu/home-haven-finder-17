@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Trash2, MapPin } from "lucide-react";
