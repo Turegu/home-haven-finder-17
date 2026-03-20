@@ -221,6 +221,7 @@ const CompanyEventEditPage = () => {
       logo_url: logoUrl || null,
       images,
       company_id: companyId,
+      agent_id: selectedAgentId && selectedAgentId !== "none" ? selectedAgentId : null,
       status: publishStatus,
     };
 
