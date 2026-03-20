@@ -32,12 +32,18 @@ interface ContactCompanyDialogProps {
   companyId: string | null;
   agentId: string | null;
   companyName?: string;
+  listingType?: 'property' | 'project' | 'event';
 }
 
-const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName }: ContactCompanyDialogProps) => {
+const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property' }: ContactCompanyDialogProps) => {
+  const defaultMessages: Record<string, string> = {
+    property: 'Hi!, I am interested in your property please contact me.',
+    project: 'Hi!, I am interested in your project please contact me.',
+    event: 'Hi!, I am interested in your event please contact me.',
+  };
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [message, setMessage] = useState('Hi!, I am interested in your property please contact me.');
+  const [message, setMessage] = useState(defaultMessages[listingType]);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -47,6 +53,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   useEffect(() => {
     if (open) {
       setSent(false);
+      setMessage(defaultMessages[listingType]);
       const loadUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -64,7 +71,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       };
       loadUser();
     }
-  }, [open]);
+  }, [open, listingType]);
 
   const handleSend = async () => {
     if (!fullName.trim() || !email.trim()) {
@@ -77,12 +84,10 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
     }
     setSending(true);
     try {
-      // Save inquiry to user_inquiries if logged in
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from('user_inquiries').insert({
+        const inquiryData: any = {
           user_id: user.id,
-          property_id: property.id,
           company_id: companyId,
           agent_id: agentId,
           inquiry_type: 'email',
@@ -90,20 +95,24 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           email: email.trim(),
           phone: phone.trim() || null,
           message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
-        });
+        };
+        if (listingType === 'property') inquiryData.property_id = property.id;
+        else if (listingType === 'project') inquiryData.project_id = property.id;
+        await supabase.from('user_inquiries').insert(inquiryData);
       }
 
-      // Also insert into company_inbox so the company sees it
       if (companyId) {
-        await supabase.from('company_inbox').insert({
+        const inboxData: any = {
           company_id: companyId,
-          property_id: property.id,
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
           message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
-          inbox_type: 'property_inquiry',
-        });
+          inbox_type: `${listingType}_inquiry`,
+        };
+        if (listingType === 'property') inboxData.property_id = property.id;
+        else if (listingType === 'project') inboxData.project_id = property.id;
+        await supabase.from('company_inbox').insert(inboxData);
       }
 
       setSent(true);
@@ -157,13 +166,25 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
               <MapPin className="h-3 w-3 text-primary flex-shrink-0" />
               <span className="line-clamp-2">{property.location}</span>
             </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
-              <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
-              {property.floorLevel && <span className="flex items-center gap-1">≡ {property.floorLevel}</span>}
-              <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {property.area} {property.areaUnit}</span>
-              <span className="flex items-center gap-1"><Bath className="h-3 w-3" /> {property.bathrooms}</span>
-              <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {property.rooms || property.bedrooms}</span>
-            </div>
+            {listingType === 'property' && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
+                <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
+                {property.floorLevel && <span className="flex items-center gap-1">≡ {property.floorLevel}</span>}
+                <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {property.area} {property.areaUnit}</span>
+                <span className="flex items-center gap-1"><Bath className="h-3 w-3" /> {property.bathrooms}</span>
+                <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {property.rooms || property.bedrooms}</span>
+              </div>
+            )}
+            {listingType === 'project' && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
+                <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
+              </div>
+            )}
+            {listingType === 'event' && (
+              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
+                <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
+              </div>
+            )}
             <p className="font-bold text-foreground text-sm mt-1.5">{formatPrice(property.price, property.currency)}</p>
           </div>
         </div>

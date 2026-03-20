@@ -294,6 +294,7 @@ const EventDetailPage = () => {
         companyId={realCompanyId}
         agentId={realAgentId}
         companyName={event.agentCompany || event.organizer}
+        listingType="event"
       />
 
       <Footer />
