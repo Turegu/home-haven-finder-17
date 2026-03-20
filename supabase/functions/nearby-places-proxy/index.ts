@@ -26,6 +26,13 @@ const replaceAroundRadius = (query: string, radius: number) =>
 const replaceOutLimit = (query: string, limit: number) =>
   query.replace(/out body\s+\d+;/, `out body ${limit};`);
 
+const capRadius = (query: string, maxRadius: number) => {
+  return query.replace(/around:(\d+)/g, (_match, r) => {
+    const val = parseInt(r, 10);
+    return `around:${Math.min(val, maxRadius)}`;
+  });
+};
+
 function buildQueryVariants(originalQuery: string): QueryVariant[] {
   const trimmed = originalQuery.trim();
 
