@@ -16,6 +16,7 @@ interface SavedSearch {
 }
 
 const SavedSearchesPage = () => {
+  const queryClient = useQueryClient();
   const [items, setItems] = useState<SavedSearch[]>([]);
   const [loading, setLoading] = useState(true);
 
