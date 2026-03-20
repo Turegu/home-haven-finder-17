@@ -85,6 +85,16 @@ const ProjectsPage = () => {
 
   useEffect(() => { document.title = 'Projects | Turegu'; }, []);
 
+  // Sync from URL params (breadcrumb navigation)
+  useEffect(() => {
+    const p = searchParams.get('province') || undefined;
+    const d = searchParams.get('district') || undefined;
+    const n = searchParams.get('neighborhood') || undefined;
+    setLocation({ province: p, district: d, neighborhood: n });
+    setCommittedParams(prev => ({ ...prev, province: p, district: d, neighborhood: n, page: 1 }));
+    setCurrentPage(1);
+  }, [searchParams.toString()]);
+
   // Re-query on sort/page/viewMode change
   useEffect(() => {
     setCommittedParams(prev => ({ ...prev, sortBy, page: currentPage, pageSize: viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS }));
