@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
-  ChevronDown, CalendarDays, Loader2, X,
+  ChevronDown, CalendarDays, Loader2, X, Home,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
