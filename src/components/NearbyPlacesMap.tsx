@@ -53,12 +53,13 @@ const categorySvgPaths: Record<string, string> = {
 };
 
 const categories: PlaceCategory[] = [
-  { key: 'education', label: 'Education', icon: GraduationCap, color: '#dc2626', osmQueries: ['amenity~"school|university|kindergarten|college"'] },
-  { key: 'health', label: 'Health', icon: HeartPulse, color: '#2563eb', osmQueries: ['amenity~"hospital|clinic|pharmacy|dentist|doctors"'] },
-  { key: 'park', label: 'Park', icon: TreePine, color: '#16a34a', osmQueries: ['leisure~"park|garden|playground"'] },
+  { key: 'education', label: 'Education', icon: GraduationCap, color: '#2563eb', osmQueries: ['amenity~"school|university|kindergarten|college"'] },
+  { key: 'health', label: 'Health', icon: HeartPulse, color: '#dc2626', osmQueries: ['amenity~"hospital|clinic|dentist|doctors"'] },
+  { key: 'pharmacy', label: 'Pharmacy', icon: Cross, color: '#16a34a', osmQueries: ['amenity~"pharmacy"'] },
+  { key: 'park', label: 'Park', icon: TreePine, color: '#15803d', osmQueries: ['leisure~"park|garden|playground"'] },
   { key: 'business', label: 'Business', icon: Briefcase, color: '#ea580c', osmQueries: ['office'] },
   { key: 'market', label: 'Market', icon: ShoppingCart, color: '#65a30d', osmQueries: ['shop~"supermarket|convenience|grocery|greengrocer"'] },
-  { key: 'mall', label: 'Mall', icon: ShoppingBag, color: '#7c3aed', osmQueries: ['shop~"mall|department_store"'] },
+  { key: 'shopping', label: 'Shopping', icon: ShoppingBag, color: '#7c3aed', osmQueries: ['shop~"mall|department_store|clothes|electronics"'] },
   { key: 'worship', label: 'Worship', icon: Church, color: '#0891b2', osmQueries: ['amenity~"place_of_worship"'] },
   { key: 'restaurant', label: 'Restaurant', icon: UtensilsCrossed, color: '#be185d', osmQueries: ['amenity~"restaurant|fast_food"'] },
   { key: 'cafe', label: 'Cafe', icon: Coffee, color: '#92400e', osmQueries: ['amenity~"cafe"'] },
