@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
   TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar,
-  Crown, Star, Tag, X
+  Crown, Star, Tag, X, Home
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ const GRID_ITEMS = 15;
 const LIST_ITEMS = 21;
 
 const ProjectsPage = () => {
+  const [searchParams] = useSearchParams();
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
   const projectStatuses = fo["project_statuses"] || [];
@@ -46,7 +47,11 @@ const ProjectsPage = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [focusListingId, setFocusListingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('newest');
-  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
+  });
   const [keyword, setKeyword] = useState('');
   const [selectedUnitTypes, setSelectedUnitTypes] = useState<string[]>([]);
   const [minArea, setMinArea] = useState('');
@@ -68,6 +73,9 @@ const ProjectsPage = () => {
     sortBy: 'newest',
     page: 1,
     pageSize: LIST_ITEMS,
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
   });
 
   const { data, isLoading, isFetching } = useProjectSearch(committedParams);
@@ -76,6 +84,16 @@ const ProjectsPage = () => {
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   useEffect(() => { document.title = 'Projects | Turegu'; }, []);
+
+  // Sync from URL params (breadcrumb navigation)
+  useEffect(() => {
+    const p = searchParams.get('province') || undefined;
+    const d = searchParams.get('district') || undefined;
+    const n = searchParams.get('neighborhood') || undefined;
+    setLocation({ province: p, district: d, neighborhood: n });
+    setCommittedParams(prev => ({ ...prev, province: p, district: d, neighborhood: n, page: 1 }));
+    setCurrentPage(1);
+  }, [searchParams.toString()]);
 
   // Re-query on sort/page/viewMode change
   useEffect(() => {
@@ -395,10 +413,44 @@ const ProjectsPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span>{'>'}</span>
-          <span className="text-primary font-medium">Projects</span>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4 flex-wrap">
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          {!location.province ? (
+            <span className="text-foreground font-medium">Projects</span>
+          ) : (
+            <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+          )}
+          {location.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.district ? (
+                <span className="text-foreground font-medium">{location.province} Projects</span>
+              ) : (
+                <Link to={`/projects?province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                  {location.province} Projects
+                </Link>
+              )}
+            </>
+          )}
+          {location.district && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.neighborhood ? (
+                <span className="text-foreground font-medium">{location.district} Projects</span>
+              ) : (
+                <Link to={`/projects?province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                  {location.district} Projects
+                </Link>
+              )}
+            </>
+          )}
+          {location.neighborhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <span className="text-foreground font-medium">{location.neighborhood} Projects</span>
+            </>
+          )}
         </div>
 
         {/* Results Header */}

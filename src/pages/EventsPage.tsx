@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
-  ChevronDown, CalendarDays, Loader2, X,
+  ChevronDown, CalendarDays, Loader2, X, Home,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -21,6 +21,7 @@ const EventsPage = () => {
   const { options: fo } = useFilterOptions('search');
   const eventTypes = fo['event_types'] || [];
   const routeLocation = useLocation();
+  const [searchParams] = useSearchParams();
 
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('list');
   const [focusListingId, setFocusListingId] = useState<string | null>(null);
@@ -28,18 +29,25 @@ const EventsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEventType, setSelectedEventType] = useState('');
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
-  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
+  const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
+  });
   const [keyword, setKeyword] = useState('');
 
   // Reset all filters when navigating to /events (e.g. clicking nav link)
   useEffect(() => {
+    const p = searchParams.get('province') || undefined;
+    const d = searchParams.get('district') || undefined;
+    const n = searchParams.get('neighborhood') || undefined;
     setKeyword('');
     setSelectedEventType('');
     setDateRange({});
-    setLocation({});
+    setLocation({ province: p, district: d, neighborhood: n });
     setSortBy('newest');
     setCurrentPage(1);
-    setCommittedParams({ sortBy: 'newest', page: 1, pageSize: LIST_ITEMS });
+    setCommittedParams({ sortBy: 'newest', page: 1, pageSize: LIST_ITEMS, province: p, district: d, neighborhood: n });
   }, [routeLocation.key]);
 
   const GRID_ITEMS = 15;
@@ -50,6 +58,9 @@ const EventsPage = () => {
     sortBy: 'newest',
     page: 1,
     pageSize: LIST_ITEMS,
+    province: searchParams.get('province') || undefined,
+    district: searchParams.get('district') || undefined,
+    neighborhood: searchParams.get('neighborhood') || undefined,
   });
 
   useEffect(() => { document.title = 'Events | Turegu'; }, []);
@@ -170,10 +181,44 @@ const EventsPage = () => {
 
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
-          <span>{'>'}</span>
-          <span className="text-primary font-medium">Events</span>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4 flex-wrap">
+          <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
+          <span className="text-muted-foreground/50">&gt;</span>
+          {!location.province ? (
+            <span className="text-foreground font-medium">Events</span>
+          ) : (
+            <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+          )}
+          {location.province && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.district ? (
+                <span className="text-foreground font-medium">{location.province} Events</span>
+              ) : (
+                <Link to={`/events?province=${encodeURIComponent(location.province)}`} className="hover:text-foreground transition-colors">
+                  {location.province} Events
+                </Link>
+              )}
+            </>
+          )}
+          {location.district && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              {!location.neighborhood ? (
+                <span className="text-foreground font-medium">{location.district} Events</span>
+              ) : (
+                <Link to={`/events?province=${encodeURIComponent(location.province || '')}&district=${encodeURIComponent(location.district)}`} className="hover:text-foreground transition-colors">
+                  {location.district} Events
+                </Link>
+              )}
+            </>
+          )}
+          {location.neighborhood && (
+            <>
+              <span className="text-muted-foreground/50">&gt;</span>
+              <span className="text-foreground font-medium">{location.neighborhood} Events</span>
+            </>
+          )}
         </div>
 
         {/* Results Header */}
