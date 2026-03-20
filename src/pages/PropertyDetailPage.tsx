@@ -8,7 +8,7 @@ import {
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import NearbyPlacesMap from '@/components/NearbyPlacesMap';
-import MapillaryStreetView from '@/components/MapillaryStreetView';
+import StreetView from '@/components/StreetView';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
