@@ -135,7 +135,7 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
-        setPinLocation(parsePinLocation(p.pin_location));
+        setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
 
         // Fetch similar properties
         const { data: similar } = await supabase

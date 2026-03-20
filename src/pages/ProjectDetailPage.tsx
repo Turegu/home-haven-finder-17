@@ -83,13 +83,15 @@ const ProjectDetailPage = () => {
   }, [id]);
 
   const pinLocation = useMemo(() => {
-    if (!project?.pinLocation) return null;
-    try {
-      const parts = project.pinLocation.split(',').map(Number);
-      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
-    } catch {}
+    if (project?.pinLocation) {
+      try {
+        const parts = project.pinLocation.split(',').map(Number);
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) return { lat: parts[0], lng: parts[1] };
+      } catch {}
+    }
+    if (project?.location) return getCoordsFromLocation(project.location);
     return null;
-  }, [project?.pinLocation]);
+  }, [project?.pinLocation, project?.location]);
 
   if (loading || !project) {
     return (
