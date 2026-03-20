@@ -104,6 +104,9 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
               <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
             </span>
           )}
+          {property.agentLogo && (
+            <img src={property.agentLogo} alt={property.companyName} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
+          )}
         </div>
 
         {/* Top-right: actions */}
@@ -124,15 +127,10 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
           </span>
 
           {/* Price */}
-          <div className="flex items-end justify-between">
-            <p className="text-xl font-bold text-white tracking-tight">
-              {formatPrice(property.price)}
-              {property.listingType === 'rent' && <span className="text-sm font-normal text-white/60">/mo</span>}
-            </p>
-            {property.agentLogo && (
-              <img src={property.agentLogo} alt={property.companyName} className="h-6 w-auto max-w-[56px] object-contain rounded bg-white/15 px-1.5 py-0.5" />
-            )}
-          </div>
+          <p className="text-xl font-bold text-white tracking-tight">
+            {formatPrice(property.price)}
+            {property.listingType === 'rent' && <span className="text-sm font-normal text-white/60">/mo</span>}
+          </p>
 
           {/* Title */}
           <h3 className="font-display text-[15px] font-semibold text-white leading-snug line-clamp-1">
