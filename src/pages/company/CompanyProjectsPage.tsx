@@ -18,6 +18,7 @@ import {
 import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface Project {
   id: string;
