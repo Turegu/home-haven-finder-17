@@ -64,6 +64,7 @@ const CompanyPropertiesPage = () => {
   const [assignDialog, setAssignDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
 
   const { options: filterOpts } = useFilterOptions("property");
+  const { canCreate, membership, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
