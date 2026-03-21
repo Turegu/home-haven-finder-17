@@ -19,6 +19,7 @@ interface CompanyRow {
   service_areas: string[] | null;
   province: string | null;
   town: string | null;
+  neighbourhood: string | null;
 }
 
 interface AgentRow {
@@ -53,7 +54,7 @@ const AgentsPage = () => {
       // Companies
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
@@ -181,8 +182,8 @@ const AgentsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
-              const headOffice = [company.town, company.province].filter(Boolean).join(', ');
-              const speaksLangs = company.languages?.slice(0, 3).join(', ');
+              const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
+              const speaksLangs = company.languages?.join(', ');
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
                   className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
@@ -207,12 +208,10 @@ const AgentsPage = () => {
                       {typeLabel(company.company_type)}
                     </p>
 
-                    {headOffice && (
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
-                        <MapPin className="h-3.5 w-3.5 text-accent shrink-0" />
-                        <span className="truncate">{headOffice}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
+                      <Home className="h-3.5 w-3.5 text-accent shrink-0" />
+                      <span className="truncate">{headOffice || 'Head office location not set'}</span>
+                    </div>
 
                     {/* Stats row */}
                     <div className="flex items-center gap-4 mt-3 text-sm">
@@ -227,13 +226,12 @@ const AgentsPage = () => {
                       </span>
                     </div>
 
-                    {/* Speaks */}
-                    {speaksLangs && (
-                      <div className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
-                        <span className="uppercase tracking-wider">Speaks: </span>
-                        <span className="text-foreground font-medium">{speaksLangs}</span>
-                      </div>
-                    )}
+                    {/* Languages */}
+                    <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-muted-foreground">Speaks:</span>
+                      <span className="text-foreground font-medium truncate">{speaksLangs || '—'}</span>
+                    </div>
                   </div>
                 </Link>
               );
