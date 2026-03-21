@@ -284,10 +284,10 @@ const AgentsPage = () => {
                     {/* Company badge */}
                     <div className="flex items-center gap-3 mt-2">
                       {agent.companies?.logo_url ? (
-                        <img src={agent.companies.logo_url} alt="" className="w-10 h-10 rounded-lg object-contain border border-border bg-card p-0.5 shrink-0" />
+                        <img src={agent.companies.logo_url} alt="" className="w-14 h-14 rounded-lg object-contain border border-border bg-card p-1 shrink-0" />
                       ) : (
-                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                          <Building2 className="h-5 w-5 text-muted-foreground" />
+                        <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                          <Building2 className="h-6 w-6 text-muted-foreground" />
                         </div>
                       )}
                       <span className="text-sm text-muted-foreground truncate">{agent.companies?.name ?? ''}</span>
