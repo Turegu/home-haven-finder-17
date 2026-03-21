@@ -178,63 +178,49 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.town, company.province].filter(Boolean).join(', ');
+              const speaksLangs = company.languages?.slice(0, 3).join(', ');
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="group relative bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-300">
-                  {/* Top accent bar */}
-                  <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary/40" />
+                  className="group bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300">
+                  {/* Large logo area */}
+                  <div className="aspect-[4/3] bg-muted/30 border-b border-border overflow-hidden flex items-center justify-center p-4">
+                    {company.logo_url ? (
+                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-5xl font-serif">
+                        {company.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
 
-                  <div className="p-5">
-                    {/* Header: logo + text side by side */}
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-background border border-border shadow-sm overflow-hidden shrink-0">
-                        {company.logo_url ? (
-                          <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-2" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-xl">
-                            {company.name.charAt(0)}
-                          </div>
-                        )}
+                  {/* Info section */}
+                  <div className="p-4 space-y-2">
+                    <h3 className="font-bold text-foreground text-lg leading-tight group-hover:text-primary transition-colors font-serif truncate">{company.name}</h3>
+                    <p className="text-sm text-primary font-medium">{typeLabel(company.company_type)}</p>
+
+                    {headOffice && (
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 text-accent shrink-0" />
+                        <span className="truncate">{headOffice}</span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-foreground text-base truncate group-hover:text-primary transition-colors font-serif">{company.name}</h3>
-                        <p className="text-xs text-muted-foreground tracking-wide uppercase">{typeLabel(company.company_type)}</p>
-                        {headOffice && (
-                          <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                            <MapPin className="h-3 w-3 text-accent shrink-0" />
-                            <span className="truncate">{headOffice}</span>
-                          </div>
-                        )}
-                      </div>
+                    )}
+
+                    <div className="flex items-center gap-1 text-sm">
+                      <span className="text-primary font-semibold">{counts.rent}</span>
+                      <span className="text-muted-foreground">For Rent</span>
+                      <span className="text-muted-foreground mx-1">·</span>
+                      <span className="text-primary font-semibold">{counts.buy}</span>
+                      <span className="text-muted-foreground">For Buy</span>
                     </div>
 
-                    {/* Metrics row */}
-                    <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
-                      {[
-                        { label: 'Agents', value: counts.agents },
-                        { label: 'For Sale', value: counts.buy },
-                        { label: 'For Rent', value: counts.rent },
-                      ].map((s) => (
-                        <div key={s.label} className="text-center">
-                          <div className="text-lg font-bold text-foreground font-serif">{s.value}</div>
-                          <div className="text-[11px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Service areas as subtle tags */}
-                    {company.service_areas && company.service_areas.length > 0 && (
-                      <div className="flex items-center gap-1.5 flex-wrap mt-4 pt-3 border-t border-border/50">
-                        {company.service_areas.slice(0, 3).map((area) => (
-                          <span key={area} className="text-[11px] bg-primary/5 text-primary px-2.5 py-0.5 rounded-full border border-primary/10">{area}</span>
-                        ))}
-                        {company.service_areas.length > 3 && (
-                          <span className="text-[11px] text-muted-foreground">+{company.service_areas.length - 3}</span>
-                        )}
+                    {speaksLangs && (
+                      <div className="pt-1">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide">Speaks</p>
+                        <p className="text-sm text-foreground font-medium">{speaksLangs}</p>
                       </div>
                     )}
                   </div>
