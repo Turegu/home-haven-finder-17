@@ -178,42 +178,39 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
+              const headOffice = [company.town, company.province].filter(Boolean).join(', ');
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
                   className="bg-card rounded-2xl border border-border p-4 hover:shadow-lg hover:border-primary/20 transition-all group text-center">
-                  {/* Large prominent logo */}
-                  <div className="w-20 h-20 mx-auto rounded-xl bg-background border border-border shadow-sm overflow-hidden mb-3">
+                  {/* Prominent large logo */}
+                  <div className="w-24 h-24 mx-auto rounded-2xl bg-background border border-border shadow-sm overflow-hidden mb-3">
                     {company.logo_url ? (
-                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-2" />
+                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-3" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl">
                         {company.name.charAt(0)}
                       </div>
                     )}
                   </div>
 
                   <h3 className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">{company.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-3">{typeLabel(company.company_type)}</p>
+                  <p className="text-xs text-muted-foreground">{typeLabel(company.company_type)}</p>
 
-                  <div className="flex items-center justify-center gap-3 text-xs flex-wrap">
+                  {headOffice && (
+                    <div className="flex items-center justify-center gap-1 mt-1.5 text-xs text-muted-foreground">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{headOffice}</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-3 text-xs flex-wrap mt-3 pt-3 border-t border-border">
                     <span><span className="font-semibold text-foreground">{counts.agents}</span> <span className="text-muted-foreground">Agents</span></span>
                     <span><span className="font-semibold text-foreground">{counts.buy}</span> <span className="text-muted-foreground">Sale</span></span>
                     <span><span className="font-semibold text-foreground">{counts.rent}</span> <span className="text-muted-foreground">Rent</span></span>
                   </div>
-
-                  {company.service_areas && company.service_areas.length > 0 && (
-                    <div className="flex flex-wrap justify-center gap-1 mt-3 pt-3 border-t border-border">
-                      {company.service_areas.slice(0, 2).map((area) => (
-                        <span key={area} className="text-[11px] bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{area}</span>
-                      ))}
-                      {company.service_areas.length > 2 && (
-                        <span className="text-[11px] text-muted-foreground">+{company.service_areas.length - 2}</span>
-                      )}
-                    </div>
-                  )}
                 </Link>
               );
             })}
