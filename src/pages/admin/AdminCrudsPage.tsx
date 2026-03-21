@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, Pencil, Upload, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 
-type CrudCategory = "property_types" | "project_types" | "project_statuses" | "interior_amenities" | "exterior_amenities" | "partners" | "featured_locations";
+type CrudCategory = "property_types" | "project_types" | "project_statuses" | "interior_amenities" | "exterior_amenities";
 
 interface CrudItem {
   id: string;
@@ -26,19 +26,14 @@ interface CrudItem {
   status: string;
   sort_order?: number;
   created_at: string;
-  logo_url?: string;
-  link_url?: string;
-  image_url?: string;
 }
 
-const TABS: { key: CrudCategory; label: string; hasImage?: boolean; hasLink?: boolean; nameField?: string }[] = [
+const TABS: { key: CrudCategory; label: string }[] = [
   { key: "property_types", label: "Property Types" },
   { key: "project_types", label: "Project Types" },
   { key: "project_statuses", label: "Project Status" },
   { key: "interior_amenities", label: "Interior Amenities" },
   { key: "exterior_amenities", label: "Exterior Amenities" },
-  { key: "partners", label: "Our Partners", hasImage: true, hasLink: true, nameField: "name" },
-  { key: "featured_locations", label: "Featured Locations", hasImage: true, hasLink: true, nameField: "name" },
 ];
 
 const AdminCrudsPage = () => {
