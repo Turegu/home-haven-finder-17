@@ -50,9 +50,20 @@ export interface MapListing {
   rentDuration?: string | null;
 }
 
+function getRentSuffix(rentDuration?: string | null): string {
+  if (!rentDuration) return '/mo';
+  switch (rentDuration) {
+    case 'Daily': return '/day';
+    case 'Weekly': return '/wk';
+    case 'Yearly': return '/yr';
+    default: return '/mo';
+  }
+}
+
 // Create price badge marker
-function createPriceIcon(price: number | null, currency: string) {
-  const label = price ? `${currency === 'USD' ? '$' : currency} ${price >= 1000000 ? (price / 1000000).toFixed(1) + 'M' : price >= 1000 ? Math.round(price / 1000) + 'K' : price.toLocaleString()}` : 'Free';
+function createPriceIcon(price: number | null, currency: string, rentDuration?: string | null) {
+  let label = price ? `${currency === 'USD' ? '$' : currency} ${price >= 1000000 ? (price / 1000000).toFixed(1) + 'M' : price >= 1000 ? Math.round(price / 1000) + 'K' : price.toLocaleString()}` : 'Free';
+  if (price && rentDuration) label += getRentSuffix(rentDuration);
   return L.divIcon({
     className: 'custom-map-marker',
     html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="background: #009688; color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer; border: 2px solid #009688;">${label}</div><div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #009688;margin-top:-1px;"></div></div>`,
