@@ -24,6 +24,14 @@ const packageIcons: Record<string, React.ElementType> = {
 };
 
 const AdvertisePage = () => {
+  const formRef = useRef<HTMLDivElement>(null);
+  const [highlightForm, setHighlightForm] = useState(false);
+
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setHighlightForm(true);
+    setTimeout(() => setHighlightForm(false), 2000);
+  };
   const [form, setForm] = useState({
     company_name: "",
     first_name: "",
