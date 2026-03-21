@@ -55,7 +55,7 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
 
   return (
     <div className="w-[240px] bg-card rounded-xl border border-border overflow-hidden shadow-xl">
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted group">
+      <div className="relative aspect-[2/1] overflow-hidden bg-muted group">
         <img src={allImages[imgIdx]} alt={listing.title} className="w-full h-full object-cover" />
         {allImages.length > 1 && (
           <>

@@ -87,7 +87,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
   return (
     <div className="w-[240px] bg-card rounded-xl border border-border overflow-hidden shadow-lg">
       {/* Image — smaller aspect ratio */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted group">
+      <div className="relative aspect-[2/1] overflow-hidden bg-muted group">
         <img
           src={allImages[imgIdx]}
           alt={listing.title}
