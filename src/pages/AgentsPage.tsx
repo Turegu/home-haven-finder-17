@@ -226,13 +226,12 @@ const AgentsPage = () => {
                       </span>
                     </div>
 
-                    {/* Speaks */}
-                    {speaksLangs && (
-                      <div className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
-                        <span className="uppercase tracking-wider">Speaks: </span>
-                        <span className="text-foreground font-medium">{speaksLangs}</span>
-                      </div>
-                    )}
+                    {/* Languages */}
+                    <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
+                      <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="text-muted-foreground">Speaks:</span>
+                      <span className="text-foreground font-medium truncate">{speaksLangs || '—'}</span>
+                    </div>
                   </div>
                 </Link>
               );
