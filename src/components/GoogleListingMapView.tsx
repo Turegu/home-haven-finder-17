@@ -28,9 +28,10 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
     position={listing.coords}
     mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
   >
-    <div className="flex flex-col items-center transform -translate-x-1/2 -translate-y-full">
+    <div className="flex flex-col items-center transform -translate-x-1/2 -translate-y-full"
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+    >
       <div
-        onClick={onClick}
         className={`px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap cursor-pointer border-2 transition-all shadow-md ${
           isSelected
             ? 'bg-foreground text-background border-foreground scale-110'
