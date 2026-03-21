@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
 import AssignAgentDialog from "@/components/company/AssignAgentDialog";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface Property {
   id: string;
