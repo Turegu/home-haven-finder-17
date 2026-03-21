@@ -2,6 +2,7 @@ import { memo, useState, useEffect } from 'react';
 import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Crown, Star, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 import type { Property } from '@/data/mockProperties';
 
 interface Props {
