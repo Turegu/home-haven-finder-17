@@ -52,9 +52,9 @@ function createPriceIcon(price: number | null, currency: string) {
   const label = price ? `${currency === 'USD' ? '$' : currency} ${price >= 1000000 ? (price / 1000000).toFixed(1) + 'M' : price >= 1000 ? Math.round(price / 1000) + 'K' : price.toLocaleString()}` : 'Free';
   return L.divIcon({
     className: 'custom-map-marker',
-    html: `<div style="background: hsl(var(--primary)); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer; border: 2px solid white;">${label}</div>`,
-    iconSize: [80, 30],
-    iconAnchor: [40, 30],
+    html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="background: hsl(var(--primary)); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer; border: 2px solid white;">${label}</div><div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid hsl(var(--primary));margin-top:-1px;"></div></div>`,
+    iconSize: [80, 36],
+    iconAnchor: [40, 36],
   });
 }
 
