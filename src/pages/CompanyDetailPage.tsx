@@ -133,13 +133,13 @@ const CompanyDetailPage = () => {
         </div>
       </div>
 
-      {/* ── Banner: contained, 4:1 aspect ratio to show full image ── */}
+      {/* ── Banner: compact height, cover-fit ── */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="relative rounded-2xl overflow-hidden bg-muted">
+        <div className="relative rounded-2xl overflow-hidden bg-muted h-[120px] sm:h-[140px] lg:h-[160px]">
           {company.cover_url ? (
-            <img src={company.cover_url} alt="" className="w-full object-contain bg-muted" />
+            <img src={company.cover_url} alt="" className="w-full h-full object-cover" />
           ) : (
-            <div className="aspect-[4/1] w-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
+            <div className="w-full h-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
           )}
           {/* Utility buttons */}
           <div className="absolute top-3 right-3 flex gap-1.5">
