@@ -178,38 +178,65 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.town, company.province].filter(Boolean).join(', ');
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="bg-card rounded-2xl border border-border p-4 hover:shadow-lg hover:border-primary/20 transition-all group text-center">
-                  {/* Prominent large logo */}
-                  <div className="w-24 h-24 mx-auto rounded-2xl bg-background border border-border shadow-sm overflow-hidden mb-3">
-                    {company.logo_url ? (
-                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-3" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl">
-                        {company.name.charAt(0)}
+                  className="group relative bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl hover:border-primary/20 transition-all duration-300">
+                  {/* Top accent bar */}
+                  <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary/40" />
+
+                  <div className="p-5">
+                    {/* Header: logo + text side by side */}
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-xl bg-background border border-border shadow-sm overflow-hidden shrink-0">
+                        {company.logo_url ? (
+                          <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-2" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-xl">
+                            {company.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-foreground text-base truncate group-hover:text-primary transition-colors font-serif">{company.name}</h3>
+                        <p className="text-xs text-muted-foreground tracking-wide uppercase">{typeLabel(company.company_type)}</p>
+                        {headOffice && (
+                          <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                            <MapPin className="h-3 w-3 text-accent shrink-0" />
+                            <span className="truncate">{headOffice}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Metrics row */}
+                    <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
+                      {[
+                        { label: 'Agents', value: counts.agents },
+                        { label: 'For Sale', value: counts.buy },
+                        { label: 'For Rent', value: counts.rent },
+                      ].map((s) => (
+                        <div key={s.label} className="text-center">
+                          <div className="text-lg font-bold text-foreground font-serif">{s.value}</div>
+                          <div className="text-[11px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Service areas as subtle tags */}
+                    {company.service_areas && company.service_areas.length > 0 && (
+                      <div className="flex items-center gap-1.5 flex-wrap mt-4 pt-3 border-t border-border/50">
+                        {company.service_areas.slice(0, 3).map((area) => (
+                          <span key={area} className="text-[11px] bg-primary/5 text-primary px-2.5 py-0.5 rounded-full border border-primary/10">{area}</span>
+                        ))}
+                        {company.service_areas.length > 3 && (
+                          <span className="text-[11px] text-muted-foreground">+{company.service_areas.length - 3}</span>
+                        )}
                       </div>
                     )}
-                  </div>
-
-                  <h3 className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">{company.name}</h3>
-                  <p className="text-xs text-muted-foreground">{typeLabel(company.company_type)}</p>
-
-                  {headOffice && (
-                    <div className="flex items-center justify-center gap-1 mt-1.5 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{headOffice}</span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-center gap-3 text-xs flex-wrap mt-3 pt-3 border-t border-border">
-                    <span><span className="font-semibold text-foreground">{counts.agents}</span> <span className="text-muted-foreground">Agents</span></span>
-                    <span><span className="font-semibold text-foreground">{counts.buy}</span> <span className="text-muted-foreground">Sale</span></span>
-                    <span><span className="font-semibold text-foreground">{counts.rent}</span> <span className="text-muted-foreground">Rent</span></span>
                   </div>
                 </Link>
               );
