@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   CheckCircle, Users, Home, FolderKanban, CalendarDays,
-  Search, Image, MessageSquare, Phone, Mail, Building2,
+  Search, Image, MessageSquare, Building2,
   Briefcase, Zap, Star, Crown
 } from "lucide-react";
 
