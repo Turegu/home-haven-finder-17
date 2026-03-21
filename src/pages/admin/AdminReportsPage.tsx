@@ -154,11 +154,14 @@ const AdminReportsPage = () => {
                         Mark Reviewed
                       </Button>
                     )}
-                    {report.status !== "resolved" && (
+                     {report.status !== "resolved" && (
                       <Button size="sm" variant="outline" onClick={() => updateStatus(report.id, "resolved")}>
                         Resolve
                       </Button>
                     )}
+                    <Button size="sm" variant="destructive" onClick={() => deleteReport(report.id)}>
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                    </Button>
                   </div>
                 </div>
               </div>
