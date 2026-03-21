@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import {
   CheckCircle, Users, Home, FolderKanban, CalendarDays,
   Search, Image, MessageSquare, Phone, Mail, Building2,
-  Package, Zap, Star, Crown
+  Briefcase, Zap, Star, Crown
 } from "lucide-react";
 
 const packageIcons: Record<string, React.ElementType> = {
