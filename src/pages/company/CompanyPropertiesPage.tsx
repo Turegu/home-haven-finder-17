@@ -48,7 +48,7 @@ const CompanyPropertiesPage = () => {
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [selected, setSelected] = useState<string[]>([]);
   const [classificationFilter, setClassificationFilter] = useState<ClassificationFilter>("all");
   const [showFilters, setShowFilters] = useState(false);
