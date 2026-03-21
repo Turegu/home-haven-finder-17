@@ -241,8 +241,8 @@ const Index = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                     <div className="absolute bottom-0 inset-x-0 p-5 flex items-end justify-between">
                       <div>
-                        {loc.tagline && <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{loc.tagline}</p>}
-                        <h3 className="font-display text-lg font-semibold text-white tracking-tight">{loc.name}</h3>
+                        {loc.tagline && <p className="text-[11px] text-white/60 uppercase tracking-widest font-light mb-1">{loc.tagline}</p>}
+                        <h3 className="font-display text-lg font-bold text-white tracking-tight">{loc.subtitle || loc.name}</h3>
                       </div>
                       <div className="h-8 w-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
                         <ExternalLink className="h-3.5 w-3.5 text-white" />
