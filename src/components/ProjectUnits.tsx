@@ -94,6 +94,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [filter, setFilter] = useState("all");
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { formatArea } = useAreaUnit();
 
   useEffect(() => {
     const fetchUnits = async () => {
