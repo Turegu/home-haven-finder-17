@@ -206,6 +206,7 @@ const CompanyProjectEditPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [images, setImages] = useState<string[]>([]);
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [logoUrl, setLogoUrl] = useState("");
