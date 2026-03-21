@@ -29,7 +29,7 @@ const Index = () => {
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
 
-  const { data: dbProperties = [] } = useQuery({
+  const { data: allFeaturedProperties = [] } = useQuery({
     queryKey: ['featured-properties'],
     queryFn: async () => {
       const { data } = await supabase
@@ -37,7 +37,7 @@ const Index = () => {
         .select('*, agents(name, avatar_url), companies(name, logo_url)')
         .eq('status', 'active')
         .eq('display_on_homepage', true)
-        .limit(6);
+        .limit(12);
       return (data || []).map((p: any) => ({
         id: p.id,
         title: p.title,
