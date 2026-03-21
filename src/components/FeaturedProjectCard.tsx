@@ -50,7 +50,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
           {/* Developer with logo */}
           <div className="flex items-center gap-2">
             {project.developerLogo ? (
-              <img src={project.developerLogo} alt={project.developer} className="h-5 w-5 rounded object-contain bg-white/10" />
+              <img src={project.developerLogo} alt={project.developer} className="h-5 w-5 rounded object-contain" />
             ) : (
               <div className="h-5 w-5 rounded bg-white/15 flex items-center justify-center">
                 <Building className="h-3 w-3 text-white/70" />
