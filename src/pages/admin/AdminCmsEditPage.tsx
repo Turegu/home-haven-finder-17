@@ -110,7 +110,7 @@ const AdminCmsEditPage = () => {
   // Featured location CRUD
   const openLocCreate = () => {
     setEditingLoc(null);
-    setLocForm({ name: "", link_url: "", sort_order: locations.length });
+    setLocForm({ name: "", link_url: "", sort_order: locations.length, tagline: "", subtitle: "" });
     setLocImageFile(null);
     setLocImagePreview(null);
     setLocDialog(true);
