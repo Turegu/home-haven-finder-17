@@ -217,28 +217,33 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mt-1">{fl.tagline || "Find Your Neighborhood"}</p>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {locations.map((loc) => (
-              <a
-                key={loc.id}
-                href={loc.link_url || "#"}
-                target={loc.link_url ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
-              >
-                {loc.image_url ? (
-                  <img src={loc.image_url} alt={loc.name} loading="lazy" className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105" />
-                ) : (
-                  <div className="w-full aspect-square bg-muted flex items-center justify-center">
-                    <MapPin className="h-12 w-12 text-muted-foreground" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            {locations.map((loc) => {
+              const isExternal = loc.link_url?.startsWith('http');
+              const LinkTag = isExternal ? 'a' : Link;
+              const linkProps = isExternal
+                ? { href: loc.link_url || '#', target: '_blank', rel: 'noopener noreferrer' }
+                : { to: loc.link_url || '#' };
+              return (
+                <LinkTag
+                  key={loc.id}
+                  {...(linkProps as any)}
+                  className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                >
+                  {loc.image_url ? (
+                    <img src={loc.image_url} alt={loc.name} loading="lazy" className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full aspect-square bg-muted flex items-center justify-center">
+                      <MapPin className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="p-3 flex items-center justify-between">
+                    <h3 className="font-semibold text-foreground text-sm">{loc.name}</h3>
+                    {loc.link_url && <ExternalLink className="h-4 w-4 text-muted-foreground" />}
                   </div>
-                )}
-                <div className="p-3 flex items-center justify-between">
-                  <h3 className="font-semibold text-foreground text-sm">{loc.name}</h3>
-                  {loc.link_url && <ExternalLink className="h-4 w-4 text-muted-foreground" />}
-                </div>
-              </a>
-            ))}
+                </LinkTag>
+              );
+            })}
           </div>
         </div>
       </section>
