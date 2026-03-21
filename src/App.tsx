@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AreaUnitProvider } from "@/hooks/useAreaUnit";
 
 // Eager-load the homepage for instant first paint
 import Index from "./pages/Index.tsx";
