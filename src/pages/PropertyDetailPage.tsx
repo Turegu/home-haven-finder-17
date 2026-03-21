@@ -524,7 +524,7 @@ const PropertyDetailPage = () => {
                 
                 <OverviewItem icon={Building} label="Type" value={property.type} />
                 <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
-                <OverviewItem icon={Ruler} label="Area" value={`${property.area} ${property.areaUnit}`} />
+                <OverviewItem icon={Ruler} label="Area" value={formatArea(property.area, property.areaUnit)} />
                 <OverviewItem icon={Home} label="Rooms" value={String(property.bedrooms)} />
                 <OverviewItem icon={Bath} label="Bathrooms" value={String(property.bathrooms)} />
                 <OverviewItem icon={FileText} label="Title Deed" value={property.titleDeed || '—'} />
