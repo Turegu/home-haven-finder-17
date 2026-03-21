@@ -143,8 +143,16 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
       const bounds = new google.maps.LatLngBounds();
       listingsWithCoords.forEach(l => bounds.extend(l.coords));
       map.fitBounds(bounds, 50);
+    } else if (listingsWithCoords.length === 0) {
+      // Fit to country bounds when no listings
+      const cb = countryConfig.bounds;
+      const bounds = new google.maps.LatLngBounds(
+        { lat: cb[0][0], lng: cb[0][1] },
+        { lat: cb[1][0], lng: cb[1][1] }
+      );
+      map.fitBounds(bounds, 20);
     }
-  }, [listingsWithCoords]);
+  }, [listingsWithCoords, countryConfig]);
 
   // Focus on a specific listing
   useEffect(() => {

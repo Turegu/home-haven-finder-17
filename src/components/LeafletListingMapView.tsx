@@ -274,7 +274,7 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
     <div className={`rounded-xl border border-border overflow-hidden ${className}`} style={{ height: '600px' }}>
       <MapContainer
         center={center}
-        zoom={6}
+        zoom={countryConfig.zoom}
         style={{ height: '100%', width: '100%' }}
         zoomControl={true}
       >
