@@ -102,11 +102,11 @@ const AgentDetailPage = () => {
 
       {/* ── Banner: company cover inherited ── */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="relative rounded-2xl overflow-hidden bg-muted h-[120px] sm:h-[140px] lg:h-[160px]">
+        <div className="relative rounded-2xl overflow-hidden bg-muted">
           {companyCover ? (
-            <img src={companyCover} alt="" className="w-full h-full object-cover" />
+            <img src={companyCover} alt="" className="w-full h-auto block" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
+            <div className="w-full h-[120px] sm:h-[140px] lg:h-[160px] bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
           )}
           {/* Utility buttons */}
           <div className="absolute top-3 right-3 flex gap-1.5">
