@@ -28,9 +28,10 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
     position={listing.coords}
     mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
   >
-    <div className="flex flex-col items-center transform -translate-x-1/2 -translate-y-full">
+    <div className="flex flex-col items-center transform -translate-x-1/2 -translate-y-full"
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+    >
       <div
-        onClick={onClick}
         className={`px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap cursor-pointer border-2 transition-all shadow-md ${
           isSelected
             ? 'bg-foreground text-background border-foreground scale-110'
@@ -196,7 +197,7 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
             position={selectedListing.coords}
             mapPaneName={OverlayView.FLOAT_PANE}
           >
-            <div className="transform -translate-x-1/2 -translate-y-[calc(100%+40px)]">
+            <div className="transform -translate-x-1/2 -translate-y-[calc(100%+40px)]" onClick={(e) => e.stopPropagation()}>
               <PopupCard listing={selectedListing} onClose={() => setSelectedId(null)} />
               <div className="w-3 h-3 bg-card border-b border-r border-border rotate-45 mx-auto -mt-1.5" />
             </div>
