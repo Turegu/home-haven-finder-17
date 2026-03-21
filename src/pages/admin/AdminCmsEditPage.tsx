@@ -126,7 +126,7 @@ const AdminCmsEditPage = () => {
     if (!locForm.name) { toast.error("Name is required"); return; }
     let image_url = editingLoc?.image_url || null;
     if (locImageFile) image_url = await uploadImage(locImageFile, "locations");
-    const payload = { name: locForm.name, link_url: locForm.link_url || null, image_url, sort_order: locForm.sort_order };
+    const payload = { name: locForm.name, link_url: locForm.link_url || null, image_url, sort_order: locForm.sort_order, tagline: locForm.tagline || null, subtitle: locForm.subtitle || null };
     if (editingLoc) {
       await supabase.from("featured_locations").update(payload).eq("id", editingLoc.id);
       toast.success("Location updated");
