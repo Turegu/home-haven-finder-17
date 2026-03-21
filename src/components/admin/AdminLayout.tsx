@@ -15,6 +15,7 @@ const sidebarItems = [
   { label: "Projects Management", icon: FolderKanban, path: "/admin/projects" },
   { label: "Events Management", icon: CalendarDays, path: "/admin/events" },
   { label: "Membership Management", icon: Crown, path: "/admin/memberships" },
+  { label: "Featured Management", icon: ArrowUpCircle, path: "/admin/featured" },
   { label: "Banners Management", icon: ImageIcon, path: "/admin/banners" },
   { label: "Banks Management", icon: Landmark, path: "/admin/banks" },
   { label: "Blog Management", icon: BookOpen, path: "/admin/blog" },
