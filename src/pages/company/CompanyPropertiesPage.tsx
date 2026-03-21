@@ -15,9 +15,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 interface Property {
   id: string;
@@ -26,10 +27,17 @@ interface Property {
   property_status: string;
   property_purpose: string;
   property_type: string;
+  property_classification: string | null;
   location: string | null;
   status: string;
   created_at: string;
+  display_on_homepage: boolean;
+  rooms: string | null;
+  bathrooms: number | null;
+  furniture: string | null;
 }
+
+type ClassificationFilter = "all" | "residential_buy" | "residential_rent" | "commercial_buy" | "commercial_rent";
 
 const CompanyPropertiesPage = () => {
   const navigate = useNavigate();
@@ -39,6 +47,16 @@ const CompanyPropertiesPage = () => {
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selected, setSelected] = useState<string[]>([]);
+  const [classificationFilter, setClassificationFilter] = useState<ClassificationFilter>("all");
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Advanced filters
+  const [filterType, setFilterType] = useState("all");
+  const [filterRooms, setFilterRooms] = useState("all");
+  const [filterFurniture, setFilterFurniture] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+
+  const { options: filterOpts } = useFilterOptions("property");
 
   useEffect(() => {
     const init = async () => {
@@ -62,7 +80,7 @@ const CompanyPropertiesPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("properties")
-      .select("id, listing_id, title, property_status, property_purpose, property_type, location, status, created_at")
+      .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
 
@@ -75,11 +93,41 @@ const CompanyPropertiesPage = () => {
     if (companyId) fetchProperties();
   }, [companyId, sortOrder]);
 
-  const filtered = properties.filter(
-    (p) =>
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.listing_id.includes(search)
-  );
+  const filtered = properties.filter((p) => {
+    // Text search
+    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+
+    // Classification filter
+    if (classificationFilter !== "all") {
+      const cls = p.property_classification?.toLowerCase() || "residential";
+      const purpose = p.property_purpose;
+      switch (classificationFilter) {
+        case "residential_buy": if (cls !== "residential" || purpose !== "buy") return false; break;
+        case "residential_rent": if (cls !== "residential" || purpose !== "rent") return false; break;
+        case "commercial_buy": if (cls !== "commercial" || purpose !== "buy") return false; break;
+        case "commercial_rent": if (cls !== "commercial" || purpose !== "rent") return false; break;
+      }
+    }
+
+    // Advanced filters
+    if (filterType !== "all" && p.property_type !== filterType) return false;
+    if (filterRooms !== "all" && p.rooms !== filterRooms) return false;
+    if (filterFurniture !== "all" && p.furniture !== filterFurniture) return false;
+    if (filterStatus !== "all" && p.status !== filterStatus) return false;
+
+    return true;
+  });
+
+  const activeFilterCount = [filterType, filterRooms, filterFurniture, filterStatus].filter(f => f !== "all").length;
+
+  const clearAllFilters = () => {
+    setFilterType("all");
+    setFilterRooms("all");
+    setFilterFurniture("all");
+    setFilterStatus("all");
+    setClassificationFilter("all");
+    setSearch("");
+  };
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
@@ -118,6 +166,10 @@ const CompanyPropertiesPage = () => {
     }
   };
 
+  const propertyTypes = filterOpts["property_type"] || [];
+  const roomOptions = filterOpts["rooms"] || [];
+  const furnitureOptions = filterOpts["furniture"] || [];
+
   return (
     <CompanyLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
@@ -125,7 +177,7 @@ const CompanyPropertiesPage = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -145,6 +197,20 @@ const CompanyPropertiesPage = () => {
             </SelectContent>
           </Select>
         </div>
+        <Button
+          variant={showFilters ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowFilters(!showFilters)}
+          className="gap-2"
+        >
+          <Filter className="h-4 w-4" />
+          Filters
+          {activeFilterCount > 0 && (
+            <span className="ml-1 bg-primary-foreground text-primary rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold">
+              {activeFilterCount}
+            </span>
+          )}
+        </Button>
         <div className="flex items-center gap-2 ml-auto">
           {selected.length > 0 && (
             <Button variant="destructive" onClick={handleDelete}>
@@ -157,10 +223,96 @@ const CompanyPropertiesPage = () => {
         </div>
       </div>
 
+      {/* Classification quick-filter chips */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        {([
+          { key: "all", label: "All Properties" },
+          { key: "residential_buy", label: "Residential For Sale" },
+          { key: "residential_rent", label: "Residential For Rent" },
+          { key: "commercial_buy", label: "Commercial For Sale" },
+          { key: "commercial_rent", label: "Commercial For Rent" },
+        ] as { key: ClassificationFilter; label: string }[]).map((chip) => (
+          <button
+            key={chip.key}
+            onClick={() => setClassificationFilter(chip.key)}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              classificationFilter === chip.key
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            }`}
+          >
+            {chip.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Advanced filters panel */}
+      {showFilters && (
+        <div className="bg-card rounded-xl border border-border p-4 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-foreground">Advanced Filters</h3>
+            <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-xs text-muted-foreground">
+              <X className="h-3 w-3 mr-1" /> Clear All
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Property Type</label>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {propertyTypes.map((t) => (
+                    <SelectItem key={t} value={t.toLowerCase()}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Rooms</label>
+              <Select value={filterRooms} onValueChange={setFilterRooms}>
+                <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Rooms" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Rooms</SelectItem>
+                  {roomOptions.map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Furniture</label>
+              <Select value={filterFurniture} onValueChange={setFilterFurniture}>
+                <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {furnitureOptions.map((f) => (
+                    <SelectItem key={f} value={f}>{f}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Listing Status</label>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Properties</h2>
+          <span className="text-xs text-muted-foreground">{filtered.length} result(s)</span>
         </div>
         <div className="overflow-x-auto">
           <Table>
@@ -176,15 +328,16 @@ const CompanyPropertiesPage = () => {
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Homepage</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={11} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={11} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
               ) : (
                 filtered.map((prop) => (
                   <TableRow key={prop.id} className="hover:bg-muted/30">
@@ -202,6 +355,15 @@ const CompanyPropertiesPage = () => {
                     <TableCell className="text-sm capitalize">{prop.property_type}</TableCell>
                     <TableCell className="font-medium text-foreground max-w-[200px] truncate">{prop.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
+                    <TableCell>
+                      {prop.display_on_homepage ? (
+                        <Badge className="bg-amber-100 text-amber-800 gap-1" variant="secondary">
+                          <Home className="h-3 w-3" /> Featured
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge className={statusColor(prop.status)} variant="secondary">
                         {prop.status === "draft" ? "Unpublished" : prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
