@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import type { MapListing } from './LeafletListingMapView';
-import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation } from '@/lib/mapConstants';
+import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation, getCountryMapConfig } from '@/lib/mapConstants';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 
 function formatPrice(price: number | null, currency: string) {
   if (!price) return 'Contact for Price';
