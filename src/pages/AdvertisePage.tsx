@@ -305,23 +305,7 @@ const AdvertisePage = () => {
         </div>
       </section>
 
-      {/* Contact CTA */}
-      <section className="py-16 bg-primary">
-        <div className="container mx-auto px-4 text-center text-primary-foreground">
-          <h2 className="text-3xl font-bold mb-4">Ready to grow your business?</h2>
-          <p className="mb-8 max-w-xl mx-auto opacity-90">
-            Our sales team is ready to help you choose the right package. Fill the form above or contact us directly.
-          </p>
-          <div className="flex flex-wrap justify-center gap-6">
-            <a href="tel:+1234567890" className="flex items-center gap-2 bg-primary-foreground/20 hover:bg-primary-foreground/30 px-6 py-3 rounded-lg transition-colors">
-              <Phone className="h-5 w-5" /> Call Us
-            </a>
-            <a href="mailto:info@turegu.com" className="flex items-center gap-2 bg-primary-foreground/20 hover:bg-primary-foreground/30 px-6 py-3 rounded-lg transition-colors">
-              <Mail className="h-5 w-5" /> Email Us
-            </a>
-          </div>
-        </div>
-      </section>
+
 
       <Footer />
     </div>
