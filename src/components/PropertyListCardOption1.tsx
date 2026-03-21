@@ -245,7 +245,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               </span>
               <span className="flex items-center gap-1">
                 <Maximize className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.area} {property.areaUnit}</span>
+                <span className="font-medium text-foreground">{formatArea(property.area, property.areaUnit)}</span>
               </span>
               <span className="flex items-center gap-1">
                 <Bath className="h-3.5 w-3.5" />
