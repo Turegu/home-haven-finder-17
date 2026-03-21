@@ -273,7 +273,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
             <div className="grid grid-cols-4 gap-3 mt-6">
               <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
               <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
-              <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'} />
+              <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? formatArea(currentUnit.area, currentUnit.area_unit || 'm²') : '—'} />
               <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
               <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
               <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />
