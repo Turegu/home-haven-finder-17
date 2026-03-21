@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Building2, Home, FolderKanban, CalendarDays, Users } from "lucide-react";
+import { Building2, Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface Stats {
