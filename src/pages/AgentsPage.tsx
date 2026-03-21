@@ -179,7 +179,7 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
@@ -188,12 +188,12 @@ const AgentsPage = () => {
                 <Link key={company.id} to={`/company/${company.id}`}
                   className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                   
-                  {/* Left: Logo area */}
-                  <div className="w-36 sm:w-44 shrink-0 bg-muted/30 border-r border-border flex items-center justify-center p-5">
+                  {/* Left: Logo area - white background */}
+                  <div className="w-28 sm:w-36 shrink-0 bg-card border-r border-border flex items-center justify-center p-4">
                     {company.logo_url ? (
                       <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl font-serif">
+                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl font-serif">
                         {company.name.charAt(0)}
                       </div>
                     )}
