@@ -137,9 +137,8 @@ export function usePropertySearch(params: PropertySearchParams) {
         }
       }
 
-      // Sorting — always tier first: premium > featured > standard (via property_classification)
-      // Then display_on_homepage DESC, then user-selected sort
-      query = query.order("property_classification", { ascending: true, nullsFirst: false });
+      // Sorting — tier priority handled client-side after fetch for correct premium > featured > standard
+      // Server sort: display_on_homepage DESC, then user-selected sort
       query = query.order("display_on_homepage", { ascending: false });
 
       switch (params.sortBy) {
