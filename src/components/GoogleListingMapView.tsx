@@ -96,7 +96,7 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
         </div>
         <div className="flex items-center gap-2.5 pt-2 border-t border-border">
           {listing.propertyType && <div className="flex items-center gap-1 text-muted-foreground text-[10px]"><Building className="h-3 w-3" /><span>{listing.propertyType}</span></div>}
-          {listing.area && <div className="flex items-center gap-1 text-muted-foreground text-[10px]"><Maximize className="h-3 w-3" /><span>{listing.area} {listing.areaUnit || 'sqm'}</span></div>}
+          {listing.area && <div className="flex items-center gap-1 text-muted-foreground text-[10px]"><Maximize className="h-3 w-3" /><span>{formatArea(listing.area, listing.areaUnit || 'm²')}</span></div>}
           {listing.bedrooms != null && listing.bedrooms > 0 && <div className="flex items-center gap-1 text-muted-foreground text-[10px]"><BedDouble className="h-3 w-3" /><span>{listing.bedrooms}</span></div>}
           {listing.bathrooms != null && listing.bathrooms > 0 && <div className="flex items-center gap-1 text-muted-foreground text-[10px]"><Bath className="h-3 w-3" /><span>{listing.bathrooms}</span></div>}
           {listing.units && <div className="flex items-center gap-1 text-muted-foreground text-[10px]"><Building className="h-3 w-3" /><span>{listing.units} Units</span></div>}
