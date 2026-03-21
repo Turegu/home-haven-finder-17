@@ -38,6 +38,9 @@ const AdminCompaniesPage = () => {
 
   const fetchCompanies = async () => {
     setLoading(true);
+    // Auto-downgrade expired memberships
+    await supabase.rpc("downgrade_expired_memberships");
+
     const query = supabase.from("companies").select("*")
       .order("created_at", { ascending: sortOrder === "oldest" });
 
