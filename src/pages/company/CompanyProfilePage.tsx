@@ -345,7 +345,7 @@ const CompanyProfilePage = () => {
 
             <div className="space-y-3">
               <Label className="text-foreground font-medium">Cover Image</Label>
-              <p className="text-xs text-muted-foreground -mt-1 mb-2">Recommended: 1200 × 300 px (4:1 ratio). Also displayed on your agents' profile pages.</p>
+              <p className="text-xs text-muted-foreground -mt-1 mb-2">Recommended: 1200 × 180 px (wide banner). Also displayed on your agents' profile pages.</p>
               {form.cover_url ? (
                 <div className="relative">
                   <img src={form.cover_url} alt="Cover" className="w-full aspect-[4/1] rounded-lg object-cover border border-border" />

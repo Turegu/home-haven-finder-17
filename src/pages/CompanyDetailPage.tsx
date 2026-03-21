@@ -237,20 +237,22 @@ const CompanyDetailPage = () => {
         </div>
       </div>
 
+      {/* ── About Us — full-width prominent section ── */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-bold text-foreground mb-2">About {company.name}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+            {company.about || `${company.name} is a trusted real estate company dedicated to helping clients find their ideal properties. With a team of experienced professionals and deep market knowledge, we provide personalized guidance for buying, selling, and renting properties across our service areas.`}
+          </p>
+        </div>
+      </div>
+
       {/* ── Body content ── */}
       <div className="container mx-auto px-4 pb-8">
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Sidebar */}
           <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
-            {/* About Us — always show, fallback to demo text */}
-            <div className="bg-card rounded-xl border border-border p-5">
-              <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">About Us</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {company.about || `${company.name} is a trusted real estate company dedicated to helping clients find their ideal properties. With a team of experienced professionals and deep market knowledge, we provide personalized guidance for buying, selling, and renting properties across our service areas.`}
-              </p>
-            </div>
-
             {/* Languages we speak */}
             {allLanguages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
