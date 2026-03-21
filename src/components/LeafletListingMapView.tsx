@@ -315,7 +315,7 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
           <Marker
             key={listing.id}
             position={listing.coords}
-            icon={createPriceIcon(listing.price, listing.currency)}
+            icon={createPriceIcon(listing.price, listing.currency, listing.rentDuration)}
             ref={(ref) => { if (ref) markerRefs.current[listing.id] = ref; }}
             eventHandlers={{
               click: () => setSelectedId(listing.id === selectedId ? null : listing.id),
