@@ -181,8 +181,9 @@ const AgentsPage = () => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-28 overflow-hidden bg-muted">
+                  className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow max-w-sm mx-auto w-full">
+                  {/* Cover: 1200×300 ratio = 4:1, use aspect-[4/1] */}
+                  <div className="aspect-[4/1] overflow-hidden bg-muted">
                     {company.cover_url ? (
                       <img src={company.cover_url} alt={company.name} className="w-full h-full object-cover" />
                     ) : (

@@ -15,7 +15,7 @@ interface AgentData {
   languages: string[] | null;
   service_areas: string[] | null;
   company_id: string;
-  companies: { id: string; name: string; logo_url: string | null; company_type: string | null } | null;
+  companies: { id: string; name: string; logo_url: string | null; company_type: string | null; cover_url: string | null } | null;
 }
 
 const AgentDetailPage = () => {
@@ -29,7 +29,7 @@ const AgentDetailPage = () => {
     const fetch = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, description, languages, service_areas, company_id, companies(id, name, logo_url, company_type)")
+        .select("id, name, designation, avatar_url, description, languages, service_areas, company_id, companies(id, name, logo_url, company_type, cover_url)")
         .eq("id", id)
         .maybeSingle();
       setAgent(data as unknown as AgentData | null);
@@ -52,6 +52,8 @@ const AgentDetailPage = () => {
     return <div className="min-h-screen bg-background"><Header /><div className="text-center py-20 text-muted-foreground">Agent not found.</div><Footer /></div>;
   }
 
+  const companyCover = agent.companies?.cover_url;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -66,6 +68,15 @@ const AgentDetailPage = () => {
           <span className="text-primary">{agent.name}</span>
         </div>
       </div>
+
+      {/* Company cover image applied to agent profile */}
+      {companyCover && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="aspect-[4/1] rounded-xl overflow-hidden">
+            <img src={companyCover} alt={`${agent.companies?.name} cover`} className="w-full h-full object-cover" />
+          </div>
+        </div>
+      )}
 
       {/* Title + actions */}
       <div className="container mx-auto px-4 flex items-center justify-between mb-4">

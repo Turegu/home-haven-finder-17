@@ -128,7 +128,8 @@ const CompanyDetailPage = () => {
       {/* Cover image */}
       {company.cover_url && (
         <div className="container mx-auto px-4 mb-4">
-          <div className="h-48 md:h-64 rounded-xl overflow-hidden">
+          {/* Cover: same 4:1 aspect ratio as cards */}
+          <div className="aspect-[4/1] rounded-xl overflow-hidden">
             <img src={company.cover_url} alt={`${company.name} cover`} className="w-full h-full object-cover" />
           </div>
         </div>
