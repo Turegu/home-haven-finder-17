@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-google-maps/api';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import type { MapListing } from './LeafletListingMapView';
-import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation } from '@/lib/mapConstants';
+import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation, getCountryMapConfig } from '@/lib/mapConstants';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 
 function formatPrice(price: number | null, currency: string) {
   if (!price) return 'Contact for Price';
@@ -122,6 +123,8 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const { data: allowedCountry = 'Turkey' } = useAllowedCountry();
+  const countryConfig = getCountryMapConfig(allowedCountry);
 
   const listingsWithCoords = useMemo(() =>
     listings.map(l => ({ ...l, coords: getCoordsFromLocation(l.location) })),
@@ -129,10 +132,10 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
   );
 
   const center = useMemo(() => {
-    if (listingsWithCoords.length === 0) return { lat: 39.0, lng: 35.0 };
+    if (listingsWithCoords.length === 0) return countryConfig.center;
     const avg = listingsWithCoords.reduce((acc, l) => ({ lat: acc.lat + l.coords.lat, lng: acc.lng + l.coords.lng }), { lat: 0, lng: 0 });
     return { lat: avg.lat / listingsWithCoords.length, lng: avg.lng / listingsWithCoords.length };
-  }, [listingsWithCoords]);
+  }, [listingsWithCoords, countryConfig]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -140,8 +143,16 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
       const bounds = new google.maps.LatLngBounds();
       listingsWithCoords.forEach(l => bounds.extend(l.coords));
       map.fitBounds(bounds, 50);
+    } else if (listingsWithCoords.length === 0) {
+      // Fit to country bounds when no listings
+      const cb = countryConfig.bounds;
+      const bounds = new google.maps.LatLngBounds(
+        { lat: cb[0][0], lng: cb[0][1] },
+        { lat: cb[1][0], lng: cb[1][1] }
+      );
+      map.fitBounds(bounds, 20);
     }
-  }, [listingsWithCoords]);
+  }, [listingsWithCoords, countryConfig]);
 
   // Focus on a specific listing
   useEffect(() => {

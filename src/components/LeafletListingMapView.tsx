@@ -5,6 +5,8 @@ import L from 'leaflet';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { useAllowedCountry } from '@/hooks/useAllowedCountry';
+import { getCountryMapConfig } from '@/lib/mapConstants';
 
 // City coordinate lookup for mock data
 const cityCoords: Record<string, [number, number]> = {
@@ -217,14 +219,20 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
 };
 
 // Auto-fit map bounds
-function FitBounds({ positions }: { positions: [number, number][] }) {
+function FitBounds({ positions, countryBounds }: { positions: [number, number][]; countryBounds: [[number, number], [number, number]] }) {
   const map = useMap();
   useMemo(() => {
     if (positions.length > 0) {
       const bounds = L.latLngBounds(positions.map(p => L.latLng(p[0], p[1])));
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
+    } else {
+      const bounds = L.latLngBounds(
+        L.latLng(countryBounds[0][0], countryBounds[0][1]),
+        L.latLng(countryBounds[1][0], countryBounds[1][1])
+      );
+      map.fitBounds(bounds, { padding: [20, 20] });
     }
-  }, [positions, map]);
+  }, [positions, map, countryBounds]);
   return null;
 }
 
@@ -252,6 +260,8 @@ interface ListingMapViewProps {
 const ListingMapView = ({ listings, className = '', focusListingId = null }: ListingMapViewProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
+  const { data: allowedCountry = 'Turkey' } = useAllowedCountry();
+  const countryConfig = getCountryMapConfig(allowedCountry);
 
   const listingsWithCoords = useMemo(() =>
     listings.map(l => ({
@@ -264,13 +274,13 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
   const positions = listingsWithCoords.map(l => l.coords);
   const center: [number, number] = positions.length > 0
     ? [positions.reduce((s, p) => s + p[0], 0) / positions.length, positions.reduce((s, p) => s + p[1], 0) / positions.length]
-    : [39.0, 35.0];
+    : [countryConfig.center.lat, countryConfig.center.lng];
 
   return (
     <div className={`rounded-xl border border-border overflow-hidden ${className}`} style={{ height: '600px' }}>
       <MapContainer
         center={center}
-        zoom={6}
+        zoom={countryConfig.zoom}
         style={{ height: '100%', width: '100%' }}
         zoomControl={true}
       >
@@ -278,7 +288,7 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <FitBounds positions={positions} />
+        <FitBounds positions={positions} countryBounds={countryConfig.bounds} />
         <FocusMarker focusId={focusListingId} markerRefs={markerRefs} />
         {listingsWithCoords.map((listing) => (
           <Marker
