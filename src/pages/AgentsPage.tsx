@@ -182,8 +182,8 @@ const AgentsPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
-              const headOffice = [company.town, company.province].filter(Boolean).join(', ');
-              const speaksLangs = company.languages?.slice(0, 3).join(', ');
+              const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
+              const speaksLangs = company.languages?.join(', ');
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
                   className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
