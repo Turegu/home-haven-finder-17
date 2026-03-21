@@ -227,24 +227,24 @@ const ContactUsPage = () => {
     {
       icon: Phone,
       title: "Phone Number",
-      value: settings.sales_phone || "Not set",
+      value: settings.sales_phone,
       link: settings.sales_phone ? `tel:${settings.sales_phone}` : undefined,
     },
     {
       icon: Mail,
       title: "Email",
-      value: settings.sales_email || "Not set",
+      value: settings.sales_email,
       link: settings.sales_email ? `mailto:${settings.sales_email}` : undefined,
     },
     {
       icon: MessageCircle,
       title: "WhatsApp",
-      value: settings.sales_whatsapp || "Not set",
+      value: settings.sales_whatsapp,
       link: settings.sales_whatsapp
         ? `https://wa.me/${settings.sales_whatsapp.replace(/[^0-9+]/g, "")}`
         : undefined,
     },
-  ];
+  ].filter((card) => card.value && card.value.trim() !== "");
 
   const subjectOptions = [
     "General Inquiries",
