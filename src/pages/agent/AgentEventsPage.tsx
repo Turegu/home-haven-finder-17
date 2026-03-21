@@ -14,6 +14,9 @@ const AgentEventsPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [filterType, setFilterType] = useState("all");
+  const [filterEntry, setFilterEntry] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const fetch = async () => {
@@ -33,14 +36,23 @@ const AgentEventsPage = () => {
     fetch();
   }, [sortOrder]);
 
-  const filtered = events.filter((e) =>
-    e.title?.toLowerCase().includes(search.toLowerCase()) || e.listing_id?.includes(search)
-  );
+  const formatType = (t: string) => t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const eventTypes = [...new Set(events.map(e => e.event_type))];
+  const entryTypes = [...new Set(events.map(e => e.entry_type))];
+
+  const filtered = events.filter((e) => {
+    if (search && !e.title?.toLowerCase().includes(search.toLowerCase()) && !e.listing_id?.includes(search)) return false;
+    if (filterType !== "all" && e.event_type !== filterType) return false;
+    if (filterEntry !== "all" && e.entry_type !== filterEntry) return false;
+    if (filterStatus !== "all" && e.status !== filterStatus) return false;
+    return true;
+  });
 
   return (
     <AgentLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">Events</h1>
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
@@ -53,7 +65,50 @@ const AgentEventsPage = () => {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Filters - always visible */}
+      <div className="bg-card rounded-xl border border-border p-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Event Type</label>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {eventTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Entry Type</label>
+            <Select value={filterEntry} onValueChange={setFilterEntry}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {entryTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Status</label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Events</h2>
+          <span className="text-xs text-muted-foreground">{filtered.length} result(s)</span>
+        </div>
         <Table>
           <TableHeader>
             <TableRow className="bg-primary/5">
@@ -74,8 +129,8 @@ const AgentEventsPage = () => {
               <TableRow key={e.id} className="hover:bg-muted/30">
                 <TableCell className="font-mono text-xs">{e.listing_id}</TableCell>
                 <TableCell className="font-medium">{e.title}</TableCell>
-                <TableCell className="capitalize text-sm">{e.event_type.replace(/_/g, " ")}</TableCell>
-                <TableCell className="capitalize text-sm">{e.entry_type.replace(/_/g, " ")}</TableCell>
+                <TableCell className="capitalize text-sm">{formatType(e.event_type)}</TableCell>
+                <TableCell className="capitalize text-sm">{formatType(e.entry_type)}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">{e.event_date ? format(new Date(e.event_date), "dd MMM yyyy") : "—"}</TableCell>
                 <TableCell><Badge variant="secondary" className={e.status === "active" ? "bg-emerald-100 text-emerald-800" : "bg-muted text-muted-foreground"}>{e.status}</Badge></TableCell>
               </TableRow>

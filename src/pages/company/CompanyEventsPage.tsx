@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -38,6 +38,9 @@ const CompanyEventsPage = () => {
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selected, setSelected] = useState<string[]>([]);
+  const [filterType, setFilterType] = useState("all");
+  const [filterEntry, setFilterEntry] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const init = async () => {
@@ -65,9 +68,16 @@ const CompanyEventsPage = () => {
 
   useEffect(() => { if (companyId) fetchEvents(); }, [companyId, sortOrder]);
 
-  const filtered = events.filter(
-    (e) => e.title.toLowerCase().includes(search.toLowerCase()) || e.listing_id.includes(search)
-  );
+  const filtered = events.filter((e) => {
+    if (search && !e.title.toLowerCase().includes(search.toLowerCase()) && !e.listing_id.includes(search)) return false;
+    if (filterType !== "all" && e.event_type !== filterType) return false;
+    if (filterEntry !== "all" && e.entry_type !== filterEntry) return false;
+    if (filterStatus !== "all" && e.status !== filterStatus) return false;
+    return true;
+  });
+
+  const eventTypes = [...new Set(events.map(e => e.event_type))];
+  const entryTypes = [...new Set(events.map(e => e.entry_type))];
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
@@ -100,7 +110,7 @@ const CompanyEventsPage = () => {
         <h1 className="text-2xl font-bold text-foreground">Events Management</h1>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search By Name Or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
@@ -127,9 +137,48 @@ const CompanyEventsPage = () => {
         </div>
       </div>
 
+      {/* Filters - always visible */}
+      <div className="bg-card rounded-xl border border-border p-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Event Type</label>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {eventTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Entry Type</label>
+            <Select value={filterEntry} onValueChange={setFilterEntry}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {entryTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Status</label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Events</h2>
+          <span className="text-xs text-muted-foreground">{filtered.length} result(s)</span>
         </div>
         <div className="overflow-x-auto">
           <Table>

@@ -17,6 +17,9 @@ const AgentProjectsPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [filterType, setFilterType] = useState("all");
+  const [filterProjectStatus, setFilterProjectStatus] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const fetch = async () => {
@@ -36,14 +39,23 @@ const AgentProjectsPage = () => {
     fetch();
   }, [sortOrder]);
 
-  const filtered = projects.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase()) || p.listing_id.includes(search)
-  );
+  const formatType = (t: string) => t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const projectTypes = [...new Set(projects.map(p => p.project_type))];
+  const projectStatuses = [...new Set(projects.map(p => p.project_status))];
+
+  const filtered = projects.filter((p) => {
+    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+    if (filterType !== "all" && p.project_type !== filterType) return false;
+    if (filterProjectStatus !== "all" && p.project_status !== filterProjectStatus) return false;
+    if (filterStatus !== "all" && p.status !== filterStatus) return false;
+    return true;
+  });
 
   return (
     <AgentLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">Projects</h1>
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
@@ -56,7 +68,50 @@ const AgentProjectsPage = () => {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Filters - always visible */}
+      <div className="bg-card rounded-xl border border-border p-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Project Type</label>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {projectTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Project Status</label>
+            <Select value={filterProjectStatus} onValueChange={setFilterProjectStatus}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {projectStatuses.map((s) => (<SelectItem key={s} value={s}>{formatType(s)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Listing Status</label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Projects</h2>
+          <span className="text-xs text-muted-foreground">{filtered.length} result(s)</span>
+        </div>
         <Table>
           <TableHeader>
             <TableRow className="bg-primary/5">
@@ -78,10 +133,10 @@ const AgentProjectsPage = () => {
               <TableRow key={p.id} className="hover:bg-muted/30">
                 <TableCell className="font-mono text-xs">{p.listing_id}</TableCell>
                 <TableCell className="font-medium">{p.title}</TableCell>
-                <TableCell className="capitalize text-sm">{p.project_type}</TableCell>
+                <TableCell className="capitalize text-sm">{formatType(p.project_type)}</TableCell>
                 <TableCell><Badge variant="secondary" className={p.status === "active" ? "bg-emerald-100 text-emerald-800" : "bg-muted text-muted-foreground"}>{p.status}</Badge></TableCell>
                 <TableCell className="text-sm">{p.min_price ? `${p.currency} ${p.min_price.toLocaleString()}` : "—"}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">{format(new Date(p.created_at), "yyyy.dd.MM")}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{format(new Date(p.created_at), "dd/MM/yyyy")}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/projects/${p.id}`)}>
                     <Eye className="h-4 w-4" />

@@ -51,7 +51,7 @@ const CompanyPropertiesPage = () => {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [selected, setSelected] = useState<string[]>([]);
   const [classificationFilter, setClassificationFilter] = useState<ClassificationFilter>("all");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   const [filterType, setFilterType] = useState("all");
   const [filterRooms, setFilterRooms] = useState("all");
