@@ -348,13 +348,13 @@ function useImageUploader(uploadImage: (file: File, folder: string) => Promise<s
 
 /* ============ Home Page Form ============ */
 
-const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocCreate, openLocEdit, handleLocDelete }: any) => {
+const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocCreate, openLocEdit, handleLocDelete, partners: partnerItems, openPartnerCreate, openPartnerEdit, handlePartnerDelete }: any) => {
   const hero = content.hero || {};
   const secondBanner = content.second_banner || {};
   const featProps = content.featured_properties || {};
   const featProjects = content.featured_projects || {};
   const featLocs = content.featured_locations || {};
-  const partners = content.partners || {};
+  const partnersContent = content.partners || {};
 
   const heroRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
