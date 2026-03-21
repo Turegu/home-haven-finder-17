@@ -270,6 +270,35 @@ const AdminCmsEditPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Partner Dialog */}
+      <Dialog open={partnerDialog} onOpenChange={setPartnerDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingPartner ? "Edit Partner" : "Create Partner"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <input ref={partnerFileRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) { setPartnerImageFile(f); setPartnerImagePreview(URL.createObjectURL(f)); }
+              }} />
+            <ImageUploadBox preview={partnerImagePreview} onClick={() => partnerFileRef.current?.click()} height="h-28" label="Logo" />
+            <div>
+              <Label>Name</Label>
+              <Input value={partnerForm.name} onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })} />
+            </div>
+            <div>
+              <Label>Link URL</Label>
+              <Input value={partnerForm.link_url} onChange={(e) => setPartnerForm({ ...partnerForm, link_url: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setPartnerDialog(false)}>Cancel</Button>
+              <Button className="flex-1" onClick={handlePartnerSave}>{editingPartner ? "Update" : "Create"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 };
