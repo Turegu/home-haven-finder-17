@@ -42,6 +42,7 @@ const CompanyEventsPage = () => {
   const [filterType, setFilterType] = useState("all");
   const [filterEntry, setFilterEntry] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const { canCreate, membership } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
