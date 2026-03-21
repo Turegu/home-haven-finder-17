@@ -54,11 +54,27 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
   const [imgIdx, setImgIdx] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const { formatArea } = useAreaUnit();
+  const touchStartX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(diff) > 40) {
+      setImgIdx(i => diff < 0 ? (i + 1) % allImages.length : (i - 1 + allImages.length) % allImages.length);
+    }
+    touchStartX.current = null;
+  };
 
   return (
     <div className="w-[240px] bg-card rounded-xl border border-border overflow-hidden shadow-xl">
-      <div className="relative aspect-[2/1] overflow-hidden bg-muted group">
-        <img src={allImages[imgIdx]} alt={listing.title} className="w-full h-full object-cover" />
+      <div className="relative aspect-[2/1] overflow-hidden bg-muted group"
+        onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div className="flex h-full transition-transform duration-300 ease-in-out" style={{ width: `${allImages.length * 100}%`, transform: `translateX(-${imgIdx * (100 / allImages.length)}%)` }}>
+          {allImages.map((src, i) => (
+            <img key={i} src={src} alt={listing.title} className="h-full object-cover shrink-0" style={{ width: `${100 / allImages.length}%` }} />
+          ))}
+        </div>
         {allImages.length > 1 && (
           <>
             <button onClick={(e) => { e.stopPropagation(); setImgIdx(i => (i - 1 + allImages.length) % allImages.length); }}
@@ -69,6 +85,12 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
               className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
+            <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-1">
+              {allImages.map((_, i) => (
+                <button key={i} onClick={(e) => { e.stopPropagation(); setImgIdx(i); }}
+                  className={`w-1.5 h-1.5 rounded-full transition-all ${i === imgIdx ? 'bg-white scale-125' : 'bg-white/50'}`} />
+              ))}
+            </div>
           </>
         )}
         <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1 bg-foreground/60 text-white text-[10px] px-1.5 py-0.5 rounded-md">
