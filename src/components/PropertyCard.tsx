@@ -52,9 +52,7 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
   };
 
   const formatPrice = (price: number, currency?: string) => {
-    const sym = currency && currency !== 'USD' ? currency : '$';
-    if (price >= 1000000) return `${sym}${(price / 1000000).toFixed(1)}M`;
-    if (price >= 1000) return `${sym}${(price / 1000).toFixed(0)}K`;
+    const sym = currency && currency !== 'USD' ? `${currency} ` : '$';
     return `${sym}${price.toLocaleString()}`;
   };
 
