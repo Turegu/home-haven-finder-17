@@ -222,16 +222,14 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
 function FitBounds({ positions, countryBounds }: { positions: [number, number][]; countryBounds: [[number, number], [number, number]] }) {
   const map = useMap();
   useMemo(() => {
-    if (positions.length > 0) {
-      const bounds = L.latLngBounds(positions.map(p => L.latLng(p[0], p[1])));
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 12 });
-    } else {
-      const bounds = L.latLngBounds(
-        L.latLng(countryBounds[0][0], countryBounds[0][1]),
-        L.latLng(countryBounds[1][0], countryBounds[1][1])
-      );
-      map.fitBounds(bounds, { padding: [20, 20] });
-    }
+    // Always include country bounds so full country is visible
+    const bounds = L.latLngBounds(
+      L.latLng(countryBounds[0][0], countryBounds[0][1]),
+      L.latLng(countryBounds[1][0], countryBounds[1][1])
+    );
+    // Extend with listing positions if any
+    positions.forEach(p => bounds.extend(L.latLng(p[0], p[1])));
+    map.fitBounds(bounds, { padding: [50, 50] });
   }, [positions, map, countryBounds]);
   return null;
 }
