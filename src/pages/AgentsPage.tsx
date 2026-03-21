@@ -19,6 +19,7 @@ interface CompanyRow {
   service_areas: string[] | null;
   province: string | null;
   town: string | null;
+  neighbourhood: string | null;
 }
 
 interface AgentRow {
