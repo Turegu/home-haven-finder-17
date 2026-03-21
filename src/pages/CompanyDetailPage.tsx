@@ -243,13 +243,13 @@ const CompanyDetailPage = () => {
 
           {/* Sidebar */}
           <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
-            {/* About Us */}
-            {company.about && (
-              <div className="bg-card rounded-xl border border-border p-5">
-                <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">About Us</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{company.about}</p>
-              </div>
-            )}
+            {/* About Us — always show, fallback to demo text */}
+            <div className="bg-card rounded-xl border border-border p-5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">About Us</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                {company.about || `${company.name} is a trusted real estate company dedicated to helping clients find their ideal properties. With a team of experienced professionals and deep market knowledge, we provide personalized guidance for buying, selling, and renting properties across our service areas.`}
+              </p>
+            </div>
 
             {/* Languages we speak */}
             {allLanguages.length > 0 && (
