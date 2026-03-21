@@ -176,63 +176,42 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="bg-card rounded-2xl border border-border p-5 hover:shadow-lg hover:border-primary/20 transition-all group">
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="w-14 h-14 rounded-xl bg-background border border-border shadow-sm overflow-hidden shrink-0">
-                      {company.logo_url ? (
-                        <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1.5" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-lg">
-                          {company.name.charAt(0)}
-                        </div>
+                  className="bg-card rounded-2xl border border-border p-4 hover:shadow-lg hover:border-primary/20 transition-all group text-center">
+                  {/* Large prominent logo */}
+                  <div className="w-20 h-20 mx-auto rounded-xl bg-background border border-border shadow-sm overflow-hidden mb-3">
+                    {company.logo_url ? (
+                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-2" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
+                        {company.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+
+                  <h3 className="font-semibold text-sm text-foreground truncate group-hover:text-primary transition-colors">{company.name}</h3>
+                  <p className="text-xs text-muted-foreground mb-3">{typeLabel(company.company_type)}</p>
+
+                  <div className="flex items-center justify-center gap-3 text-xs flex-wrap">
+                    <span><span className="font-semibold text-foreground">{counts.agents}</span> <span className="text-muted-foreground">Agents</span></span>
+                    <span><span className="font-semibold text-foreground">{counts.buy}</span> <span className="text-muted-foreground">Sale</span></span>
+                    <span><span className="font-semibold text-foreground">{counts.rent}</span> <span className="text-muted-foreground">Rent</span></span>
+                  </div>
+
+                  {company.service_areas && company.service_areas.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-1 mt-3 pt-3 border-t border-border">
+                      {company.service_areas.slice(0, 2).map((area) => (
+                        <span key={area} className="text-[11px] bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{area}</span>
+                      ))}
+                      {company.service_areas.length > 2 && (
+                        <span className="text-[11px] text-muted-foreground">+{company.service_areas.length - 2}</span>
                       )}
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">{company.name}</h3>
-                      <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 mb-4 flex-wrap">
-                    {[
-                      { icon: Users, label: 'Agents', value: counts.agents },
-                      { icon: Home, label: 'Sale', value: counts.buy },
-                      { icon: Home, label: 'Rent', value: counts.rent },
-                    ].map((s) => (
-                      <div key={s.label} className="flex items-center gap-1.5 text-sm">
-                        <s.icon className="h-3.5 w-3.5 text-primary" />
-                        <span className="font-semibold text-foreground">{s.value}</span>
-                        <span className="text-muted-foreground text-xs">{s.label}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-3 border-t border-border space-y-2">
-                    {company.service_areas && company.service_areas.length > 0 && (
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        {company.service_areas.slice(0, 3).map((area) => (
-                          <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-0.5 rounded-full">{area}</span>
-                        ))}
-                      </div>
-                    )}
-                    {company.languages && company.languages.length > 0 && (
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        {company.languages.slice(0, 4).map((lang) => (
-                          <span key={lang} className="text-xs text-muted-foreground">{lang}</span>
-                        ))}
-                        {company.languages.length > 4 && (
-                          <span className="text-xs text-muted-foreground">+{company.languages.length - 4}</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </Link>
               );
             })}
