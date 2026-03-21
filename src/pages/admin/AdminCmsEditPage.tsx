@@ -74,7 +74,7 @@ const AdminCmsEditPage = () => {
       setLoading(false);
     };
     fetchPage();
-    if (slug === "home") fetchLocations();
+    if (slug === "home") { fetchLocations(); fetchPartners(); }
   }, [slug]);
 
   const fetchLocations = async () => {
