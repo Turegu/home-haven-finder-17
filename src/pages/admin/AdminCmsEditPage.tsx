@@ -22,6 +22,15 @@ interface FeaturedLocation {
   status: string;
 }
 
+interface Partner {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  link_url: string | null;
+  sort_order: number;
+  status: string;
+}
+
 const AdminCmsEditPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
