@@ -359,6 +359,19 @@ const CompanyPropertiesPage = () => {
                     </TableCell>
                     <TableCell className="text-sm capitalize">{prop.property_purpose}</TableCell>
                     <TableCell className="text-sm capitalize">{prop.property_type}</TableCell>
+                    <TableCell>
+                      {prop.property_classification === "premium" ? (
+                        <Badge className="bg-purple-100 text-purple-800 gap-1" variant="secondary">
+                          <Crown className="h-3 w-3" /> Premium
+                        </Badge>
+                      ) : prop.property_classification === "featured" ? (
+                        <Badge className="bg-teal-100 text-teal-800 gap-1" variant="secondary">
+                          <Star className="h-3 w-3" /> Featured
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Standard</span>
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium text-foreground max-w-[200px] truncate">{prop.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
                     <TableCell>
