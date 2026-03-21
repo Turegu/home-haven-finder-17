@@ -307,57 +307,51 @@ const AgentsPage = () => {
                 <Link key={agent.id} to={`/agents/${agent.id}`}
                   className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                   
-                  {/* Left: Avatar */}
-                  <div className="w-28 sm:w-36 shrink-0 bg-card border-r border-border flex items-center justify-center p-4">
+                  {/* Left: Avatar - dark bg like reference */}
+                  <div className="w-28 sm:w-32 shrink-0 bg-muted border-r border-border overflow-hidden">
                     {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt={agent.name} className="w-20 h-20 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" />
+                      <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl font-serif">
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl font-serif">
                         {agent.name.charAt(0)}
                       </div>
                     )}
                   </div>
 
                   {/* Right: Info */}
-                  <div className="flex-1 p-4 flex flex-col justify-center min-w-0 bg-muted/30">
-                    <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
-                      {agent.name}
-                    </h3>
-                    <p className="text-sm text-primary/80 font-medium mt-0.5">{agent.designation}</p>
-
-                    {/* Company badge */}
-                    <div className="flex items-center gap-3 mt-2">
+                  <div className="flex-1 p-4 flex flex-col min-w-0 bg-card">
+                    {/* Top row: name + company logo */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <h3 className="text-base font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                          {agent.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>
+                      </div>
                       {agent.companies?.logo_url ? (
-                        <img src={agent.companies.logo_url} alt="" className="w-14 h-14 rounded-lg object-contain border border-border bg-card p-1 shrink-0" />
+                        <img src={agent.companies.logo_url} alt={agent.companies.name ?? ''} className="w-12 h-12 rounded-lg object-contain border border-border bg-card p-0.5 shrink-0" />
                       ) : (
-                        <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                          <Building2 className="h-6 w-6 text-muted-foreground" />
+                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                          <Building2 className="h-5 w-5 text-muted-foreground" />
                         </div>
                       )}
-                      <span className="text-sm text-muted-foreground truncate">{agent.companies?.name ?? ''}</span>
-                    </div>
-
-                    {/* Stats row */}
-                    <div className="flex items-center gap-4 mt-3 text-sm">
-                      <span>
-                        <span className="font-semibold text-primary">{ac.rent}</span>
-                        <span className="text-muted-foreground ml-1">For Rent</span>
-                      </span>
-                      <span className="text-border">·</span>
-                      <span>
-                        <span className="font-semibold text-primary">{ac.buy}</span>
-                        <span className="text-muted-foreground ml-1">For Sale</span>
-                      </span>
                     </div>
 
                     {/* Languages */}
-                    {agent.languages && agent.languages.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
-                        <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                        <span className="text-muted-foreground">Speaks:</span>
-                        <span className="text-foreground font-medium truncate">{agent.languages.join(', ')}</span>
-                      </div>
-                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      <span>Languages: </span>
+                      <span className="text-foreground font-medium">{agent.languages?.join(', ') || '—'}</span>
+                    </p>
+
+                    {/* Stats row - bottom */}
+                    <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 text-sm">
+                      <span>
+                        <span className="text-primary font-semibold">For Sale: {ac.buy}</span>
+                      </span>
+                      <span>
+                        <span className="text-primary font-semibold">For Rent: {ac.rent}</span>
+                      </span>
+                    </div>
                   </div>
                 </Link>
               );
