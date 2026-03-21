@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2 } from 'lucide-react';
+import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,17 @@ interface AgentData {
   description: string | null;
   languages: string[] | null;
   service_areas: string[] | null;
+  phone: string | null;
+  email: string;
+  whatsapp: string | null;
   company_id: string;
-  companies: { id: string; name: string; logo_url: string | null; company_type: string | null; cover_url: string | null } | null;
+  companies: {
+    id: string;
+    name: string;
+    logo_url: string | null;
+    company_type: string | null;
+    cover_url: string | null;
+  } | null;
 }
 
 const AgentDetailPage = () => {
@@ -23,33 +32,55 @@ const AgentDetailPage = () => {
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
+  const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
 
   useEffect(() => {
     if (!id) return;
-    const fetch = async () => {
+    const fetchAgent = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, description, languages, service_areas, company_id, companies(id, name, logo_url, company_type, cover_url)")
+        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_type, cover_url)")
         .eq("id", id)
         .maybeSingle();
-      setAgent(data as unknown as AgentData | null);
+      const agentData = data as unknown as AgentData | null;
+      setAgent(agentData);
+
+      if (agentData) {
+        const { count: buyCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "buy");
+        const { count: rentCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "rent");
+        const { count: projCount } = await supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active");
+        const { count: evtCount } = await supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active");
+        setCounts({ buy: buyCount ?? 0, rent: rentCount ?? 0, projects: projCount ?? 0, events: evtCount ?? 0 });
+      }
       setLoading(false);
     };
-    fetch();
+    fetchAgent();
   }, [id]);
 
   const tabs = [
-    { key: 'properties', label: 'Properties' },
-    { key: 'projects', label: 'Projects' },
-    { key: 'events', label: 'Events' },
+    { key: 'properties', label: 'Properties', icon: Home },
+    { key: 'projects', label: 'Projects', icon: Building2 },
+    { key: 'events', label: 'Events', icon: Calendar },
   ];
 
   if (loading) {
-    return <div className="min-h-screen bg-background"><Header /><div className="text-center py-20 text-muted-foreground">Loading...</div><Footer /></div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="text-center py-20 text-muted-foreground">Loading...</div>
+        <Footer />
+      </div>
+    );
   }
 
   if (!agent) {
-    return <div className="min-h-screen bg-background"><Header /><div className="text-center py-20 text-muted-foreground">Agent not found.</div><Footer /></div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="text-center py-20 text-muted-foreground">Agent not found.</div>
+        <Footer />
+      </div>
+    );
   }
 
   const companyCover = agent.companies?.cover_url;
@@ -60,142 +91,207 @@ const AgentDetailPage = () => {
 
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-primary">Home</Link>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to="/agents" className="hover:text-primary">Agents</Link>
+          <Link to="/agents" className="hover:text-primary transition-colors">Agents</Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-primary">{agent.name}</span>
+          <span className="text-foreground font-medium">{agent.name}</span>
         </div>
       </div>
 
-      {/* Company cover image applied to agent profile */}
-      {companyCover && (
-        <div className="container mx-auto px-4 mb-4">
-          <div className="aspect-[4/1] rounded-xl overflow-hidden">
-            <img src={companyCover} alt={`${agent.companies?.name} cover`} className="w-full h-full object-cover" />
+      {/* ── Banner: company cover inherited ── */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="relative rounded-2xl overflow-hidden bg-muted h-[120px] sm:h-[140px] lg:h-[160px]">
+          {companyCover ? (
+            <img src={companyCover} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
+          )}
+          {/* Utility buttons */}
+          <div className="absolute top-3 right-3 flex gap-1.5">
+            <button className="p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors">
+              <Printer className="h-4 w-4 text-white" />
+            </button>
+            <button className="p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors">
+              <Share2 className="h-4 w-4 text-white" />
+            </button>
           </div>
         </div>
-      )}
-
-      {/* Title + actions */}
-      <div className="container mx-auto px-4 flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold text-foreground">{agent.name}</h1>
-        <div className="flex items-center gap-2">
-          <button className="p-2 rounded-full hover:bg-secondary"><Printer className="h-4 w-4 text-muted-foreground" /></button>
-          <button className="p-2 rounded-full hover:bg-secondary"><Share2 className="h-4 w-4 text-muted-foreground" /></button>
-        </div>
       </div>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 pb-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left sidebar */}
-          <div className="w-full lg:w-80 shrink-0">
-            <div className="bg-card rounded-xl border border-border overflow-hidden p-6 text-center">
-              {agent.avatar_url ? (
-                <img src={agent.avatar_url} alt={agent.name} className="w-28 h-28 rounded-lg mx-auto object-cover border-4 border-primary/10" />
-              ) : (
-                <div className="w-28 h-28 rounded-lg mx-auto bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl border-4 border-primary/10">
-                  {agent.name.charAt(0)}
+      {/* ── Floating identity card ── */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+          <div className="flex flex-col lg:flex-row">
+            {/* Left: agent info */}
+            <div className="flex-1 p-5 sm:p-6">
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
+                  {agent.avatar_url ? (
+                    <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
+                      {agent.name.charAt(0)}
+                    </div>
+                  )}
                 </div>
-              )}
-              <h2 className="font-bold text-foreground text-lg mt-4">{agent.name}</h2>
-              <p className="text-sm text-muted-foreground">{agent.designation}</p>
 
-              <Button variant="outline" className="w-full mt-4 gap-2">
-                <UserPlus className="h-4 w-4" />
-                Follow
-              </Button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                      <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-2 shrink-0">
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Follow
+                    </Button>
+                  </div>
 
-              <div className="flex items-center justify-center gap-0 mt-4 border-t border-border pt-4">
-                <button className="flex-1 flex items-center justify-center gap-1 text-primary hover:bg-secondary py-2 rounded-lg text-sm">
-                  <Phone className="h-4 w-4" />
-                </button>
-                <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1 text-primary hover:bg-secondary py-2 rounded-lg text-sm">
-                  <Mail className="h-4 w-4" />
-                </button>
-                <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1 text-primary hover:bg-secondary py-2 rounded-lg text-sm">
-                  <MessageCircle className="h-4 w-4" />
-                </button>
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 mt-3 flex-wrap">
+                    {[
+                      { icon: Home, label: 'Sale', value: counts.buy },
+                      { icon: Home, label: 'Rent', value: counts.rent },
+                      { icon: Building2, label: 'Projects', value: counts.projects },
+                      { icon: Calendar, label: 'Events', value: counts.events },
+                    ].map((s) => (
+                      <div key={s.label} className="flex items-center gap-1.5 text-sm">
+                        <s.icon className="h-3.5 w-3.5 text-primary" />
+                        <span className="font-semibold text-foreground">{s.value}</span>
+                        <span className="text-muted-foreground text-xs">{s.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Contact pills */}
+                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                    {agent.phone && (
+                      <a href={`tel:${agent.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                        <Phone className="h-3 w-3" /> Call
+                      </a>
+                    )}
+                    <a href={`mailto:${agent.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                      <Mail className="h-3 w-3" /> Email
+                    </a>
+                    <a href={`https://wa.me/${agent.whatsapp || agent.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
+                      <MessageCircle className="h-3 w-3" /> WhatsApp
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right content */}
-          <div className="flex-1 min-w-0">
-            {/* Company + Info table */}
-            <div className="bg-card rounded-xl border border-border p-6 mb-6">
-              {/* Company reference */}
-              {agent.companies && (
-                <Link to={`/company/${agent.companies.id}`} className="flex items-center gap-3 mb-5 pb-5 border-b border-border">
+            {/* Right: Company badge */}
+            {agent.companies && (
+              <Link
+                to={`/company/${agent.companies.id}`}
+                className="lg:w-[280px] xl:w-[320px] shrink-0 border-t lg:border-t-0 lg:border-l border-border p-5 flex items-center gap-4 hover:bg-muted/50 transition-colors group"
+              >
+                <div className="w-14 h-14 rounded-xl bg-background border border-border shadow-sm overflow-hidden shrink-0">
                   {agent.companies.logo_url ? (
-                    <img src={agent.companies.logo_url} alt={agent.companies.name} className="h-12 w-auto max-w-[80px] rounded-lg object-contain" />
+                    <img src={agent.companies.logo_url} alt={agent.companies.name} className="w-full h-full object-contain p-1.5" />
                   ) : (
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold">
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-lg">
                       {agent.companies.name.charAt(0)}
                     </div>
                   )}
-                  <div>
-                    <h3 className="font-semibold text-foreground">{agent.companies.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {agent.companies.company_type?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Real Estate Company'}
-                    </p>
-                  </div>
-                </Link>
-              )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Company</p>
+                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{agent.companies.name}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {agent.companies.company_type?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Real Estate Company'}
+                  </p>
+                </div>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
 
-              <table className="w-full text-sm">
-                <tbody>
-                  {agent.languages && agent.languages.length > 0 && (
-                    <tr className="border-b border-border">
-                      <td className="py-3 text-muted-foreground w-40">I Speak:</td>
-                      <td className="py-3 text-foreground">{agent.languages.join(', ')}</td>
-                    </tr>
-                  )}
-                  {agent.service_areas && agent.service_areas.length > 0 && (
-                    <tr className="border-b border-border">
-                      <td className="py-3 text-muted-foreground">Service Areas:</td>
-                      <td className="py-3 text-foreground">{agent.service_areas.join(' - ')}</td>
-                    </tr>
-                  )}
-                  <tr>
-                    <td className="py-3 text-muted-foreground">Designation:</td>
-                    <td className="py-3 text-foreground">{agent.designation}</td>
-                  </tr>
-                </tbody>
-              </table>
+      {/* ── About section — full-width prominent ── */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="bg-card rounded-xl border border-border p-6">
+          <h2 className="text-lg font-bold text-foreground mb-2">About {agent.name}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+            {agent.description || `${agent.name} is an experienced real estate professional dedicated to helping clients find their ideal properties. With deep market knowledge and a client-first approach, ${agent.name} provides personalized guidance for buying, selling, and renting across all service areas.`}
+          </p>
+        </div>
+      </div>
 
-              {agent.description && (
-                <>
-                  <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">About {agent.name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{agent.description}</p>
-                </>
-              )}
-            </div>
+      {/* ── Body content ── */}
+      <div className="container mx-auto px-4 pb-8">
+        <div className="flex flex-col lg:flex-row gap-8">
 
+          {/* Sidebar */}
+          <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
+            {/* Languages */}
+            {agent.languages && agent.languages.length > 0 && (
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                  <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
+                  I Speak
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {agent.languages.map((lang) => (
+                    <span key={lang} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Service areas */}
+            {agent.service_areas && agent.service_areas.length > 0 && (
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                  <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
+                  Service Areas
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {agent.service_areas.map((area) => (
+                    <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
+                      {area}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
+
+          {/* Main content */}
+          <div className="flex-1 min-w-0">
             {/* Tabs */}
-            <div className="flex items-center gap-2 mb-6">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                    activeTab === tab.key
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <div className="border-b border-border mb-6">
+              <div className="flex items-center gap-0 -mb-px overflow-x-auto">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`flex items-center gap-2 px-5 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === tab.key
+                          ? 'border-primary text-primary'
+                          : 'border-transparent text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="text-center py-12 text-muted-foreground text-sm">
-              No {activeTab} found.
-            </div>
+            {/* Tab content */}
+            {activeTab === 'properties' && <div className="text-center py-12 text-muted-foreground text-sm">No properties found for this agent.</div>}
+            {activeTab === 'projects' && <div className="text-center py-12 text-muted-foreground text-sm">No projects found for this agent.</div>}
+            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this agent.</div>}
           </div>
         </div>
       </div>
