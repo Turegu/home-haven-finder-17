@@ -52,19 +52,10 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
 
         {/* Bottom overlaid content */}
         <div className="absolute bottom-0 inset-x-0 p-5 flex flex-col gap-3">
-          {/* Developer with logo */}
-          <div className="flex items-center gap-2">
-            {project.developerLogo ? (
-              <img src={project.developerLogo} alt={project.developer} className="h-7 w-7 rounded object-contain" />
-            ) : (
-              <div className="h-5 w-5 rounded bg-white/15 flex items-center justify-center">
-                <Building className="h-3 w-3 text-white/70" />
-              </div>
-            )}
-            <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
-              {project.developer}
-            </span>
-          </div>
+          {/* Developer name */}
+          <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
+            {project.developer}
+          </span>
 
           {/* Title */}
           <h3 className="font-display text-xl font-semibold text-white leading-tight tracking-tight text-wrap-balance">
@@ -88,9 +79,15 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
                 ${project.priceFrom.toLocaleString()}
               </p>
             </div>
-            <span className="text-[11px] text-white/50 font-medium">
-              {project.units} units
-            </span>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[11px] text-white/50 font-medium">
+                {project.units} units
+              </span>
+              <span className="flex items-center gap-1 text-[11px] text-white/60 font-medium">
+                <Calendar className="h-3 w-3 text-primary" />
+                {project.completionDate}
+              </span>
+            </div>
           </div>
         </div>
       </div>
