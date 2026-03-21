@@ -77,6 +77,12 @@ const CompanyDetailPage = () => {
     return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   };
 
+  const handleMapClick = () => {
+    if (!company?.pin_location) return;
+    const [lat, lng] = company.pin_location.split(",").map(s => s.trim());
+    window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
+  };
+
   const tabs = [
     { key: 'properties', label: 'Our Properties' },
     { key: 'projects', label: 'Projects' },
@@ -119,6 +125,15 @@ const CompanyDetailPage = () => {
         </div>
       </div>
 
+      {/* Cover image */}
+      {company.cover_url && (
+        <div className="container mx-auto px-4 mb-4">
+          <div className="h-48 md:h-64 rounded-xl overflow-hidden">
+            <img src={company.cover_url} alt={`${company.name} cover`} className="w-full h-full object-cover" />
+          </div>
+        </div>
+      )}
+
       {/* Title + actions */}
       <div className="container mx-auto px-4 flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-foreground">{company.name}</h1>
@@ -134,16 +149,16 @@ const CompanyDetailPage = () => {
           {/* Left sidebar */}
           <div className="w-full lg:w-80 shrink-0">
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {/* Map replaces cover image */}
-              <div className="h-48 overflow-hidden">
+              {/* Map - clickable to navigate to office */}
+              <div className="h-48 overflow-hidden cursor-pointer relative" onClick={handleMapClick} title="Click to open in Google Maps">
                 <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
               </div>
               <div className="p-5 text-center relative">
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
                   {company.logo_url ? (
-                    <img src={company.logo_url} alt={company.name} className="h-20 w-auto max-w-[120px] rounded-lg border-2 border-background object-contain bg-white shadow" />
+                    <img src={company.logo_url} alt={company.name} className="h-20 w-auto max-w-[120px] rounded-lg border-4 border-card object-contain bg-card shadow-lg" />
                   ) : (
-                    <div className="w-20 h-20 rounded-lg border-2 border-background bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl shadow">
+                    <div className="w-20 h-20 rounded-lg border-4 border-card bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl shadow-lg">
                       {company.name.charAt(0)}
                     </div>
                   )}

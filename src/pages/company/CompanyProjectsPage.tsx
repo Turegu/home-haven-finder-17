@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Layers } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -38,6 +38,9 @@ const CompanyProjectsPage = () => {
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selected, setSelected] = useState<string[]>([]);
+  const [filterType, setFilterType] = useState("all");
+  const [filterProjectStatus, setFilterProjectStatus] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const init = async () => {
@@ -65,9 +68,18 @@ const CompanyProjectsPage = () => {
 
   useEffect(() => { if (companyId) fetchProjects(); }, [companyId, sortOrder]);
 
-  const filtered = projects.filter(
-    (p) => p.title.toLowerCase().includes(search.toLowerCase()) || p.listing_id.includes(search)
-  );
+  const filtered = projects.filter((p) => {
+    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+    if (filterType !== "all" && p.project_type !== filterType) return false;
+    if (filterProjectStatus !== "all" && p.project_status !== filterProjectStatus) return false;
+    if (filterStatus !== "all" && p.status !== filterStatus) return false;
+    return true;
+  });
+
+  const projectTypes = [...new Set(projects.map(p => p.project_type))];
+  const projectStatuses = [...new Set(projects.map(p => p.project_status))];
+
+  const formatType = (t: string) => t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
@@ -93,7 +105,7 @@ const CompanyProjectsPage = () => {
         <h1 className="text-2xl font-bold text-foreground">Projects Management</h1>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search By Title Or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
@@ -120,9 +132,48 @@ const CompanyProjectsPage = () => {
         </div>
       </div>
 
+      {/* Filters - always visible */}
+      <div className="bg-card rounded-xl border border-border p-4 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Project Type</label>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {projectTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Project Status</label>
+            <Select value={filterProjectStatus} onValueChange={setFilterProjectStatus}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {projectStatuses.map((s) => (<SelectItem key={s} value={s}>{formatType(s)}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Listing Status</label>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Projects</h2>
+          <span className="text-xs text-muted-foreground">{filtered.length} result(s)</span>
         </div>
         <div className="overflow-x-auto">
           <Table>
@@ -151,7 +202,7 @@ const CompanyProjectsPage = () => {
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                       {format(new Date(proj.created_at), "dd/MM/yyyy")}
                     </TableCell>
-                    <TableCell className="text-sm capitalize">{proj.project_type.replace("_", " ")}</TableCell>
+                    <TableCell className="text-sm capitalize">{formatType(proj.project_type)}</TableCell>
                     <TableCell className="font-medium text-foreground max-w-[200px] truncate">{proj.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{proj.location || "—"}</TableCell>
                     <TableCell>
