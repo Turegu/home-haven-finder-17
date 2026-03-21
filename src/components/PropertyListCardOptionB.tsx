@@ -18,6 +18,7 @@ interface PropertyListCardProps {
 const PropertyListCard = ({ property }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const { formatArea } = useAreaUnit();
 
   const nextImage = (e: React.MouseEvent) => {
     e.preventDefault();
