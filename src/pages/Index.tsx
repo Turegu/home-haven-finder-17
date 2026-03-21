@@ -244,7 +244,6 @@ const Index = () => {
                 </LinkTag>
               );
             })}
-            ))}
           </div>
         </div>
       </section>
