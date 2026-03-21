@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Building2, Home, FolderKanban, CalendarDays, Users } from "lucide-react";
+import { Building2, Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface Stats {
@@ -40,10 +40,10 @@ const AdminDashboardPage = () => {
   ];
 
   const membershipCards = [
-    { label: "Basic members", count: stats.basicCompanies, color: "bg-lime-50 border-lime-200", barColor: "bg-lime-500" },
-    { label: "Lite members", count: stats.liteCompanies, color: "bg-purple-50 border-purple-200", barColor: "bg-purple-500" },
-    { label: "Plus members", count: stats.plusCompanies, color: "bg-orange-50 border-orange-200", barColor: "bg-orange-500" },
-    { label: "Pro members", count: stats.proCompanies, color: "bg-emerald-50 border-emerald-200", barColor: "bg-emerald-500" },
+    { label: "Basic members", count: stats.basicCompanies, color: "bg-lime-50 border-lime-200", barColor: "bg-lime-500", icon: Briefcase },
+    { label: "Lite members", count: stats.liteCompanies, color: "bg-purple-50 border-purple-200", barColor: "bg-purple-500", icon: Zap },
+    { label: "Plus members", count: stats.plusCompanies, color: "bg-orange-50 border-orange-200", barColor: "bg-orange-500", icon: Star },
+    { label: "Pro members", count: stats.proCompanies, color: "bg-emerald-50 border-emerald-200", barColor: "bg-emerald-500", icon: Crown },
   ];
 
   return (
@@ -84,7 +84,7 @@ const AdminDashboardPage = () => {
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <p className="text-4xl font-bold text-foreground">{card.count}</p>
-                <Users className="h-8 w-8 text-muted-foreground" />
+                <card.icon className="h-8 w-8 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-muted-foreground mt-1">Companies</p>
             </div>
