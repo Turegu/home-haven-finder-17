@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface Agent {
   id: string;
