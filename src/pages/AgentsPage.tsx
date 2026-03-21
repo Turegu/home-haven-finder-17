@@ -66,18 +66,32 @@ const AgentsPage = () => {
         .eq("status", "active");
       setAgents((agentData ?? []) as unknown as AgentRow[]);
 
+      // Agent property counts
+      if (agentData && agentData.length > 0) {
+        const agentIds = agentData.map((a: any) => a.id);
+        const aCounts: Record<string, { buy: number; rent: number }> = {};
+        agentIds.forEach((id: string) => { aCounts[id] = { buy: 0, rent: 0 }; });
+
+        const { data: agentProps } = await supabase
+          .from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds);
+        (agentProps ?? []).forEach((p: any) => {
+          if (!aCounts[p.agent_id]) return;
+          if (p.property_purpose === 'rent') aCounts[p.agent_id].rent++;
+          else aCounts[p.agent_id].buy++;
+        });
+        setAgentCounts(aCounts);
+      }
+
       // Counts per company
       if (compData && compData.length > 0) {
         const ids = compData.map(c => c.id);
         const counts: Record<string, { agents: number; buy: number; rent: number }> = {};
         ids.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
 
-        // Agent counts
-        const { data: agentCounts } = await supabase
+        const { data: agentCountsData } = await supabase
           .from("agents").select("company_id").eq("status", "active").in("company_id", ids);
-        (agentCounts ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
+        (agentCountsData ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
 
-        // Property counts
         const { data: propCounts } = await supabase
           .from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", ids);
         (propCounts ?? []).forEach((p: any) => {
