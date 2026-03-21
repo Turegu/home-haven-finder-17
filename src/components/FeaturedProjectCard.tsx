@@ -34,10 +34,15 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
         {/* Gradient scrim — only bottom half */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
-        {/* Top: delivery pill */}
-        <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-background/90 backdrop-blur text-foreground text-[11px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full">
-          <Calendar className="h-3 w-3 text-primary" />
-          {project.completionDate}
+        {/* Top-left: developer logo */}
+        <div className="absolute top-4 left-4">
+          {project.developerLogo ? (
+            <img src={project.developerLogo} alt={project.developer} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
+          ) : (
+            <div className="h-7 w-7 rounded bg-white/90 shadow-sm flex items-center justify-center">
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
         </div>
 
         {/* Arrow on hover */}
