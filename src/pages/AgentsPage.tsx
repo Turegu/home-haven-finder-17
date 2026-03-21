@@ -173,14 +173,32 @@ const AgentsPage = () => {
           </button>
         </div>
 
-        <div className="bg-card rounded-xl shadow-md p-4 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto">
+        <div className="bg-card rounded-xl shadow-md p-4 flex flex-col md:flex-row items-center gap-3 max-w-4xl mx-auto">
           <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 w-full md:w-48">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <select className="bg-transparent text-sm outline-none w-full text-foreground">
-              <option>Location</option>
-              <option>Istanbul</option>
-              <option>Antalya</option>
-              <option>Bodrum</option>
+            <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+            <select
+              className="bg-transparent text-sm outline-none w-full text-foreground"
+              value={selectedProvince}
+              onChange={(e) => setSelectedProvince(e.target.value)}
+            >
+              <option value="">Province</option>
+              {provinces.map((p) => (
+                <option key={p.name} value={p.name}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 w-full md:w-48">
+            <Home className="h-4 w-4 text-muted-foreground shrink-0" />
+            <select
+              className="bg-transparent text-sm outline-none w-full text-foreground"
+              value={selectedTown}
+              onChange={(e) => setSelectedTown(e.target.value)}
+              disabled={!selectedProvince}
+            >
+              <option value="">City / Town</option>
+              {towns.map((t) => (
+                <option key={t.name} value={t.name}>{t.name}</option>
+              ))}
             </select>
           </div>
           <div className="flex-1 w-full">
