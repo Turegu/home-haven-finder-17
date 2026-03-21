@@ -444,17 +444,10 @@ export default function AdminLocationsPage() {
             <div className="space-y-4">
               <div>
                 <Label>Allowed Country (restricts keyword search)</Label>
-                <div className="flex gap-2 mt-1">
-                  <Input
-                    defaultValue={allowedCountry}
-                    id="allowed_country"
-                    placeholder="e.g. Turkey"
-                  />
-                  <Button size="sm" onClick={() => {
-                    const v = (document.getElementById("allowed_country") as HTMLInputElement)?.value;
-                    if (v) handleUpdateSetting("allowed_country", v);
-                  }}>Save</Button>
-                </div>
+                <CountryCombobox
+                  value={allowedCountry}
+                  onSelect={(country) => handleUpdateSetting("allowed_country", country)}
+                />
                 <p className="text-xs text-muted-foreground mt-1">Keywords from search will be restricted to this country</p>
               </div>
               <div>
