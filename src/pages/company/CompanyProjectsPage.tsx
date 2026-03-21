@@ -42,7 +42,7 @@ const CompanyProjectsPage = () => {
   const [filterType, setFilterType] = useState("all");
   const [filterProjectStatus, setFilterProjectStatus] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
-  const { canCreate, membership, remainingSlots } = useMembershipLimits(companyId);
+  const { canCreate, membership } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
