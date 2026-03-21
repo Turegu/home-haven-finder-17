@@ -35,7 +35,7 @@ const AdminCmsEditPage = () => {
   const [locations, setLocations] = useState<FeaturedLocation[]>([]);
   const [locDialog, setLocDialog] = useState(false);
   const [editingLoc, setEditingLoc] = useState<FeaturedLocation | null>(null);
-  const [locForm, setLocForm] = useState({ name: "", link_url: "", sort_order: 0 });
+  const [locForm, setLocForm] = useState({ name: "", link_url: "", sort_order: 0, tagline: "", subtitle: "" });
   const [locImageFile, setLocImageFile] = useState<File | null>(null);
   const [locImagePreview, setLocImagePreview] = useState<string | null>(null);
   const locFileRef = useRef<HTMLInputElement>(null);
