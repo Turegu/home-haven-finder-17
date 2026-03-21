@@ -7,6 +7,16 @@ import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation, getCountryMapConfig } from 
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 
+function getRentSuffix(rentDuration?: string | null): string {
+  if (!rentDuration) return '/mo';
+  switch (rentDuration) {
+    case 'Daily': return '/day';
+    case 'Weekly': return '/wk';
+    case 'Yearly': return '/yr';
+    default: return '/mo';
+  }
+}
+
 function formatPrice(price: number | null, currency: string) {
   if (!price) return 'Contact for Price';
   const sym = currency === 'USD' ? '$' : currency + ' ';
@@ -15,12 +25,15 @@ function formatPrice(price: number | null, currency: string) {
   return `${sym}${price.toLocaleString()}`;
 }
 
-function formatPriceShort(price: number | null, currency: string) {
+function formatPriceShort(price: number | null, currency: string, rentDuration?: string | null) {
   if (!price) return 'Free';
   const sym = currency === 'USD' ? '$' : currency + ' ';
-  if (price >= 1000000) return `${sym}${(price / 1000000).toFixed(1)}M`;
-  if (price >= 1000) return `${sym}${Math.round(price / 1000)}K`;
-  return `${sym}${price.toLocaleString()}`;
+  let base = '';
+  if (price >= 1000000) base = `${sym}${(price / 1000000).toFixed(1)}M`;
+  else if (price >= 1000) base = `${sym}${Math.round(price / 1000)}K`;
+  else base = `${sym}${price.toLocaleString()}`;
+  if (rentDuration) base += getRentSuffix(rentDuration);
+  return base;
 }
 
 // Price badge marker overlay
@@ -39,7 +52,7 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
             : 'bg-primary text-primary-foreground border-primary hover:scale-105'
         }`}
       >
-        {formatPriceShort(listing.price, listing.currency)}
+        {formatPriceShort(listing.price, listing.currency, listing.rentDuration)}
       </div>
       <div className={`w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent -mt-px ${
         isSelected ? 'border-t-foreground' : 'border-t-primary'
@@ -116,7 +129,7 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
         )}
       </div>
       <div className="p-3">
-        <div className="text-sm font-bold text-foreground mb-0.5">{formatPrice(listing.price, listing.currency)}</div>
+        <div className="text-sm font-bold text-foreground mb-0.5">{formatPrice(listing.price, listing.currency)}{listing.rentDuration && <span className="text-xs font-normal text-muted-foreground">{getRentSuffix(listing.rentDuration)}</span>}</div>
         <Link to={listing.linkTo}>
           <h4 className="text-xs font-medium text-foreground/90 hover:text-primary transition-colors line-clamp-1 mb-1.5">{listing.title}</h4>
         </Link>

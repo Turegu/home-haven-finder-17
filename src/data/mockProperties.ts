@@ -18,6 +18,7 @@ export interface Property {
   isFeatured: boolean;
   listingTier: 'premium' | 'featured' | 'standard';
   listingType: 'buy' | 'rent';
+  rentDuration?: string | null;
   advertisingTags?: string[];
 }
 
