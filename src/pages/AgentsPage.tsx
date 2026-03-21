@@ -17,6 +17,8 @@ interface CompanyRow {
   cover_url: string | null;
   languages: string[] | null;
   service_areas: string[] | null;
+  province: string | null;
+  town: string | null;
 }
 
 interface AgentRow {
