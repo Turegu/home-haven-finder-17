@@ -221,7 +221,7 @@ const AdminCmsEditPage = () => {
       </div>
 
       <div className="space-y-8 max-w-4xl">
-        {slug === "home" && <HomePageForm content={content} updateSection={updateSection} uploadImage={uploadImage} locations={locations} openLocCreate={openLocCreate} openLocEdit={openLocEdit} handleLocDelete={handleLocDelete} />}
+        {slug === "home" && <HomePageForm content={content} updateSection={updateSection} uploadImage={uploadImage} locations={locations} openLocCreate={openLocCreate} openLocEdit={openLocEdit} handleLocDelete={handleLocDelete} partners={partners} openPartnerCreate={openPartnerCreate} openPartnerEdit={openPartnerEdit} handlePartnerDelete={handlePartnerDelete} />}
         {slug === "agents" && <AgentsPageForm content={content} updateSection={updateSection} uploadImage={uploadImage} />}
         {slug === "terms" && <RichTextPageForm content={content} updateNestedField={updateNestedField} sectionTitle="For Users" />}
         {slug === "privacy" && <RichTextPageForm content={content} updateNestedField={updateNestedField} sectionTitle="Data" />}
