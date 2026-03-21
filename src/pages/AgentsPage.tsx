@@ -34,13 +34,14 @@ interface AgentRow {
 }
 
 const AgentsPage = () => {
-  const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('companies');
+  const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [agents, setAgents] = useState<AgentRow[]>([]);
   const [companyCounts, setCompanyCounts] = useState<Record<string, { agents: number; buy: number; rent: number }>>({});
+  const [agentCounts, setAgentCounts] = useState<Record<string, { buy: number; rent: number }>>({});
 
   useEffect(() => {
     const fetchData = async () => {
