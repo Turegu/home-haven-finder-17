@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2 } from 'lucide-react';
+import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -84,10 +84,10 @@ const CompanyDetailPage = () => {
   };
 
   const tabs = [
-    { key: 'properties', label: 'Our Properties' },
-    { key: 'projects', label: 'Projects' },
-    { key: 'events', label: 'Events' },
-    { key: 'agents', label: 'Our Agents' },
+    { key: 'properties', label: 'Properties', icon: Home },
+    { key: 'projects', label: 'Projects', icon: Building2 },
+    { key: 'events', label: 'Events', icon: Calendar },
+    { key: 'agents', label: 'Our Team', icon: Users },
   ];
 
   if (loading) {
@@ -110,146 +110,233 @@ const CompanyDetailPage = () => {
     );
   }
 
+  const totalListings = counts.buy + counts.rent + counts.projects + counts.events;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Breadcrumb */}
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-primary">Home</Link>
-          <ChevronRight className="h-3 w-3" />
-          <Link to="/agents" className="hover:text-primary">Companies</Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-primary">{company.name}</span>
-        </div>
-      </div>
+      {/* Editorial Hero Section */}
+      <div className="relative">
+        {/* Cover image — cinematic wide crop */}
+        <div className="relative h-[220px] sm:h-[280px] lg:h-[340px] overflow-hidden bg-muted">
+          {company.cover_url ? (
+            <img
+              src={company.cover_url}
+              alt={`${company.name} cover`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/20 via-muted to-primary/5" />
+          )}
+          {/* Dark scrim for legibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-      {/* Cover image */}
-      {company.cover_url && (
-        <div className="container mx-auto px-4 mb-4">
-          {/* Cover: same 4:1 aspect ratio as cards */}
-          <div className="aspect-[4/1] rounded-xl overflow-hidden">
-            <img src={company.cover_url} alt={`${company.name} cover`} className="w-full h-full object-cover" />
+          {/* Breadcrumb overlay — top */}
+          <div className="absolute top-0 left-0 right-0">
+            <div className="container mx-auto px-4 pt-4">
+              <div className="flex items-center gap-2 text-xs text-white/70">
+                <Link to="/" className="hover:text-white transition-colors">Home</Link>
+                <ChevronRight className="h-3 w-3" />
+                <Link to="/agents" className="hover:text-white transition-colors">Companies</Link>
+                <ChevronRight className="h-3 w-3" />
+                <span className="text-white">{company.name}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Company identity — bottom-left of hero */}
+          <div className="absolute bottom-0 left-0 right-0">
+            <div className="container mx-auto px-4 pb-6 flex items-end gap-5">
+              {/* Logo */}
+              <div className="shrink-0 w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-xl border-2 border-white/20 bg-card shadow-xl overflow-hidden backdrop-blur-sm">
+                {company.logo_url ? (
+                  <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1.5" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
+                    {company.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+              {/* Name + type */}
+              <div className="pb-0.5">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight drop-shadow-md font-serif">
+                  {company.name}
+                </h1>
+                <p className="text-sm text-white/70 mt-0.5 tracking-wide uppercase font-light">
+                  {typeLabel(company.company_type)}
+                </p>
+              </div>
+              {/* Actions — far right */}
+              <div className="ml-auto flex items-center gap-1.5 pb-1">
+                <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors">
+                  <Printer className="h-4 w-4 text-white/80" />
+                </button>
+                <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors">
+                  <Share2 className="h-4 w-4 text-white/80" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Title + actions */}
-      <div className="container mx-auto px-4 flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold text-foreground">{company.name}</h1>
-        <div className="flex items-center gap-2">
-          <button className="p-2 rounded-full hover:bg-secondary"><Printer className="h-4 w-4 text-muted-foreground" /></button>
-          <button className="p-2 rounded-full hover:bg-secondary"><Share2 className="h-4 w-4 text-muted-foreground" /></button>
+        {/* Stats ribbon — editorial data strip */}
+        <div className="border-b border-border bg-card">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center divide-x divide-border overflow-x-auto">
+              <div className="flex items-center gap-2 px-5 py-3 text-sm">
+                <Users className="h-3.5 w-3.5 text-primary" />
+                <span className="text-muted-foreground">Team</span>
+                <span className="font-semibold text-foreground">{counts.agents}</span>
+              </div>
+              <div className="flex items-center gap-2 px-5 py-3 text-sm">
+                <Home className="h-3.5 w-3.5 text-primary" />
+                <span className="text-muted-foreground">For Sale</span>
+                <span className="font-semibold text-foreground">{counts.buy}</span>
+              </div>
+              <div className="flex items-center gap-2 px-5 py-3 text-sm">
+                <Home className="h-3.5 w-3.5 text-primary" />
+                <span className="text-muted-foreground">For Rent</span>
+                <span className="font-semibold text-foreground">{counts.rent}</span>
+              </div>
+              <div className="flex items-center gap-2 px-5 py-3 text-sm">
+                <Building2 className="h-3.5 w-3.5 text-primary" />
+                <span className="text-muted-foreground">Projects</span>
+                <span className="font-semibold text-foreground">{counts.projects}</span>
+              </div>
+              <div className="flex items-center gap-2 px-5 py-3 text-sm">
+                <Calendar className="h-3.5 w-3.5 text-primary" />
+                <span className="text-muted-foreground">Events</span>
+                <span className="font-semibold text-foreground">{counts.events}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 pb-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left sidebar */}
-          <div className="w-full lg:w-80 shrink-0">
+      {/* Main content — editorial two-column */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+
+          {/* Left sidebar — contact & map card */}
+          <aside className="w-full lg:w-[300px] shrink-0 space-y-5">
+            {/* Contact card */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {/* Logo + name */}
-              <div className="p-5 text-center">
-                <div className="flex justify-center mb-3">
-                  {company.logo_url ? (
-                    <img src={company.logo_url} alt={company.name} className="h-16 w-auto max-w-[100px] rounded-lg border border-border object-contain bg-card" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
-                      {company.name.charAt(0)}
+              <div className="px-5 pt-5 pb-4">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Contact</h3>
+                <div className="space-y-3">
+                  {company.phone && (
+                    <a href={`tel:${company.phone}`} className="flex items-center gap-3 text-sm text-foreground hover:text-primary transition-colors group">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <Phone className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      {company.phone}
+                    </a>
+                  )}
+                  <a href={`mailto:${company.email}`} className="flex items-center gap-3 text-sm text-foreground hover:text-primary transition-colors group">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <Mail className="h-3.5 w-3.5 text-primary" />
+                    </div>
+                    <span className="truncate">{company.email}</span>
+                  </a>
+                  {company.whatsapp && (
+                    <a href={`https://wa.me/${company.whatsapp}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm text-foreground hover:text-primary transition-colors group">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <MessageCircle className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      WhatsApp
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="px-5 pb-5">
+                <Button variant="outline" className="w-full gap-2 mt-1">
+                  <UserPlus className="h-4 w-4" />
+                  Follow Company
+                </Button>
+              </div>
+            </div>
+
+            {/* Office location card */}
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
+              <div className="px-5 pt-5 pb-3">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Office Location</h3>
+              </div>
+              <div
+                className="h-[180px] cursor-pointer relative group"
+                onClick={handleMapClick}
+                title="Click to open in Google Maps"
+              >
+                <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow-lg flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 text-primary" /> Open in Maps
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Details card */}
+            <div className="bg-card rounded-xl border border-border overflow-hidden">
+              <div className="px-5 pt-5 pb-4">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Details</h3>
+                <div className="space-y-3">
+                  {company.languages && company.languages.length > 0 && (
+                    <div className="flex items-start gap-3 text-sm">
+                      <Globe className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-0.5">Languages</p>
+                        <p className="text-foreground">{company.languages.join(', ')}</p>
+                      </div>
+                    </div>
+                  )}
+                  {company.service_areas && company.service_areas.length > 0 && (
+                    <div className="flex items-start gap-3 text-sm">
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-0.5">Service Areas</p>
+                        <p className="text-foreground">{company.service_areas.join(' · ')}</p>
+                      </div>
                     </div>
                   )}
                 </div>
-                <h2 className="font-bold text-foreground text-lg">{company.name}</h2>
-                <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
-              </div>
-              {/* Map - clickable to navigate to office */}
-              <div className="h-36 overflow-hidden cursor-pointer border-t border-border" onClick={handleMapClick} title="Click to open in Google Maps">
-                <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
-              </div>
-              <div className="p-5 text-center">
-                <Button variant="outline" className="w-full mt-4 gap-2">
-                  <UserPlus className="h-4 w-4" />
-                  Follow
-                </Button>
-                <div className="flex items-center justify-center gap-0 mt-4 border-t border-border pt-4">
-                  <button className="flex-1 flex items-center justify-center gap-1 text-primary hover:bg-secondary py-2 rounded-lg text-sm">
-                    <Phone className="h-4 w-4" /> Call
-                  </button>
-                  <div className="w-px h-6 bg-border" />
-                  <button className="flex-1 flex items-center justify-center gap-1 text-primary hover:bg-secondary py-2 rounded-lg text-sm">
-                    <Mail className="h-4 w-4" /> Email
-                  </button>
-                  <div className="w-px h-6 bg-border" />
-                  <button className="flex-1 flex items-center justify-center gap-1 text-primary hover:bg-secondary py-2 rounded-lg text-sm">
-                    <MessageCircle className="h-4 w-4" /> WhatsApp
-                  </button>
-                </div>
               </div>
             </div>
-          </div>
+          </aside>
 
           {/* Right content */}
           <div className="flex-1 min-w-0">
-            {/* Info table */}
-            <div className="bg-card rounded-xl border border-border p-6 mb-6">
-              <table className="w-full text-sm">
-                <tbody>
-                  <tr className="border-b border-border">
-                    <td className="py-3 text-muted-foreground w-40">Employees:</td>
-                    <td className="py-3 text-foreground"><span className="text-primary font-semibold">{counts.agents}</span> Agents</td>
-                  </tr>
-                  {company.languages && company.languages.length > 0 && (
-                    <tr className="border-b border-border">
-                      <td className="py-3 text-muted-foreground">We Speak:</td>
-                      <td className="py-3 text-foreground">{company.languages.join(', ')}</td>
-                    </tr>
-                  )}
-                  <tr className="border-b border-border">
-                    <td className="py-3 text-muted-foreground">Properties:</td>
-                    <td className="py-3 text-foreground">
-                      <span className="text-primary">({counts.buy})</span> For Buy
-                      <span className="mx-2 text-muted-foreground">·</span>
-                      <span className="text-primary">({counts.rent})</span> For Rent
-                      <span className="mx-2 text-muted-foreground">·</span>
-                      <span className="text-primary">({counts.projects})</span> Projects
-                      <span className="mx-2 text-muted-foreground">·</span>
-                      <span className="text-primary">({counts.events})</span> Events
-                    </td>
-                  </tr>
-                  {company.service_areas && company.service_areas.length > 0 && (
-                    <tr>
-                      <td className="py-3 text-muted-foreground">Service Areas:</td>
-                      <td className="py-3 text-foreground">{company.service_areas.join(' - ')}</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            {/* About — editorial prose block */}
+            {company.about && (
+              <div className="mb-8">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">About</h2>
+                <div className="bg-card rounded-xl border border-border p-6">
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{company.about}</p>
+                </div>
+              </div>
+            )}
 
-              {company.about && (
-                <>
-                  <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">About {company.name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{company.about}</p>
-                </>
-              )}
-            </div>
-
-            {/* Tabs */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                    activeTab === tab.key
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            {/* Tabs — editorial underline style */}
+            <div className="border-b border-border mb-6">
+              <div className="flex items-center gap-0 overflow-x-auto -mb-px">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`flex items-center gap-2 px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
+                        activeTab === tab.key
+                          ? 'border-primary text-primary'
+                          : 'border-transparent text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Tab content */}
@@ -259,17 +346,17 @@ const CompanyDetailPage = () => {
                   <Link
                     key={agent.id}
                     to={`/agents/${agent.id}`}
-                    className="bg-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md transition-shadow"
+                    className="bg-card rounded-xl border border-border p-4 flex items-center gap-4 hover:shadow-md hover:border-primary/20 transition-all group"
                   >
                     {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt={agent.name} className="w-14 h-14 rounded-lg object-cover" />
+                      <img src={agent.avatar_url} alt={agent.name} className="w-14 h-14 rounded-xl object-cover ring-2 ring-border group-hover:ring-primary/30 transition-all" />
                     ) : (
-                      <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold">
+                      <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold ring-2 ring-border">
                         {agent.name.charAt(0)}
                       </div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-foreground">{agent.name}</h4>
+                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{agent.name}</h4>
                       <p className="text-sm text-muted-foreground">{agent.designation}</p>
                       {agent.languages && (
                         <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).join(', ')}</p>
