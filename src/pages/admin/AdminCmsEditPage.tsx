@@ -35,7 +35,7 @@ const AdminCmsEditPage = () => {
   const [locations, setLocations] = useState<FeaturedLocation[]>([]);
   const [locDialog, setLocDialog] = useState(false);
   const [editingLoc, setEditingLoc] = useState<FeaturedLocation | null>(null);
-  const [locForm, setLocForm] = useState({ name: "", link_url: "", sort_order: 0 });
+  const [locForm, setLocForm] = useState({ name: "", link_url: "", sort_order: 0, tagline: "", subtitle: "" });
   const [locImageFile, setLocImageFile] = useState<File | null>(null);
   const [locImagePreview, setLocImagePreview] = useState<string | null>(null);
   const locFileRef = useRef<HTMLInputElement>(null);
@@ -110,14 +110,14 @@ const AdminCmsEditPage = () => {
   // Featured location CRUD
   const openLocCreate = () => {
     setEditingLoc(null);
-    setLocForm({ name: "", link_url: "", sort_order: locations.length });
+    setLocForm({ name: "", link_url: "", sort_order: locations.length, tagline: "", subtitle: "" });
     setLocImageFile(null);
     setLocImagePreview(null);
     setLocDialog(true);
   };
   const openLocEdit = (loc: FeaturedLocation) => {
     setEditingLoc(loc);
-    setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order });
+    setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order, tagline: (loc as any).tagline || "", subtitle: (loc as any).subtitle || "" });
     setLocImageFile(null);
     setLocImagePreview(loc.image_url);
     setLocDialog(true);
@@ -126,7 +126,7 @@ const AdminCmsEditPage = () => {
     if (!locForm.name) { toast.error("Name is required"); return; }
     let image_url = editingLoc?.image_url || null;
     if (locImageFile) image_url = await uploadImage(locImageFile, "locations");
-    const payload = { name: locForm.name, link_url: locForm.link_url || null, image_url, sort_order: locForm.sort_order };
+    const payload = { name: locForm.name, link_url: locForm.link_url || null, image_url, sort_order: locForm.sort_order, tagline: locForm.tagline || null, subtitle: locForm.subtitle || null };
     if (editingLoc) {
       await supabase.from("featured_locations").update(payload).eq("id", editingLoc.id);
       toast.success("Location updated");
@@ -187,6 +187,14 @@ const AdminCmsEditPage = () => {
             <div>
               <Label>Name</Label>
               <Input value={locForm.name} onChange={(e) => setLocForm({ ...locForm, name: e.target.value })} />
+            </div>
+            <div>
+              <Label>Tagline <span className="text-muted-foreground text-xs">(thin text, e.g. "Explore")</span></Label>
+              <Input value={locForm.tagline} onChange={(e) => setLocForm({ ...locForm, tagline: e.target.value })} placeholder="Explore" />
+            </div>
+            <div>
+              <Label>Subtitle <span className="text-muted-foreground text-xs">(bold text, e.g. "Projects in Dubai")</span></Label>
+              <Input value={locForm.subtitle} onChange={(e) => setLocForm({ ...locForm, subtitle: e.target.value })} placeholder="Projects in Dubai" />
             </div>
             <div>
               <Label>Link</Label>
