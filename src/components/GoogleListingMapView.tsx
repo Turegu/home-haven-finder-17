@@ -46,6 +46,7 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
   const allImages = listing.images?.length ? listing.images : [listing.image];
   const [imgIdx, setImgIdx] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const { formatArea } = useAreaUnit();
 
   return (
     <div className="w-[240px] bg-card rounded-xl border border-border overflow-hidden shadow-xl">
