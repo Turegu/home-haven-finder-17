@@ -164,6 +164,10 @@ const CompanyAgentEditPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyId) { toast.error("Company not found"); return; }
+    if (!isEdit && !membershipLimits.canCreate("agents")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more agents. Please upgrade.`);
+      return;
+    }
     if (!form.name.trim()) { toast.error("Agent name is required"); return; }
     if (!form.email.trim()) { toast.error("Email is required"); return; }
     if (!form.designation.trim()) { toast.error("Designation is required"); return; }
