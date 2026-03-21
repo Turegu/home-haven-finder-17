@@ -54,7 +54,7 @@ const AgentsPage = () => {
       // Companies
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
