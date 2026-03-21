@@ -4,7 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -75,6 +75,17 @@ const AdminReportsPage = () => {
     setReports((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
   };
 
+  const deleteReport = async (id: string) => {
+    const { error } = await supabase
+      .from("property_reports" as any)
+      .delete()
+      .eq("id", id);
+
+    if (error) { toast.error("Failed to delete report"); return; }
+    toast.success("Report deleted");
+    setReports((prev) => prev.filter((r) => r.id !== id));
+  };
+
   const filtered = filter === "all" ? reports : reports.filter((r) => r.status === filter);
 
   const statusColor = (s: string) => {
@@ -143,11 +154,14 @@ const AdminReportsPage = () => {
                         Mark Reviewed
                       </Button>
                     )}
-                    {report.status !== "resolved" && (
+                     {report.status !== "resolved" && (
                       <Button size="sm" variant="outline" onClick={() => updateStatus(report.id, "resolved")}>
                         Resolve
                       </Button>
                     )}
+                    <Button size="sm" variant="destructive" onClick={() => deleteReport(report.id)}>
+                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                    </Button>
                   </div>
                 </div>
               </div>
