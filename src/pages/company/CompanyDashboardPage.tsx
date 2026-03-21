@@ -7,9 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Phone,
-  TrendingUp, Star, ArrowRight
+  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
+
+const membershipIcons: Record<string, React.ElementType> = {
+  basic: Briefcase,
+  lite: Zap,
+  plus: Star,
+  pro: Crown,
+};
 
 interface CompanyData {
   id: string;
@@ -100,19 +107,26 @@ const CompanyDashboardPage = () => {
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-        {/* Membership */}
-        <div className={`rounded-xl border p-5 ${mem.bg}`}>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Membership</h3>
-            <Star className="h-4 w-4 text-muted-foreground/50" />
-          </div>
-          <p className={`text-xl font-bold ${mem.color} capitalize`}>{company?.membership}</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            {company?.package_end_date
-              ? `Valid till ${format(new Date(company.package_end_date), "do MMM yyyy")}`
-              : "No expiry set"}
-          </p>
-        </div>
+        {(() => {
+          const MembershipIcon = membershipIcons[company?.membership || "basic"] || Briefcase;
+          const daysLeft = company?.package_end_date
+            ? differenceInDays(new Date(company.package_end_date), new Date())
+            : null;
+          return (
+            <div className={`rounded-xl border p-5 ${mem.bg}`}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Membership</h3>
+                <MembershipIcon className="h-5 w-5 text-primary" />
+              </div>
+              <p className={`text-xl font-bold ${mem.color} capitalize`}>{company?.membership}</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                {company?.package_end_date
+                  ? `Expires ${format(new Date(company.package_end_date), "do MMM yyyy")}${daysLeft !== null && daysLeft >= 0 ? ` (${daysLeft} days left)` : daysLeft !== null ? " (Expired)" : ""}`
+                  : "No expiry set"}
+              </p>
+            </div>
+          );
+        })()}
 
         {/* Credit Balance */}
         <div className="bg-card rounded-xl border border-border p-5">
