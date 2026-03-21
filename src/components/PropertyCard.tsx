@@ -17,6 +17,7 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
   const [isFavorited, setIsFavorited] = useState(isSaved);
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const queryClient = useQueryClient();
+  const { formatArea } = useAreaUnit();
 
   // Sync local state when prop changes (e.g. after query refetch)
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
