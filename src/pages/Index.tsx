@@ -230,7 +230,7 @@ const Index = () => {
                   {...(linkProps as any)}
                   className="group relative rounded-2xl overflow-hidden"
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden">
+                  <div className="relative aspect-[16/9] overflow-hidden">
                     {loc.image_url ? (
                       <img src={loc.image_url} alt={loc.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]" />
                     ) : (
@@ -241,11 +241,11 @@ const Index = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                     <div className="absolute bottom-0 inset-x-0 p-5 flex items-end justify-between">
                       <div>
-                        <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">Explore</p>
-                        <h3 className="font-display text-xl font-semibold text-white tracking-tight">{loc.name}</h3>
+                        {loc.tagline && <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">{loc.tagline}</p>}
+                        <h3 className="font-display text-lg font-semibold text-white tracking-tight">{loc.name}</h3>
                       </div>
-                      <div className="h-9 w-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                        <ExternalLink className="h-4 w-4 text-white" />
+                      <div className="h-8 w-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                        <ExternalLink className="h-3.5 w-3.5 text-white" />
                       </div>
                     </div>
                   </div>
