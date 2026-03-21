@@ -178,73 +178,62 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.town, company.province].filter(Boolean).join(', ');
               const speaksLangs = company.languages?.slice(0, 3).join(', ');
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="group relative bg-card rounded-none border-b-2 border-primary/0 hover:border-primary overflow-hidden transition-all duration-500">
+                  className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                   
-                  {/* Full-bleed cover / logo area */}
-                  <div className="relative aspect-[16/10] bg-muted overflow-hidden">
-                    {company.cover_url ? (
-                      <img src={company.cover_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  {/* Left: Logo area */}
+                  <div className="w-36 sm:w-44 shrink-0 bg-muted/30 border-r border-border flex items-center justify-center p-5">
+                    {company.logo_url ? (
+                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-primary/20 via-accent/10 to-muted" />
+                      <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl font-serif">
+                        {company.name.charAt(0)}
+                      </div>
                     )}
-                    {/* Gradient scrim */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
-                    
-                    {/* Floating logo badge */}
-                    <div className="absolute bottom-4 left-5 w-14 h-14 rounded-lg bg-card shadow-lg border border-border overflow-hidden">
-                      {company.logo_url ? (
-                        <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1.5" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary text-primary-foreground font-bold text-xl font-serif">
-                          {company.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Listing counts on image */}
-                    <div className="absolute bottom-5 right-5 flex items-center gap-3 text-xs font-semibold text-white/90">
-                      <span>{counts.buy} For Sale</span>
-                      <span className="w-px h-3 bg-white/40" />
-                      <span>{counts.rent} For Rent</span>
-                    </div>
                   </div>
 
-                  {/* Text content */}
-                  <div className="px-5 pt-4 pb-5 space-y-1.5">
-                    <h3 className="text-xl font-bold text-foreground leading-tight font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                  {/* Right: Info */}
+                  <div className="flex-1 p-5 flex flex-col justify-center min-w-0">
+                    <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
                       {company.name}
                     </h3>
-                    <p className="text-sm text-primary/80 font-medium tracking-wide">
+                    <p className="text-sm text-primary/80 font-medium mt-0.5">
                       {typeLabel(company.company_type)}
                     </p>
 
                     {headOffice && (
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
                         <MapPin className="h-3.5 w-3.5 text-accent shrink-0" />
-                        <span>{headOffice}</span>
+                        <span className="truncate">{headOffice}</span>
                       </div>
                     )}
 
-                    {/* Divider + metadata */}
-                    <div className="pt-3 mt-2 border-t border-border/50 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Users className="h-3.5 w-3.5" />
-                        <span><span className="font-semibold text-foreground">{counts.agents}</span> Agents</span>
-                      </div>
-                      {speaksLangs && (
-                        <div className="text-xs text-muted-foreground">
-                          <span className="uppercase tracking-wider mr-1">Speaks:</span>
-                          <span className="text-foreground font-medium">{speaksLangs}</span>
-                        </div>
-                      )}
+                    {/* Stats row */}
+                    <div className="flex items-center gap-4 mt-3 text-sm">
+                      <span>
+                        <span className="font-semibold text-primary">{counts.rent}</span>
+                        <span className="text-muted-foreground ml-1">For Rent</span>
+                      </span>
+                      <span className="text-border">·</span>
+                      <span>
+                        <span className="font-semibold text-primary">{counts.buy}</span>
+                        <span className="text-muted-foreground ml-1">For Sale</span>
+                      </span>
                     </div>
+
+                    {/* Speaks */}
+                    {speaksLangs && (
+                      <div className="mt-3 pt-3 border-t border-border/50 text-xs text-muted-foreground">
+                        <span className="uppercase tracking-wider">Speaks: </span>
+                        <span className="text-foreground font-medium">{speaksLangs}</span>
+                      </div>
+                    )}
                   </div>
                 </Link>
               );
