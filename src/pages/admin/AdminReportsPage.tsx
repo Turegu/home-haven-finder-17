@@ -75,6 +75,17 @@ const AdminReportsPage = () => {
     setReports((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
   };
 
+  const deleteReport = async (id: string) => {
+    const { error } = await supabase
+      .from("property_reports" as any)
+      .delete()
+      .eq("id", id);
+
+    if (error) { toast.error("Failed to delete report"); return; }
+    toast.success("Report deleted");
+    setReports((prev) => prev.filter((r) => r.id !== id));
+  };
+
   const filtered = filter === "all" ? reports : reports.filter((r) => r.status === filter);
 
   const statusColor = (s: string) => {
