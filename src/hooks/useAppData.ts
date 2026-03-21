@@ -110,7 +110,7 @@ export function useCmsPage<T = Record<string, any>>(slug: string) {
 }
 
 // ─── Featured locations ───
-interface FeaturedLocation { id: string; name: string; image_url: string | null; link_url: string | null }
+interface FeaturedLocation { id: string; name: string; image_url: string | null; link_url: string | null; tagline: string | null }
 
 export function useFeaturedLocations() {
   return useQuery({
