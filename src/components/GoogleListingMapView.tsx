@@ -197,7 +197,7 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
             position={selectedListing.coords}
             mapPaneName={OverlayView.FLOAT_PANE}
           >
-            <div className="transform -translate-x-1/2 -translate-y-[calc(100%+40px)]">
+            <div className="transform -translate-x-1/2 -translate-y-[calc(100%+40px)]" onClick={(e) => e.stopPropagation()}>
               <PopupCard listing={selectedListing} onClose={() => setSelectedId(null)} />
               <div className="w-3 h-3 bg-card border-b border-r border-border rotate-45 mx-auto -mt-1.5" />
             </div>
