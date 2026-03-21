@@ -506,6 +506,7 @@ const BuyPage = () => {
                     area: p.area ?? 0,
                     areaUnit: p.area_unit ?? 'm²',
                     propertyType: p.property_type,
+                    listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as const,
                     rentDuration: p.rent_duration,
                   }))}
                   focusListingId={focusListingId}
