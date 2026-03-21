@@ -133,104 +133,104 @@ const CompanyDetailPage = () => {
         </div>
       </div>
 
-      {/* ── Hero: Contained cover with map overlay ── */}
+      {/* ── Banner: contained, 4:1 aspect ratio to show full image ── */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="relative rounded-2xl overflow-hidden h-[240px] sm:h-[280px] lg:h-[320px] bg-muted">
-          {/* Cover image */}
+        <div className="relative rounded-2xl overflow-hidden bg-muted">
           {company.cover_url ? (
-            <img src={company.cover_url} alt="" className="w-full h-full object-cover" />
+            <img src={company.cover_url} alt="" className="w-full object-contain bg-muted" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
+            <div className="aspect-[4/1] w-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
           )}
-          {/* Scrim */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
-
-          {/* Map overlay — right side */}
-          <div
-            className="absolute top-3 right-3 bottom-3 w-[200px] sm:w-[240px] lg:w-[280px] rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl cursor-pointer group"
-            onClick={handleMapClick}
-            title="Click to open in Google Maps"
-          >
-            <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors flex items-center justify-center">
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
-                <MapPin className="h-3 w-3 text-primary" /> Open in Maps
-              </span>
-            </div>
-          </div>
-
-          {/* Utility buttons — top left */}
-          <div className="absolute top-3 left-3 flex gap-1.5">
-            <button className="p-2 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm transition-colors">
-              <Printer className="h-4 w-4 text-white/80" />
+          {/* Utility buttons */}
+          <div className="absolute top-3 right-3 flex gap-1.5">
+            <button className="p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors">
+              <Printer className="h-4 w-4 text-white" />
             </button>
-            <button className="p-2 rounded-full bg-white/10 hover:bg-white/25 backdrop-blur-sm transition-colors">
-              <Share2 className="h-4 w-4 text-white/80" />
+            <button className="p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors">
+              <Share2 className="h-4 w-4 text-white" />
             </button>
           </div>
         </div>
       </div>
 
-      {/* ── Identity Card (glassmorphism, overlapping hero) ── */}
-      <div className="container mx-auto px-4 -mt-16 relative z-10 mb-6">
-        <div className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl p-5 sm:p-6 mx-4 sm:mx-8">
-          <div className="flex flex-col sm:flex-row items-start gap-4">
-            {/* Logo */}
-            <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-card border border-border shadow-md overflow-hidden">
-              {company.logo_url ? (
-                <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1.5" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
-                  {company.name.charAt(0)}
+      {/* ── Floating identity card ── */}
+      <div className="container mx-auto px-4 mb-6">
+        <div className="bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+          <div className="flex flex-col lg:flex-row">
+            {/* Left: company info */}
+            <div className="flex-1 p-5 sm:p-6">
+              <div className="flex items-start gap-4">
+                {/* Logo */}
+                <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
+                  {company.logo_url ? (
+                    <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1.5" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
+                      {company.name.charAt(0)}
+                    </div>
+                  )}
                 </div>
-              )}
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
+                      <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-2 shrink-0">
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Follow
+                    </Button>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 mt-3 flex-wrap">
+                    {[
+                      { icon: Users, label: 'Team', value: counts.agents },
+                      { icon: Home, label: 'Sale', value: counts.buy },
+                      { icon: Home, label: 'Rent', value: counts.rent },
+                      { icon: Building2, label: 'Projects', value: counts.projects },
+                      { icon: Calendar, label: 'Events', value: counts.events },
+                    ].map((s) => (
+                      <div key={s.label} className="flex items-center gap-1.5 text-sm">
+                        <s.icon className="h-3.5 w-3.5 text-primary" />
+                        <span className="font-semibold text-foreground">{s.value}</span>
+                        <span className="text-muted-foreground text-xs">{s.label}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Contact pills */}
+                  <div className="flex items-center gap-2 mt-3 flex-wrap">
+                    {company.phone && (
+                      <a href={`tel:${company.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                        <Phone className="h-3 w-3" /> Call
+                      </a>
+                    )}
+                    <a href={`mailto:${company.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                      <Mail className="h-3 w-3" /> Email
+                    </a>
+                    {company.whatsapp && (
+                      <a href={`https://wa.me/${company.whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                        <MessageCircle className="h-3 w-3" /> WhatsApp
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
-                  <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
-                </div>
-                <Button variant="outline" size="sm" className="gap-2 shrink-0 self-start">
-                  <UserPlus className="h-3.5 w-3.5" />
-                  Follow
-                </Button>
-              </div>
-
-              {/* Stats */}
-              <div className="flex items-center gap-4 sm:gap-5 mt-3 flex-wrap">
-                {[
-                  { icon: Users, label: 'Team', value: counts.agents },
-                  { icon: Home, label: 'Sale', value: counts.buy },
-                  { icon: Home, label: 'Rent', value: counts.rent },
-                  { icon: Building2, label: 'Projects', value: counts.projects },
-                  { icon: Calendar, label: 'Events', value: counts.events },
-                ].map((s) => (
-                  <div key={s.label} className="flex items-center gap-1.5 text-sm">
-                    <s.icon className="h-3.5 w-3.5 text-primary" />
-                    <span className="font-semibold text-foreground">{s.value}</span>
-                    <span className="text-muted-foreground text-xs">{s.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Contact pills */}
-              <div className="flex items-center gap-2 mt-3 flex-wrap">
-                {company.phone && (
-                  <a href={`tel:${company.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                    <Phone className="h-3 w-3" /> Call
-                  </a>
-                )}
-                <a href={`mailto:${company.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                  <Mail className="h-3 w-3" /> Email
-                </a>
-                {company.whatsapp && (
-                  <a href={`https://wa.me/${company.whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                    <MessageCircle className="h-3 w-3" /> WhatsApp
-                  </a>
-                )}
+            {/* Right: Map inside the card */}
+            <div
+              className="lg:w-[280px] xl:w-[320px] h-[180px] lg:h-auto shrink-0 cursor-pointer relative group border-t lg:border-t-0 lg:border-l border-border"
+              onClick={handleMapClick}
+              title="Click to open in Google Maps"
+            >
+              <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
+                  <MapPin className="h-3 w-3 text-primary" /> Open in Maps
+                </span>
               </div>
             </div>
           </div>
@@ -243,7 +243,7 @@ const CompanyDetailPage = () => {
 
           {/* Sidebar */}
           <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
-            {/* About */}
+            {/* About Us */}
             {company.about && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">About Us</h3>
