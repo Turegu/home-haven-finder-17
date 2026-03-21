@@ -26,6 +26,7 @@ import {
 import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 

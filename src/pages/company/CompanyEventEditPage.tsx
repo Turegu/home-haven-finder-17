@@ -18,6 +18,7 @@ import {
 import LocationFormFields from "@/components/LocationFormFields";
 import { getEventTypeIcon } from "@/data/eventTypes";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {

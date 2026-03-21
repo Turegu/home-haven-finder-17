@@ -231,6 +231,16 @@ const CompanyPropertyEditPage = () => {
 
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
+    // For new properties (not editing), check membership limits
+    if (!isEdit && !membershipLimits.canCreate("properties")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more properties. Please upgrade your membership.`);
+      return;
+    }
+    // For reactivating from inactive/draft to active, also check limits
+    if (publishStatus === "active" && !membershipLimits.canCreate("properties") && !isEdit) {
+      toast.error(`Your ${membershipLimits.membership} membership limit reached. Please upgrade.`);
+      return;
+    }
     if (!form.title.trim()) { toast.error("Title is required"); return; }
     if (!form.price) { toast.error("Price is required"); return; }
     if (!form.area) { toast.error("Area is required"); return; }
