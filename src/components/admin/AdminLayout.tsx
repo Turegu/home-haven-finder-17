@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ const sidebarItems = [
   { label: "Projects Management", icon: FolderKanban, path: "/admin/projects" },
   { label: "Events Management", icon: CalendarDays, path: "/admin/events" },
   { label: "Membership Management", icon: Crown, path: "/admin/memberships" },
+  { label: "Featured Management", icon: ArrowUpCircle, path: "/admin/featured" },
   { label: "Banners Management", icon: ImageIcon, path: "/admin/banners" },
   { label: "Banks Management", icon: Landmark, path: "/admin/banks" },
   { label: "Blog Management", icon: BookOpen, path: "/admin/blog" },
