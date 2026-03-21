@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import {
   Save, Upload, X, Mail, ImageIcon, UserCircle, Phone, FileText,
   Globe, ChevronDown, Search, Briefcase
