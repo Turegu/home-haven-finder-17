@@ -28,15 +28,20 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
     position={listing.coords}
     mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
   >
-    <div
-      onClick={onClick}
-      className={`px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap cursor-pointer border-2 transition-all transform -translate-x-1/2 -translate-y-full shadow-md ${
-        isSelected
-          ? 'bg-foreground text-background border-foreground scale-110'
-          : 'bg-primary text-primary-foreground border-white hover:scale-105'
-      }`}
-    >
-      {formatPriceShort(listing.price, listing.currency)}
+    <div className="flex flex-col items-center transform -translate-x-1/2 -translate-y-full">
+      <div
+        onClick={onClick}
+        className={`px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap cursor-pointer border-2 transition-all shadow-md ${
+          isSelected
+            ? 'bg-foreground text-background border-foreground scale-110'
+            : 'bg-primary text-primary-foreground border-white hover:scale-105'
+        }`}
+      >
+        {formatPriceShort(listing.price, listing.currency)}
+      </div>
+      <div className={`w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent -mt-px ${
+        isSelected ? 'border-t-foreground' : 'border-t-primary'
+      }`} />
     </div>
   </OverlayViewF>
 );
@@ -50,7 +55,7 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
 
   return (
     <div className="w-[240px] bg-card rounded-xl border border-border overflow-hidden shadow-xl">
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted group">
+      <div className="relative aspect-[2/1] overflow-hidden bg-muted group">
         <img src={allImages[imgIdx]} alt={listing.title} className="w-full h-full object-cover" />
         {allImages.length > 1 && (
           <>
