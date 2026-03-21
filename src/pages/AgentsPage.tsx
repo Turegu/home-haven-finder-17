@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Search, User } from 'lucide-react';
+import { MapPin, Search, User, Users, Home, Building2, Globe, ChevronRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -176,46 +176,80 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {filteredCompanies.map((company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="bg-card rounded-xl shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow max-w-sm mx-auto w-full">
-                  {/* Cover: 1200×300 ratio = 4:1, use aspect-[4/1] */}
-                  <div className="aspect-[4/1] overflow-hidden bg-muted">
-                    {company.cover_url ? (
-                      <img src={company.cover_url} alt={company.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-r from-primary/20 to-primary/5" />
-                    )}
-                  </div>
-                  <div className="p-5 relative">
-                    <div className="absolute -top-8 left-5">
-                      {company.logo_url ? (
-                        <img src={company.logo_url} alt={company.name} className="h-16 w-auto max-w-[80px] rounded-lg border-2 border-background object-contain shadow-sm bg-white" />
-                      ) : (
-                        <div className="w-16 h-16 rounded-lg border-2 border-background bg-primary/10 flex items-center justify-center text-primary font-bold text-xl shadow-sm">
-                          {company.name.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-6">
-                      <h3 className="font-semibold text-foreground">{company.name}</h3>
-                      <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
-                    </div>
-                    <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-                      <span><span className="text-primary font-semibold">{counts.agents}</span> Agents</span>
-                      <span><span className="text-primary font-semibold">{counts.buy}</span> For Buy</span>
-                      <span><span className="text-primary font-semibold">{counts.rent}</span> For Rent</span>
-                    </div>
-                    {company.service_areas && company.service_areas.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1">
-                        {company.service_areas.slice(0, 3).map((area) => (
-                          <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{area}</span>
-                        ))}
+                  className="bg-card rounded-2xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all group">
+                  <div className="flex flex-col sm:flex-row">
+                    {/* Left: Cover image */}
+                    <div className="sm:w-[180px] lg:w-[220px] shrink-0 overflow-hidden bg-muted">
+                      <div className="aspect-[16/10] sm:aspect-auto sm:h-full">
+                        {company.cover_url ? (
+                          <img src={company.cover_url} alt={company.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-muted to-accent/10" />
+                        )}
                       </div>
-                    )}
+                    </div>
+
+                    {/* Right: Info */}
+                    <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between min-w-0">
+                      <div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-11 h-11 rounded-lg bg-background border border-border shadow-sm overflow-hidden shrink-0">
+                            {company.logo_url ? (
+                              <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-sm">
+                                {company.name.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">{company.name}</h3>
+                            <p className="text-xs text-muted-foreground">{typeLabel(company.company_type)}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 mt-3 flex-wrap">
+                          {[
+                            { icon: Users, label: 'Agents', value: counts.agents },
+                            { icon: Home, label: 'Sale', value: counts.buy },
+                            { icon: Home, label: 'Rent', value: counts.rent },
+                          ].map((s) => (
+                            <div key={s.label} className="flex items-center gap-1 text-xs">
+                              <s.icon className="h-3 w-3 text-primary" />
+                              <span className="font-semibold text-foreground">{s.value}</span>
+                              <span className="text-muted-foreground">{s.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-border flex flex-col gap-2">
+                        {company.service_areas && company.service_areas.length > 0 && (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
+                            {company.service_areas.slice(0, 3).map((area) => (
+                              <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">{area}</span>
+                            ))}
+                          </div>
+                        )}
+                        {company.languages && company.languages.length > 0 && (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <Globe className="h-3 w-3 text-muted-foreground shrink-0" />
+                            {company.languages.slice(0, 4).map((lang) => (
+                              <span key={lang} className="text-xs text-muted-foreground">{lang}</span>
+                            ))}
+                            {company.languages.length > 4 && (
+                              <span className="text-xs text-muted-foreground">+{company.languages.length - 4}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </Link>
               );
