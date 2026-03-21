@@ -130,6 +130,7 @@ const AdminCmsEditPage = () => {
     fetchPartners();
   };
 
+  const updateSection = (section: string, field: string, value: any) => {
     setContent((prev) => ({
       ...prev,
       [section]: { ...prev[section], [field]: value },
