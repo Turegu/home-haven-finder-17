@@ -26,6 +26,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { formatArea } = useAreaUnit();
 
   // Sync local state when prop changes (e.g. after query refetch)
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
