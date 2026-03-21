@@ -6,9 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Users2,
-  Star, ArrowRight
+  Star, ArrowRight, Briefcase, Zap, Crown
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
+
+const membershipIcons: Record<string, React.ElementType> = {
+  basic: Briefcase,
+  lite: Zap,
+  plus: Star,
+  pro: Crown,
+};
 
 interface AgentData {
   id: string;
