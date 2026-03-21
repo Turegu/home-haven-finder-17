@@ -132,7 +132,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
           {/* Price */}
           <p className="text-xl font-bold text-white tracking-tight">
             {formatPrice(property.price, property.currency)}
-            {property.listingType === 'rent' && <span className="text-sm font-normal text-white/60">/mo</span>}
+            {property.listingType === 'rent' && <span className="text-sm font-normal text-white/60">/{property.rentDuration === 'Daily' ? 'day' : property.rentDuration === 'Weekly' ? 'wk' : property.rentDuration === 'Yearly' ? 'yr' : 'mo'}</span>}
           </p>
 
           {/* Title */}

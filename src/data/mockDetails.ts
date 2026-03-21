@@ -23,7 +23,7 @@ export const mockPropertyDetail = {
   orientation: ['Sea View', 'City View'],
   listingId: '48208342',
   listingDate: '2026-01-15',
-  listingType: 'buy' as const,
+  listingType: 'buy' as 'buy' | 'rent',
   images: [
     'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&h=600&fit=crop',
     'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=600&fit=crop',

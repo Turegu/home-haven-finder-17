@@ -57,6 +57,7 @@ const emptyPropertyState = {
   town: '',
   neighbourhood: '',
   propertyPurpose: 'buy',
+  rentDuration: null as string | null,
 };
 
 const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
@@ -126,7 +127,8 @@ const PropertyDetailPage = () => {
           orientation: p.property_orientation ? [p.property_orientation] : [],
           listingId: p.listing_id || '',
           listingDate: p.created_at?.slice(0, 10) || '',
-          listingType: (p.property_purpose || 'buy') as 'buy',
+          listingType: (p.property_purpose || 'buy') as 'buy' | 'rent',
+          rentDuration: p.rent_duration || null,
           images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
           description: p.description || mockPropertyDetail.description,
           interiorAmenities: p.interior_amenities || [],
@@ -178,6 +180,7 @@ const PropertyDetailPage = () => {
             isFeatured: s.display_on_homepage,
             listingTier: 'standard' as const,
             listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+            rentDuration: s.rent_duration ?? null,
             advertisingTags: s.advertising_tags ?? [],
           })));
         }
@@ -463,7 +466,8 @@ const PropertyDetailPage = () => {
               </div>
 
               <p className="text-2xl font-bold text-primary mb-1">
-                From $ {property.price.toLocaleString()}
+                {property.currency && property.currency !== 'USD' ? property.currency + ' ' : '$ '}{property.price.toLocaleString()}
+                {property.listingType === 'rent' && property.rentDuration && <span className="text-lg font-normal text-muted-foreground"> /{property.rentDuration === 'Daily' ? 'day' : property.rentDuration === 'Weekly' ? 'wk' : property.rentDuration === 'Yearly' ? 'yr' : 'mo'}</span>}
               </p>
               <p className="text-foreground/80 mb-2">{property.title}</p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm">
