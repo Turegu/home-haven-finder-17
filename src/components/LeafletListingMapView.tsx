@@ -254,6 +254,8 @@ interface ListingMapViewProps {
 const ListingMapView = ({ listings, className = '', focusListingId = null }: ListingMapViewProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
+  const { data: allowedCountry = 'Turkey' } = useAllowedCountry();
+  const countryConfig = getCountryMapConfig(allowedCountry);
 
   const listingsWithCoords = useMemo(() =>
     listings.map(l => ({
@@ -266,7 +268,7 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
   const positions = listingsWithCoords.map(l => l.coords);
   const center: [number, number] = positions.length > 0
     ? [positions.reduce((s, p) => s + p[0], 0) / positions.length, positions.reduce((s, p) => s + p[1], 0) / positions.length]
-    : [39.0, 35.0];
+    : [countryConfig.center.lat, countryConfig.center.lng];
 
   return (
     <div className={`rounded-xl border border-border overflow-hidden ${className}`} style={{ height: '600px' }}>
