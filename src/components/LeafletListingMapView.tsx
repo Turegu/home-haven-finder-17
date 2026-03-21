@@ -63,6 +63,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
   const allImages = listing.images?.length ? listing.images : [listing.image];
   const [imgIdx, setImgIdx] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const { formatArea } = useAreaUnit();
 
   const prevImg = (e: React.MouseEvent) => {
     e.stopPropagation();
