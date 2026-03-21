@@ -333,6 +333,7 @@ const CompanyPropertiesPage = () => {
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Property Status</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Contract Type</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Tier</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Homepage</TableHead>
