@@ -194,7 +194,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                       </span>
                       {unit.area && (
                         <span className="flex items-center gap-1">
-                          <Maximize className="h-3 w-3" /> {unit.area} {unit.area_unit || 'm²'}
+                          <Maximize className="h-3 w-3" /> {formatArea(unit.area, unit.area_unit || 'm²')}
                         </span>
                       )}
                       {unit.rooms && (
