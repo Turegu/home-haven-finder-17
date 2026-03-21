@@ -87,7 +87,13 @@ const Index = () => {
     },
   ];
 
-  const featuredProperties = dbProperties.length > 0 ? dbProperties : sampleProperties;
+  const displayedProperties = useMemo(() => {
+    if (allFeaturedProperties.length <= 3) return allFeaturedProperties;
+    const shuffled = [...allFeaturedProperties].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }, [allFeaturedProperties]);
+
+  const featuredProperties = displayedProperties.length > 0 ? displayedProperties : sampleProperties;
 
   // Fetch up to 12 featured projects, randomly show 3
   const { data: allFeaturedProjects = [] } = useQuery({
