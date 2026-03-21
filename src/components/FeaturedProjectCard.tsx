@@ -34,10 +34,15 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
         {/* Gradient scrim — only bottom half */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
-        {/* Top: delivery pill */}
-        <div className="absolute top-4 left-4 flex items-center gap-1.5 bg-background/90 backdrop-blur text-foreground text-[11px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full">
-          <Calendar className="h-3 w-3 text-primary" />
-          {project.completionDate}
+        {/* Top-left: developer logo */}
+        <div className="absolute top-4 left-4">
+          {project.developerLogo ? (
+            <img src={project.developerLogo} alt={project.developer} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
+          ) : (
+            <div className="h-7 w-7 rounded bg-white/90 shadow-sm flex items-center justify-center">
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </div>
+          )}
         </div>
 
         {/* Arrow on hover */}
@@ -47,19 +52,10 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
 
         {/* Bottom overlaid content */}
         <div className="absolute bottom-0 inset-x-0 p-5 flex flex-col gap-3">
-          {/* Developer with logo */}
-          <div className="flex items-center gap-2">
-            {project.developerLogo ? (
-              <img src={project.developerLogo} alt={project.developer} className="h-7 w-7 rounded object-contain" />
-            ) : (
-              <div className="h-5 w-5 rounded bg-white/15 flex items-center justify-center">
-                <Building className="h-3 w-3 text-white/70" />
-              </div>
-            )}
-            <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
-              {project.developer}
-            </span>
-          </div>
+          {/* Developer name */}
+          <span className="text-[11px] font-medium uppercase tracking-widest text-white/60">
+            {project.developer}
+          </span>
 
           {/* Title */}
           <h3 className="font-display text-xl font-semibold text-white leading-tight tracking-tight text-wrap-balance">
@@ -83,9 +79,15 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
                 ${project.priceFrom.toLocaleString()}
               </p>
             </div>
-            <span className="text-[11px] text-white/50 font-medium">
-              {project.units} units
-            </span>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[11px] text-white/50 font-medium">
+                {project.units} units
+              </span>
+              <span className="flex items-center gap-1 text-[11px] text-white/60 font-medium">
+                <Calendar className="h-3 w-3 text-primary" />
+                {project.completionDate}
+              </span>
+            </div>
           </div>
         </div>
       </div>
