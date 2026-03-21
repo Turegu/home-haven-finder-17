@@ -8,13 +8,12 @@ import { useAreaUnit } from '@/hooks/useAreaUnit';
 import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 
 function getRentSuffix(rentDuration?: string | null): string {
-  if (!rentDuration) return '/mo';
-  switch (rentDuration) {
-    case 'Daily': return '/day';
-    case 'Weekly': return '/wk';
-    case 'Yearly': return '/yr';
-    default: return '/mo';
-  }
+  const normalized = rentDuration?.trim().toLowerCase();
+  if (!normalized || normalized.includes('month')) return '/mo';
+  if (normalized.includes('day')) return '/day';
+  if (normalized.includes('week')) return '/wk';
+  if (normalized.includes('year') || normalized.includes('annual')) return '/yr';
+  return '/mo';
 }
 
 function formatPrice(price: number | null, currency: string) {
@@ -23,11 +22,11 @@ function formatPrice(price: number | null, currency: string) {
   return `${sym}${price.toLocaleString()}`;
 }
 
-function formatPriceShort(price: number | null, currency: string, rentDuration?: string | null) {
+function formatPriceShort(price: number | null, currency: string, rentDuration?: string | null, isRentListing = false) {
   if (!price) return 'Free';
   const sym = currency === 'USD' ? '$' : currency + ' ';
   let base = `${sym}${price.toLocaleString()}`;
-  if (rentDuration) base += getRentSuffix(rentDuration);
+  if (isRentListing) base += getRentSuffix(rentDuration);
   return base;
 }
 
@@ -47,7 +46,12 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
             : 'bg-primary text-primary-foreground border-primary hover:scale-105'
         }`}
       >
-        {formatPriceShort(listing.price, listing.currency, listing.rentDuration)}
+        {formatPriceShort(
+          listing.price,
+          listing.currency,
+          listing.rentDuration,
+          listing.type === 'property' && listing.listingType === 'rent'
+        )}
       </div>
       <div className={`w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent -mt-px ${
         isSelected ? 'border-t-foreground' : 'border-t-primary'
@@ -124,7 +128,7 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
         )}
       </div>
       <div className="p-3">
-        <div className="text-sm font-bold text-foreground mb-0.5">{formatPrice(listing.price, listing.currency)}{listing.rentDuration && <span className="text-xs font-normal text-muted-foreground">{getRentSuffix(listing.rentDuration)}</span>}</div>
+        <div className="text-sm font-bold text-foreground mb-0.5">{formatPrice(listing.price, listing.currency)}{listing.type === 'property' && listing.listingType === 'rent' && <span className="text-xs font-normal text-muted-foreground">{getRentSuffix(listing.rentDuration)}</span>}</div>
         <Link to={listing.linkTo}>
           <h4 className="text-xs font-medium text-foreground/90 hover:text-primary transition-colors line-clamp-1 mb-1.5">{listing.title}</h4>
         </Link>
