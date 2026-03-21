@@ -319,7 +319,7 @@ const AdvertisePage = () => {
                     <p>$ {pkg.annual_price?.toLocaleString()} for 1 Year</p>
                   </div>
 
-                  <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"}>
+                  <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
                     Get Your {pkg.name}
                   </Button>
                 </CardContent>
