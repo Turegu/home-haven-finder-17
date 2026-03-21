@@ -85,7 +85,51 @@ const AdminCmsEditPage = () => {
     setLocations((data as FeaturedLocation[]) || []);
   };
 
-  const updateSection = (section: string, field: string, value: any) => {
+  const fetchPartners = async () => {
+    const { data } = await supabase
+      .from("partners")
+      .select("*")
+      .order("sort_order");
+    setPartners((data as Partner[]) || []);
+  };
+
+  // Partner CRUD
+  const openPartnerCreate = () => {
+    setEditingPartner(null);
+    setPartnerForm({ name: "", link_url: "" });
+    setPartnerImageFile(null);
+    setPartnerImagePreview(null);
+    setPartnerDialog(true);
+  };
+  const openPartnerEdit = (p: Partner) => {
+    setEditingPartner(p);
+    setPartnerForm({ name: p.name, link_url: p.link_url || "" });
+    setPartnerImageFile(null);
+    setPartnerImagePreview(p.logo_url);
+    setPartnerDialog(true);
+  };
+  const handlePartnerSave = async () => {
+    if (!partnerForm.name) { toast.error("Name is required"); return; }
+    let logo_url = editingPartner?.logo_url || null;
+    if (partnerImageFile) logo_url = await uploadImage(partnerImageFile, "partners");
+    const payload = { name: partnerForm.name, link_url: partnerForm.link_url || null, logo_url, sort_order: editingPartner?.sort_order ?? partners.length };
+    if (editingPartner) {
+      await supabase.from("partners").update(payload).eq("id", editingPartner.id);
+      toast.success("Partner updated");
+    } else {
+      await supabase.from("partners").insert(payload);
+      toast.success("Partner created");
+    }
+    setPartnerDialog(false);
+    fetchPartners();
+  };
+  const handlePartnerDelete = async (id: string) => {
+    if (!confirm("Delete this partner?")) return;
+    await supabase.from("partners").delete().eq("id", id);
+    toast.success("Partner deleted");
+    fetchPartners();
+  };
+
     setContent((prev) => ({
       ...prev,
       [section]: { ...prev[section], [field]: value },
