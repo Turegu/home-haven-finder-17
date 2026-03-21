@@ -189,6 +189,14 @@ const AdminCmsEditPage = () => {
               <Input value={locForm.name} onChange={(e) => setLocForm({ ...locForm, name: e.target.value })} />
             </div>
             <div>
+              <Label>Tagline <span className="text-muted-foreground text-xs">(thin text, e.g. "Explore")</span></Label>
+              <Input value={locForm.tagline} onChange={(e) => setLocForm({ ...locForm, tagline: e.target.value })} placeholder="Explore" />
+            </div>
+            <div>
+              <Label>Subtitle <span className="text-muted-foreground text-xs">(bold text, e.g. "Projects in Dubai")</span></Label>
+              <Input value={locForm.subtitle} onChange={(e) => setLocForm({ ...locForm, subtitle: e.target.value })} placeholder="Projects in Dubai" />
+            </div>
+            <div>
               <Label>Link</Label>
               <Input value={locForm.link_url} onChange={(e) => setLocForm({ ...locForm, link_url: e.target.value })} placeholder="https://..." />
             </div>
