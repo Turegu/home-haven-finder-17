@@ -209,12 +209,14 @@ const CompanyPropertiesPage = () => {
           <Input placeholder="Search By Title Or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="whitespace-nowrap">Sort By Date</span>
+          <span className="whitespace-nowrap">Sort By</span>
           <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
-            <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[190px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">Newest to Oldest</SelectItem>
               <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="premium_first">Premium First</SelectItem>
+              <SelectItem value="featured_first">Featured First</SelectItem>
             </SelectContent>
           </Select>
         </div>
