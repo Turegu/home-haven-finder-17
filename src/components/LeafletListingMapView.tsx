@@ -48,22 +48,22 @@ export interface MapListing {
   propertyType?: string;
   units?: number;
   rentDuration?: string | null;
+  listingType?: 'buy' | 'rent';
 }
 
 function getRentSuffix(rentDuration?: string | null): string {
-  if (!rentDuration) return '/mo';
-  switch (rentDuration) {
-    case 'Daily': return '/day';
-    case 'Weekly': return '/wk';
-    case 'Yearly': return '/yr';
-    default: return '/mo';
-  }
+  const normalized = rentDuration?.trim().toLowerCase();
+  if (!normalized || normalized.includes('month')) return '/mo';
+  if (normalized.includes('day')) return '/day';
+  if (normalized.includes('week')) return '/wk';
+  if (normalized.includes('year') || normalized.includes('annual')) return '/yr';
+  return '/mo';
 }
 
 // Create price badge marker
-function createPriceIcon(price: number | null, currency: string, rentDuration?: string | null) {
+function createPriceIcon(price: number | null, currency: string, rentDuration?: string | null, isRentListing = false) {
   let label = price ? `${currency === 'USD' ? '$' : `${currency} `}${price.toLocaleString()}` : 'Free';
-  if (price && rentDuration) label += getRentSuffix(rentDuration);
+  if (price && isRentListing) label += getRentSuffix(rentDuration);
   return L.divIcon({
     className: 'custom-map-marker',
     html: `<div style="display:flex;flex-direction:column;align-items:center;"><div style="background: #009688; color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer; border: 2px solid #009688;">${label}</div><div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #009688;margin-top:-1px;"></div></div>`,
@@ -186,7 +186,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
       <div className="p-3">
         {/* Price */}
         <div className="text-sm font-bold text-foreground mb-0.5">
-          {formatPrice(listing.price, listing.currency)}{listing.rentDuration && <span className="text-xs font-normal text-muted-foreground">{getRentSuffix(listing.rentDuration)}</span>}
+          {formatPrice(listing.price, listing.currency)}{listing.type === 'property' && listing.listingType === 'rent' && <span className="text-xs font-normal text-muted-foreground">{getRentSuffix(listing.rentDuration)}</span>}
         </div>
 
         {/* Title */}
@@ -314,7 +314,12 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
           <Marker
             key={listing.id}
             position={listing.coords}
-            icon={createPriceIcon(listing.price, listing.currency, listing.rentDuration)}
+            icon={createPriceIcon(
+              listing.price,
+              listing.currency,
+              listing.rentDuration,
+              listing.type === 'property' && listing.listingType === 'rent'
+            )}
             ref={(ref) => { if (ref) markerRefs.current[listing.id] = ref; }}
             eventHandlers={{
               click: () => setSelectedId(listing.id === selectedId ? null : listing.id),
