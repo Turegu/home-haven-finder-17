@@ -199,8 +199,8 @@ const AgentsPage = () => {
                     )}
                   </div>
 
-                  {/* Right: Info */}
-                  <div className="flex-1 p-5 flex flex-col justify-center min-w-0">
+                  {/* Right: Info - grey background */}
+                  <div className="flex-1 p-4 flex flex-col justify-center min-w-0 bg-muted/30">
                     <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
                       {company.name}
                     </h3>
