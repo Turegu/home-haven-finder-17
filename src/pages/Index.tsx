@@ -257,37 +257,65 @@ const Index = () => {
       </section>
 
       {/* Partners */}
-      <section className="bg-muted/50 py-12 overflow-hidden">
-        <div className="container mx-auto px-4 mb-6 text-center">
-          <h2 className="text-xl font-bold text-foreground">{pt.title || "Our Partners"}</h2>
-          {pt.tagline && <p className="text-sm text-muted-foreground mt-1">{pt.tagline}</p>}
-        </div>
-        <div className="relative">
-          <div className="flex marquee whitespace-nowrap">
-            {[...partners, ...partners].map((partner, i) => (
-              <div key={`${partner.id}-${i}`} className="flex-shrink-0 mx-8">
-                {partner.link_url ? (
-                  <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
-                    {partner.logo_url ? (
-                      <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
+      {partners.length > 0 && (
+        <section className="bg-muted/50 py-12 overflow-hidden">
+          <div className="container mx-auto px-4 mb-6 text-center">
+            <h2 className="text-xl font-bold text-foreground">{pt.title || "Our Partners"}</h2>
+            {pt.tagline && <p className="text-sm text-muted-foreground mt-1">{pt.tagline}</p>}
+          </div>
+          {partners.length >= 4 ? (
+            <div className="relative">
+              <div className="flex marquee whitespace-nowrap">
+                {[...partners, ...partners].map((partner, i) => (
+                  <div key={`${partner.id}-${i}`} className="flex-shrink-0 mx-8">
+                    {partner.link_url ? (
+                      <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
+                        {partner.logo_url ? (
+                          <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
+                        ) : (
+                          <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
+                            {partner.name}
+                          </div>
+                        )}
+                      </a>
+                    ) : partner.logo_url ? (
+                      <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
                     ) : (
-                      <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
+                      <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
                         {partner.name}
                       </div>
                     )}
-                  </a>
-                ) : partner.logo_url ? (
-                  <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
-                ) : (
-                  <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
-                    {partner.name}
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
+          ) : (
+            <div className="container mx-auto px-4 flex flex-wrap items-center justify-center gap-8">
+              {partners.map((partner) => (
+                <div key={partner.id}>
+                  {partner.link_url ? (
+                    <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
+                      {partner.logo_url ? (
+                        <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
+                      ) : (
+                        <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
+                          {partner.name}
+                        </div>
+                      )}
+                    </a>
+                  ) : partner.logo_url ? (
+                    <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
+                  ) : (
+                    <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
+                      {partner.name}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <Footer />
     </div>
