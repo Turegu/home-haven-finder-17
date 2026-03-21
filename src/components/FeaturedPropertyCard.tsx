@@ -16,6 +16,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
   const [isFavorited, setIsFavorited] = useState(isSaved);
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const queryClient = useQueryClient();
+  const { formatArea } = useAreaUnit();
 
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
   useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
