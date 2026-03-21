@@ -18,6 +18,7 @@ import {
 import LocationFormFields from "@/components/LocationFormFields";
 import { getEventTypeIcon } from "@/data/eventTypes";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 /* ─── Rich Text Toolbar ─── */
 function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
@@ -91,6 +92,7 @@ const CompanyEventEditPage = () => {
   const eventTypes = (filterOpts["event_types"] || []).map(t => ({ value: t.toLowerCase().replace(/[\s\/]+/g, '_'), label: t }));
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [agents, setAgents] = useState<{ id: string; name: string }[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
@@ -196,6 +198,11 @@ const CompanyEventEditPage = () => {
 
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
+    if (!isEdit && !membershipLimits.canCreate("events")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more events. Please upgrade.`);
+      return;
+    }
+    if (!form.title.trim()) { toast.error("Event name is required"); return; }
     if (!form.title.trim()) { toast.error("Event name is required"); return; }
     setLoading(true);
 

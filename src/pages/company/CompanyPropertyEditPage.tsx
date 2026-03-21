@@ -23,6 +23,7 @@ import {
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import AmenitiesViewAllDialog from "@/components/AmenitiesViewAllDialog";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 /* ─── Options aligned with front-end search filters ─── */
 
@@ -49,6 +50,7 @@ const CompanyPropertyEditPage = () => {
   const { options: filterOpts } = useFilterOptions("property");
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [images, setImages] = useState<string[]>([]);
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -229,6 +231,16 @@ const CompanyPropertyEditPage = () => {
 
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
+    // For new properties (not editing), check membership limits
+    if (!isEdit && !membershipLimits.canCreate("properties")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more properties. Please upgrade your membership.`);
+      return;
+    }
+    // For reactivating from inactive/draft to active, also check limits
+    if (publishStatus === "active" && !membershipLimits.canCreate("properties") && !isEdit) {
+      toast.error(`Your ${membershipLimits.membership} membership limit reached. Please upgrade.`);
+      return;
+    }
     if (!form.title.trim()) { toast.error("Title is required"); return; }
     if (!form.price) { toast.error("Price is required"); return; }
     if (!form.area) { toast.error("Area is required"); return; }

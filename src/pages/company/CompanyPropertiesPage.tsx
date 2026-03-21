@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
 import AssignAgentDialog from "@/components/company/AssignAgentDialog";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface Property {
   id: string;
@@ -63,6 +64,7 @@ const CompanyPropertiesPage = () => {
   const [assignDialog, setAssignDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
 
   const { options: filterOpts } = useFilterOptions("property");
+  const { canCreate, membership, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
@@ -166,11 +168,17 @@ const CompanyPropertiesPage = () => {
 
   const handleDeactivate = async (prop: Property) => {
     const newStatus = prop.status === "active" ? "inactive" : "active";
+    // Prevent reactivation if at membership limit
+    if (newStatus === "active" && !canCreate("properties")) {
+      toast.error(`Your ${membership} membership does not allow more active properties. Please upgrade your membership.`);
+      return;
+    }
     const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", prop.id);
     if (error) toast.error("Failed to update status");
     else {
       toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`);
       fetchProperties();
+      refreshLimits();
     }
   };
 
@@ -232,7 +240,15 @@ const CompanyPropertiesPage = () => {
               <Trash2 className="h-4 w-4 mr-2" /> Delete ({selected.length})
             </Button>
           )}
-          <Button onClick={() => navigate("/company/properties/new")}>
+          <Button
+            onClick={() => {
+              if (!canCreate("properties")) {
+                toast.error(`Your ${membership} membership allows max ${remainingSlots("properties") === 0 ? "0 more" : remainingSlots("properties")} properties. Please upgrade.`);
+                return;
+              }
+              navigate("/company/properties/new");
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" /> Create New Property
           </Button>
         </div>

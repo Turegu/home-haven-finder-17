@@ -18,6 +18,7 @@ import {
 import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, Layers } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface Project {
   id: string;
@@ -41,6 +42,7 @@ const CompanyProjectsPage = () => {
   const [filterType, setFilterType] = useState("all");
   const [filterProjectStatus, setFilterProjectStatus] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const { canCreate, membership } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
@@ -126,7 +128,15 @@ const CompanyProjectsPage = () => {
               <Trash2 className="h-4 w-4 mr-2" /> Delete ({selected.length})
             </Button>
           )}
-          <Button onClick={() => navigate("/company/projects/new")}>
+          <Button
+            onClick={() => {
+              if (!canCreate("projects")) {
+                toast.error(`Your ${membership} membership does not allow more projects. Please upgrade.`);
+                return;
+              }
+              navigate("/company/projects/new");
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" /> Create New Project
           </Button>
         </div>

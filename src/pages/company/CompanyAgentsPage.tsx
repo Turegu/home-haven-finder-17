@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface Agent {
   id: string;
@@ -45,6 +46,7 @@ const CompanyAgentsPage = () => {
   const [creditDialog, setCreditDialog] = useState<{ open: boolean; agent: Agent | null }>({ open: false, agent: null });
   const [creditAmount, setCreditAmount] = useState("");
   const [sharingCredits, setSharingCredits] = useState(false);
+  const { canCreate, membership } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
@@ -154,7 +156,15 @@ const CompanyAgentsPage = () => {
           </Select>
         </div>
         <div className="flex items-center gap-2 ml-auto">
-          <Button onClick={() => navigate("/company/agents/new")}>
+          <Button
+            onClick={() => {
+              if (!canCreate("agents")) {
+                toast.error(`Your ${membership} membership does not allow more agents. Please upgrade.`);
+                return;
+              }
+              navigate("/company/agents/new");
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" /> Create New Agent
           </Button>
         </div>

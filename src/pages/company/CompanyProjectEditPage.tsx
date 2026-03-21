@@ -26,6 +26,7 @@ import {
 import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
@@ -205,6 +206,7 @@ const CompanyProjectEditPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [images, setImages] = useState<string[]>([]);
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [logoUrl, setLogoUrl] = useState("");
@@ -436,6 +438,11 @@ const CompanyProjectEditPage = () => {
 
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
+    if (!isEdit && !membershipLimits.canCreate("projects")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
+      return;
+    }
+    if (!form.title.trim()) { toast.error("Project name is required"); return; }
     if (!form.title.trim()) { toast.error("Project name is required"); return; }
     setLoading(true);
 

@@ -18,6 +18,7 @@ import {
 import { Search, Plus, Trash2, MoreVertical, Eye, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 interface EventRow {
   id: string;
@@ -41,6 +42,7 @@ const CompanyEventsPage = () => {
   const [filterType, setFilterType] = useState("all");
   const [filterEntry, setFilterEntry] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const { canCreate, membership } = useMembershipLimits(companyId);
 
   useEffect(() => {
     const init = async () => {
@@ -131,7 +133,15 @@ const CompanyEventsPage = () => {
               <Trash2 className="h-4 w-4 mr-2" /> Delete ({selected.length})
             </Button>
           )}
-          <Button onClick={() => navigate("/company/events/new")}>
+          <Button
+            onClick={() => {
+              if (!canCreate("events")) {
+                toast.error(`Your ${membership} membership does not allow more events. Please upgrade.`);
+                return;
+              }
+              navigate("/company/events/new");
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" /> Create New Event
           </Button>
         </div>

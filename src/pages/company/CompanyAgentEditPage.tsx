@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import {
   Save, Upload, X, Mail, ImageIcon, UserCircle, Phone, FileText,
   Globe, ChevronDown, Search, Briefcase
@@ -87,6 +88,7 @@ const CompanyAgentEditPage = () => {
   const isEdit = id && id !== "new";
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [agentHasUser, setAgentHasUser] = useState(false);
 
@@ -162,6 +164,10 @@ const CompanyAgentEditPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyId) { toast.error("Company not found"); return; }
+    if (!isEdit && !membershipLimits.canCreate("agents")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more agents. Please upgrade.`);
+      return;
+    }
     if (!form.name.trim()) { toast.error("Agent name is required"); return; }
     if (!form.email.trim()) { toast.error("Email is required"); return; }
     if (!form.designation.trim()) { toast.error("Designation is required"); return; }
