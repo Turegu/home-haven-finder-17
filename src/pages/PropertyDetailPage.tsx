@@ -179,6 +179,7 @@ const PropertyDetailPage = () => {
             isFeatured: s.display_on_homepage,
             listingTier: 'standard' as const,
             listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+            rentDuration: s.rent_duration ?? null,
             advertisingTags: s.advertising_tags ?? [],
           })));
         }
