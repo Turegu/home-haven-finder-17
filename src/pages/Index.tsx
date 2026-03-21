@@ -217,8 +217,8 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mt-1">{fl.tagline || "Find Your Neighborhood"}</p>
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-            {locations.map((loc) => {
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {locations.slice(0, 3).map((loc) => {
               const isExternal = loc.link_url?.startsWith('http');
               const LinkTag = isExternal ? 'a' : Link;
               const linkProps = isExternal
@@ -228,18 +228,26 @@ const Index = () => {
                 <LinkTag
                   key={loc.id}
                   {...(linkProps as any)}
-                  className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                  className="group relative rounded-2xl overflow-hidden"
                 >
-                  {loc.image_url ? (
-                    <img src={loc.image_url} alt={loc.name} loading="lazy" className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105" />
-                  ) : (
-                    <div className="w-full aspect-square bg-muted flex items-center justify-center">
-                      <MapPin className="h-12 w-12 text-muted-foreground" />
+                  <div className="relative aspect-[4/5] overflow-hidden">
+                    {loc.image_url ? (
+                      <img src={loc.image_url} alt={loc.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]" />
+                    ) : (
+                      <div className="absolute inset-0 bg-muted flex items-center justify-center">
+                        <MapPin className="h-12 w-12 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                    <div className="absolute bottom-0 inset-x-0 p-5 flex items-end justify-between">
+                      <div>
+                        <p className="text-[10px] text-white/50 uppercase tracking-widest mb-1">Explore</p>
+                        <h3 className="font-display text-xl font-semibold text-white tracking-tight">{loc.name}</h3>
+                      </div>
+                      <div className="h-9 w-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                        <ExternalLink className="h-4 w-4 text-white" />
+                      </div>
                     </div>
-                  )}
-                  <div className="p-3 flex items-center justify-between">
-                    <h3 className="font-semibold text-foreground text-sm">{loc.name}</h3>
-                    {loc.link_url && <ExternalLink className="h-4 w-4 text-muted-foreground" />}
                   </div>
                 </LinkTag>
               );
