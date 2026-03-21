@@ -15,10 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
+import UpgradeMembershipDialog from "@/components/admin/UpgradeMembershipDialog";
+import AddCreditsDialog from "@/components/admin/AddCreditsDialog";
 
 type Company = Tables<"companies">;
 
@@ -30,8 +32,15 @@ const AdminCompaniesPage = () => {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selected, setSelected] = useState<string[]>([]);
 
+  // Dialog state
+  const [upgradeCompany, setUpgradeCompany] = useState<Company | null>(null);
+  const [creditsCompany, setCreditsCompany] = useState<Company | null>(null);
+
   const fetchCompanies = async () => {
     setLoading(true);
+    // Auto-downgrade expired memberships
+    await supabase.rpc("downgrade_expired_memberships");
+
     const query = supabase.from("companies").select("*")
       .order("created_at", { ascending: sortOrder === "oldest" });
 
@@ -202,10 +211,19 @@ const AdminCompaniesPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}`)}>
-                            <Eye className="h-4 w-4 mr-2" /> View
+                            <Eye className="h-4 w-4 mr-2" /> View Profile
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}/edit`)}>
                             <Pencil className="h-4 w-4 mr-2" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setUpgradeCompany(company)}>
+                            <ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade Membership
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
+                            <Coins className="h-4 w-4 mr-2" /> Add Points
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}/agents`)}>
+                            <Users className="h-4 w-4 mr-2" /> View Agents
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -217,6 +235,31 @@ const AdminCompaniesPage = () => {
           </Table>
         </div>
       </div>
+
+      {/* Upgrade Membership Dialog */}
+      {upgradeCompany && (
+        <UpgradeMembershipDialog
+          open={!!upgradeCompany}
+          onOpenChange={(open) => !open && setUpgradeCompany(null)}
+          companyId={upgradeCompany.id}
+          companyName={upgradeCompany.name}
+          currentMembership={upgradeCompany.membership}
+          packageEndDate={upgradeCompany.package_end_date}
+          onUpgraded={fetchCompanies}
+        />
+      )}
+
+      {/* Add Credits Dialog */}
+      {creditsCompany && (
+        <AddCreditsDialog
+          open={!!creditsCompany}
+          onOpenChange={(open) => !open && setCreditsCompany(null)}
+          companyId={creditsCompany.id}
+          companyName={creditsCompany.name}
+          currentBalance={creditsCompany.credit_balance}
+          onUpdated={fetchCompanies}
+        />
+      )}
     </AdminLayout>
   );
 };

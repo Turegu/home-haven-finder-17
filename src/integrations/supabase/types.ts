@@ -2077,6 +2077,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      downgrade_expired_memberships: { Args: never; Returns: undefined }
       get_distinct_districts: {
         Args: { p_province: string }
         Returns: {
