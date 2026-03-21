@@ -288,7 +288,7 @@ const AdvertisePage = () => {
                 )}
                 <CardHeader className="text-center pb-2">
                   {(() => {
-                    const IconComp = packageIcons[pkg.package_type] || Package;
+                    const IconComp = packageIcons[pkg.package_type] || Briefcase;
                     return (
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                         <IconComp className="h-8 w-8 text-primary" />
