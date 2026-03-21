@@ -480,7 +480,7 @@ const PropertyDetailPage = () => {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Maximize className="h-4 w-4" />
-                    {property.area} {property.areaUnit}
+                    {formatArea(property.area, property.areaUnit)}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <BedDouble className="h-4 w-4" />
