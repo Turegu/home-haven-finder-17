@@ -810,9 +810,12 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
 
             {/* Price bar */}
             <div className="bg-primary px-4 py-2 flex items-center justify-between">
-              <span className="text-lg font-bold text-primary-foreground">
-                Starting from {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
-              </span>
+              <div>
+                <span className="text-[10px] text-primary-foreground/70 uppercase tracking-wider">Starting from</span>
+                <span className="text-lg font-bold text-primary-foreground ml-2">
+                  {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
+                </span>
+              </div>
               {project.completion_date && (
                 <span className="flex items-center gap-1.5 text-sm text-primary-foreground/90">
                   <Calendar className="h-3.5 w-3.5" /> {project.completion_date}
