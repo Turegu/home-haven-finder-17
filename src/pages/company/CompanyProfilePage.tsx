@@ -308,6 +308,7 @@ const CompanyProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <Label className="text-foreground font-medium">Company Logo</Label>
+              <p className="text-xs text-muted-foreground -mt-1 mb-2">Recommended: 200 × 200 px (square)</p>
               <div className="flex items-center gap-4">
                 {form.logo_url ? (
                   <div className="relative">
@@ -338,7 +339,6 @@ const CompanyProfilePage = () => {
                   <Button variant="outline" size="sm" disabled={uploadingLogo} onClick={() => document.getElementById("logo-upload")?.click()}>
                     <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? "Uploading..." : "Upload Logo"}
                   </Button>
-                  <p className="text-xs text-muted-foreground mt-1">Recommended: 200×200px</p>
                 </div>
               </div>
             </div>
