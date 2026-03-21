@@ -22,6 +22,15 @@ interface FeaturedLocation {
   status: string;
 }
 
+interface Partner {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  link_url: string | null;
+  sort_order: number;
+  status: string;
+}
+
 const AdminCmsEditPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -40,6 +49,15 @@ const AdminCmsEditPage = () => {
   const [locImagePreview, setLocImagePreview] = useState<string | null>(null);
   const locFileRef = useRef<HTMLInputElement>(null);
 
+  // Partners state (home page only)
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [partnerDialog, setPartnerDialog] = useState(false);
+  const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
+  const [partnerForm, setPartnerForm] = useState({ name: "", link_url: "" });
+  const [partnerImageFile, setPartnerImageFile] = useState<File | null>(null);
+  const [partnerImagePreview, setPartnerImagePreview] = useState<string | null>(null);
+  const partnerFileRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const fetchPage = async () => {
       const { data } = await supabase
@@ -56,7 +74,7 @@ const AdminCmsEditPage = () => {
       setLoading(false);
     };
     fetchPage();
-    if (slug === "home") fetchLocations();
+    if (slug === "home") { fetchLocations(); fetchPartners(); }
   }, [slug]);
 
   const fetchLocations = async () => {
@@ -65,6 +83,51 @@ const AdminCmsEditPage = () => {
       .select("*")
       .order("sort_order");
     setLocations((data as FeaturedLocation[]) || []);
+  };
+
+  const fetchPartners = async () => {
+    const { data } = await supabase
+      .from("partners")
+      .select("*")
+      .order("sort_order");
+    setPartners((data as Partner[]) || []);
+  };
+
+  // Partner CRUD
+  const openPartnerCreate = () => {
+    setEditingPartner(null);
+    setPartnerForm({ name: "", link_url: "" });
+    setPartnerImageFile(null);
+    setPartnerImagePreview(null);
+    setPartnerDialog(true);
+  };
+  const openPartnerEdit = (p: Partner) => {
+    setEditingPartner(p);
+    setPartnerForm({ name: p.name, link_url: p.link_url || "" });
+    setPartnerImageFile(null);
+    setPartnerImagePreview(p.logo_url);
+    setPartnerDialog(true);
+  };
+  const handlePartnerSave = async () => {
+    if (!partnerForm.name) { toast.error("Name is required"); return; }
+    let logo_url = editingPartner?.logo_url || null;
+    if (partnerImageFile) logo_url = await uploadImage(partnerImageFile, "partners");
+    const payload = { name: partnerForm.name, link_url: partnerForm.link_url || null, logo_url, sort_order: editingPartner?.sort_order ?? partners.length };
+    if (editingPartner) {
+      await supabase.from("partners").update(payload).eq("id", editingPartner.id);
+      toast.success("Partner updated");
+    } else {
+      await supabase.from("partners").insert(payload);
+      toast.success("Partner created");
+    }
+    setPartnerDialog(false);
+    fetchPartners();
+  };
+  const handlePartnerDelete = async (id: string) => {
+    if (!confirm("Delete this partner?")) return;
+    await supabase.from("partners").delete().eq("id", id);
+    toast.success("Partner deleted");
+    fetchPartners();
   };
 
   const updateSection = (section: string, field: string, value: any) => {
@@ -158,7 +221,7 @@ const AdminCmsEditPage = () => {
       </div>
 
       <div className="space-y-8 max-w-4xl">
-        {slug === "home" && <HomePageForm content={content} updateSection={updateSection} uploadImage={uploadImage} locations={locations} openLocCreate={openLocCreate} openLocEdit={openLocEdit} handleLocDelete={handleLocDelete} />}
+        {slug === "home" && <HomePageForm content={content} updateSection={updateSection} uploadImage={uploadImage} locations={locations} openLocCreate={openLocCreate} openLocEdit={openLocEdit} handleLocDelete={handleLocDelete} partners={partners} openPartnerCreate={openPartnerCreate} openPartnerEdit={openPartnerEdit} handlePartnerDelete={handlePartnerDelete} />}
         {slug === "agents" && <AgentsPageForm content={content} updateSection={updateSection} uploadImage={uploadImage} />}
         {slug === "terms" && <RichTextPageForm content={content} updateNestedField={updateNestedField} sectionTitle="For Users" />}
         {slug === "privacy" && <RichTextPageForm content={content} updateNestedField={updateNestedField} sectionTitle="Data" />}
@@ -203,6 +266,35 @@ const AdminCmsEditPage = () => {
             <div className="flex gap-3 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setLocDialog(false)}>Cancel</Button>
               <Button className="flex-1" onClick={handleLocSave}>{editingLoc ? "Update" : "Create"}</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Partner Dialog */}
+      <Dialog open={partnerDialog} onOpenChange={setPartnerDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingPartner ? "Edit Partner" : "Create Partner"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <input ref={partnerFileRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) { setPartnerImageFile(f); setPartnerImagePreview(URL.createObjectURL(f)); }
+              }} />
+            <ImageUploadBox preview={partnerImagePreview} onClick={() => partnerFileRef.current?.click()} height="h-28" label="Logo" />
+            <div>
+              <Label>Name</Label>
+              <Input value={partnerForm.name} onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })} />
+            </div>
+            <div>
+              <Label>Link URL</Label>
+              <Input value={partnerForm.link_url} onChange={(e) => setPartnerForm({ ...partnerForm, link_url: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setPartnerDialog(false)}>Cancel</Button>
+              <Button className="flex-1" onClick={handlePartnerSave}>{editingPartner ? "Update" : "Create"}</Button>
             </div>
           </div>
         </DialogContent>
@@ -256,13 +348,13 @@ function useImageUploader(uploadImage: (file: File, folder: string) => Promise<s
 
 /* ============ Home Page Form ============ */
 
-const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocCreate, openLocEdit, handleLocDelete }: any) => {
+const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocCreate, openLocEdit, handleLocDelete, partners: partnerItems, openPartnerCreate, openPartnerEdit, handlePartnerDelete }: any) => {
   const hero = content.hero || {};
   const secondBanner = content.second_banner || {};
   const featProps = content.featured_properties || {};
   const featProjects = content.featured_projects || {};
   const featLocs = content.featured_locations || {};
-  const partners = content.partners || {};
+  const partnersContent = content.partners || {};
 
   const heroRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
@@ -346,9 +438,33 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
       </SectionCard>
 
       <SectionCard title="Our Partners">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><Label>Title</Label><Input value={partners.title || ""} onChange={(e) => updateSection("partners", "title", e.target.value)} /></div>
-          <div><Label>Tagline</Label><Input value={partners.tagline || ""} onChange={(e) => updateSection("partners", "tagline", e.target.value)} /></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div><Label>Title</Label><Input value={partnersContent.title || ""} onChange={(e) => updateSection("partners", "title", e.target.value)} /></div>
+          <div><Label>Tagline</Label><Input value={partnersContent.tagline || ""} onChange={(e) => updateSection("partners", "tagline", e.target.value)} /></div>
+        </div>
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-foreground">Partner Logos</p>
+            <Button size="sm" onClick={openPartnerCreate} className="gap-1"><Plus className="h-3.5 w-3.5" /> Add Partner</Button>
+          </div>
+          {partnerItems.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No partners yet.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {partnerItems.map((p: Partner) => (
+                <div key={p.id} className="border border-border rounded-lg overflow-hidden bg-background">
+                  {p.logo_url ? <img src={p.logo_url} alt={p.name} className="w-full aspect-[3/2] object-contain p-2 bg-white" /> : <div className="w-full aspect-[3/2] bg-muted flex items-center justify-center"><ImageIcon className="h-8 w-8 text-muted-foreground" /></div>}
+                  <div className="p-2 flex items-center justify-between">
+                    <span className="text-xs font-medium truncate">{p.name}</span>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openPartnerEdit(p)}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handlePartnerDelete(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </SectionCard>
     </>
