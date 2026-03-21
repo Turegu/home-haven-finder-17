@@ -208,12 +208,10 @@ const AgentsPage = () => {
                       {typeLabel(company.company_type)}
                     </p>
 
-                    {headOffice && (
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
-                        <MapPin className="h-3.5 w-3.5 text-accent shrink-0" />
-                        <span className="truncate">{headOffice}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
+                      <Home className="h-3.5 w-3.5 text-accent shrink-0" />
+                      <span className="truncate">{headOffice || 'Head office location not set'}</span>
+                    </div>
 
                     {/* Stats row */}
                     <div className="flex items-center gap-4 mt-3 text-sm">
