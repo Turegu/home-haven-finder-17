@@ -34,7 +34,7 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
         className={`px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap cursor-pointer border-2 transition-all shadow-md ${
           isSelected
             ? 'bg-foreground text-background border-foreground scale-110'
-            : 'bg-primary text-primary-foreground border-white hover:scale-105'
+            : 'bg-primary text-primary-foreground border-primary hover:scale-105'
         }`}
       >
         {formatPriceShort(listing.price, listing.currency)}
