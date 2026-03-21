@@ -22,6 +22,7 @@ interface CmsContent {
   partners?: { title?: string; tagline?: string };
 }
 
+// Homepage component
 const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
   const { data: locations = [] } = useFeaturedLocations();
