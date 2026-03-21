@@ -47,6 +47,22 @@ const AgentsPage = () => {
   const [companyCounts, setCompanyCounts] = useState<Record<string, { agents: number; buy: number; rent: number }>>({});
   const [agentCounts, setAgentCounts] = useState<Record<string, { buy: number; rent: number }>>({});
 
+  // Fetch provinces on mount
+  useEffect(() => {
+    supabase.rpc('get_distinct_provinces').then(({ data }) => {
+      if (data) setProvinces(data);
+    });
+  }, []);
+
+  // Fetch towns when province changes
+  useEffect(() => {
+    if (!selectedProvince) { setTowns([]); setSelectedTown(''); return; }
+    supabase.rpc('get_distinct_districts', { p_province: selectedProvince }).then(({ data }) => {
+      if (data) setTowns(data);
+    });
+    setSelectedTown('');
+  }, [selectedProvince]);
+
   useEffect(() => {
     const fetchData = async () => {
       // CMS
