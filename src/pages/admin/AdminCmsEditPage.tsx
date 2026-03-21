@@ -438,9 +438,33 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
       </SectionCard>
 
       <SectionCard title="Our Partners">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><Label>Title</Label><Input value={partners.title || ""} onChange={(e) => updateSection("partners", "title", e.target.value)} /></div>
-          <div><Label>Tagline</Label><Input value={partners.tagline || ""} onChange={(e) => updateSection("partners", "tagline", e.target.value)} /></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div><Label>Title</Label><Input value={partnersContent.title || ""} onChange={(e) => updateSection("partners", "title", e.target.value)} /></div>
+          <div><Label>Tagline</Label><Input value={partnersContent.tagline || ""} onChange={(e) => updateSection("partners", "tagline", e.target.value)} /></div>
+        </div>
+        <div className="border-t border-border pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-foreground">Partner Logos</p>
+            <Button size="sm" onClick={openPartnerCreate} className="gap-1"><Plus className="h-3.5 w-3.5" /> Add Partner</Button>
+          </div>
+          {partnerItems.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No partners yet.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {partnerItems.map((p: Partner) => (
+                <div key={p.id} className="border border-border rounded-lg overflow-hidden bg-background">
+                  {p.logo_url ? <img src={p.logo_url} alt={p.name} className="w-full aspect-[3/2] object-contain p-2 bg-white" /> : <div className="w-full aspect-[3/2] bg-muted flex items-center justify-center"><ImageIcon className="h-8 w-8 text-muted-foreground" /></div>}
+                  <div className="p-2 flex items-center justify-between">
+                    <span className="text-xs font-medium truncate">{p.name}</span>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openPartnerEdit(p)}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => handlePartnerDelete(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </SectionCard>
     </>
