@@ -128,7 +128,8 @@ const CompanyDetailPage = () => {
       {/* Cover image */}
       {company.cover_url && (
         <div className="container mx-auto px-4 mb-4">
-          <div className="h-48 md:h-64 rounded-xl overflow-hidden">
+          {/* Cover: same 4:1 aspect ratio as cards */}
+          <div className="aspect-[4/1] rounded-xl overflow-hidden">
             <img src={company.cover_url} alt={`${company.name} cover`} className="w-full h-full object-cover" />
           </div>
         </div>
@@ -149,24 +150,25 @@ const CompanyDetailPage = () => {
           {/* Left sidebar */}
           <div className="w-full lg:w-80 shrink-0">
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {/* Map - clickable to navigate to office */}
-              <div className="h-48 overflow-hidden cursor-pointer relative" onClick={handleMapClick} title="Click to open in Google Maps">
-                <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
-              </div>
-              <div className="p-5 text-center relative">
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-10">
+              {/* Logo + name */}
+              <div className="p-5 text-center">
+                <div className="flex justify-center mb-3">
                   {company.logo_url ? (
-                    <img src={company.logo_url} alt={company.name} className="h-20 w-auto max-w-[120px] rounded-lg border-4 border-card object-contain bg-card shadow-lg" />
+                    <img src={company.logo_url} alt={company.name} className="h-16 w-auto max-w-[100px] rounded-lg border border-border object-contain bg-card" />
                   ) : (
-                    <div className="w-20 h-20 rounded-lg border-4 border-card bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl shadow-lg">
+                    <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
                       {company.name.charAt(0)}
                     </div>
                   )}
                 </div>
-                <div className="mt-8">
-                  <h2 className="font-bold text-foreground text-lg">{company.name}</h2>
-                  <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
-                </div>
+                <h2 className="font-bold text-foreground text-lg">{company.name}</h2>
+                <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
+              </div>
+              {/* Map - clickable to navigate to office */}
+              <div className="h-36 overflow-hidden cursor-pointer border-t border-border" onClick={handleMapClick} title="Click to open in Google Maps">
+                <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
+              </div>
+              <div className="p-5 text-center">
                 <Button variant="outline" className="w-full mt-4 gap-2">
                   <UserPlus className="h-4 w-4" />
                   Follow

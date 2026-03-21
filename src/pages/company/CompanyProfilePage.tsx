@@ -308,6 +308,7 @@ const CompanyProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <Label className="text-foreground font-medium">Company Logo</Label>
+              <p className="text-xs text-muted-foreground -mt-1 mb-2">Recommended: 200 × 200 px (square)</p>
               <div className="flex items-center gap-4">
                 {form.logo_url ? (
                   <div className="relative">
@@ -338,20 +339,20 @@ const CompanyProfilePage = () => {
                   <Button variant="outline" size="sm" disabled={uploadingLogo} onClick={() => document.getElementById("logo-upload")?.click()}>
                     <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? "Uploading..." : "Upload Logo"}
                   </Button>
-                  <p className="text-xs text-muted-foreground mt-1">Recommended: 200×200px</p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
               <Label className="text-foreground font-medium">Cover Image</Label>
+              <p className="text-xs text-muted-foreground -mt-1 mb-2">Recommended: 1200 × 300 px (4:1 ratio). Also displayed on your agents' profile pages.</p>
               {form.cover_url ? (
                 <div className="relative">
-                  <img src={form.cover_url} alt="Cover" className="w-full h-28 rounded-lg object-cover border border-border" />
+                  <img src={form.cover_url} alt="Cover" className="w-full aspect-[4/1] rounded-lg object-cover border border-border" />
                   <button onClick={() => updateField("cover_url", "")} className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-0.5"><X className="h-3 w-3" /></button>
                 </div>
               ) : (
-                <div className="w-full h-28 rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted/30">
+                <div className="w-full aspect-[4/1] rounded-lg border-2 border-dashed border-border flex items-center justify-center bg-muted/30">
                   <Upload className="h-6 w-6 text-muted-foreground/50" />
                 </div>
               )}
