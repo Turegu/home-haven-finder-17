@@ -288,7 +288,7 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <FitBounds positions={positions} />
+        <FitBounds positions={positions} countryBounds={countryConfig.bounds} />
         <FocusMarker focusId={focusListingId} markerRefs={markerRefs} />
         {listingsWithCoords.map((listing) => (
           <Marker
