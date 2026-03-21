@@ -343,9 +343,9 @@ const CompanyPropertiesPage = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={11} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={12} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={11} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={12} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
               ) : (
                 filtered.map((prop) => (
                   <TableRow key={prop.id} className="hover:bg-muted/30">
