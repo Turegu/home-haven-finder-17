@@ -253,6 +253,7 @@ const BuyPage = () => {
       isFeatured: p.display_on_homepage,
       listingTier: tierMap[p.property_classification ?? ''] ?? 'standard' as const,
       listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+      rentDuration: p.rent_duration,
       advertisingTags: p.advertising_tags ?? [],
     };
   }
