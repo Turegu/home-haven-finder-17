@@ -88,6 +88,7 @@ const CompanyAgentEditPage = () => {
   const isEdit = id && id !== "new";
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [agentHasUser, setAgentHasUser] = useState(false);
 
