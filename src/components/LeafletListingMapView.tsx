@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // City coordinate lookup for mock data
 const cityCoords: Record<string, [number, number]> = {
