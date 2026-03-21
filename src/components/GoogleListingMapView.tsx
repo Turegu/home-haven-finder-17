@@ -4,6 +4,7 @@ import { GoogleMap, useJsApiLoader, OverlayViewF, OverlayView } from '@react-goo
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import type { MapListing } from './LeafletListingMapView';
 import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation } from '@/lib/mapConstants';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 function formatPrice(price: number | null, currency: string) {
   if (!price) return 'Contact for Price';
