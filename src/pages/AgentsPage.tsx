@@ -37,11 +37,31 @@ const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedTown, setSelectedTown] = useState('');
+  const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
+  const [towns, setTowns] = useState<{ name: string; ar: string }[]>([]);
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [agents, setAgents] = useState<AgentRow[]>([]);
   const [companyCounts, setCompanyCounts] = useState<Record<string, { agents: number; buy: number; rent: number }>>({});
   const [agentCounts, setAgentCounts] = useState<Record<string, { buy: number; rent: number }>>({});
+
+  // Fetch provinces on mount
+  useEffect(() => {
+    supabase.rpc('get_distinct_provinces').then(({ data }) => {
+      if (data) setProvinces(data);
+    });
+  }, []);
+
+  // Fetch towns when province changes
+  useEffect(() => {
+    if (!selectedProvince) { setTowns([]); setSelectedTown(''); return; }
+    supabase.rpc('get_distinct_districts', { p_province: selectedProvince }).then(({ data }) => {
+      if (data) setTowns(data);
+    });
+    setSelectedTown('');
+  }, [selectedProvince]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,12 +126,18 @@ const AgentsPage = () => {
     fetchData();
   }, []);
 
-  const filteredCompanies = companies.filter(c =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  const filteredAgents = agents.filter(a =>
-    a.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCompanies = companies.filter(c => {
+    if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (selectedProvince && c.province !== selectedProvince) return false;
+    if (selectedTown && c.town !== selectedTown) return false;
+    return true;
+  });
+  const filteredAgents = agents.filter(a => {
+    if (searchQuery && !a.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (selectedProvince && !a.service_areas?.some(area => area.toLowerCase().includes(selectedProvince.toLowerCase()))) return false;
+    if (selectedTown && !a.service_areas?.some(area => area.toLowerCase().includes(selectedTown.toLowerCase()))) return false;
+    return true;
+  });
 
   const typeLabel = (t: string | null) => {
     if (!t) return 'Real Estate Company';
@@ -153,14 +179,32 @@ const AgentsPage = () => {
           </button>
         </div>
 
-        <div className="bg-card rounded-xl shadow-md p-4 flex flex-col md:flex-row items-center gap-3 max-w-3xl mx-auto">
+        <div className="bg-card rounded-xl shadow-md p-4 flex flex-col md:flex-row items-center gap-3 max-w-4xl mx-auto">
           <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 w-full md:w-48">
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-            <select className="bg-transparent text-sm outline-none w-full text-foreground">
-              <option>Location</option>
-              <option>Istanbul</option>
-              <option>Antalya</option>
-              <option>Bodrum</option>
+            <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+            <select
+              className="bg-transparent text-sm outline-none w-full text-foreground"
+              value={selectedProvince}
+              onChange={(e) => setSelectedProvince(e.target.value)}
+            >
+              <option value="">Province</option>
+              {provinces.map((p) => (
+                <option key={p.name} value={p.name}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 w-full md:w-48">
+            <Home className="h-4 w-4 text-muted-foreground shrink-0" />
+            <select
+              className="bg-transparent text-sm outline-none w-full text-foreground"
+              value={selectedTown}
+              onChange={(e) => setSelectedTown(e.target.value)}
+              disabled={!selectedProvince}
+            >
+              <option value="">City / Town</option>
+              {towns.map((t) => (
+                <option key={t.name} value={t.name}>{t.name}</option>
+              ))}
             </select>
           </div>
           <div className="flex-1 w-full">
