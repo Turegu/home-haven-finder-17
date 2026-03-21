@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import PropertyCard from '@/components/PropertyCard';
+import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
 
 interface CompanyData {
   id: string;
@@ -19,6 +19,7 @@ interface CompanyData {
   email: string;
   phone: string | null;
   whatsapp: string | null;
+  pin_location: string | null;
 }
 
 interface AgentData {
@@ -42,19 +43,17 @@ const CompanyDetailPage = () => {
     const fetchCompany = async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location")
         .eq("id", id)
         .maybeSingle();
       setCompany(data as CompanyData | null);
 
       if (data) {
-        // Agents
         const { data: agts } = await supabase
           .from("agents").select("id, name, designation, avatar_url, languages")
           .eq("company_id", data.id).eq("status", "active");
         setCompanyAgents((agts ?? []) as AgentData[]);
 
-        // Counts
         const { count: buyCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active").eq("property_purpose", "buy");
         const { count: rentCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active").eq("property_purpose", "rent");
         const { count: projCount } = await supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active");
@@ -135,12 +134,9 @@ const CompanyDetailPage = () => {
           {/* Left sidebar */}
           <div className="w-full lg:w-80 shrink-0">
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="h-32 overflow-hidden bg-muted">
-                {company.cover_url ? (
-                  <img src={company.cover_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-r from-primary/20 to-primary/5" />
-                )}
+              {/* Map replaces cover image */}
+              <div className="h-48 overflow-hidden">
+                <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
               </div>
               <div className="p-5 text-center relative">
                 <div className="absolute -top-10 left-1/2 -translate-x-1/2">

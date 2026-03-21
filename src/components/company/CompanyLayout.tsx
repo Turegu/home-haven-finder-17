@@ -25,7 +25,7 @@ const mainLinks = [
   { label: "Notifications", path: "/company/notifications", icon: Bell },
 ];
 
-const settingsLink = { label: "Profile Settings", path: "/company/profile", icon: UserCircle };
+const settingsLink = { label: "Company Profile Settings", path: "/company/profile", icon: UserCircle };
 
 const CompanyLayout = ({ children }: CompanyLayoutProps) => {
   const navigate = useNavigate();
