@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 interface PropertyListCardProps {
   property: Property;

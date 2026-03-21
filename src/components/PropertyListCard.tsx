@@ -10,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {

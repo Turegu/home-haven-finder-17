@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 interface PropertyListCardProps {
   property: Property;
