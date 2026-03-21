@@ -49,6 +49,15 @@ const AdminCmsEditPage = () => {
   const [locImagePreview, setLocImagePreview] = useState<string | null>(null);
   const locFileRef = useRef<HTMLInputElement>(null);
 
+  // Partners state (home page only)
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [partnerDialog, setPartnerDialog] = useState(false);
+  const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
+  const [partnerForm, setPartnerForm] = useState({ name: "", link_url: "" });
+  const [partnerImageFile, setPartnerImageFile] = useState<File | null>(null);
+  const [partnerImagePreview, setPartnerImagePreview] = useState<string | null>(null);
+  const partnerFileRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const fetchPage = async () => {
       const { data } = await supabase
