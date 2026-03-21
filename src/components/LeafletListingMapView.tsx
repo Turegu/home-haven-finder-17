@@ -5,6 +5,8 @@ import L from 'leaflet';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { useAllowedCountry } from '@/hooks/useAllowedCountry';
+import { getCountryMapConfig } from '@/lib/mapConstants';
 
 // City coordinate lookup for mock data
 const cityCoords: Record<string, [number, number]> = {
