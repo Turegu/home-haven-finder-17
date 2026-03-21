@@ -438,6 +438,11 @@ const CompanyProjectEditPage = () => {
 
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (!companyId) { toast.error("Company not found"); return; }
+    if (!isEdit && !membershipLimits.canCreate("projects")) {
+      toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
+      return;
+    }
+    if (!form.title.trim()) { toast.error("Project name is required"); return; }
     if (!form.title.trim()) { toast.error("Project name is required"); return; }
     setLoading(true);
 
