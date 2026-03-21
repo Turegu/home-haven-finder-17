@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAreaUnit } from "@/hooks/useAreaUnit";
 import {
   ChevronLeft, ChevronRight, Building, Maximize,
   BedDouble, Bath, Car, Eye, DollarSign, Home, CheckCircle
