@@ -7,6 +7,16 @@ import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation, getCountryMapConfig } from 
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 
+function getRentSuffix(rentDuration?: string | null): string {
+  if (!rentDuration) return '/mo';
+  switch (rentDuration) {
+    case 'Daily': return '/day';
+    case 'Weekly': return '/wk';
+    case 'Yearly': return '/yr';
+    default: return '/mo';
+  }
+}
+
 function formatPrice(price: number | null, currency: string) {
   if (!price) return 'Contact for Price';
   const sym = currency === 'USD' ? '$' : currency + ' ';
@@ -15,12 +25,15 @@ function formatPrice(price: number | null, currency: string) {
   return `${sym}${price.toLocaleString()}`;
 }
 
-function formatPriceShort(price: number | null, currency: string) {
+function formatPriceShort(price: number | null, currency: string, rentDuration?: string | null) {
   if (!price) return 'Free';
   const sym = currency === 'USD' ? '$' : currency + ' ';
-  if (price >= 1000000) return `${sym}${(price / 1000000).toFixed(1)}M`;
-  if (price >= 1000) return `${sym}${Math.round(price / 1000)}K`;
-  return `${sym}${price.toLocaleString()}`;
+  let base = '';
+  if (price >= 1000000) base = `${sym}${(price / 1000000).toFixed(1)}M`;
+  else if (price >= 1000) base = `${sym}${Math.round(price / 1000)}K`;
+  else base = `${sym}${price.toLocaleString()}`;
+  if (rentDuration) base += getRentSuffix(rentDuration);
+  return base;
 }
 
 // Price badge marker overlay
