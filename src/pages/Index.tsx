@@ -29,7 +29,7 @@ const Index = () => {
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
 
-  const { data: dbProperties = [] } = useQuery({
+  const { data: allFeaturedProperties = [] } = useQuery({
     queryKey: ['featured-properties'],
     queryFn: async () => {
       const { data } = await supabase
@@ -37,7 +37,7 @@ const Index = () => {
         .select('*, agents(name, avatar_url), companies(name, logo_url)')
         .eq('status', 'active')
         .eq('display_on_homepage', true)
-        .limit(6);
+        .limit(12);
       return (data || []).map((p: any) => ({
         id: p.id,
         title: p.title,
@@ -87,7 +87,13 @@ const Index = () => {
     },
   ];
 
-  const featuredProperties = dbProperties.length > 0 ? dbProperties : sampleProperties;
+  const displayedProperties = useMemo(() => {
+    if (allFeaturedProperties.length <= 3) return allFeaturedProperties;
+    const shuffled = [...allFeaturedProperties].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }, [allFeaturedProperties]);
+
+  const featuredProperties = displayedProperties.length > 0 ? displayedProperties : sampleProperties;
 
   // Fetch up to 12 featured projects, randomly show 3
   const { data: allFeaturedProjects = [] } = useQuery({
