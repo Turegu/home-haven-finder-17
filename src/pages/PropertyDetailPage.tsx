@@ -465,7 +465,8 @@ const PropertyDetailPage = () => {
               </div>
 
               <p className="text-2xl font-bold text-primary mb-1">
-                From $ {property.price.toLocaleString()}
+                {property.currency && property.currency !== 'USD' ? property.currency + ' ' : '$ '}{property.price.toLocaleString()}
+                {property.listingType === 'rent' && property.rentDuration && <span className="text-lg font-normal text-muted-foreground"> /{property.rentDuration === 'Daily' ? 'day' : property.rentDuration === 'Weekly' ? 'wk' : property.rentDuration === 'Yearly' ? 'yr' : 'mo'}</span>}
               </p>
               <p className="text-foreground/80 mb-2">{property.title}</p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm">

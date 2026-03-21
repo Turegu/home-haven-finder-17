@@ -149,7 +149,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
           <div className="bg-foreground px-3 py-1.5 flex items-center justify-between">
             <span className="text-base font-bold text-background">
               $ {property.price.toLocaleString()}
-              {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /mo</span>}
+              {property.listingType === 'rent' && <span className="text-sm font-normal text-background/80"> /{property.rentDuration === 'Daily' ? 'day' : property.rentDuration === 'Weekly' ? 'wk' : property.rentDuration === 'Yearly' ? 'yr' : 'mo'}</span>}
             </span>
             {property.advertisingTags && property.advertisingTags.length > 0 && (
               <Badge
