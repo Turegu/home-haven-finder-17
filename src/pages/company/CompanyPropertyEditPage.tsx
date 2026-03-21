@@ -49,8 +49,8 @@ const CompanyPropertyEditPage = () => {
   const isEdit = id && id !== "new";
   const { options: filterOpts } = useFilterOptions("property");
   const [loading, setLoading] = useState(false);
-  const membershipLimits = useMembershipLimits(companyId);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const membershipLimits = useMembershipLimits(companyId);
   const [images, setImages] = useState<string[]>([]);
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
