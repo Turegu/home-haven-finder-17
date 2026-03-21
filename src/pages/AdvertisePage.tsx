@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -12,10 +12,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   CheckCircle, Users, Home, FolderKanban, CalendarDays,
-  Search, Image, MessageSquare, Phone, Mail, Building2
+  Search, Image, MessageSquare, Phone, Mail, Building2,
+  Package, Zap, Star, Crown
 } from "lucide-react";
 
+const packageIcons: Record<string, React.ElementType> = {
+  basic: Package,
+  lite: Zap,
+  plus: Star,
+  pro: Crown,
+};
+
 const AdvertisePage = () => {
+  const formRef = useRef<HTMLDivElement>(null);
+  const [highlightForm, setHighlightForm] = useState(false);
+
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setHighlightForm(true);
+    setTimeout(() => setHighlightForm(false), 2000);
+  };
   const [form, setForm] = useState({
     company_name: "",
     first_name: "",
@@ -106,7 +122,7 @@ const AdvertisePage = () => {
             </div>
 
             {/* Right - Form */}
-            <Card className="shadow-2xl border-0">
+            <Card ref={formRef} className={`shadow-2xl border-0 transition-all duration-700 ${highlightForm ? "ring-4 ring-accent ring-offset-2" : ""}`}>
               <CardHeader className="pb-4">
                 <CardTitle className="text-2xl text-center">Let's Register</CardTitle>
               </CardHeader>
@@ -271,6 +287,14 @@ const AdvertisePage = () => {
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
+                  {(() => {
+                    const IconComp = packageIcons[pkg.package_type] || Package;
+                    return (
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                        <IconComp className="h-8 w-8 text-primary" />
+                      </div>
+                    );
+                  })()}
                   <CardTitle className="text-xl">{pkg.name}</CardTitle>
                   <p className="text-xs text-muted-foreground">{pkg.tagline}</p>
                   <div className="mt-4">
@@ -295,7 +319,7 @@ const AdvertisePage = () => {
                     <p>$ {pkg.annual_price?.toLocaleString()} for 1 Year</p>
                   </div>
 
-                  <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"}>
+                  <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
                     Get Your {pkg.name}
                   </Button>
                 </CardContent>
