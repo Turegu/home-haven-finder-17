@@ -310,7 +310,7 @@ const AgentsPage = () => {
                   {/* Left: Avatar */}
                   <div className="w-28 sm:w-36 shrink-0 bg-card border-r border-border flex items-center justify-center p-4">
                     {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" />
+                      <img src={agent.avatar_url} alt={agent.name} className="w-20 h-20 object-cover rounded-lg group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl font-serif">
                         {agent.name.charAt(0)}
