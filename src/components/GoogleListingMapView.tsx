@@ -52,7 +52,7 @@ const PriceMarker = ({ listing, isSelected, onClick }: { listing: MapListing & {
             : 'bg-primary text-primary-foreground border-primary hover:scale-105'
         }`}
       >
-        {formatPriceShort(listing.price, listing.currency)}
+        {formatPriceShort(listing.price, listing.currency, listing.rentDuration)}
       </div>
       <div className={`w-0 h-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent -mt-px ${
         isSelected ? 'border-t-foreground' : 'border-t-primary'
