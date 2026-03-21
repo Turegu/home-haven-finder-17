@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle, Crown, Star } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
@@ -48,7 +48,7 @@ const CompanyPropertiesPage = () => {
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [selected, setSelected] = useState<string[]>([]);
   const [classificationFilter, setClassificationFilter] = useState<ClassificationFilter>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -82,14 +82,32 @@ const CompanyPropertiesPage = () => {
   const fetchProperties = async () => {
     if (!companyId) return;
     setLoading(true);
-    const { data, error } = await supabase
+    const ascending = sortOrder === "oldest";
+    let query = supabase
       .from("properties")
       .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture, agent_id")
       .eq("company_id", companyId)
-      .order("created_at", { ascending: sortOrder === "oldest" });
+      .order("created_at", { ascending });
+
+    const { data, error } = await query;
 
     if (error) toast.error("Failed to fetch properties");
-    else setProperties(data || []);
+    else {
+      let results = data || [];
+      // Client-side sort for premium/featured
+      if (sortOrder === "premium_first") {
+        results = results.sort((a, b) => {
+          const order = (c: string | null) => c === "premium" ? 0 : c === "featured" ? 1 : 2;
+          return order(a.property_classification) - order(b.property_classification);
+        });
+      } else if (sortOrder === "featured_first") {
+        results = results.sort((a, b) => {
+          const order = (c: string | null) => c === "featured" ? 0 : c === "premium" ? 1 : 2;
+          return order(a.property_classification) - order(b.property_classification);
+        });
+      }
+      setProperties(results);
+    }
     setLoading(false);
   };
 
@@ -191,12 +209,14 @@ const CompanyPropertiesPage = () => {
           <Input placeholder="Search By Title Or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="whitespace-nowrap">Sort By Date</span>
+          <span className="whitespace-nowrap">Sort By</span>
           <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
-            <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[190px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">Newest to Oldest</SelectItem>
               <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="premium_first">Premium First</SelectItem>
+              <SelectItem value="featured_first">Featured First</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -313,6 +333,7 @@ const CompanyPropertiesPage = () => {
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Property Status</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Contract Type</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Tier</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Homepage</TableHead>
@@ -322,9 +343,9 @@ const CompanyPropertiesPage = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={11} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={12} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={11} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={12} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
               ) : (
                 filtered.map((prop) => (
                   <TableRow key={prop.id} className="hover:bg-muted/30">
@@ -338,6 +359,19 @@ const CompanyPropertiesPage = () => {
                     </TableCell>
                     <TableCell className="text-sm capitalize">{prop.property_purpose}</TableCell>
                     <TableCell className="text-sm capitalize">{prop.property_type}</TableCell>
+                    <TableCell>
+                      {prop.property_classification === "premium" ? (
+                        <Badge className="bg-purple-100 text-purple-800 gap-1" variant="secondary">
+                          <Crown className="h-3 w-3" /> Premium
+                        </Badge>
+                      ) : prop.property_classification === "featured" ? (
+                        <Badge className="bg-teal-100 text-teal-800 gap-1" variant="secondary">
+                          <Star className="h-3 w-3" /> Featured
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Standard</span>
+                      )}
+                    </TableCell>
                     <TableCell className="font-medium text-foreground max-w-[200px] truncate">{prop.title}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
                     <TableCell>
