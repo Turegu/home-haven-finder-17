@@ -20,6 +20,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
+  const { formatArea } = useAreaUnit();
 
   useEffect(() => {
     checkIfSaved(property.id).then(setIsFavorited);
