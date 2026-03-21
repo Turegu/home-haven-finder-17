@@ -79,7 +79,29 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
   const [isFavorited, setIsFavorited] = useState(false);
   const { formatArea } = useAreaUnit();
   const touchStartX = useRef<number | null>(null);
-...
+
+  const prevImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setImgIdx(i => (i - 1 + allImages.length) % allImages.length);
+  };
+
+  const nextImg = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setImgIdx(i => (i + 1) % allImages.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(diff) > 40) {
+      setImgIdx(i => diff < 0 ? (i + 1) % allImages.length : (i - 1 + allImages.length) % allImages.length);
+    }
+    touchStartX.current = null;
+  };
+
   const formatPrice = (price: number | null, currency: string) => {
     if (!price) return 'Contact for Price';
     const sym = currency === 'USD' ? '$' : currency + ' ';
