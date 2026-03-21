@@ -258,7 +258,7 @@ const Index = () => {
 
       {/* Partners */}
       {partners.length > 0 && (
-        <section className="bg-muted/50 py-12 overflow-hidden">
+        <section className="bg-background py-12 overflow-hidden">
           <div className="container mx-auto px-4 mb-6 text-center">
             <h2 className="text-xl font-bold text-foreground">{pt.title || "Our Partners"}</h2>
             {pt.tagline && <p className="text-sm text-muted-foreground mt-1">{pt.tagline}</p>}
