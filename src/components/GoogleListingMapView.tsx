@@ -123,6 +123,8 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const { data: allowedCountry = 'Turkey' } = useAllowedCountry();
+  const countryConfig = getCountryMapConfig(allowedCountry);
 
   const listingsWithCoords = useMemo(() =>
     listings.map(l => ({ ...l, coords: getCoordsFromLocation(l.location) })),
@@ -130,10 +132,10 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
   );
 
   const center = useMemo(() => {
-    if (listingsWithCoords.length === 0) return { lat: 39.0, lng: 35.0 };
+    if (listingsWithCoords.length === 0) return countryConfig.center;
     const avg = listingsWithCoords.reduce((acc, l) => ({ lat: acc.lat + l.coords.lat, lng: acc.lng + l.coords.lng }), { lat: 0, lng: 0 });
     return { lat: avg.lat / listingsWithCoords.length, lng: avg.lng / listingsWithCoords.length };
-  }, [listingsWithCoords]);
+  }, [listingsWithCoords, countryConfig]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
