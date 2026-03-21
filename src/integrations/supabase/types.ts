@@ -932,6 +932,7 @@ export type Database = {
           name: string
           sort_order: number
           status: string
+          subtitle: string | null
           tagline: string | null
           updated_at: string
         }
@@ -943,6 +944,7 @@ export type Database = {
           name: string
           sort_order?: number
           status?: string
+          subtitle?: string | null
           tagline?: string | null
           updated_at?: string
         }
@@ -954,6 +956,7 @@ export type Database = {
           name?: string
           sort_order?: number
           status?: string
+          subtitle?: string | null
           tagline?: string | null
           updated_at?: string
         }
