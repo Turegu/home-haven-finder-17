@@ -234,6 +234,7 @@ const App = () => (
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
+    </AreaUnitProvider>
   </QueryClientProvider>
 );
 

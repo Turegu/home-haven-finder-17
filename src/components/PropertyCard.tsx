@@ -129,7 +129,7 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
         </div>
         <div className="flex items-center gap-3 pt-3 border-t border-foreground/10">
           <SpecItem icon={<Building className="h-3.5 w-3.5" />} label={property.type} />
-          <SpecItem icon={<Maximize className="h-3.5 w-3.5" />} label={`${property.area} ${property.areaUnit}`} />
+          <SpecItem icon={<Maximize className="h-3.5 w-3.5" />} label={formatArea(property.area, property.areaUnit)} />
           {property.bedrooms > 0 && <SpecItem icon={<BedDouble className="h-3.5 w-3.5" />} label={`${property.bedrooms}`} />}
           <SpecItem icon={<Bath className="h-3.5 w-3.5" />} label={`${property.bathrooms}`} />
         </div>
