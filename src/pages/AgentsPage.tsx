@@ -37,6 +37,10 @@ const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedTown, setSelectedTown] = useState('');
+  const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
+  const [towns, setTowns] = useState<{ name: string; ar: string }[]>([]);
   const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [agents, setAgents] = useState<AgentRow[]>([]);
