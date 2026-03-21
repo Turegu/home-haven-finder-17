@@ -187,7 +187,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
       <div className="p-3">
         {/* Price */}
         <div className="text-sm font-bold text-foreground mb-0.5">
-          {formatPrice(listing.price, listing.currency)}
+          {formatPrice(listing.price, listing.currency)}{listing.rentDuration && <span className="text-xs font-normal text-muted-foreground">{getRentSuffix(listing.rentDuration)}</span>}
         </div>
 
         {/* Title */}
