@@ -287,6 +287,14 @@ const AdvertisePage = () => {
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
+                  {(() => {
+                    const IconComp = packageIcons[pkg.package_type] || Package;
+                    return (
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                        <IconComp className="h-8 w-8 text-primary" />
+                      </div>
+                    );
+                  })()}
                   <CardTitle className="text-xl">{pkg.name}</CardTitle>
                   <p className="text-xs text-muted-foreground">{pkg.tagline}</p>
                   <div className="mt-4">
