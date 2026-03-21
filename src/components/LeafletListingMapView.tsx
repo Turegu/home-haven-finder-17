@@ -47,6 +47,7 @@ export interface MapListing {
   areaUnit?: string;
   propertyType?: string;
   units?: number;
+  rentDuration?: string | null;
 }
 
 // Create price badge marker
