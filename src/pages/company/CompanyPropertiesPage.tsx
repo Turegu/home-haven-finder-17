@@ -82,14 +82,32 @@ const CompanyPropertiesPage = () => {
   const fetchProperties = async () => {
     if (!companyId) return;
     setLoading(true);
-    const { data, error } = await supabase
+    const ascending = sortOrder === "oldest";
+    let query = supabase
       .from("properties")
       .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture, agent_id")
       .eq("company_id", companyId)
-      .order("created_at", { ascending: sortOrder === "oldest" });
+      .order("created_at", { ascending });
+
+    const { data, error } = await query;
 
     if (error) toast.error("Failed to fetch properties");
-    else setProperties(data || []);
+    else {
+      let results = data || [];
+      // Client-side sort for premium/featured
+      if (sortOrder === "premium_first") {
+        results = results.sort((a, b) => {
+          const order = (c: string | null) => c === "premium" ? 0 : c === "featured" ? 1 : 2;
+          return order(a.property_classification) - order(b.property_classification);
+        });
+      } else if (sortOrder === "featured_first") {
+        results = results.sort((a, b) => {
+          const order = (c: string | null) => c === "featured" ? 0 : c === "premium" ? 1 : 2;
+          return order(a.property_classification) - order(b.property_classification);
+        });
+      }
+      setProperties(results);
+    }
     setLoading(false);
   };
 
