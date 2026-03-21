@@ -20,6 +20,7 @@ import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import ReportPropertyDialog from '@/components/ReportPropertyDialog';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // Lazy-load heavy below-the-fold components
 const NearbyPlacesMap = lazy(() => import('@/components/NearbyPlacesMap'));
@@ -76,6 +77,7 @@ const parsePinLocation = (value: unknown): { lat: number; lng: number } | null =
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatArea } = useAreaUnit();
   const [property, setProperty] = useState(emptyPropertyState);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
@@ -478,7 +480,7 @@ const PropertyDetailPage = () => {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Maximize className="h-4 w-4" />
-                    {property.area} {property.areaUnit}
+                    {formatArea(property.area, property.areaUnit)}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <BedDouble className="h-4 w-4" />
@@ -522,7 +524,7 @@ const PropertyDetailPage = () => {
                 
                 <OverviewItem icon={Building} label="Type" value={property.type} />
                 <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
-                <OverviewItem icon={Ruler} label="Area" value={`${property.area} ${property.areaUnit}`} />
+                <OverviewItem icon={Ruler} label="Area" value={formatArea(property.area, property.areaUnit)} />
                 <OverviewItem icon={Home} label="Rooms" value={String(property.bedrooms)} />
                 <OverviewItem icon={Bath} label="Bathrooms" value={String(property.bathrooms)} />
                 <OverviewItem icon={FileText} label="Title Deed" value={property.titleDeed || '—'} />

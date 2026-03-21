@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { MapPin, Building, X, ChevronLeft, ChevronRight, Heart, Layers, Maximize, Camera, BedDouble, Bath } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // City coordinate lookup for mock data
 const cityCoords: Record<string, [number, number]> = {
@@ -62,6 +63,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
   const allImages = listing.images?.length ? listing.images : [listing.image];
   const [imgIdx, setImgIdx] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
+  const { formatArea } = useAreaUnit();
 
   const prevImg = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -187,7 +189,7 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
           {listing.area && (
             <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
               <Maximize className="h-3 w-3" />
-              <span>{listing.area} {listing.areaUnit || 'sqm'}</span>
+              <span>{formatArea(listing.area, listing.areaUnit || 'm²')}</span>
             </div>
           )}
           {listing.bedrooms != null && listing.bedrooms > 0 && (

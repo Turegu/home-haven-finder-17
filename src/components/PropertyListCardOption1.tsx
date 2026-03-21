@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 interface PropertyListCardProps {
   property: Property;
@@ -19,6 +20,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
+  const { formatArea } = useAreaUnit();
 
   useEffect(() => {
     checkIfSaved(property.id).then(setIsFavorited);
@@ -243,7 +245,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               </span>
               <span className="flex items-center gap-1">
                 <Maximize className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.area} {property.areaUnit}</span>
+                <span className="font-medium text-foreground">{formatArea(property.area, property.areaUnit)}</span>
               </span>
               <span className="flex items-center gap-1">
                 <Bath className="h-3.5 w-3.5" />

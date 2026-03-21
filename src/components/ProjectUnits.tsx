@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAreaUnit } from "@/hooks/useAreaUnit";
 import {
   ChevronLeft, ChevronRight, Building, Maximize,
   BedDouble, Bath, Car, Eye, DollarSign, Home, CheckCircle
@@ -93,6 +94,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [filter, setFilter] = useState("all");
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { formatArea } = useAreaUnit();
 
   useEffect(() => {
     const fetchUnits = async () => {
@@ -192,7 +194,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                       </span>
                       {unit.area && (
                         <span className="flex items-center gap-1">
-                          <Maximize className="h-3 w-3" /> {unit.area} {unit.area_unit || 'm²'}
+                          <Maximize className="h-3 w-3" /> {formatArea(unit.area, unit.area_unit || 'm²')}
                         </span>
                       )}
                       {unit.rooms && (
@@ -271,7 +273,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
             <div className="grid grid-cols-4 gap-3 mt-6">
               <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
               <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
-              <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? `${currentUnit.area} ${currentUnit.area_unit || 'm²'}` : '—'} />
+              <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? formatArea(currentUnit.area, currentUnit.area_unit || 'm²') : '—'} />
               <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
               <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
               <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />

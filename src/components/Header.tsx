@@ -152,7 +152,7 @@ const Header = () => {
 
   const selectLang = (lang: typeof languages[0]) => { setSelectedLang(lang); localStorage.setItem('selectedLangCode', lang.code); setOpenDropdown(null); };
   const selectCurrency = (currency: typeof currencies[0]) => { setSelectedCurrency(currency); localStorage.setItem('selectedCurrencyCode', currency.code); setOpenDropdown(null); };
-  const selectArea = (unit: typeof AREA_UNITS[0]) => { setSelectedArea(unit); localStorage.setItem('selectedAreaUnit', unit.value); setOpenDropdown(null); };
+  const selectArea = (unit: typeof AREA_UNITS[0]) => { setSelectedArea(unit); localStorage.setItem('selectedAreaUnit', unit.value); window.dispatchEvent(new Event('area-unit-changed')); setOpenDropdown(null); };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

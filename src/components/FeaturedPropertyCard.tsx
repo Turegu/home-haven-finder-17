@@ -2,6 +2,7 @@ import { memo, useState, useEffect } from 'react';
 import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Crown, Star, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 import type { Property } from '@/data/mockProperties';
 
 interface Props {
@@ -15,6 +16,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
   const [isFavorited, setIsFavorited] = useState(isSaved);
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const queryClient = useQueryClient();
+  const { formatArea } = useAreaUnit();
 
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
   useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
@@ -149,7 +151,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
 
           {/* Specs */}
           <div className="flex items-center gap-4 text-white/60 text-xs">
-            <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" />{property.area} {property.areaUnit}</span>
+            <span className="flex items-center gap-1"><Maximize className="h-3.5 w-3.5" />{formatArea(property.area, property.areaUnit)}</span>
             {property.bedrooms > 0 && <span className="flex items-center gap-1"><BedDouble className="h-3.5 w-3.5" />{property.bedrooms}</span>}
             <span className="flex items-center gap-1"><Bath className="h-3.5 w-3.5" />{property.bathrooms}</span>
           </div>

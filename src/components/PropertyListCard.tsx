@@ -10,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 
 interface PropertyListCardProps {
@@ -25,6 +26,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { formatArea } = useAreaUnit();
 
   // Sync local state when prop changes (e.g. after query refetch)
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
@@ -276,7 +278,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
               </span>
               <span className="flex items-center gap-1">
                 <Maximize className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.area} {property.areaUnit}</span>
+                <span className="font-medium text-foreground">{formatArea(property.area, property.areaUnit)}</span>
               </span>
               <span className="flex items-center gap-1">
                 <Bath className="h-3.5 w-3.5" />
