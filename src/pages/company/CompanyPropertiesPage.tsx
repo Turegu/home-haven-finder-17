@@ -168,11 +168,17 @@ const CompanyPropertiesPage = () => {
 
   const handleDeactivate = async (prop: Property) => {
     const newStatus = prop.status === "active" ? "inactive" : "active";
+    // Prevent reactivation if at membership limit
+    if (newStatus === "active" && !canCreate("properties")) {
+      toast.error(`Your ${membership} membership does not allow more active properties. Please upgrade your membership.`);
+      return;
+    }
     const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", prop.id);
     if (error) toast.error("Failed to update status");
     else {
       toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`);
       fetchProperties();
+      refreshLimits();
     }
   };
 
