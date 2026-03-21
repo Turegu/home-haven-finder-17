@@ -13,12 +13,14 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
+import AssignAgentDialog from "@/components/company/AssignAgentDialog";
 
 interface Property {
   id: string;
@@ -35,6 +37,7 @@ interface Property {
   rooms: string | null;
   bathrooms: number | null;
   furniture: string | null;
+  agent_id: string | null;
 }
 
 type ClassificationFilter = "all" | "residential_buy" | "residential_rent" | "commercial_buy" | "commercial_rent";
@@ -50,11 +53,14 @@ const CompanyPropertiesPage = () => {
   const [classificationFilter, setClassificationFilter] = useState<ClassificationFilter>("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Advanced filters
   const [filterType, setFilterType] = useState("all");
   const [filterRooms, setFilterRooms] = useState("all");
   const [filterFurniture, setFilterFurniture] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+
+  // Dialog states
+  const [upgradeDialog, setUpgradeDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
+  const [assignDialog, setAssignDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
 
   const { options: filterOpts } = useFilterOptions("property");
 
@@ -68,9 +74,7 @@ const CompanyPropertiesPage = () => {
         .eq("owner_user_id", user.id)
         .limit(1)
         .maybeSingle();
-      if (company) {
-        setCompanyId(company.id);
-      }
+      if (company) setCompanyId(company.id);
     };
     init();
   }, []);
@@ -80,7 +84,7 @@ const CompanyPropertiesPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("properties")
-      .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture")
+      .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture, agent_id")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
 
@@ -94,10 +98,7 @@ const CompanyPropertiesPage = () => {
   }, [companyId, sortOrder]);
 
   const filtered = properties.filter((p) => {
-    // Text search
     if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
-
-    // Classification filter
     if (classificationFilter !== "all") {
       const cls = p.property_classification?.toLowerCase() || "residential";
       const purpose = p.property_purpose;
@@ -108,13 +109,10 @@ const CompanyPropertiesPage = () => {
         case "commercial_rent": if (cls !== "commercial" || purpose !== "rent") return false; break;
       }
     }
-
-    // Advanced filters
     if (filterType !== "all" && p.property_type !== filterType) return false;
     if (filterRooms !== "all" && p.rooms !== filterRooms) return false;
     if (filterFurniture !== "all" && p.furniture !== filterFurniture) return false;
     if (filterStatus !== "all" && p.status !== filterStatus) return false;
-
     return true;
   });
 
@@ -144,6 +142,16 @@ const CompanyPropertiesPage = () => {
     else {
       toast.success(`${selected.length} property(ies) deleted`);
       setSelected([]);
+      fetchProperties();
+    }
+  };
+
+  const handleDeactivate = async (prop: Property) => {
+    const newStatus = prop.status === "active" ? "inactive" : "active";
+    const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", prop.id);
+    if (error) toast.error("Failed to update status");
+    else {
+      toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`);
       fetchProperties();
     }
   };
@@ -180,12 +188,7 @@ const CompanyPropertiesPage = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search By Title Or ID"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-secondary/50"
-          />
+          <Input placeholder="Search By Title Or ID" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="whitespace-nowrap">Sort By Date</span>
@@ -197,18 +200,10 @@ const CompanyPropertiesPage = () => {
             </SelectContent>
           </Select>
         </div>
-        <Button
-          variant={showFilters ? "default" : "outline"}
-          size="sm"
-          onClick={() => setShowFilters(!showFilters)}
-          className="gap-2"
-        >
-          <Filter className="h-4 w-4" />
-          Filters
+        <Button variant={showFilters ? "default" : "outline"} size="sm" onClick={() => setShowFilters(!showFilters)} className="gap-2">
+          <Filter className="h-4 w-4" /> Filters
           {activeFilterCount > 0 && (
-            <span className="ml-1 bg-primary-foreground text-primary rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold">
-              {activeFilterCount}
-            </span>
+            <span className="ml-1 bg-primary-foreground text-primary rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold">{activeFilterCount}</span>
           )}
         </Button>
         <div className="flex items-center gap-2 ml-auto">
@@ -262,9 +257,7 @@ const CompanyPropertiesPage = () => {
                 <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
-                  {propertyTypes.map((t) => (
-                    <SelectItem key={t} value={t.toLowerCase()}>{t}</SelectItem>
-                  ))}
+                  {propertyTypes.map((t) => (<SelectItem key={t} value={t.toLowerCase()}>{t}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
@@ -274,9 +267,7 @@ const CompanyPropertiesPage = () => {
                 <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Rooms" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Rooms</SelectItem>
-                  {roomOptions.map((r) => (
-                    <SelectItem key={r} value={r}>{r}</SelectItem>
-                  ))}
+                  {roomOptions.map((r) => (<SelectItem key={r} value={r}>{r}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
@@ -286,9 +277,7 @@ const CompanyPropertiesPage = () => {
                 <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All</SelectItem>
-                  {furnitureOptions.map((f) => (
-                    <SelectItem key={f} value={f}>{f}</SelectItem>
-                  ))}
+                  {furnitureOptions.map((f) => (<SelectItem key={f} value={f}>{f}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
@@ -318,9 +307,7 @@ const CompanyPropertiesPage = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/5">
-                <TableHead className="w-10">
-                  <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
-                </TableHead>
+                <TableHead className="w-10"><Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} /></TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">ID</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Property Status</TableHead>
@@ -343,9 +330,7 @@ const CompanyPropertiesPage = () => {
                   <TableRow key={prop.id} className="hover:bg-muted/30">
                     <TableCell><Checkbox checked={selected.includes(prop.id)} onCheckedChange={() => toggleSelect(prop.id)} /></TableCell>
                     <TableCell className="text-sm font-mono text-muted-foreground">{prop.listing_id}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {format(new Date(prop.created_at), "dd/MM/yyyy hh:mm a")}
-                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{format(new Date(prop.created_at), "dd/MM/yyyy hh:mm a")}</TableCell>
                     <TableCell>
                       <Badge className={propStatusColor(prop.property_status)} variant="secondary">
                         {prop.property_status.charAt(0).toUpperCase() + prop.property_status.slice(1)}
@@ -378,11 +363,21 @@ const CompanyPropertiesPage = () => {
                           <DropdownMenuItem onClick={() => navigate(`/property/${prop.id}`)}>
                             <Eye className="h-4 w-4 mr-2" /> View
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => fetchProperties()}>
+                            <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => navigate(`/company/properties/${prop.id}/edit`)}>
                             <Pencil className="h-4 w-4 mr-2" /> Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate(`/company/properties/${prop.id}/edit`)}>
-                            <RefreshCw className="h-4 w-4 mr-2" /> Deactivate
+                          <DropdownMenuItem onClick={() => handleDeactivate(prop)}>
+                            <Ban className="h-4 w-4 mr-2" /> {prop.status === "active" ? "Deactivate" : "Activate"}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setAssignDialog({ open: true, property: prop })}>
+                            <UserPlus className="h-4 w-4 mr-2" /> Assign To Agent
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: prop })}>
+                            <ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -394,6 +389,32 @@ const CompanyPropertiesPage = () => {
           </Table>
         </div>
       </div>
+
+      {/* Dialogs */}
+      {upgradeDialog.property && companyId && (
+        <UpgradeListingDialog
+          open={upgradeDialog.open}
+          onOpenChange={(open) => setUpgradeDialog({ open, property: open ? upgradeDialog.property : null })}
+          listingId={upgradeDialog.property.id}
+          listingTitle={upgradeDialog.property.title}
+          listingType="property"
+          companyId={companyId}
+          currentClassification={upgradeDialog.property.property_classification}
+          onUpgraded={fetchProperties}
+        />
+      )}
+      {assignDialog.property && companyId && (
+        <AssignAgentDialog
+          open={assignDialog.open}
+          onOpenChange={(open) => setAssignDialog({ open, property: open ? assignDialog.property : null })}
+          listingId={assignDialog.property.id}
+          listingTitle={assignDialog.property.title}
+          listingType="property"
+          companyId={companyId}
+          currentAgentId={assignDialog.property.agent_id}
+          onAssigned={fetchProperties}
+        />
+      )}
     </CompanyLayout>
   );
 };
