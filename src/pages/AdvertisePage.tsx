@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -12,8 +12,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   CheckCircle, Users, Home, FolderKanban, CalendarDays,
-  Search, Image, MessageSquare, Phone, Mail, Building2
+  Search, Image, MessageSquare, Phone, Mail, Building2,
+  Package, Zap, Star, Crown
 } from "lucide-react";
+
+const packageIcons: Record<string, React.ElementType> = {
+  basic: Package,
+  lite: Zap,
+  plus: Star,
+  pro: Crown,
+};
 
 const AdvertisePage = () => {
   const [form, setForm] = useState({
