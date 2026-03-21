@@ -84,7 +84,7 @@ const AdminDashboardPage = () => {
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <p className="text-4xl font-bold text-foreground">{card.count}</p>
-                <Users className="h-8 w-8 text-muted-foreground" />
+                <card.icon className="h-8 w-8 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-muted-foreground mt-1">Companies</p>
             </div>
