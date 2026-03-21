@@ -3,6 +3,7 @@ import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Building, ChevronLeft
 import { Badge } from '@/components/ui/badge';
 import { useQueryClient } from '@tanstack/react-query';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
+import { useAreaUnit } from '@/hooks/useAreaUnit';
 import type { Property } from '@/data/mockProperties';
 
 interface PropertyCardProps {
