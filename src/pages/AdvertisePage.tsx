@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 const packageIcons: Record<string, React.ElementType> = {
-  basic: Package,
+  basic: Building2,
   lite: Zap,
   plus: Star,
   pro: Crown,
