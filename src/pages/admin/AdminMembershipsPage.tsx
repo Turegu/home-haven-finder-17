@@ -184,24 +184,23 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
           <EditableRow label="Events Listings" packages={packages} editData={editData} field="max_events" update={update} type="number" />
           <CheckboxRow label="Receive Property Requests" packages={packages} editData={editData} field="has_property_requests" update={update} />
           <CheckboxRow label="Included Company & Agent Search" packages={packages} editData={editData} field="has_company_agent_search" update={update} />
-          <CheckboxRow label="Company Logo in Home Page" packages={packages} editData={editData} field="has_home_logo" update={update} />
           <PriceRow label="Monthly Subscription fees" packages={packages} editData={editData} field="monthly_price" update={update} />
           <PriceRow label="3 months Subscription fees" packages={packages} editData={editData} field="quarterly_price" update={update} />
           <PriceRow label="6 months Subscription fees" packages={packages} editData={editData} field="semiannual_price" update={update} />
           <PriceRow label="12 months Subscription fees" packages={packages} editData={editData} field="annual_price" update={update} />
           <tr>
             <td className="p-3 bg-primary/5 font-semibold rounded-bl-lg"></td>
-            {packages.map((p, i) => (
-              <td key={p.id} className={`p-3 text-center ${i === packages.length - 1 ? "rounded-br-lg" : ""}`}>
-                <Button
-                  size="sm"
-                  onClick={() => updateMutation.mutate(editData[p.id])}
-                  disabled={updateMutation.isPending}
-                >
-                  <Save className="h-4 w-4 mr-1" /> Update
-                </Button>
-              </td>
-            ))}
+            <td colSpan={packages.length} className={`p-3 text-center rounded-br-lg`}>
+              <Button
+                size="sm"
+                onClick={() => {
+                  packages.forEach((p) => updateMutation.mutate(editData[p.id]));
+                }}
+                disabled={updateMutation.isPending}
+              >
+                <Save className="h-4 w-4 mr-1" /> Update All Packages
+              </Button>
+            </td>
           </tr>
         </tbody>
       </table>
