@@ -165,8 +165,21 @@ export function usePropertySearch(params: PropertySearchParams) {
       const { data, error, count } = await query;
       if (error) throw error;
 
+      // Re-sort results to enforce premium > featured > standard tier ordering
+      const tierOrder = (cls: string | null) => {
+        if (cls === "premium") return 0;
+        if (cls === "featured") return 1;
+        return 2;
+      };
+      const sorted = (data ?? []).sort((a: any, b: any) => {
+        const ta = tierOrder(a.property_classification);
+        const tb = tierOrder(b.property_classification);
+        if (ta !== tb) return ta - tb;
+        return 0; // preserve server order for same tier
+      });
+
       return {
-        properties: (data ?? []) as PropertyResult[],
+        properties: sorted as PropertyResult[],
         total: count ?? 0,
       };
     },
