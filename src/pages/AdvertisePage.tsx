@@ -12,12 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import {
   CheckCircle, Users, Home, FolderKanban, CalendarDays,
-  Search, Image, MessageSquare, Phone, Mail, Building2,
-  Package, Zap, Star, Crown
+  Search, Image, MessageSquare, Building2,
+  Briefcase, Zap, Star, Crown
 } from "lucide-react";
 
 const packageIcons: Record<string, React.ElementType> = {
-  basic: Building2,
+  basic: Briefcase,
   lite: Zap,
   plus: Star,
   pro: Crown,
@@ -288,7 +288,7 @@ const AdvertisePage = () => {
                 )}
                 <CardHeader className="text-center pb-2">
                   {(() => {
-                    const IconComp = packageIcons[pkg.package_type] || Package;
+                    const IconComp = packageIcons[pkg.package_type] || Briefcase;
                     return (
                       <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
                         <IconComp className="h-8 w-8 text-primary" />
