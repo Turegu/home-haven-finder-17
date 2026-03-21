@@ -157,7 +157,15 @@ const CompanyAgentsPage = () => {
           </Select>
         </div>
         <div className="flex items-center gap-2 ml-auto">
-          <Button onClick={() => navigate("/company/agents/new")}>
+          <Button
+            onClick={() => {
+              if (!canCreate("agents")) {
+                toast.error(`Your ${membership} membership does not allow more agents. Please upgrade.`);
+                return;
+              }
+              navigate("/company/agents/new");
+            }}
+          >
             <Plus className="h-4 w-4 mr-2" /> Create New Agent
           </Button>
         </div>
