@@ -57,6 +57,7 @@ const emptyPropertyState = {
   town: '',
   neighbourhood: '',
   propertyPurpose: 'buy',
+  rentDuration: null as string | null,
 };
 
 const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
