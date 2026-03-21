@@ -670,17 +670,24 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
         </div>
         <div className="p-4">
           <h3 className="font-semibold text-foreground mb-1">{project.title}</h3>
-          <div className="flex items-center gap-1 text-muted-foreground text-xs mb-2">
+          <div className="flex items-center gap-1 text-muted-foreground text-xs mb-1">
             <MapPin className="h-3.5 w-3.5 text-primary" />
             <span>{loc}</span>
           </div>
+          <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-2">
+            <Building className="h-3.5 w-3.5" />
+            <span>{project.project_type}</span>
+          </div>
           <div className="flex items-center justify-between pt-3 border-t border-border">
-            <p className="text-sm font-bold text-foreground">
-              Starting from {(project.currency ?? 'TRY')} {(project.min_price ?? 0).toLocaleString()}
-            </p>
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Starting from</p>
+              <p className="text-sm font-bold text-foreground">
+                {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
+              </p>
+            </div>
             {project.completion_date && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
+                <Calendar className="h-3.5 w-3.5 text-primary" />
                 <span>{project.completion_date}</span>
               </div>
             )}
@@ -803,9 +810,12 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
 
             {/* Price bar */}
             <div className="bg-primary px-4 py-2 flex items-center justify-between">
-              <span className="text-lg font-bold text-primary-foreground">
-                Starting from {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
-              </span>
+              <div>
+                <span className="text-[10px] text-primary-foreground/70 uppercase tracking-wider">Starting from</span>
+                <span className="text-lg font-bold text-primary-foreground ml-2">
+                  {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
+                </span>
+              </div>
               {project.completion_date && (
                 <span className="flex items-center gap-1.5 text-sm text-primary-foreground/90">
                   <Calendar className="h-3.5 w-3.5" /> {project.completion_date}
