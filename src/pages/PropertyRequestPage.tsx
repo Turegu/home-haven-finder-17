@@ -169,42 +169,51 @@ const PropertyRequestPage = () => {
     }
   };
 
-  const SelectField = ({ label, field, options, required = false }: { label: string; field: string; options: string[]; required?: boolean }) => (
-    <div>
-      <label className="block text-sm font-medium text-foreground mb-1.5">{label}{required && '*'}</label>
-      <div className="relative">
-        <select
-          value={(formData as any)[field] ?? ''}
-          onChange={(e) => handleChange(field, e.target.value)}
-          className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Select</option>
-          {options.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+  const SelectField = ({ label, field, options, required = false, showAny = true }: { label: string; field: string; options: string[]; required?: boolean; showAny?: boolean }) => {
+    const currentValue = (formData as any)[field] ?? '';
+    const hasAnyInOptions = options.some(o => o.toLowerCase() === 'any');
+    const shouldShowAny = showAny && !hasAnyInOptions;
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">{label}{required && '*'}</label>
+        <div className="relative">
+          <select
+            value={currentValue}
+            onChange={(e) => handleChange(field, e.target.value)}
+            className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            <option value="" disabled hidden>Select</option>
+            {shouldShowAny && <option value="" className="text-foreground">Any</option>}
+            {options.map((o) => <option key={o} value={o} className="text-foreground">{o}</option>)}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
-  const EnquirySelect = () => (
-    <div>
-      <label className="block text-sm font-medium text-foreground mb-1.5">Enquiry Type*</label>
-      <div className="relative">
-        <select
-          value={formData.enquiryType}
-          onChange={(e) => {
-            handleChange('enquiryType', e.target.value);
-            handleChange('propertyType', '');
-          }}
-          className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Select</option>
-          {ENQUIRY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+  const EnquirySelect = () => {
+    const currentValue = formData.enquiryType;
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Enquiry Type*</label>
+        <div className="relative">
+          <select
+            value={currentValue}
+            onChange={(e) => {
+              handleChange('enquiryType', e.target.value);
+              handleChange('propertyType', '');
+            }}
+            className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            <option value="" disabled hidden>Select</option>
+            {ENQUIRY_TYPES.map((t) => <option key={t.value} value={t.value} className="text-foreground">{t.label}</option>)}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const AmenityGrid = ({ label, field, options }: { label: string; field: 'interiorAmenities' | 'exteriorAmenities'; options: string[] }) => (
     <div className="md:col-span-2">
@@ -312,9 +321,9 @@ const PropertyRequestPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <EnquirySelect />
               <SelectField label="Property Type" field="propertyType" options={propertyTypeOptions} />
-              <SelectField label="Province / City" field="province" options={provinces} />
-              <SelectField label="District" field="district" options={districts} />
-              <SelectField label="Neighbourhood" field="neighbourhood" options={neighbourhoods} />
+              <SelectField label="Province / City" field="province" options={provinces} showAny={false} />
+              <SelectField label="District" field="district" options={districts} showAny={false} />
+              <SelectField label="Neighbourhood" field="neighbourhood" options={neighbourhoods} showAny={false} />
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" /></div>
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
