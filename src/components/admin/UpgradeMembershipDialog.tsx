@@ -80,16 +80,20 @@ const UpgradeMembershipDialog = ({
     }
   };
 
-  const handleUpgrade = async () => {
+  const isToBasic = selectedPackage === "basic";
+
+  const handleChange = async () => {
     if (!selectedPackage) return;
-    if (!testMode && !selectedDuration) return;
+    if (!isToBasic && !testMode && !selectedDuration) return;
     if (testMode && testMinutes < 1) return;
 
     setLoading(true);
     try {
-      let newEndDate: string;
+      let newEndDate: string | null;
 
-      if (testMode) {
+      if (isToBasic) {
+        newEndDate = null;
+      } else if (testMode) {
         newEndDate = addMinutes(new Date(), testMinutes).toISOString();
       } else {
         const months = DURATIONS.find(d => d.key === selectedDuration)!.months;
@@ -106,15 +110,17 @@ const UpgradeMembershipDialog = ({
 
       if (error) throw error;
 
-      const durationLabel = testMode
-        ? `${testMinutes} minute(s) (test)`
-        : `${DURATIONS.find(d => d.key === selectedDuration)!.months} month(s)`;
+      const durationLabel = isToBasic
+        ? "(downgraded)"
+        : testMode
+          ? `${testMinutes} minute(s) (test)`
+          : `${DURATIONS.find(d => d.key === selectedDuration)!.months} month(s)`;
 
-      toast.success(`${companyName} upgraded to ${selectedPackage} for ${durationLabel}`);
+      toast.success(`${companyName} changed to ${selectedPackage} ${durationLabel}`);
       onUpgraded();
       onOpenChange(false);
     } catch {
-      toast.error("Failed to upgrade membership");
+      toast.error("Failed to change membership");
     } finally {
       setLoading(false);
     }
