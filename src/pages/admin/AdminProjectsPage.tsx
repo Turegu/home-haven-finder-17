@@ -7,7 +7,8 @@ import { FolderKanban } from "lucide-react";
 
 const AdminProjectsPage = () => {
   const navigate = useNavigate();
-
+  const [searchParams] = useSearchParams();
+  const initialCompanyFilter = searchParams.get("company") || undefined;
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-projects"],
     queryFn: async () => {

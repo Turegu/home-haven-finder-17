@@ -7,7 +7,8 @@ import { CalendarDays } from "lucide-react";
 
 const AdminEventsPage = () => {
   const navigate = useNavigate();
-
+  const [searchParams] = useSearchParams();
+  const initialCompanyFilter = searchParams.get("company") || undefined;
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-events"],
     queryFn: async () => {

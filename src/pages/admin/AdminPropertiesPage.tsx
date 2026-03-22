@@ -7,7 +7,8 @@ import { Home } from "lucide-react";
 
 const AdminPropertiesPage = () => {
   const navigate = useNavigate();
-
+  const [searchParams] = useSearchParams();
+  const initialCompanyFilter = searchParams.get("company") || undefined;
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-properties"],
     queryFn: async () => {
