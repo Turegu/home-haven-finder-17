@@ -120,7 +120,7 @@ serve(async (req) => {
     }
 
     // ── Fetch from Overpass (race all endpoints) ───────────────
-    const result = await fetchFromOverpass(query, 25000);
+    const result = await fetchFromOverpass(query, 30000);
 
     if ("error" in result) {
       return new Response(
