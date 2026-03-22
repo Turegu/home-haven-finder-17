@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import {
   Search, MoreVertical, Eye, RefreshCw, Ban, Monitor, Trash2,
   ChevronLeft, ChevronRight, Home, CheckCircle, XCircle, LayoutList,
-  Briefcase, Zap, Star, Crown,
+  Briefcase, Zap, Star, Crown, MapPin,
 } from "lucide-react";
 
 export interface ListingItem {
@@ -69,6 +69,7 @@ const AdminListingTable = ({
 }: AdminListingTableProps) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [locationSearch, setLocationSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
@@ -98,23 +99,25 @@ const AdminListingTable = ({
     return items
       .filter((item) => {
         const q = search.toLowerCase();
-        const matchesSearch =
+        const matchesSearch = !q ||
           item.title.toLowerCase().includes(q) ||
           item.listing_id.toLowerCase().includes(q) ||
-          (item.company_name || "").toLowerCase().includes(q) ||
-          (item.province || "").toLowerCase().includes(q) ||
-          (item.town || "").toLowerCase().includes(q) ||
-          (item.location || "").toLowerCase().includes(q);
+          (item.company_name || "").toLowerCase().includes(q);
+        const loc = locationSearch.toLowerCase();
+        const matchesLocation = !loc ||
+          (item.province || "").toLowerCase().includes(loc) ||
+          (item.town || "").toLowerCase().includes(loc) ||
+          (item.location || "").toLowerCase().includes(loc);
         const matchesStatus = statusFilter === "all" || item.status === statusFilter;
         const matchesCompany = companyFilter === "all" || item.company_name === companyFilter;
-        return matchesSearch && matchesStatus && matchesCompany;
+        return matchesSearch && matchesLocation && matchesStatus && matchesCompany;
       })
       .sort((a, b) => {
         const da = new Date(a.created_at).getTime();
         const db = new Date(b.created_at).getTime();
         return sortOrder === "newest" ? db - da : da - db;
       });
-  }, [items, search, statusFilter, companyFilter, sortOrder]);
+  }, [items, search, locationSearch, statusFilter, companyFilter, sortOrder]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -268,10 +271,19 @@ const AdminListingTable = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by Title, ID, Company, or Location"
+              placeholder="Search by Title, ID, or Company"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-9 w-64"
+              className="pl-9 w-60"
+            />
+          </div>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by Province, City, Area"
+              value={locationSearch}
+              onChange={(e) => { setLocationSearch(e.target.value); setPage(1); }}
+              className="pl-9 w-56"
             />
           </div>
           <Select value={companyFilter} onValueChange={(v) => { setCompanyFilter(v); setPage(1); }}>
