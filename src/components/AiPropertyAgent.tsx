@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import aiAgentIcon from "@/assets/ai-agent-icon.png";
+import { useQuery } from "@tanstack/react-query";
 
 interface AiPick {
   score: number;
