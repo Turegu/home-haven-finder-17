@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminListingTable, { ListingItem } from "@/components/admin/AdminListingTable";
@@ -7,18 +7,20 @@ import { Home } from "lucide-react";
 
 const AdminPropertiesPage = () => {
   const navigate = useNavigate();
-
+  const [searchParams] = useSearchParams();
+  const initialCompanyFilter = searchParams.get("company") || undefined;
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-properties"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("properties")
-        .select("*, companies(name)")
+        .select("*, companies(name, membership)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data || []).map((p: any) => ({
         ...p,
         company_name: p.companies?.name || "—",
+        company_membership: p.companies?.membership || "basic",
       })) as ListingItem[];
     },
   });
@@ -27,16 +29,19 @@ const AdminPropertiesPage = () => {
     { key: "listing_id", label: "ID" },
     { key: "created_at", label: "CREATION DATE" },
     { key: "property_status", label: "PROPERTY STATUS" },
-    { key: "property_purpose", label: "PROPERTY PURPOSE" },
+    { key: "property_purpose", label: "PURPOSE" },
     { key: "property_type", label: "TYPE" },
     { key: "title", label: "TITLE" },
-    { key: "company_name", label: "COMPANY NAME" },
-    { key: "location", label: "LOCATION" },
+    { key: "company_name", label: "COMPANY" },
+    { key: "province", label: "PROVINCE" },
+    { key: "town", label: "CITY" },
+    { key: "updated_at", label: "LAST UPDATED" },
   ];
 
   const renderCell = (item: ListingItem, key: string) => {
-    if (key === "created_at") {
-      return new Date(item.created_at).toLocaleString();
+    if (key === "created_at" || key === "updated_at") {
+      const val = (item as any)[key];
+      return val ? new Date(val).toLocaleDateString() : "—";
     }
     if (key === "property_status") {
       const colors: Record<string, string> = {
@@ -56,10 +61,6 @@ const AdminPropertiesPage = () => {
     }
     if (key === "property_type") {
       return (item.property_type || "—").charAt(0).toUpperCase() + (item.property_type || "").slice(1);
-    }
-    if (key === "location") {
-      const loc = item.location || "—";
-      return <span className="max-w-[200px] truncate block">{loc}</span>;
     }
     return (item as any)[key] ?? "—";
   };
@@ -81,6 +82,7 @@ const AdminPropertiesPage = () => {
             columns={columns}
             renderCell={renderCell}
             onView={(item) => navigate(`/property/${item.id}`)}
+            initialCompanyFilter={initialCompanyFilter}
           />
         )}
       </div>

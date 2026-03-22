@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -13,7 +12,9 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
-  Search, MoreVertical, Eye, RefreshCw, Ban, Monitor, Trash2, ChevronLeft, ChevronRight, Home,
+  Search, MoreVertical, Eye, RefreshCw, Ban, Monitor, Trash2,
+  ChevronLeft, ChevronRight, Home, CheckCircle, XCircle, LayoutList,
+  Briefcase, Zap, Star, Crown,
 } from "lucide-react";
 
 export interface ListingItem {
@@ -23,9 +24,12 @@ export interface ListingItem {
   status: string;
   display_on_homepage: boolean;
   created_at: string;
+  updated_at?: string;
   company_name?: string;
+  company_membership?: string;
   location?: string;
-  // type-specific
+  province?: string;
+  town?: string;
   property_status?: string;
   property_purpose?: string;
   property_type?: string;
@@ -41,32 +45,73 @@ interface AdminListingTableProps {
   columns: { key: string; label: string }[];
   renderCell: (item: ListingItem, key: string) => React.ReactNode;
   onView?: (item: ListingItem) => void;
+  initialCompanyFilter?: string;
 }
 
 const ITEMS_PER_PAGE = 10;
 
+const MEMBERSHIP_ICONS: Record<string, React.ReactNode> = {
+  basic: <Briefcase className="h-3 w-3" />,
+  lite: <Zap className="h-3 w-3" />,
+  plus: <Star className="h-3 w-3" />,
+  pro: <Crown className="h-3 w-3" />,
+};
+
+const MEMBERSHIP_COLORS: Record<string, string> = {
+  basic: "bg-muted text-muted-foreground",
+  lite: "bg-purple-100 text-purple-800",
+  plus: "bg-orange-100 text-orange-800",
+  pro: "bg-emerald-100 text-emerald-800",
+};
+
 const AdminListingTable = ({
-  tableName, queryKey, items, columns, renderCell, onView,
+  tableName, queryKey, items, columns, renderCell, onView, initialCompanyFilter,
 }: AdminListingTableProps) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "deactivated">("all");
+  const [companyFilter, setCompanyFilter] = useState<string>(initialCompanyFilter || "all");
+
+  // Unique companies for dropdown
+  const companies = useMemo(() => {
+    const map = new Map<string, string>();
+    items.forEach((item) => {
+      if (item.company_name && item.company_name !== "—") {
+        map.set(item.company_name, item.company_name);
+      }
+    });
+    return Array.from(map.values()).sort();
+  }, [items]);
+
+  // Stats
+  const stats = useMemo(() => ({
+    total: items.length,
+    active: items.filter((i) => i.status === "active").length,
+    deactivated: items.filter((i) => i.status === "deactivated").length,
+  }), [items]);
 
   // Filter & sort
-  const filtered = items
-    .filter((item) => {
-      const q = search.toLowerCase();
-      return item.title.toLowerCase().includes(q) ||
-        item.listing_id.toLowerCase().includes(q) ||
-        (item.company_name || "").toLowerCase().includes(q);
-    })
-    .sort((a, b) => {
-      const da = new Date(a.created_at).getTime();
-      const db = new Date(b.created_at).getTime();
-      return sortOrder === "newest" ? db - da : da - db;
-    });
+  const filtered = useMemo(() => {
+    return items
+      .filter((item) => {
+        const q = search.toLowerCase();
+        const matchesSearch =
+          item.title.toLowerCase().includes(q) ||
+          item.listing_id.toLowerCase().includes(q) ||
+          (item.company_name || "").toLowerCase().includes(q);
+        const matchesStatus = statusFilter === "all" || item.status === statusFilter;
+        const matchesCompany = companyFilter === "all" || item.company_name === companyFilter;
+        return matchesSearch && matchesStatus && matchesCompany;
+      })
+      .sort((a, b) => {
+        const da = new Date(a.created_at).getTime();
+        const db = new Date(b.created_at).getTime();
+        return sortOrder === "newest" ? db - da : da - db;
+      });
+  }, [items, search, statusFilter, companyFilter, sortOrder]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -82,6 +127,19 @@ const AdminListingTable = ({
       toast.success("Updated successfully");
     },
     onError: () => toast.error("Update failed"),
+  });
+
+  const bulkUpdateMutation = useMutation({
+    mutationFn: async ({ ids, updates }: { ids: string[]; updates: Record<string, any> }) => {
+      const { error } = await supabase.from(tableName).update(updates).in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKey] });
+      setSelectedIds(new Set());
+      toast.success("Bulk update successful");
+    },
+    onError: () => toast.error("Bulk update failed"),
   });
 
   const deleteMutation = useMutation({
@@ -120,6 +178,14 @@ const AdminListingTable = ({
     }
   };
 
+  const handleBulkStatusChange = (newStatus: string) => {
+    if (selectedIds.size === 0) return;
+    bulkUpdateMutation.mutate({
+      ids: Array.from(selectedIds),
+      updates: { status: newStatus },
+    });
+  };
+
   const statusBadge = (status: string) => {
     const colors: Record<string, string> = {
       active: "bg-green-100 text-green-800",
@@ -132,11 +198,70 @@ const AdminListingTable = ({
     );
   };
 
+  const membershipBadge = (membership?: string) => {
+    if (!membership) return null;
+    const color = MEMBERSHIP_COLORS[membership] || MEMBERSHIP_COLORS.basic;
+    const icon = MEMBERSHIP_ICONS[membership] || MEMBERSHIP_ICONS.basic;
+    return (
+      <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${color}`}>
+        {icon} {membership.charAt(0).toUpperCase() + membership.slice(1)}
+      </span>
+    );
+  };
+
   return (
     <div className="space-y-4">
+      {/* Summary Stats */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-primary/10 p-2">
+            <LayoutList className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Total</p>
+            <p className="text-lg font-bold text-foreground">{stats.total}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-green-100 p-2">
+            <CheckCircle className="h-4 w-4 text-green-700" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Active</p>
+            <p className="text-lg font-bold text-green-700">{stats.active}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-red-100 p-2">
+            <XCircle className="h-4 w-4 text-red-700" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Deactivated</p>
+            <p className="text-lg font-bold text-red-700">{stats.deactivated}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Status Filter Tabs */}
+      <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1 w-fit">
+        {(["all", "active", "deactivated"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => { setStatusFilter(tab); setPage(1); }}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              statusFilter === tab
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab === "all" ? `All (${stats.total})` : tab === "active" ? `Active (${stats.active})` : `Deactivated (${stats.deactivated})`}
+          </button>
+        ))}
+      </div>
+
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -146,8 +271,19 @@ const AdminListingTable = ({
               className="pl-9 w-64"
             />
           </div>
+          <Select value={companyFilter} onValueChange={(v) => { setCompanyFilter(v); setPage(1); }}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="All Companies" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Companies</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-foreground">Sort By Date</span>
+            <span className="text-sm font-medium text-foreground">Sort</span>
             <Select value={sortOrder} onValueChange={(v) => { setSortOrder(v as any); setPage(1); }}>
               <SelectTrigger className="w-40">
                 <SelectValue />
@@ -160,11 +296,24 @@ const AdminListingTable = ({
           </div>
         </div>
         {selectedIds.size > 0 && (
-          <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
-            <Trash2 className="h-4 w-4 mr-1" /> Delete ({selectedIds.size})
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => handleBulkStatusChange("active")}>
+              <CheckCircle className="h-4 w-4 mr-1" /> Activate ({selectedIds.size})
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => handleBulkStatusChange("deactivated")}>
+              <Ban className="h-4 w-4 mr-1" /> Deactivate ({selectedIds.size})
+            </Button>
+            <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
+              <Trash2 className="h-4 w-4 mr-1" /> Delete ({selectedIds.size})
+            </Button>
+          </div>
         )}
       </div>
+
+      {/* Results count */}
+      <p className="text-xs text-muted-foreground">
+        Showing {paginated.length} of {filtered.length} listing(s)
+      </p>
 
       {/* Table */}
       <div className="overflow-x-auto border border-border rounded-lg">
@@ -210,6 +359,9 @@ const AdminListingTable = ({
                           <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full shrink-0" title="Displayed on Homepage">
                             <Home className="h-3 w-3" /> Homepage
                           </span>
+                        )}
+                        {col.key === "company_name" && item.company_membership && (
+                          <span className="ml-1">{membershipBadge(item.company_membership)}</span>
                         )}
                       </span>
                     </td>

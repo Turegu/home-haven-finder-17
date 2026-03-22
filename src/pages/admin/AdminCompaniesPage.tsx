@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
@@ -224,6 +224,15 @@ const AdminCompaniesPage = () => {
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}/agents`)}>
                             <Users className="h-4 w-4 mr-2" /> View Agents
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/properties?company=${encodeURIComponent(company.name)}`)}>
+                            <Home className="h-4 w-4 mr-2" /> View Properties
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/projects?company=${encodeURIComponent(company.name)}`)}>
+                            <FolderKanban className="h-4 w-4 mr-2" /> View Projects
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/events?company=${encodeURIComponent(company.name)}`)}>
+                            <CalendarDays className="h-4 w-4 mr-2" /> View Events
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
