@@ -533,15 +533,27 @@ const CompanyProjectEditPage = () => {
     switch (s) { case "available": return "bg-emerald-100 text-emerald-800"; case "reserved": return "bg-orange-100 text-orange-800"; case "sold": return "bg-red-100 text-red-800"; default: return "bg-muted text-muted-foreground"; }
   };
 
-  const handleSave = async (publishStatus: "draft" | "active") => {
-    if (!companyId) { toast.error("Company not found"); return; }
+  const validateProjectForm = (): boolean => {
+    if (!companyId) { toast.error("Company not found"); return false; }
     if (!isEdit && !membershipLimits.canCreate("projects")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
-      return;
+      return false;
     }
-    if (!form.title.trim()) { toast.error("Project name is required"); return; }
-    if (!form.title.trim()) { toast.error("Project name is required"); return; }
-    setLoading(true);
+    if (!form.title.trim()) { toast.error("Project name is required"); return false; }
+    return true;
+  };
+
+  const handlePublishClick = () => {
+    if (!validateProjectForm()) return;
+    setShowUpgradeDialog(true);
+  };
+
+  const handleSave = async (publishStatus: "draft" | "active", classificationOverride?: string) => {
+    if (publishStatus === "active" && !validateProjectForm()) return;
+    if (publishStatus === "draft") {
+      if (!companyId) { toast.error("Company not found"); return; }
+      if (!form.title.trim()) { toast.error("Project name is required"); return; }
+    }
 
     const payload: any = {
       title: form.title.trim(), description: form.description || null,
