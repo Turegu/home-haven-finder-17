@@ -135,7 +135,19 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   }, [projectId]);
 
   const currentUnit = units.find((u) => u.id === selectedUnit) || units[0];
+  const currentUnitIndex = units.findIndex((u) => u.id === selectedUnit);
   const otherUnits = units.filter((u) => u.id !== currentUnit?.id);
+
+  const goToPrevUnit = () => {
+    if (units.length <= 1) return;
+    const prev = (currentUnitIndex - 1 + units.length) % units.length;
+    setSelectedUnit(units[prev].id);
+  };
+  const goToNextUnit = () => {
+    if (units.length <= 1) return;
+    const next = (currentUnitIndex + 1) % units.length;
+    setSelectedUnit(units[next].id);
+  };
 
   const nextImage = () => {
     if (!currentUnit?.images?.length) return;
