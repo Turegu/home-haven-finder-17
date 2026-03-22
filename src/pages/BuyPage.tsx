@@ -412,6 +412,7 @@ const BuyPage = () => {
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
               <option value="area_desc">Area: Largest First</option>
+              <option value="area_asc">Area: Smallest First</option>
             </select>
             <button
               onClick={() => {
