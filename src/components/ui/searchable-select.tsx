@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Check, ChevronDown, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, turkishIncludes } from "@/lib/utils";
 
 interface SearchableSelectProps {
   value: string;
