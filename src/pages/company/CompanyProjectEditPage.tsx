@@ -175,6 +175,7 @@ interface UnitForm {
   area_unit: string;
   interior_amenities: string[];
   exterior_amenities: string[];
+  advertising_tags: string[];
   images: string[];
   status: string;
 }
@@ -188,7 +189,7 @@ const unitStatuses = [
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
-  interior_amenities: [], exterior_amenities: [], images: [], status: "available",
+  interior_amenities: [], exterior_amenities: [], advertising_tags: [], images: [], status: "available",
 };
 
 const CompanyProjectEditPage = () => {
