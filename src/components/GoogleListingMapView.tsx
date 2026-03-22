@@ -17,7 +17,7 @@ function getRentSuffix(rentDuration?: string | null): string {
 }
 
 function formatPrice(price: number | null, currency: string) {
-  if (!price) return 'Contact for Price';
+  if (!price) return `${currency === 'USD' ? '$' : currency + ' '}0`;
   const sym = currency === 'USD' ? '$' : currency + ' ';
   return `${sym}${price.toLocaleString()}`;
 }
