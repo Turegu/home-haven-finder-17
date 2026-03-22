@@ -25,11 +25,40 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all active properties with agent/company info
+    // Fetch membership packages that have AI search enabled
+    const { data: aiPackages } = await supabase
+      .from("membership_packages")
+      .select("package_type")
+      .eq("has_ai_search", true);
+    
+    const eligibleMemberships = (aiPackages || []).map((p: any) => p.package_type);
+
+    // Fetch companies with eligible memberships
+    let companyIds: string[] = [];
+    if (eligibleMemberships.length > 0) {
+      const { data: eligibleCompanies } = await supabase
+        .from("companies")
+        .select("id")
+        .in("membership", eligibleMemberships)
+        .eq("is_verified", true);
+      companyIds = (eligibleCompanies || []).map((c: any) => c.id);
+    }
+
+    if (companyIds.length === 0) {
+      return new Response(JSON.stringify({
+        analysis: "No properties are currently included in AI search. Properties from eligible membership plans will appear here.",
+        picks: [],
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Fetch only properties belonging to eligible companies
     const { data: properties, error: dbError } = await supabase
       .from("properties")
       .select("id, title, price, currency, location, province, town, neighbourhood, property_type, property_purpose, area, area_unit, bedrooms, bathrooms, rooms, images, listing_id, floor_level, furniture, property_age, parking_spaces, rent_duration, interior_amenities, exterior_amenities, property_classification, created_at, description, pin_location, agents(name, avatar_url), companies(name, logo_url)")
       .eq("status", "active")
+      .in("company_id", companyIds)
       .order("created_at", { ascending: false })
       .limit(500);
 

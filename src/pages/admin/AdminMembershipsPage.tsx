@@ -29,6 +29,7 @@ type MembershipPackage = {
   has_company_agent_search: boolean;
   has_home_logo: boolean;
   has_company_profile: boolean;
+  has_ai_search: boolean;
   sort_order: number;
 };
 
@@ -136,6 +137,7 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
           has_company_agent_search: pkg.has_company_agent_search,
           has_home_logo: pkg.has_home_logo,
           has_company_profile: pkg.has_company_profile,
+          has_ai_search: pkg.has_ai_search,
         })
         .eq("id", pkg.id);
       if (error) throw error;
@@ -184,6 +186,7 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
           <EditableRow label="Events Listings" packages={packages} editData={editData} field="max_events" update={update} type="number" />
           <CheckboxRow label="Receive Property Requests" packages={packages} editData={editData} field="has_property_requests" update={update} />
           <CheckboxRow label="Included Company & Agent Search" packages={packages} editData={editData} field="has_company_agent_search" update={update} />
+          <CheckboxRow label="Included in AI Search" packages={packages} editData={editData} field="has_ai_search" update={update} />
           <PriceRow label="Monthly Subscription fees" packages={packages} editData={editData} field="monthly_price" update={update} />
           <PriceRow label="3 months Subscription fees" packages={packages} editData={editData} field="quarterly_price" update={update} />
           <PriceRow label="6 months Subscription fees" packages={packages} editData={editData} field="semiannual_price" update={update} />
