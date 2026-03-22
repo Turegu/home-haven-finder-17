@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
+import { useAnalyticsPhase } from "@/hooks/useAnalyticsPhase";
 
 interface AgentProperty {
   id: string;
