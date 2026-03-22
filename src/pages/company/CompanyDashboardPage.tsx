@@ -67,8 +67,6 @@ const CompanyDashboardPage = () => {
       setCompany(companyData);
 
       const now = new Date();
-      const monthStart = startOfMonth(now).toISOString();
-      const yearStart = startOfYear(now).toISOString();
 
       const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
         supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
