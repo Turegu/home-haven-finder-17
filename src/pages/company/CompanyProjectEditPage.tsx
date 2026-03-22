@@ -652,9 +652,9 @@ const CompanyProjectEditPage = () => {
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="title">
                 <Label className="text-foreground font-medium">Project Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={20} />
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={20} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/20 characters</p>
               </div>
               <div className="space-y-2">
