@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, Pencil, Upload, X, ArrowLeft, Tag } from "lucide-react";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
+import SearchablePillSelect from "@/components/ui/searchable-pill-select";
 
 interface UnitForm {
   unit_name: string;
