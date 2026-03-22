@@ -42,6 +42,7 @@ const AdminSettingsPage = () => {
         setSalesAddress(map.sales_address || "");
         setMapProvider(map.map_provider || "google");
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
+        setAiSearchEnabled(map.ai_search_enabled !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
