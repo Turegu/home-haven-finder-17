@@ -161,7 +161,8 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* User dashboard */}
-            <Route path="/account" element={<AccountSettingsPage />} />
+            <Route path="/account" element={<UserDashboardPage />} />
+            <Route path="/account/settings" element={<AccountSettingsPage />} />
             <Route path="/account/followed-agents" element={<FollowedAgentsPage />} />
             <Route path="/account/saved-properties" element={<SavedPropertiesPage />} />
             <Route path="/account/saved-searches" element={<SavedSearchesPage />} />
