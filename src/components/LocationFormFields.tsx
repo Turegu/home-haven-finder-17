@@ -409,9 +409,9 @@ const LocationFormFields = ({
   return (
     <div className={`space-y-5 ${className}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Province */}
+        {/* Province (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">Province</Label>
+          <Label className="text-foreground font-medium">Province <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={province}
             onValueChange={handleProvinceChange}
