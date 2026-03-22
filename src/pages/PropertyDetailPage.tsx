@@ -80,6 +80,7 @@ const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { formatArea } = useAreaUnit();
+  useTrackPageView(id, 'property');
   const [property, setProperty] = useState(emptyPropertyState);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
