@@ -238,7 +238,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        <AiPropertyAgent />
+        
       </BrowserRouter>
     </TooltipProvider>
     </AreaUnitProvider>
