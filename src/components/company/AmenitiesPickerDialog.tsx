@@ -36,7 +36,7 @@ export default function AmenitiesPickerDialog({
   const currentOptions = tab === 'exterior' ? exteriorOptions : interiorOptions;
   const currentSelected = tab === 'exterior' ? selectedExterior : selectedInterior;
   const currentToggle = tab === 'exterior' ? onToggleExterior : onToggleInterior;
-  const currentType = tab as 'exterior' | 'interior';
+  
 
   const filtered = search
     ? currentOptions.filter(o => turkishIncludes(o, search))
