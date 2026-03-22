@@ -45,9 +45,10 @@ interface ContactCompanyDialogProps {
   agentId: string | null;
   companyName?: string;
   listingType?: 'property' | 'project' | 'event';
+  projectUnits?: ProjectUnitOption[];
 }
 
-const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property' }: ContactCompanyDialogProps) => {
+const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property', projectUnits }: ContactCompanyDialogProps) => {
   const defaultMessages: Record<string, string> = {
     property: 'Hi!, I am interested in your property please contact me.',
     project: 'Hi!, I am interested in your project please contact me.',
