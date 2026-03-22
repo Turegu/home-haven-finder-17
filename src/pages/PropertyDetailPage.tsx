@@ -445,6 +445,17 @@ const PropertyDetailPage = () => {
 
       </div>
 
+const getPaymentStepIcon = (title: string, index: number) => {
+  const t = title.toLowerCase();
+  if (t.includes('down') || t.includes('booking') || t.includes('deposit')) return Wallet;
+  if (t.includes('construct') || t.includes('during') || t.includes('progress')) return HardHat;
+  if (t.includes('handover') || t.includes('delivery') || t.includes('key')) return KeyRound;
+  if (t.includes('completion') || t.includes('complete') || t.includes('finish')) return CalendarCheck;
+  if (t.includes('post') || t.includes('installment') || t.includes('monthly')) return Banknote;
+  const fallbacks = [Wallet, HardHat, CalendarCheck, KeyRound, Banknote];
+  return fallbacks[index % fallbacks.length];
+};
+
 
       {/* Lightbox */}
       {lightboxOpen && (
