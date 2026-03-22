@@ -242,22 +242,29 @@ const CompanyPropertyEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more properties. Please upgrade your membership.`);
       return false;
     }
-    if (!form.title.trim()) { toast.error("Title is required"); return false; }
-    if (!form.price) { toast.error("Price is required"); return false; }
-    if (!form.area) { toast.error("Area is required"); return false; }
-    if (!form.rooms) { toast.error("Rooms selection is required"); return false; }
-    if (!form.bedrooms) { toast.error("Bedrooms is required"); return false; }
-    if (!form.bathrooms) { toast.error("Bathrooms is required"); return false; }
-    if (!form.floor_level) { toast.error("Floor level is required"); return false; }
-    if (!form.furniture) { toast.error("Furniture status is required"); return false; }
-    if (!form.property_age) { toast.error("Property age is required"); return false; }
-    if (!form.property_orientation) { toast.error("Property orientation is required"); return false; }
-    if (!form.title_deed) { toast.error("Title deed is required"); return false; }
-    if (!form.province) { toast.error("Province is required"); return false; }
-    if (!form.town) { toast.error("Town/District is required"); return false; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
-    if (isRent && !form.rent_duration) { toast.error("Rent duration is required"); return false; }
-    return true;
+    const rules = [
+      { field: "title", check: !form.title.trim(), message: "Title is required" },
+      { field: "price", check: !form.price, message: "Price is required" },
+      { field: "area", check: !form.area, message: "Area is required" },
+      { field: "rooms", check: !form.rooms, message: "Rooms selection is required" },
+      { field: "bedrooms", check: !form.bedrooms, message: "Bedrooms is required" },
+      { field: "bathrooms", check: !form.bathrooms, message: "Bathrooms is required" },
+      { field: "floor_level", check: !form.floor_level, message: "Floor level is required" },
+      { field: "furniture", check: !form.furniture, message: "Furniture status is required" },
+      { field: "property_age", check: !form.property_age, message: "Property age is required" },
+      { field: "property_orientation", check: !form.property_orientation, message: "Property orientation is required" },
+      { field: "title_deed", check: !form.title_deed, message: "Title deed is required" },
+      { field: "province", check: !form.province, message: "Province is required" },
+      { field: "town", check: !form.town, message: "Town/District is required" },
+      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      ...(isRent ? [{ field: "rent_duration", check: !form.rent_duration, message: "Rent duration is required" }] : []),
+    ];
+    const valid = validate(rules);
+    if (!valid) {
+      const firstError = rules.find(r => r.check);
+      if (firstError) toast.error(firstError.message);
+    }
+    return valid;
   };
 
   const handlePublishClick = () => {
