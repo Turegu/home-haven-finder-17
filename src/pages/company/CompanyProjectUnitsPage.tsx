@@ -56,7 +56,7 @@ const CompanyProjectUnitsPage = () => {
   const [form, setForm] = useState<UnitForm>({ ...emptyUnit });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
+  
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -145,11 +145,11 @@ const CompanyProjectUnitsPage = () => {
         if (error) throw error;
         toast.success("Unit updated!");
       } else {
-        const { error } = await supabase.from("project_units").insert(payload);
+        const { data, error } = await supabase.from("project_units").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success("Unit added!");
+        toast.success("Unit saved! You can now add payment plans below.");
+        setEditingUnitId(data.id);
       }
-      setDialogOpen(false);
       fetchUnits();
     } catch (err: any) {
       toast.error(err.message || "Save failed");
@@ -212,11 +212,6 @@ const CompanyProjectUnitsPage = () => {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
-
-              {/* Payment Plan Manager */}
-              <div className="px-4 pb-3">
-                <UnitPaymentPlanManager unitId={unit.id} unitName={unit.unit_name} />
               </div>
             </div>
           ))
@@ -333,10 +328,17 @@ const CompanyProjectUnitsPage = () => {
               </div>
             </div>
 
+            {/* Payment Plan — only after unit is saved */}
+            {editingUnitId && (
+              <div className="border-t border-border pt-4">
+                <UnitPaymentPlanManager unitId={editingUnitId} unitName={form.unit_name} />
+              </div>
+            )}
+
             <div className="flex justify-end gap-3 pt-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
               <Button onClick={handleSubmitUnit} disabled={saving}>
-                {saving ? "Saving..." : "Submit"}
+                {saving ? (editingUnitId ? "Saving..." : "Save & Continue") : (editingUnitId ? "Update Unit" : "Save & Add Payment Plan")}
               </Button>
             </div>
           </div>
