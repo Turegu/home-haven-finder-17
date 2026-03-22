@@ -172,7 +172,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   if (units.length === 0) return null;
 
   const currentPlans = currentUnit ? (paymentPlans[currentUnit.id] || []) : [];
-  const images = currentUnit?.images || [];
+  const images = currentUnit?.images?.length ? currentUnit.images : GENERIC_IMAGES.slice(0, 3);
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
