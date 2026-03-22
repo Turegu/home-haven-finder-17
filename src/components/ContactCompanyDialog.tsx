@@ -218,6 +218,32 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           </div>
         </div>
 
+        {/* Unit selector for projects */}
+        {listingType === 'project' && projectUnits && projectUnits.length > 0 && (
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-foreground">I'm interested in a specific unit</Label>
+            <Select value={selectedUnitId} onValueChange={setSelectedUnitId}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder="Select a unit (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No specific unit</SelectItem>
+                {projectUnits.map((unit) => (
+                  <SelectItem key={unit.id} value={unit.id}>
+                    <span className="flex items-center gap-2">
+                      {unit.unit_name}
+                      <span className="text-muted-foreground text-xs">
+                        {unit.unit_type}{unit.price ? ` · ${unit.currency || '$'}${unit.price.toLocaleString()}` : ''}
+                        {unit.rooms ? ` · ${unit.rooms}` : ''}
+                      </span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {/* Message */}
         <Textarea
           value={message}
