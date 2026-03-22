@@ -303,7 +303,7 @@ function InteractiveMapPicker({
       markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
-        if (!trySetPin(pos.lat, pos.lng)) {
+        if (!trySetPinRef.current(pos.lat, pos.lng)) {
           if (parsedCoords) {
             markerRef.current.setLatLng([parsedCoords.lat, parsedCoords.lng]);
           }
