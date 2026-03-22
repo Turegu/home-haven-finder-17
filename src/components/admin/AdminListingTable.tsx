@@ -56,10 +56,12 @@ const AdminListingTable = ({
 
   // Filter & sort
   const filtered = items
-    .filter((item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.listing_id.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((item) => {
+      const q = search.toLowerCase();
+      return item.title.toLowerCase().includes(q) ||
+        item.listing_id.toLowerCase().includes(q) ||
+        (item.company_name || "").toLowerCase().includes(q);
+    })
     .sort((a, b) => {
       const da = new Date(a.created_at).getTime();
       const db = new Date(b.created_at).getTime();
@@ -138,7 +140,7 @@ const AdminListingTable = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search By Title Or ID"
+              placeholder="Search By Title, ID, or Company"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="pl-9 w-64"
