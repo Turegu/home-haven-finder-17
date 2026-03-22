@@ -9,6 +9,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface ProjectUnit {
   id: string;
@@ -25,22 +26,20 @@ interface ProjectUnit {
   status: string;
 }
 
+interface PaymentPlan {
+  id: string;
+  plan_name: string;
+  steps: { id: string; percentage: number; title: string; subtitle: string | null; sort_order: number }[];
+}
+
 interface ProjectUnitsProps {
   projectId: string;
 }
 
 const MOCK_UNITS: ProjectUnit[] = [
   {
-    id: "mock-1",
-    unit_name: "Villa 1",
-    unit_type: "Villa",
-    price: 285000,
-    currency: "$",
-    area: 180,
-    area_unit: "m²",
-    rooms: "3+1",
-    bathrooms: 2,
-    car_parking: 1,
+    id: "mock-1", unit_name: "Villa 1", unit_type: "Villa", price: 285000, currency: "$",
+    area: 180, area_unit: "m²", rooms: "3+1", bathrooms: 2, car_parking: 1,
     images: [
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
@@ -48,16 +47,8 @@ const MOCK_UNITS: ProjectUnit[] = [
     status: "available",
   },
   {
-    id: "mock-2",
-    unit_name: "Apartment A2",
-    unit_type: "Apartment",
-    price: 145000,
-    currency: "$",
-    area: 95,
-    area_unit: "m²",
-    rooms: "2+1",
-    bathrooms: 1,
-    car_parking: 1,
+    id: "mock-2", unit_name: "Apartment A2", unit_type: "Apartment", price: 145000, currency: "$",
+    area: 95, area_unit: "m²", rooms: "2+1", bathrooms: 1, car_parking: 1,
     images: [
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
@@ -65,19 +56,9 @@ const MOCK_UNITS: ProjectUnit[] = [
     status: "available",
   },
   {
-    id: "mock-3",
-    unit_name: "Penthouse B1",
-    unit_type: "Penthouse",
-    price: 520000,
-    currency: "$",
-    area: 310,
-    area_unit: "m²",
-    rooms: "4+1",
-    bathrooms: 3,
-    car_parking: 2,
-    images: [
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
-    ],
+    id: "mock-3", unit_name: "Penthouse B1", unit_type: "Penthouse", price: 520000, currency: "$",
+    area: 310, area_unit: "m²", rooms: "4+1", bathrooms: 3, car_parking: 2,
+    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop"],
     status: "reserved",
   },
 ];
@@ -94,6 +75,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [filter, setFilter] = useState("all");
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [paymentPlans, setPaymentPlans] = useState<Record<string, PaymentPlan[]>>({});
   const { formatArea } = useAreaUnit();
 
   useEffect(() => {
@@ -107,15 +89,45 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
       const finalUnits = dbUnits.length > 0 ? dbUnits : MOCK_UNITS;
       setUnits(finalUnits);
       if (finalUnits.length > 0) setSelectedUnit(finalUnits[0].id);
+
+      // Fetch active payment plans for all units
+      if (dbUnits.length > 0) {
+        const unitIds = dbUnits.map(u => u.id);
+        const { data: plans } = await supabase
+          .from("unit_payment_plans")
+          .select("*")
+          .in("unit_id", unitIds)
+          .eq("is_active", true)
+          .order("sort_order");
+
+        if (plans && plans.length > 0) {
+          const planIds = plans.map((p: any) => p.id);
+          const { data: steps } = await supabase
+            .from("unit_payment_plan_steps")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("sort_order");
+
+          const plansMap: Record<string, PaymentPlan[]> = {};
+          for (const plan of plans) {
+            const p = plan as any;
+            if (!plansMap[p.unit_id]) plansMap[p.unit_id] = [];
+            plansMap[p.unit_id].push({
+              id: p.id,
+              plan_name: p.plan_name,
+              steps: (steps || []).filter((s: any) => s.plan_id === p.id),
+            });
+          }
+          setPaymentPlans(plansMap);
+        }
+      }
+
       setLoading(false);
     };
     fetchUnits();
   }, [projectId]);
 
-  const filtered = filter === "all"
-    ? units
-    : units.filter((u) => u.status === filter);
-
+  const filtered = filter === "all" ? units : units.filter((u) => u.status === filter);
   const currentUnit = filtered.find((u) => u.id === selectedUnit) || filtered[0];
 
   const nextImage = () => {
@@ -127,9 +139,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
     setCurrentImageIndex((prev) => (prev - 1 + currentUnit.images!.length) % currentUnit.images!.length);
   };
 
-  useEffect(() => {
-    setCurrentImageIndex(0);
-  }, [selectedUnit, filter]);
+  useEffect(() => { setCurrentImageIndex(0); }, [selectedUnit, filter]);
 
   if (loading) {
     return (
@@ -141,6 +151,8 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   }
 
   if (units.length === 0) return null;
+
+  const currentPlans = currentUnit ? (paymentPlans[currentUnit.id] || []) : [];
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
@@ -163,9 +175,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No units match this filter.
-        </p>
+        <p className="text-sm text-muted-foreground text-center py-8">No units match this filter.</p>
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -189,24 +199,12 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                       </Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Building className="h-3 w-3" /> {unit.unit_type}
-                      </span>
-                      {unit.area && (
-                        <span className="flex items-center gap-1">
-                          <Maximize className="h-3 w-3" /> {formatArea(unit.area, unit.area_unit || 'm²')}
-                        </span>
-                      )}
-                      {unit.rooms && (
-                        <span className="flex items-center gap-1">
-                          <BedDouble className="h-3 w-3" /> {unit.rooms}
-                        </span>
-                      )}
+                      <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {unit.unit_type}</span>
+                      {unit.area && <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {formatArea(unit.area, unit.area_unit || 'm²')}</span>}
+                      {unit.rooms && <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {unit.rooms}</span>}
                     </div>
                     {unit.price != null && (
-                      <p className="text-primary font-bold text-sm mt-1.5">
-                        {unit.currency || '$'}{unit.price.toLocaleString()}
-                      </p>
+                      <p className="text-primary font-bold text-sm mt-1.5">{unit.currency || '$'}{unit.price.toLocaleString()}</p>
                     )}
                   </button>
                 ))}
@@ -216,38 +214,21 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
             {/* Unit Detail (right) */}
             {currentUnit && (
               <div className="lg:col-span-3">
-                {/* Image */}
                 <div className="relative rounded-xl overflow-hidden bg-muted aspect-[16/10]">
                   {currentUnit.images && currentUnit.images.length > 0 ? (
                     <>
-                      <img
-                        src={currentUnit.images[currentImageIndex]}
-                        alt={currentUnit.unit_name}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={currentUnit.images[currentImageIndex]} alt={currentUnit.unit_name} className="w-full h-full object-cover" />
                       {currentUnit.images.length > 1 && (
                         <>
-                          <button
-                            onClick={prevImage}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors"
-                          >
+                          <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors">
                             <ChevronLeft className="h-4 w-4" />
                           </button>
-                          <button
-                            onClick={nextImage}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors"
-                          >
+                          <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors">
                             <ChevronRight className="h-4 w-4" />
                           </button>
                           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
                             {currentUnit.images.map((_, i) => (
-                              <button
-                                key={i}
-                                onClick={() => setCurrentImageIndex(i)}
-                                className={`h-2 w-2 rounded-full transition-colors ${
-                                  i === currentImageIndex ? "bg-primary" : "bg-background/60"
-                                }`}
-                              />
+                              <button key={i} onClick={() => setCurrentImageIndex(i)} className={`h-2 w-2 rounded-full transition-colors ${i === currentImageIndex ? "bg-primary" : "bg-background/60"}`} />
                             ))}
                           </div>
                         </>
@@ -268,7 +249,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
             )}
           </div>
 
-          {/* Fact boxes — full width below */}
+          {/* Fact boxes */}
           {currentUnit && (
             <div className="grid grid-cols-4 gap-3 mt-6">
               <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
@@ -281,21 +262,61 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
               <UnitSpecCard icon={Eye} label="Status" value={currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)} />
             </div>
           )}
+
+          {/* Payment Plan Section */}
+          {currentUnit && currentPlans.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-lg font-bold text-foreground mb-4">Payment Plan</h3>
+              {currentPlans.length === 1 ? (
+                <PaymentPlanDisplay plan={currentPlans[0]} />
+              ) : (
+                <Tabs defaultValue={currentPlans[0].id}>
+                  <TabsList className="mb-4">
+                    {currentPlans.map((plan) => (
+                      <TabsTrigger key={plan.id} value={plan.id}>{plan.plan_name}</TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {currentPlans.map((plan) => (
+                    <TabsContent key={plan.id} value={plan.id}>
+                      <PaymentPlanDisplay plan={plan} />
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
   );
 };
 
-const UnitSpecCard = ({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-}) => (
+const PaymentPlanDisplay = ({ plan }: { plan: PaymentPlan }) => {
+  if (plan.steps.length === 0) return null;
+
+  return (
+    <div className="flex items-stretch gap-0">
+      {plan.steps.map((step, idx) => (
+        <div key={step.id} className="flex items-stretch">
+          <div className="flex-1 min-w-[140px] rounded-xl bg-muted/50 border border-border p-4 text-center">
+            <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
+            <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
+            {step.subtitle && (
+              <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>
+            )}
+          </div>
+          {idx < plan.steps.length - 1 && (
+            <div className="flex items-center px-2">
+              <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const UnitSpecCard = ({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) => (
   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
     <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
       <Icon className="h-4 w-4 text-primary" />

@@ -1974,6 +1974,82 @@ export type Database = {
         }
         Relationships: []
       }
+      unit_payment_plan_steps: {
+        Row: {
+          created_at: string
+          id: string
+          percentage: number
+          plan_id: string
+          sort_order: number
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          percentage?: number
+          plan_id: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          percentage?: number
+          plan_id?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_payment_plan_steps_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "unit_payment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unit_payment_plans: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          plan_name: string
+          sort_order: number
+          unit_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          plan_name?: string
+          sort_order?: number
+          unit_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          plan_name?: string
+          sort_order?: number
+          unit_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unit_payment_plans_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "project_units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_announcements: {
         Row: {
           announcement_id: string
