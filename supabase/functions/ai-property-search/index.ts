@@ -235,31 +235,36 @@ ${listingSummaries}`;
 
     return new Response(JSON.stringify({
       analysis: cleanedText,
-      picks: picks.map(p => ({
-        score: p.score,
-        property: {
-          id: p.property.id,
-          title: p.property.title,
-          price: p.property.price,
-          currency: p.property.currency,
-          location: p.property.location,
-          province: p.property.province,
-          town: p.property.town,
-          neighbourhood: p.property.neighbourhood,
-          property_type: p.property.property_type,
-          property_purpose: p.property.property_purpose,
-          area: p.property.area,
-          area_unit: p.property.area_unit,
-          bedrooms: p.property.bedrooms,
-          bathrooms: p.property.bathrooms,
-          rooms: p.property.rooms,
-          images: p.property.images,
-          listing_id: p.property.listing_id,
-          property_classification: p.property.property_classification,
-          agents: p.property.agents,
-          companies: p.property.companies,
-        },
-      })),
+      picks: picks.map(p => {
+        const l = p.listing;
+        const isProject = l._type === 'project';
+        return {
+          score: p.score,
+          listing_type: l._type,
+          property: {
+            id: l.id,
+            title: l.title,
+            price: isProject ? l.min_price : l.price,
+            currency: l.currency,
+            location: l.location,
+            province: l.province,
+            town: l.town,
+            neighbourhood: l.neighbourhood,
+            property_type: isProject ? l.project_type : l.property_type,
+            property_purpose: isProject ? 'project' : l.property_purpose,
+            area: isProject ? l.min_area : l.area,
+            area_unit: l.area_unit,
+            bedrooms: isProject ? null : l.bedrooms,
+            bathrooms: isProject ? null : l.bathrooms,
+            rooms: isProject ? null : l.rooms,
+            images: l.images,
+            listing_id: l.listing_id,
+            property_classification: l.property_classification,
+            agents: l.agents,
+            companies: l.companies,
+          },
+        };
+      }),
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
