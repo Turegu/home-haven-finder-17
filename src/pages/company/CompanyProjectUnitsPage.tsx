@@ -145,11 +145,11 @@ const CompanyProjectUnitsPage = () => {
         if (error) throw error;
         toast.success("Unit updated!");
       } else {
-        const { error } = await supabase.from("project_units").insert(payload);
+        const { data, error } = await supabase.from("project_units").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success("Unit added!");
+        toast.success("Unit saved! You can now add payment plans below.");
+        setEditingUnitId(data.id);
       }
-      setDialogOpen(false);
       fetchUnits();
     } catch (err: any) {
       toast.error(err.message || "Save failed");
