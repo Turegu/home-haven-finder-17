@@ -796,22 +796,29 @@ function MultiSelectDropdown({
               </div>
             </div>
           )}
-          <ScrollArea>
-            <div className="p-1.5 space-y-0.5">
-              {filtered.length === 0 && (
-                <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
-              )}
-              {filtered.map((opt) => {
-                const isChecked = selected.includes(opt);
-                return (
-                  <label key={opt} className={`flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-md transition-colors ${isChecked ? "bg-primary/5" : "hover:bg-muted"}`}>
-                    <Checkbox checked={isChecked} onCheckedChange={() => onToggle(opt)} />
-                    <span className={`text-sm ${isChecked ? "text-foreground font-medium" : "text-foreground"}`}>{opt}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </ScrollArea>
+          <div
+            className="max-h-[280px] overflow-y-auto p-1.5 space-y-0.5"
+            onWheel={(e) => {
+              const el = e.currentTarget;
+              if (el.scrollHeight <= el.clientHeight) return;
+              e.preventDefault();
+              e.stopPropagation();
+              el.scrollTop += e.deltaY;
+            }}
+          >
+            {filtered.length === 0 && (
+              <p className="text-xs text-muted-foreground px-2 py-4 text-center">No results found</p>
+            )}
+            {filtered.map((opt) => {
+              const isChecked = selected.includes(opt);
+              return (
+                <label key={opt} className={`flex items-center gap-2.5 cursor-pointer py-2 px-2.5 rounded-md transition-colors ${isChecked ? "bg-primary/5" : "hover:bg-muted"}`}>
+                  <Checkbox checked={isChecked} onCheckedChange={() => onToggle(opt)} />
+                  <span className={`text-sm ${isChecked ? "text-foreground font-medium" : "text-foreground"}`}>{opt}</span>
+                </label>
+              );
+            })}
+          </div>
           {selected.length > 0 && (
             <div className="px-3 py-2 border-t border-border bg-muted/30">
               <p className="text-xs text-muted-foreground">

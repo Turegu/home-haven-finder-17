@@ -123,16 +123,23 @@ function MultiSelectDropdown({
               </div>
             </div>
           )}
-          <ScrollArea>
-            <div className="p-2 space-y-1">
-              {filtered.map((opt) => (
-                <label key={opt} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
-                  <Checkbox checked={selected.includes(opt)} onCheckedChange={() => onToggle(opt)} />
-                  <span>{opt}</span>
-                </label>
-              ))}
-            </div>
-          </ScrollArea>
+          <div
+            className="max-h-[280px] overflow-y-auto p-2 space-y-1"
+            onWheel={(e) => {
+              const el = e.currentTarget;
+              if (el.scrollHeight <= el.clientHeight) return;
+              e.preventDefault();
+              e.stopPropagation();
+              el.scrollTop += e.deltaY;
+            }}
+          >
+            {filtered.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
+                <Checkbox checked={selected.includes(opt)} onCheckedChange={() => onToggle(opt)} />
+                <span>{opt}</span>
+              </label>
+            ))}
+          </div>
         </PopoverContent>
       </Popover>
       {selected.length > 0 && (
