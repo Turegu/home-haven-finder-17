@@ -94,6 +94,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               <img
                 src={property.images[currentImage]}
                 alt={property.title}
+                loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
