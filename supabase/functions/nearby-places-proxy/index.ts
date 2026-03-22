@@ -52,7 +52,7 @@ const capRadius = (query: string, maxRadius: number) => {
 
 // Try endpoints sequentially — first success wins, avoids hammering all at once
 async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Promise<{ data: unknown } | { error: string }> {
-  const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 15);
+  const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 25);
   const errors: string[] = [];
 
   for (const url of OVERPASS_URLS) {
