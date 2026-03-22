@@ -89,7 +89,7 @@ const CompanyInboxPage = () => {
   }, [companyId, activeTab]);
 
   const filtered = items.filter(
-    (item) => item.full_name.toLowerCase().includes(search.toLowerCase()) || item.email.toLowerCase().includes(search.toLowerCase())
+    (item) => turkishIncludes(item.full_name, search) || turkishIncludes(item.email, search)
   );
 
   const toggleSelect = (id: string) =>

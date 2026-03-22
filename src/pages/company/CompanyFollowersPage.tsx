@@ -180,7 +180,7 @@ const CompanyFollowersPage = () => {
 
   const filtered = sorted.filter((f) => {
     const name = f.profile?.display_name || "";
-    return name.toLowerCase().includes(search.toLowerCase());
+    return turkishIncludes(name, search);
   });
 
   return (

@@ -79,7 +79,7 @@ const CompanyAgentsPage = () => {
   useEffect(() => { if (companyId) fetchAgents(); }, [companyId, sortOrder]);
 
   const filtered = agents.filter(
-    (a) => a.name.toLowerCase().includes(search.toLowerCase()) || a.email.toLowerCase().includes(search.toLowerCase())
+    (a) => turkishIncludes(a.name, search) || turkishIncludes(a.email, search)
   );
 
   const handleDelete = async (agentId: string) => {
