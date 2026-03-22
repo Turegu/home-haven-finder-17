@@ -205,6 +205,12 @@ const CompanyEventEditPage = () => {
       return false;
     }
     if (!form.title.trim()) { toast.error("Event name is required"); return false; }
+    if (!form.event_type) { toast.error("Event type is required"); return false; }
+    if (!form.event_date) { toast.error("Event date is required"); return false; }
+    if (!form.province) { toast.error("Province is required"); return false; }
+    if (!form.town) { toast.error("Town/District is required"); return false; }
+    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
+    if (form.entry_type === "paid" && !form.price) { toast.error("Price is required for paid events"); return false; }
     return true;
   };
 

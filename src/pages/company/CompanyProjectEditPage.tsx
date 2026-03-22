@@ -541,6 +541,13 @@ const CompanyProjectEditPage = () => {
       return false;
     }
     if (!form.title.trim()) { toast.error("Project name is required"); return false; }
+    if (!form.project_type) { toast.error("Project type is required"); return false; }
+    if (!form.project_status) { toast.error("Project status is required"); return false; }
+    if (!form.province) { toast.error("Province is required"); return false; }
+    if (!form.town) { toast.error("Town/District is required"); return false; }
+    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
+    if (!form.min_price && !form.max_price) { toast.error("At least one price value is required"); return false; }
+    if (!form.min_area && !form.max_area) { toast.error("At least one area value is required"); return false; }
     return true;
   };
 
