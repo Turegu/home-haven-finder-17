@@ -17,13 +17,15 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
 import AssignAgentDialog from "@/components/company/AssignAgentDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
 
 interface Property {
   id: string;
