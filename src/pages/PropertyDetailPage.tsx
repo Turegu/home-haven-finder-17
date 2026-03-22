@@ -346,10 +346,11 @@ const PropertyDetailPage = () => {
                   : []
               );
               return visibleImages.map((img, i) => (
-              <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
-                <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
-              </div>
-            ))}
+                <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
+                  <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ));
+            })()}
           </div>
           <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
             <ChevronLeft className="h-5 w-5" />
