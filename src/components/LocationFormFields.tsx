@@ -407,7 +407,7 @@ function InteractiveMapPicker({
     if (!navigator.geolocation || !mapRef.current) return;
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
-      if (!trySetPin(latitude, longitude)) return;
+      if (!trySetPinRef.current(latitude, longitude)) return;
 
       mapRef.current.setView([latitude, longitude], 15);
       if (markerRef.current) {
@@ -416,7 +416,7 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([latitude, longitude], { draggable: true, icon: createPinIcon(L) }).addTo(mapRef.current);
         markerRef.current.on("dragend", () => {
           const p = markerRef.current.getLatLng();
-          if (!trySetPin(p.lat, p.lng)) {
+          if (!trySetPinRef.current(p.lat, p.lng)) {
             markerRef.current.setLatLng([latitude, longitude]);
           }
         });
