@@ -115,10 +115,10 @@ const AiPropertyAgent = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full shadow-xl transition-all duration-300 hover:scale-105 ${
+        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 shadow-xl transition-all duration-300 hover:scale-105 ${
           isOpen
-            ? "bg-foreground text-background h-12 w-12 justify-center"
-            : "bg-primary text-primary-foreground px-5 py-3"
+            ? "bg-foreground text-background h-12 w-12 justify-center rounded-full"
+            : "bg-primary text-primary-foreground pl-1.5 pr-4 py-1.5 rounded-full"
         }`}
         aria-label="AI Property Agent"
       >
@@ -126,7 +126,7 @@ const AiPropertyAgent = () => {
           <X className="h-5 w-5" />
         ) : (
           <>
-            <Sparkles className="h-5 w-5" />
+            <img src={aiAgentIcon} alt="AI Agent" className="h-10 w-10 rounded-full object-cover border-2 border-primary-foreground/30" />
             <span className="text-sm font-semibold hidden sm:inline">Ask AI Agent</span>
           </>
         )}
@@ -134,14 +134,12 @@ const AiPropertyAgent = () => {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
-          style={{ maxHeight: "min(600px, calc(100vh - 8rem))" }}
+        <div className="fixed bottom-24 right-6 z-50 w-[440px] max-w-[calc(100vw-2rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
+          style={{ maxHeight: "min(700px, calc(100vh - 8rem))" }}
         >
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-              <Sparkles className="h-5 w-5" />
-            </div>
+            <img src={aiAgentIcon} alt="AI Agent" className="h-11 w-11 rounded-full object-cover border-2 border-primary-foreground/30 bg-primary-foreground/10" />
             <div>
               <h3 className="font-semibold text-sm">AI Property Agent</h3>
               <p className="text-xs opacity-80">Describe your dream property</p>
