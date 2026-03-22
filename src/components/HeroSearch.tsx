@@ -94,6 +94,10 @@ const HeroSearch = () => {
                 </button>
               )}
             </div>
+            <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
+              <Search className="h-4 w-4 mr-1.5" />
+              Search
+            </Button>
           </div>
 
           {/* Filter Row */}
@@ -124,11 +128,6 @@ const HeroSearch = () => {
                 setMoreFilters(emptyMoreFilters);
               }}
             />
-            <div className="flex-1" />
-            <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
-              <Search className="h-4 w-4 mr-1.5" />
-              Search
-            </Button>
           </div>
         </div>
       </div>
