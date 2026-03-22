@@ -308,9 +308,9 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     });
     // Only fetch if not already prefetched and not in-flight
     if (!places[key] && !inFlightRef.current.has(key)) {
-      void fetchNearbyPlaces(key);
+      void fetchSingleCategory(key);
     }
-  }, [places, fetchNearbyPlaces]);
+  }, [places, fetchSingleCategory]);
 
   const handlePlaceClick = useCallback((place: NearbyPlace) => {
     setSelectedPlace(prev => prev?.id === place.id ? null : place);
