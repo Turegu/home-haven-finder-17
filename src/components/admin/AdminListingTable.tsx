@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import {
   Search, MoreVertical, Eye, RefreshCw, Ban, Monitor, Trash2,
   ChevronLeft, ChevronRight, Home, CheckCircle, XCircle, LayoutList,
-  Briefcase, Zap, Star, Crown,
+  Briefcase, Zap, Star, Crown, MapPin,
 } from "lucide-react";
 
 export interface ListingItem {
