@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Phone,
-  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle,
-  ArrowDownRight, ArrowUpRight, History
+  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle
 } from "lucide-react";
 import { format, differenceInDays, startOfMonth, startOfYear } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
