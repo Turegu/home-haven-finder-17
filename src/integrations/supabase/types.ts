@@ -1289,6 +1289,7 @@ export type Database = {
         Row: {
           annual_price: number
           created_at: string
+          has_ai_search: boolean
           has_company_agent_search: boolean
           has_company_profile: boolean
           has_home_logo: boolean
@@ -1310,6 +1311,7 @@ export type Database = {
         Insert: {
           annual_price?: number
           created_at?: string
+          has_ai_search?: boolean
           has_company_agent_search?: boolean
           has_company_profile?: boolean
           has_home_logo?: boolean
@@ -1331,6 +1333,7 @@ export type Database = {
         Update: {
           annual_price?: number
           created_at?: string
+          has_ai_search?: boolean
           has_company_agent_search?: boolean
           has_company_profile?: boolean
           has_home_logo?: boolean
