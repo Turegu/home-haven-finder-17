@@ -718,11 +718,21 @@ const CompanyPropertyEditPage = () => {
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Saving..." : "Save as Draft"}
           </Button>
-          <Button type="button" disabled={loading} onClick={() => handleSave("active")}>
+          <Button type="button" disabled={loading} onClick={handlePublishClick}>
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
           </Button>
         </div>
+
+        <PrePublishUpgradeDialog
+          open={showUpgradeDialog}
+          onOpenChange={setShowUpgradeDialog}
+          companyId={companyId || ""}
+          listingId={isEdit ? (id || null) : null}
+          listingTitle={form.title}
+          listingType="property"
+          onPublish={(classification) => handleSave("active", classification)}
+        />
       </form>
     </CompanyLayout>
   );
