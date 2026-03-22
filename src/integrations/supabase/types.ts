@@ -119,6 +119,7 @@ export type Database = {
           languages: string[] | null
           name: string
           phone: string | null
+          profile_classification: string
           registration_number: string | null
           service_areas: string[] | null
           status: string
@@ -138,6 +139,7 @@ export type Database = {
           languages?: string[] | null
           name: string
           phone?: string | null
+          profile_classification?: string
           registration_number?: string | null
           service_areas?: string[] | null
           status?: string
@@ -157,6 +159,7 @@ export type Database = {
           languages?: string[] | null
           name?: string
           phone?: string | null
+          profile_classification?: string
           registration_number?: string | null
           service_areas?: string[] | null
           status?: string
@@ -388,6 +391,7 @@ export type Database = {
           package_end_date: string | null
           phone: string | null
           pin_location: string | null
+          profile_classification: string
           province: string | null
           registration_number: string | null
           service_areas: string[] | null
@@ -415,6 +419,7 @@ export type Database = {
           package_end_date?: string | null
           phone?: string | null
           pin_location?: string | null
+          profile_classification?: string
           province?: string | null
           registration_number?: string | null
           service_areas?: string[] | null
@@ -442,6 +447,7 @@ export type Database = {
           package_end_date?: string | null
           phone?: string | null
           pin_location?: string | null
+          profile_classification?: string
           province?: string | null
           registration_number?: string | null
           service_areas?: string[] | null
