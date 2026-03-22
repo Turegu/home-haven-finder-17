@@ -58,7 +58,7 @@ const capLimit = (query: string, maxItems: number) => {
 
 // Try endpoints sequentially with short timeouts
 async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Promise<{ data: unknown } | { error: string }> {
-  const prepared = capLimit(replaceQueryTimeout(capRadius(query.trim(), 3000), 15), 10);
+  const prepared = capLimit(replaceQueryTimeout(capRadius(query.trim(), 3000), 25), 10);
   const errors: string[] = [];
 
   for (const url of OVERPASS_URLS) {
@@ -126,7 +126,7 @@ serve(async (req) => {
     }
 
     // ── Fetch from Overpass — 8s per request, sequential ──────
-    const result = await fetchFromOverpass(query, 8000);
+    const result = await fetchFromOverpass(query, 12000);
 
     if ("error" in result) {
       // Return empty elements instead of 504 so the UI doesn't break

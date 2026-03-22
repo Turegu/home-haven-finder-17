@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -117,39 +117,128 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const prefetchedRef = useRef(false);
+  const mountedRef = useRef(true);
 
   const propertyIcon = useMemo(() => createPropertyIcon(), []);
 
-  const fetchNearbyPlaces = useCallback(async (categoryKey: string) => {
-    if (loadingCategory === categoryKey) return;
-    if (places[categoryKey] && !loadErrors[categoryKey]) return;
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
+  const classifyElement = useCallback((el: any): string | null => {
+    const tags = el?.tags;
+    if (!tags) return null;
+    if (tags.amenity === 'school' || tags.amenity === 'university') return 'education';
+    if (tags.amenity === 'hospital' || tags.amenity === 'clinic') return 'health';
+    if (tags.amenity === 'pharmacy') return 'pharmacy';
+    if (tags.leisure === 'park' || tags.leisure === 'garden') return 'park';
+    if (tags.shop === 'supermarket' || tags.shop === 'grocery') return 'market';
+    if (tags.shop === 'mall' || tags.shop === 'department_store') return 'shopping';
+    if (tags.amenity === 'place_of_worship') return 'worship';
+    if (tags.amenity === 'restaurant' || tags.amenity === 'fast_food') return 'restaurant';
+    if (tags.amenity === 'cafe') return 'cafe';
+    if (tags.leisure === 'fitness_centre' || tags.leisure === 'sports_centre') return 'gym';
+    if (tags.railway === 'station' || tags.railway === 'halt' || tags.amenity === 'bus_station') return 'transport';
+    return null;
+  }, []);
+
+  const mapElementToPlace = useCallback((el: any, categoryKey: string): NearbyPlace => {
+    const dist = haversineDistance(lat, lng, el.lat, el.lon);
+    const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
+    const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
+    const rawType = el.tags?.amenity || el.tags?.shop || el.tags?.leisure || el.tags?.railway || el.tags?.highway || el.tags?.office || el.tags?.public_transport || '';
+    const subtype = rawType.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+    return {
+      id: String(el.id),
+      name: el.tags.name,
+      lat: el.lat,
+      lng: el.lon,
+      category: categoryKey,
+      subtype: subtype || undefined,
+      distance: Math.round(dist * 1000),
+      walkTime: Math.max(1, Math.round((dist / 5) * 60)),
+      driveTime: Math.max(1, Math.round((dist / 40) * 60)),
+      rating: Number.isFinite(parsedRating) ? parsedRating : Math.min(5, fallbackRating),
+    };
+  }, [lat, lng]);
+
+  // Prefetch ALL categories in a single combined Overpass query
+  useEffect(() => {
+    if (prefetchedRef.current) return;
+    prefetchedRef.current = true;
+
+    const prefetchAll = async () => {
+      const radius = 3000;
+      const allNodeParts: string[] = [];
+      for (const cat of categories) {
+        for (const q of cat.osmQueries) {
+          const tildeIdx = q.indexOf('~');
+          if (tildeIdx === -1) {
+            allNodeParts.push(`node[${q}](around:${radius},${lat},${lng});`);
+          } else {
+            const key = q.substring(0, tildeIdx);
+            const rawVal = q.substring(tildeIdx + 1);
+            allNodeParts.push(`node[${key}~${rawVal}](around:${radius},${lat},${lng});`);
+          }
+        }
+      }
+      const query = `[out:json][timeout:25];(${allNodeParts.join('')});out body 120;`;
+
+      try {
+        const { data, error } = await supabase.functions.invoke('nearby-places-proxy', { body: { query } });
+        if (!mountedRef.current) return;
+        if (error) throw new Error(error.message);
+
+        const elements = Array.isArray(data?.elements)
+          ? data.elements
+          : Array.isArray(data?.data?.elements)
+            ? data.data.elements
+            : [];
+
+        const grouped: Record<string, NearbyPlace[]> = {};
+        for (const cat of categories) grouped[cat.key] = [];
+
+        for (const el of elements) {
+          if (!el?.lat || !el?.lon || !el?.tags?.name) continue;
+          const catKey = classifyElement(el);
+          if (catKey && grouped[catKey]) {
+            grouped[catKey].push(mapElementToPlace(el, catKey));
+          }
+        }
+
+        const result: Record<string, NearbyPlace[]> = {};
+        for (const [key, items] of Object.entries(grouped)) {
+          result[key] = items.sort((a, b) => (a.distance || 0) - (b.distance || 0)).slice(0, 15);
+        }
+        setPlaces(result);
+      } catch (err) {
+        console.error('Bulk prefetch failed:', err);
+      }
+    };
+
+    prefetchAll();
+  }, [lat, lng, classifyElement, mapElementToPlace]);
+
+  const fetchSingleCategory = useCallback(async (categoryKey: string) => {
     setLoadingCategory(categoryKey);
     const cat = categories.find(c => c.key === categoryKey);
-    if (!cat) {
-      setLoadingCategory(null);
-      return;
-    }
+    if (!cat) { setLoadingCategory(null); return; }
 
     try {
       const radius = 3000;
       const nodeParts = cat.osmQueries.map(q => {
         const tildeIdx = q.indexOf('~');
-        if (tildeIdx === -1) {
-          return `node[${q}](around:${radius},${lat},${lng});`;
-        }
+        if (tildeIdx === -1) return `node[${q}](around:${radius},${lat},${lng});`;
         const key = q.substring(0, tildeIdx);
         const rawVal = q.substring(tildeIdx + 1);
         return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
       });
-
       const query = `[out:json][timeout:12];(${nodeParts.join('')});out body 10;`;
-
-      const { data, error } = await supabase.functions.invoke('nearby-places-proxy', {
-        body: { query },
-      });
-
-      if (error) throw new Error(error.message || 'Nearby places request failed');
+      const { data, error } = await supabase.functions.invoke('nearby-places-proxy', { body: { query } });
+      if (error) throw new Error(error.message);
+      if (!mountedRef.current) return;
 
       const elements = Array.isArray(data?.elements)
         ? data.elements
@@ -159,52 +248,20 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
 
       const results: NearbyPlace[] = elements
         .filter((el: any) => el?.lat && el?.lon && el?.tags?.name)
-        .map((el: any) => {
-          const dist = haversineDistance(lat, lng, el.lat, el.lon);
-          const fallbackRating = 3.5 + ((Number(el.id) % 16) / 10);
-          const parsedRating = Number.parseFloat(el.tags?.rating ?? '');
-
-          // Extract human-readable subtype from OSM tags
-          const rawType = el.tags?.amenity || el.tags?.shop || el.tags?.leisure || el.tags?.railway || el.tags?.highway || el.tags?.office || el.tags?.public_transport || '';
-          const subtype = rawType.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-
-          return {
-            id: String(el.id),
-            name: el.tags.name,
-            lat: el.lat,
-            lng: el.lon,
-            category: categoryKey,
-            subtype: subtype || undefined,
-            distance: Math.round(dist * 1000),
-            walkTime: Math.max(1, Math.round((dist / 5) * 60)),
-            driveTime: Math.max(1, Math.round((dist / 40) * 60)),
-            rating: Number.isFinite(parsedRating) ? parsedRating : Math.min(5, fallbackRating),
-          };
-        })
+        .map((el: any) => mapElementToPlace(el, categoryKey))
         .sort((a: NearbyPlace, b: NearbyPlace) => (a.distance || 0) - (b.distance || 0))
         .slice(0, 15);
 
       setPlaces(prev => ({ ...prev, [categoryKey]: results }));
-      setLoadErrors(prev => {
-        const next = { ...prev };
-        delete next[categoryKey];
-        return next;
-      });
+      setLoadErrors(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
     } catch (err) {
+      if (!mountedRef.current) return;
       console.error('Failed to fetch nearby places:', err);
-      setLoadErrors(prev => ({
-        ...prev,
-        [categoryKey]: 'Could not load nearby places. Tap again to retry.',
-      }));
-      setPlaces(prev => {
-        const next = { ...prev };
-        delete next[categoryKey];
-        return next;
-      });
+      setLoadErrors(prev => ({ ...prev, [categoryKey]: 'Could not load nearby places. Tap again to retry.' }));
     } finally {
-      setLoadingCategory(null);
+      if (mountedRef.current) setLoadingCategory(null);
     }
-  }, [lat, lng, places, loadErrors, loadingCategory]);
+  }, [lat, lng, mapElementToPlace]);
 
   const handleCategoryClick = (key: string) => {
     if (activeCategory === key) {
@@ -215,7 +272,9 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
 
     setActiveCategory(key);
     setSelectedPlace(null);
-    void fetchNearbyPlaces(key);
+    if (!places[key]) {
+      void fetchSingleCategory(key);
+    }
   };
 
   const activePlaces = activeCategory ? (places[activeCategory] || []) : [];
