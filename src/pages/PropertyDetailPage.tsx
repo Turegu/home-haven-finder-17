@@ -870,18 +870,17 @@ const PropertyDetailPage = () => {
           type: property.type,
           price: property.price,
           currency: property.currency,
-          companyId: property.companyId,
-          companyName: property.agentCompany,
-          agentName: property.agentName,
-          agentEmail: property.agentEmail,
         }}
+        companyId={property.companyId || null}
+        agentId={property.agentId || null}
+        companyName={property.agentCompany}
       />
 
       <ReportPropertyDialog
         open={reportDialogOpen}
         onOpenChange={setReportDialogOpen}
-        listingId={property.listingId}
-        listingTitle={property.title}
+        propertyId={property.id}
+        propertyTitle={property.title}
       />
     </div>
   );
