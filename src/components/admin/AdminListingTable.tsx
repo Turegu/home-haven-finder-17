@@ -73,7 +73,7 @@ const AdminListingTable = ({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "deactivated">("all");
-  const [companyFilter, setCompanyFilter] = useState<string>("all");
+  const [companyFilter, setCompanyFilter] = useState<string>(initialCompanyFilter || "all");
 
   // Unique companies for dropdown
   const companies = useMemo(() => {
