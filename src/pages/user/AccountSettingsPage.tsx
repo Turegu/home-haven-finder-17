@@ -20,6 +20,7 @@ const AREA_UNITS = [
 ];
 
 const AccountSettingsPage = () => {
+  const navigate = useNavigate();
   const { data: languages = [] } = useLanguages();
   const { data: currencies = [] } = useCurrencies();
 
