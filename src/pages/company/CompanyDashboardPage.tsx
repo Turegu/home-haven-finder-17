@@ -239,9 +239,15 @@ const CompanyDashboardPage = () => {
               <Progress value={creditBarPercent} className="h-1.5" />
             </div>
           )}
-          <Button variant="link" size="sm" className="mt-1 p-0 h-auto text-xs text-primary" onClick={() => openSalesWhatsApp("Hi, I'd like to top up my credits.")}>
-            <Phone className="h-3 w-3 mr-1" /> Contact Sales
-          </Button>
+          <div className="flex items-center gap-2 mt-1">
+            <Button variant="link" size="sm" className="p-0 h-auto text-xs text-primary" onClick={() => openSalesWhatsApp("Hi, I'd like to top up my credits.")}>
+              <Phone className="h-3 w-3 mr-1" /> Contact Sales
+            </Button>
+            <span className="text-muted-foreground/30">·</span>
+            <Link to="/company/credits" className="text-xs text-primary hover:underline font-medium">
+              Details
+            </Link>
+          </div>
         </div>
 
         {/* Premium Listings */}
