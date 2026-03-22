@@ -100,13 +100,11 @@ const UpgradeMembershipDialog = ({
         newEndDate = addMonths(new Date(), months).toISOString();
       }
 
-      const { error } = await supabase
-        .from("companies")
-        .update({
-          membership: selectedPackage as any,
-          package_end_date: newEndDate,
-        })
-        .eq("id", companyId);
+      const { error } = await supabase.rpc("admin_change_membership", {
+        p_company_id: companyId,
+        p_new_membership: selectedPackage,
+        p_new_end_date: newEndDate,
+      });
 
       if (error) throw error;
 

@@ -2167,6 +2167,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_change_membership: {
+        Args: {
+          p_company_id: string
+          p_new_end_date: string
+          p_new_membership: string
+        }
+        Returns: undefined
+      }
       downgrade_expired_memberships: { Args: never; Returns: undefined }
       get_distinct_districts: {
         Args: { p_province: string }
