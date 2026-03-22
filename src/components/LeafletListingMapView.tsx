@@ -295,7 +295,73 @@ interface ListingMapViewProps {
   selectedDistrict?: string;
 }
 
-const ListingMapView = ({ listings, className = '', focusListingId = null }: ListingMapViewProps) => {
+// Fetch district boundary from Nominatim with fallback
+async function fetchBoundaryPolygons(province: string, district: string): Promise<L.LatLngExpression[][] | null> {
+  const queries = [
+    `https://nominatim.openstreetmap.org/search?county=${encodeURIComponent(district)}&state=${encodeURIComponent(province)}&country=Turkey&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${district} district, ${province}, Turkey`)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${district}, ${province}`)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+  ];
+
+  for (const url of queries) {
+    try {
+      const res = await fetch(url, { headers: { 'User-Agent': 'LovableRealEstate/1.0' } });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const geo = data?.[0]?.geojson;
+      if (!geo || geo.type === 'Point') continue;
+
+      let rings: number[][][] = [];
+      if (geo.type === 'Polygon') rings = geo.coordinates;
+      else if (geo.type === 'MultiPolygon') {
+        for (const poly of geo.coordinates) rings.push(...poly);
+      }
+
+      if (rings.length > 0) {
+        return rings.map(ring => ring.map(coord => [coord[1], coord[0]] as [number, number]));
+      }
+    } catch { /* continue */ }
+  }
+  return null;
+}
+
+// Component to draw district boundary on map
+function DistrictBoundary({ province, district }: { province: string; district: string }) {
+  const map = useMap();
+  const layerRef = useRef<L.Polygon | null>(null);
+
+  useEffect(() => {
+    if (layerRef.current) {
+      map.removeLayer(layerRef.current);
+      layerRef.current = null;
+    }
+
+    if (!province || !district) return;
+
+    fetchBoundaryPolygons(province, district).then(polygons => {
+      if (!polygons) return;
+      const poly = L.polygon(polygons, {
+        color: '#2563eb',
+        fillColor: '#3b82f6',
+        fillOpacity: 0.08,
+        weight: 2,
+      }).addTo(map);
+      layerRef.current = poly;
+      map.fitBounds(poly.getBounds(), { padding: [30, 30] });
+    });
+
+    return () => {
+      if (layerRef.current) {
+        map.removeLayer(layerRef.current);
+        layerRef.current = null;
+      }
+    };
+  }, [province, district, map]);
+
+  return null;
+}
+
+const ListingMapView = ({ listings, className = '', focusListingId = null, selectedProvince, selectedDistrict }: ListingMapViewProps) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const markerRefs = useRef<Record<string, L.Marker>>({});
   const { data: allowedCountry = 'Turkey' } = useAllowedCountry();
@@ -304,7 +370,7 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
   const listingsWithCoords = useMemo(() =>
     listings.map(l => ({
       ...l,
-      coords: getCityFromLocation(l.location),
+      coords: getListingCoords(l),
     })),
     [listings]
   );
@@ -326,7 +392,11 @@ const ListingMapView = ({ listings, className = '', focusListingId = null }: Lis
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <FitBounds positions={positions} countryBounds={countryConfig.bounds} />
+        {selectedProvince && selectedDistrict ? (
+          <DistrictBoundary province={selectedProvince} district={selectedDistrict} />
+        ) : (
+          <FitBounds positions={positions} countryBounds={countryConfig.bounds} />
+        )}
         <FocusMarker focusId={focusListingId} markerRefs={markerRefs} />
         {listingsWithCoords.map((listing) => (
           <Marker
