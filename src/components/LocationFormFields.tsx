@@ -69,14 +69,13 @@ function getCityCenter(province: string, town: string): [number, number] | null 
 }
 
 // Fetch admin boundary polygon from OSM Nominatim
-let boundaryCache: Record<string, number[][][] | null> = {};
+const boundaryCache: Record<string, number[][][] | null> = {};
 
 async function fetchDistrictBoundary(province: string, town: string): Promise<number[][][] | null> {
   const cacheKey = `${province}|${town}`;
   if (cacheKey in boundaryCache) return boundaryCache[cacheKey];
-  
+
   try {
-    // Search for the district within the province
     const query = `${town}, ${province}`;
     const res = await fetch(
       `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
@@ -85,14 +84,13 @@ async function fetchDistrictBoundary(province: string, town: string): Promise<nu
     if (!res.ok) { boundaryCache[cacheKey] = null; return null; }
     const data = await res.json();
     if (!data?.[0]?.geojson) { boundaryCache[cacheKey] = null; return null; }
-    
+
     const geo = data[0].geojson;
     let polygons: number[][][] = [];
-    
+
     if (geo.type === 'Polygon') {
       polygons = geo.coordinates;
     } else if (geo.type === 'MultiPolygon') {
-      // Flatten multi-polygon into array of rings
       for (const poly of geo.coordinates) {
         polygons.push(...poly);
       }
@@ -100,7 +98,7 @@ async function fetchDistrictBoundary(province: string, town: string): Promise<nu
       boundaryCache[cacheKey] = null;
       return null;
     }
-    
+
     boundaryCache[cacheKey] = polygons;
     return polygons;
   } catch {
@@ -111,8 +109,6 @@ async function fetchDistrictBoundary(province: string, town: string): Promise<nu
 
 // Ray-casting point-in-polygon check
 function isPointInPolygons(lat: number, lng: number, polygons: number[][][]): boolean {
-  // Check if point is inside any of the polygon rings (first ring = outer boundary)
-  // For simplicity, check outer rings only
   for (const ring of polygons) {
     if (isPointInRing(lat, lng, ring)) return true;
   }
@@ -131,20 +127,6 @@ function isPointInRing(lat: number, lng: number, ring: number[][]): boolean {
   return inside;
 }
 
-interface LocationFormFieldsProps {
-  province: string;
-  town: string;
-  neighbourhood: string;
-  pinLocation?: string;
-  onProvinceChange: (value: string) => void;
-  onTownChange: (value: string) => void;
-  onNeighbourhoodChange: (value: string) => void;
-  onPinLocationChange?: (value: string) => void;
-  showPinLocation?: boolean;
-  showMap?: boolean;
-  className?: string;
-}
-
 // Reverse geocode using Nominatim (free, no API key needed)
 async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
   try {
@@ -155,7 +137,6 @@ async function reverseGeocode(lat: number, lng: number): Promise<string | null> 
     if (!res.ok) return null;
     const data = await res.json();
     const addr = data.address;
-    // Try multiple fields that could contain the neighbourhood name
     return addr?.neighbourhood || addr?.suburb || addr?.quarter || addr?.hamlet || addr?.village || null;
   } catch {
     return null;
@@ -173,16 +154,28 @@ function normalizeForMatch(s: string): string {
 
 function findBestNeighbourhoodMatch(nominatimName: string, options: NamePair[]): string | null {
   const needle = normalizeForMatch(nominatimName);
-  // Exact match first
   for (const opt of options) {
     if (normalizeForMatch(opt.name) === needle) return opt.name;
   }
-  // Contains match
   for (const opt of options) {
     const norm = normalizeForMatch(opt.name);
     if (norm.includes(needle) || needle.includes(norm)) return opt.name;
   }
   return null;
+}
+
+interface LocationFormFieldsProps {
+  province: string;
+  town: string;
+  neighbourhood: string;
+  pinLocation?: string;
+  onProvinceChange: (value: string) => void;
+  onTownChange: (value: string) => void;
+  onNeighbourhoodChange: (value: string) => void;
+  onPinLocationChange?: (value: string) => void;
+  showPinLocation?: boolean;
+  showMap?: boolean;
+  className?: string;
 }
 
 /* ─── Interactive Leaflet Map for pin placement ─── */
@@ -203,13 +196,12 @@ function InteractiveMapPicker({
 }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
-  const circleRef = useRef<any>(null);
+  const boundaryLayerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [mapReady, setMapReady] = useState(false);
   const [L, setL] = useState<any>(null);
   const [boundsError, setBoundsError] = useState<string | null>(null);
-
-  const hasTown = Boolean(town);
+  const [boundaryPolygons, setBoundaryPolygons] = useState<number[][][] | null>(null);
+  const [loadingBoundary, setLoadingBoundary] = useState(false);
 
   // Parse existing pin_location "lat,lng" string
   const parsedCoords = useMemo(() => {
@@ -232,21 +224,32 @@ function InteractiveMapPicker({
     });
   }, []);
 
-  // Validate and set pin, returns true if valid. Also triggers reverse geocoding.
-  const trySetPin = useCallback((lat: number, lng: number) => {
-    const cityCenter = getCityCenter(province, town);
-    if (!cityCenter) return false;
-    
-    if (!isWithinBounds(lat, lng, cityCenter, hasTown)) {
-      const areaName = town || province;
-      setBoundsError(`Pin must be placed within ${areaName} boundaries.`);
-      setTimeout(() => setBoundsError(null), 3000);
-      return false;
+  // Fetch boundary when province+town changes
+  useEffect(() => {
+    if (!province || !town) {
+      setBoundaryPolygons(null);
+      return;
     }
-    
+    setLoadingBoundary(true);
+    fetchDistrictBoundary(province, town).then((polys) => {
+      setBoundaryPolygons(polys);
+      setLoadingBoundary(false);
+    });
+  }, [province, town]);
+
+  // Validate and set pin using polygon boundary
+  const trySetPin = useCallback((lat: number, lng: number) => {
+    if (boundaryPolygons) {
+      if (!isPointInPolygons(lat, lng, boundaryPolygons)) {
+        setBoundsError(`Pin must be placed within ${town} district boundary.`);
+        setTimeout(() => setBoundsError(null), 3000);
+        return false;
+      }
+    }
+
     setBoundsError(null);
     onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
-    
+
     // Auto-detect neighbourhood via reverse geocoding
     if (neighborhoods.length > 0) {
       reverseGeocode(lat, lng).then((nominatimName) => {
@@ -258,9 +261,9 @@ function InteractiveMapPicker({
         }
       });
     }
-    
+
     return true;
-  }, [province, town, hasTown, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
+  }, [boundaryPolygons, town, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
 
   // Load Leaflet dynamically
   useEffect(() => {
@@ -291,26 +294,12 @@ function InteractiveMapPicker({
       maxZoom: 19,
     }).addTo(map);
 
-    // Draw boundary circle
-    if (cityCenter) {
-      const radiusKm = hasTown ? CITY_RADIUS_DEG * 111 : PROVINCE_RADIUS_DEG * 111;
-      circleRef.current = L.circle(cityCenter, {
-        radius: radiusKm * 1000,
-        color: '#0d9488',
-        fillColor: '#0d9488',
-        fillOpacity: 0.05,
-        weight: 1,
-        dashArray: '5, 5',
-      }).addTo(map);
-    }
-
     // Add marker if we have coords
     if (parsedCoords) {
       markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
         if (!trySetPin(pos.lat, pos.lng)) {
-          // Revert marker to previous position
           if (parsedCoords) {
             markerRef.current.setLatLng([parsedCoords.lat, parsedCoords.lng]);
           }
@@ -318,7 +307,7 @@ function InteractiveMapPicker({
       });
     }
 
-    // Click to place/move pin — enforce bounds
+    // Click to place/move pin — enforce boundary
     map.on("click", (e: any) => {
       const { lat, lng } = e.latlng;
       if (!trySetPin(lat, lng)) return;
@@ -337,47 +326,66 @@ function InteractiveMapPicker({
     });
 
     mapRef.current = map;
-    setMapReady(true);
 
     return () => {
       map.remove();
       mapRef.current = null;
       markerRef.current = null;
-      circleRef.current = null;
+      boundaryLayerRef.current = null;
     };
   }, [L]);
 
-  // Update map center + boundary when province/town changes
+  // Draw boundary polygon on map when it loads/changes
   useEffect(() => {
     if (!mapRef.current || !L) return;
-    const cityCenter = getCityCenter(province, town);
-    if (cityCenter) {
-      mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
-      
-      // Update boundary circle
-      if (circleRef.current) {
-        mapRef.current.removeLayer(circleRef.current);
-      }
-      const radiusKm = hasTown ? CITY_RADIUS_DEG * 111 : PROVINCE_RADIUS_DEG * 111;
-      circleRef.current = L.circle(cityCenter, {
-        radius: radiusKm * 1000,
-        color: '#0d9488',
-        fillColor: '#0d9488',
-        fillOpacity: 0.05,
-        weight: 1,
-        dashArray: '5, 5',
-      }).addTo(mapRef.current);
+
+    // Remove old boundary layer
+    if (boundaryLayerRef.current) {
+      mapRef.current.removeLayer(boundaryLayerRef.current);
+      boundaryLayerRef.current = null;
     }
-    
-    // Clear pin if it's now outside bounds
-    if (parsedCoords && cityCenter && !isWithinBounds(parsedCoords.lat, parsedCoords.lng, cityCenter, hasTown)) {
+
+    if (boundaryPolygons && boundaryPolygons.length > 0) {
+      // Convert GeoJSON [lng, lat] to Leaflet [lat, lng]
+      const latLngPolygons = boundaryPolygons.map(ring =>
+        ring.map(coord => [coord[1], coord[0]] as [number, number])
+      );
+
+      boundaryLayerRef.current = L.polygon(latLngPolygons, {
+        color: '#2563eb',
+        fillColor: '#3b82f6',
+        fillOpacity: 0.08,
+        weight: 2,
+      }).addTo(mapRef.current);
+
+      // Fit map to boundary
+      mapRef.current.fitBounds(boundaryLayerRef.current.getBounds(), { padding: [20, 20] });
+    } else {
+      // Fallback: center on city coords
+      const cityCenter = getCityCenter(province, town);
+      if (cityCenter) {
+        mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
+      }
+    }
+
+    // Clear pin if it's now outside boundary
+    if (parsedCoords && boundaryPolygons && !isPointInPolygons(parsedCoords.lat, parsedCoords.lng, boundaryPolygons)) {
       onPinLocationChange("");
       if (markerRef.current) {
         mapRef.current.removeLayer(markerRef.current);
         markerRef.current = null;
       }
     }
-  }, [province, town, L]);
+  }, [boundaryPolygons, L]);
+
+  // Update map center when province/town changes and no boundary yet
+  useEffect(() => {
+    if (!mapRef.current || !L || boundaryPolygons) return;
+    const cityCenter = getCityCenter(province, town);
+    if (cityCenter) {
+      mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
+    }
+  }, [province, town, L, boundaryPolygons]);
 
   // Update marker when pinLocation changes externally
   useEffect(() => {
@@ -396,7 +404,7 @@ function InteractiveMapPicker({
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
       if (!trySetPin(latitude, longitude)) return;
-      
+
       mapRef.current.setView([latitude, longitude], 15);
       if (markerRef.current) {
         markerRef.current.setLatLng([latitude, longitude]);
@@ -416,7 +424,8 @@ function InteractiveMapPicker({
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <MapPin className="h-3 w-3" /> Click on the map to place your listing pin within {town || province}
+          <MapPin className="h-3 w-3" />
+          {loadingBoundary ? "Loading district boundary..." : `Click within the blue boundary to place your pin in ${town}`}
         </p>
         <Button type="button" variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleLocateMe}>
           <Navigation className="h-3 w-3" /> My Location
@@ -426,6 +435,11 @@ function InteractiveMapPicker({
       {boundsError && (
         <p className="text-xs text-destructive flex items-center gap-1 animate-in fade-in">
           <AlertTriangle className="h-3 w-3" /> {boundsError}
+        </p>
+      )}
+      {!boundaryPolygons && !loadingBoundary && province && town && (
+        <p className="text-xs text-amber-600 flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" /> District boundary not available — pin placement unrestricted.
         </p>
       )}
       {pinLocation && parsedCoords && !boundsError && (
