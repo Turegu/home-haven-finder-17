@@ -681,13 +681,17 @@ const CompanyProjectEditPage = () => {
               value={form.project_type}
               onChange={(v) => updateField("project_type", v)}
               options={projectTypes.map((t) => ({ value: t.value, label: t.label }))}
+              fieldName="project_type"
+              error={errorClass("project_type") !== ""}
             />
             <FormSelect
-              label="Project Status"
+              label="Project Status *"
               icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
               value={form.project_status}
               onChange={(v) => updateField("project_status", v)}
               options={projectStatuses.map((s) => ({ value: s, label: s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) }))}
+              fieldName="project_status"
+              error={errorClass("project_status") !== ""}
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
