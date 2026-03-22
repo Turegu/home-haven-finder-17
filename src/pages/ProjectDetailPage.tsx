@@ -345,8 +345,12 @@ const ProjectDetailPage = () => {
                     <div>
                       <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {project.interiorAmenities.map((a: string) => (
-                          <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> {a}</span>
+                        {project.interiorAmenities.map((a: string) => {
+                          const Icon = getIcon(a, 'interior');
+                          return (
+                            <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><Icon className="h-3.5 w-3.5 text-primary" /> {a}</span>
+                          );
+                        })}
                         ))}
                       </div>
                     </div>
