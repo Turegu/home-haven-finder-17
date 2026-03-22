@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
 
 import Footer from '@/components/Footer';
+import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { mockProjects } from '@/data/mockProperties';
 import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
