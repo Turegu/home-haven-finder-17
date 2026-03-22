@@ -37,6 +37,14 @@ const AddCreditsDialog = ({
         .eq("id", companyId);
       if (error) throw error;
 
+      // Log transaction
+      await supabase.from("credit_transactions").insert({
+        company_id: companyId,
+        amount: credits,
+        transaction_type: "topup",
+        description: `Admin added ${credits} credits`,
+      });
+
       toast.success(`${credits} credits added to ${companyName}`);
       setAmount("");
       onUpdated();
