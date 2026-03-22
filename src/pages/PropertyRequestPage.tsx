@@ -115,7 +115,7 @@ const PropertyRequestPage = () => {
   })();
 
   const handleSubmit = async () => {
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.enquiryType) {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.enquiryType || !formData.propertyType || !formData.province || !formData.areaSqm || !formData.budget) {
       toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" });
       return;
     }
