@@ -728,24 +728,14 @@ const CompanyProjectEditPage = () => {
         {/* ─── Amenities ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<TreePine className="h-4 w-4" />} title="Amenities" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <MultiSelectDropdown
-              label="Exterior Amenities"
-              icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
-              options={exteriorAmenities}
-              selected={form.exterior_amenities}
-              onToggle={(val) => toggleAmenity("exterior_amenities", val)}
-              searchable
-            />
-            <MultiSelectDropdown
-              label="Interior Amenities"
-              icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
-              options={interiorAmenities}
-              selected={form.interior_amenities}
-              onToggle={(val) => toggleAmenity("interior_amenities", val)}
-              searchable
-            />
-          </div>
+          <AmenitiesPickerDialog
+            interiorOptions={interiorAmenities}
+            exteriorOptions={exteriorAmenities}
+            selectedInterior={form.interior_amenities}
+            selectedExterior={form.exterior_amenities}
+            onToggleInterior={(val) => toggleAmenity("interior_amenities", val)}
+            onToggleExterior={(val) => toggleAmenity("exterior_amenities", val)}
+          />
         </section>
 
         {/* ─── Advertising Tags ─── */}
