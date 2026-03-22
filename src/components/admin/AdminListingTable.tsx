@@ -69,6 +69,7 @@ const AdminListingTable = ({
 }: AdminListingTableProps) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
+  const [locationSearch, setLocationSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
