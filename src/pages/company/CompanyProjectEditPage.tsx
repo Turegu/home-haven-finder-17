@@ -706,11 +706,11 @@ const CompanyProjectEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<DollarSign className="h-4 w-4" />} title="Pricing & Size" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="min_price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Starting Price ({form.currency})
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Starting Price ({form.currency}) *
               </Label>
-              <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className="bg-secondary/50" />
+              <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className={`bg-secondary/50 ${errorClass("min_price")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
