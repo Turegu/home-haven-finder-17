@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { AlertTriangle, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SearchableSelect from "@/components/ui/searchable-select";
+import "leaflet/dist/leaflet.css";
 
 interface NamePair { name: string; ar: string }
 
