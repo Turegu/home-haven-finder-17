@@ -103,13 +103,31 @@ async function fetchDistrictBoundary(province: string, town: string): Promise<nu
   if (cacheKey in boundaryCache) return boundaryCache[cacheKey];
 
   try {
-    const query = `${town}, ${province}`;
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
-      { headers: { 'User-Agent': 'LovableRealEstate/1.0' } }
-    );
-    if (!res.ok) { boundaryCache[cacheKey] = null; return null; }
-    const data = await res.json();
+    // Try structured query first for better results (county=district within state=province)
+    const structuredUrl = `https://nominatim.openstreetmap.org/search?county=${encodeURIComponent(town)}&state=${encodeURIComponent(province)}&country=Turkey&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`;
+    let res = await fetch(structuredUrl, { headers: { 'User-Agent': 'LovableRealEstate/1.0' } });
+    let data = res.ok ? await res.json() : [];
+
+    // If structured query didn't return a polygon, try free-form with "district"
+    if (!data?.[0]?.geojson || data[0].geojson.type === 'Point') {
+      const freeQuery = `${town} district, ${province}, Turkey`;
+      res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(freeQuery)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+        { headers: { 'User-Agent': 'LovableRealEstate/1.0' } }
+      );
+      data = res.ok ? await res.json() : [];
+    }
+
+    // Last fallback: simple query
+    if (!data?.[0]?.geojson || data[0].geojson.type === 'Point') {
+      const simpleQuery = `${town}, ${province}`;
+      res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(simpleQuery)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+        { headers: { 'User-Agent': 'LovableRealEstate/1.0' } }
+      );
+      data = res.ok ? await res.json() : [];
+    }
+
     if (!data?.[0]?.geojson) { boundaryCache[cacheKey] = null; return null; }
 
     const geo = data[0].geojson;
