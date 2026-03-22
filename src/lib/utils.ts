@@ -6,18 +6,29 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Normalize Turkish special characters to ASCII equivalents
- * for accent-insensitive search matching.
- * e.g. "Beyoğlu" → "Beyoglu", "Şişli" → "Sisli"
+ * Normalize text for accent/Turkish-insensitive search matching.
+ * Handles İ/ı dotted-i issue, strips combining diacritics, and maps
+ * Turkish-specific chars to ASCII equivalents.
+ * e.g. "İstanbul" → "istanbul", "Beyoğlu" → "beyoglu", "Şişli" → "sisli"
  */
 export function turkishNormalize(text: string): string {
-  const map: Record<string, string> = {
-    'ğ': 'g', 'Ğ': 'G',
-    'ü': 'u', 'Ü': 'U',
-    'ş': 's', 'Ş': 'S',
-    'ı': 'i', 'İ': 'I',
-    'ö': 'o', 'Ö': 'O',
-    'ç': 'c', 'Ç': 'C',
-  };
-  return text.replace(/[ğĞüÜşŞıİöÖçÇ]/g, (ch) => map[ch] || ch);
+  return text
+    .replace(/İ/g, "i")
+    .replace(/I/g, "i")
+    .replace(/ı/g, "i")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/ğ/g, "g")
+    .replace(/ş/g, "s")
+    .replace(/ç/g, "c")
+    .replace(/ö/g, "o")
+    .replace(/ü/g, "u");
+}
+
+/**
+ * Check if `text` contains `query` using Turkish/accent-insensitive matching.
+ */
+export function turkishIncludes(text: string, query: string): boolean {
+  return turkishNormalize(text).includes(turkishNormalize(query));
 }
