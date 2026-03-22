@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Trash2, MapPin, Sparkles, Loader2, TrendingUp, DollarSign,
   Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star, Plane
