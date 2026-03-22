@@ -16,12 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import UpgradeMembershipDialog from "@/components/admin/UpgradeMembershipDialog";
 import AddCreditsDialog from "@/components/admin/AddCreditsDialog";
+import UpgradeProfileDialog from "@/components/admin/UpgradeProfileDialog";
 
 type Company = Tables<"companies">;
 
@@ -36,6 +37,7 @@ const AdminCompaniesPage = () => {
   // Dialog state
   const [upgradeCompany, setUpgradeCompany] = useState<Company | null>(null);
   const [creditsCompany, setCreditsCompany] = useState<Company | null>(null);
+  const [boostCompany, setBoostCompany] = useState<Company | null>(null);
 
   const fetchCompanies = async () => {
     setLoading(true);
@@ -220,6 +222,9 @@ const AdminCompaniesPage = () => {
                           <DropdownMenuItem onClick={() => setUpgradeCompany(company)}>
                             <ArrowUpCircle className="h-4 w-4 mr-2" /> Change Membership
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setBoostCompany(company)}>
+                            <UserPlus className="h-4 w-4 mr-2" /> Boost Profile
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
                             <Coins className="h-4 w-4 mr-2" /> Add Points
                           </DropdownMenuItem>
@@ -268,6 +273,20 @@ const AdminCompaniesPage = () => {
           companyName={creditsCompany.name}
           currentBalance={creditsCompany.credit_balance}
           onUpdated={fetchCompanies}
+        />
+      )}
+
+      {/* Boost Profile Dialog */}
+      {boostCompany && (
+        <UpgradeProfileDialog
+          open={!!boostCompany}
+          onOpenChange={(open) => !open && setBoostCompany(null)}
+          profileId={boostCompany.id}
+          profileName={boostCompany.name}
+          profileType="company"
+          companyId={boostCompany.id}
+          currentClassification={(boostCompany as any).profile_classification || "standard"}
+          onUpgraded={fetchCompanies}
         />
       )}
     </AdminLayout>

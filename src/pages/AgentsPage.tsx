@@ -21,6 +21,7 @@ interface CompanyRow {
   province: string | null;
   town: string | null;
   neighbourhood: string | null;
+  profile_classification?: string;
 }
 
 interface AgentRow {
@@ -31,8 +32,15 @@ interface AgentRow {
   company_id: string;
   languages: string[] | null;
   service_areas: string[] | null;
+  profile_classification?: string;
   companies: { name: string; logo_url: string | null } | null;
 }
+
+const tierOrder = (cls?: string) => {
+  if (cls === "premium") return 0;
+  if (cls === "featured") return 1;
+  return 2;
+};
 
 const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
@@ -76,14 +84,14 @@ const AgentsPage = () => {
       // Companies
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
       // Agents with company join
       const { data: agentData } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, company_id, languages, service_areas, companies(name, logo_url)")
+        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, companies(name, logo_url)")
         .eq("status", "active");
       setAgents((agentData ?? []) as unknown as AgentRow[]);
 
@@ -132,13 +140,14 @@ const AgentsPage = () => {
     if (selectedProvince && c.province !== selectedProvince) return false;
     if (selectedTown && c.town !== selectedTown) return false;
     return true;
-  });
+  }).sort((a, b) => tierOrder(a.profile_classification) - tierOrder(b.profile_classification));
+
   const filteredAgents = agents.filter(a => {
     if (searchQuery && !turkishIncludes(a.name, searchQuery)) return false;
     if (selectedProvince && !a.service_areas?.some(area => turkishIncludes(area, selectedProvince))) return false;
     if (selectedTown && !a.service_areas?.some(area => turkishIncludes(area, selectedTown))) return false;
     return true;
-  });
+  }).sort((a, b) => tierOrder(a.profile_classification) - tierOrder(b.profile_classification));
 
   const typeLabel = (t: string | null) => {
     if (!t) return 'Real Estate Company';
