@@ -62,6 +62,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   const [phone, setPhone] = useState('');
   const [preferredContact, setPreferredContact] = useState('email');
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [selectedUnitId, setSelectedUnitId] = useState<string>('');
 
   useEffect(() => {
     if (open) {
