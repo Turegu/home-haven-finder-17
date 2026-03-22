@@ -625,16 +625,18 @@ const CompanyPropertyEditPage = () => {
         </section>
 
         {/* ─── Location ─── */}
-        <section className="bg-card rounded-xl border border-border p-6">
+        <section className="bg-card rounded-xl border border-border p-6" data-field="province">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Compass className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Location</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Location *</h2>
           </div>
+          <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
             province={form.province} town={form.town} neighbourhood={form.neighbourhood} pinLocation={form.pin_location}
-            onProvinceChange={(v) => updateField("province", v)} onTownChange={(v) => updateField("town", v)}
+            onProvinceChange={(v) => { updateField("province", v); clearError("town"); clearError("neighbourhood"); }} onTownChange={(v) => updateField("town", v)}
             onNeighbourhoodChange={(v) => updateField("neighbourhood", v)} onPinLocationChange={(v) => updateField("pin_location", v)}
           />
+          </div>
         </section>
 
         {/* ─── Media ─── */}
