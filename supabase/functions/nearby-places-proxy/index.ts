@@ -7,9 +7,10 @@ const corsHeaders = {
 
 const OVERPASS_URLS = [
   "https://overpass-api.de/api/interpreter",
+  "https://z.overpass-api.de/api/interpreter",
+  "https://lz4.overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
   "https://overpass.private.coffee/api/interpreter",
-  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
 ];
 
 // ── In-memory cache ──────────────────────────────────────────────
@@ -50,9 +51,14 @@ const capRadius = (query: string, maxRadius: number) => {
   });
 };
 
-// Try endpoints sequentially — first success wins, avoids hammering all at once
+// Reduce item limit to speed up queries
+const capLimit = (query: string, maxItems: number) => {
+  return query.replace(/\[out:json\]/, `[out:json][maxsize:1048576]`);
+};
+
+// Try endpoints sequentially with short timeouts
 async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Promise<{ data: unknown } | { error: string }> {
-  const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 25);
+  const prepared = capLimit(replaceQueryTimeout(capRadius(query.trim(), 3000), 15), 10);
   const errors: string[] = [];
 
   for (const url of OVERPASS_URLS) {
@@ -68,8 +74,8 @@ async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Pr
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        errors.push(`${url} returned ${res.status}: ${text.slice(0, 120)}`);
+        const text = await res.text().catch(() => "");
+        errors.push(`${url} ${res.status}`);
         continue;
       }
 
@@ -78,7 +84,7 @@ async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Pr
       return { data };
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
-      errors.push(`${url}: ${msg}`);
+      errors.push(`${url}: ${msg.slice(0, 60)}`);
     } finally {
       clearTimeout(timeout);
     }
@@ -119,14 +125,16 @@ serve(async (req) => {
       });
     }
 
-    // ── Fetch from Overpass (race all endpoints) ───────────────
-    const result = await fetchFromOverpass(query, 30000);
+    // ── Fetch from Overpass — 8s per request, sequential ──────
+    const result = await fetchFromOverpass(query, 8000);
 
     if ("error" in result) {
-      return new Response(
-        JSON.stringify({ error: "Overpass request failed", details: result.error }),
-        { status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      // Return empty elements instead of 504 so the UI doesn't break
+      const emptyResponse = { elements: [] };
+      return new Response(JSON.stringify(emptyResponse), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json", "X-Cache": "EMPTY" },
+      });
     }
 
     setCache(cacheKey, result.data);
