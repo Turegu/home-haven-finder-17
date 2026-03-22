@@ -214,6 +214,9 @@ const AiPropertyAgent = () => {
                             <span className="text-lg">{medal}</span>
                             {tierBadge(p.property_classification)}
                           </div>
+                          {isProject && (
+                            <div className="absolute bottom-2 left-2 bg-accent/90 backdrop-blur-sm rounded px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">PROJECT</div>
+                          )}
                         </div>
                         {/* Details */}
                         <div className="p-3 flex-1 flex flex-col justify-between min-w-0">
