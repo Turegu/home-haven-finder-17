@@ -127,7 +127,7 @@ const CompanyPropertiesPage = () => {
   }), [properties]);
 
   const filtered = useMemo(() => properties.filter((p) => {
-    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+    if (search && !turkishIncludes(p.title, search) && !p.listing_id.includes(search)) return false;
     if (classificationFilter !== "all") {
       const cls = p.property_classification?.toLowerCase() || "residential";
       const purpose = p.property_purpose;
