@@ -247,7 +247,7 @@ const CompanyPropertyEditPage = () => {
       { field: "price", check: !form.price, message: "Price is required" },
       { field: "area", check: !form.area, message: "Area is required" },
       { field: "rooms", check: !form.rooms, message: "Rooms selection is required" },
-      { field: "bedrooms", check: !form.bedrooms, message: "Bedrooms is required" },
+      
       { field: "bathrooms", check: !form.bathrooms, message: "Bathrooms is required" },
       { field: "floor_level", check: !form.floor_level, message: "Floor level is required" },
       { field: "furniture", check: !form.furniture, message: "Furniture status is required" },
