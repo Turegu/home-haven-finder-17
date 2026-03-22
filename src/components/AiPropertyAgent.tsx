@@ -134,8 +134,8 @@ const AiPropertyAgent = () => {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[440px] max-w-[calc(100vw-2rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
-          style={{ maxHeight: "min(700px, calc(100vh - 8rem))" }}
+        <div className="fixed bottom-24 right-6 z-50 w-[500px] max-w-[calc(100vw-2rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
+          style={{ maxHeight: "min(800px, calc(100vh - 8rem))", height: "calc(100vh - 10rem)" }}
         >
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3">
