@@ -137,6 +137,7 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
           has_company_agent_search: pkg.has_company_agent_search,
           has_home_logo: pkg.has_home_logo,
           has_company_profile: pkg.has_company_profile,
+          has_ai_search: pkg.has_ai_search,
         })
         .eq("id", pkg.id);
       if (error) throw error;
