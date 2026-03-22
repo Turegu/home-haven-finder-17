@@ -781,6 +781,126 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
+        {/* ─── Payment Plans ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+            <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Payment Plans</h2>
+            <Button
+              type="button" variant="outline" size="sm" className="h-7 text-xs ml-auto"
+              onClick={() => setPaymentPlans(prev => [...prev, {
+                id: `local-${Date.now()}`,
+                plan_name: `Option ${prev.length + 1}`,
+                is_active: true,
+                steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+              }])}
+            >
+              <Plus className="h-3 w-3 mr-1" /> Add Plan
+            </Button>
+          </div>
+
+          {paymentPlans.length === 0 && (
+            <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options on this property.</p>
+          )}
+
+          {paymentPlans.map((plan, planIdx) => (
+            <div key={plan.id} className="border border-border rounded-lg bg-muted/20 p-3 space-y-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Input
+                  value={plan.plan_name}
+                  onChange={(e) => {
+                    const updated = [...paymentPlans];
+                    updated[planIdx] = { ...updated[planIdx], plan_name: e.target.value };
+                    setPaymentPlans(updated);
+                  }}
+                  className="h-7 text-sm font-medium max-w-[180px] bg-secondary/50"
+                />
+                <label className="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={plan.is_active}
+                    onChange={() => {
+                      const updated = [...paymentPlans];
+                      updated[planIdx] = { ...updated[planIdx], is_active: !plan.is_active };
+                      setPaymentPlans(updated);
+                    }}
+                    className="rounded"
+                  />
+                  Active
+                </label>
+                <Button
+                  type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
+                  onClick={() => setPaymentPlans(prev => prev.filter((_, i) => i !== planIdx))}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+
+              {(plan.steps ?? []).map((step, stepIdx) => (
+                <div key={step.id} className="flex items-center gap-1.5">
+                  <Input
+                    type="number" placeholder="%" value={step.percentage || ""}
+                    onChange={(e) => {
+                      const updated = [...paymentPlans];
+                      const steps = [...(updated[planIdx].steps ?? [])];
+                      steps[stepIdx] = { ...steps[stepIdx], percentage: parseFloat(e.target.value) || 0 };
+                      updated[planIdx] = { ...updated[planIdx], steps };
+                      setPaymentPlans(updated);
+                    }}
+                    className="h-7 text-xs w-16 bg-secondary/50 text-center"
+                  />
+                  <Input
+                    placeholder="e.g. Down payment" value={step.title}
+                    onChange={(e) => {
+                      const updated = [...paymentPlans];
+                      const steps = [...(updated[planIdx].steps ?? [])];
+                      steps[stepIdx] = { ...steps[stepIdx], title: e.target.value };
+                      updated[planIdx] = { ...updated[planIdx], steps };
+                      setPaymentPlans(updated);
+                    }}
+                    className="h-7 text-xs bg-secondary/50 flex-1"
+                  />
+                  <Input
+                    placeholder="e.g. At signing" value={step.subtitle}
+                    onChange={(e) => {
+                      const updated = [...paymentPlans];
+                      const steps = [...(updated[planIdx].steps ?? [])];
+                      steps[stepIdx] = { ...steps[stepIdx], subtitle: e.target.value };
+                      updated[planIdx] = { ...updated[planIdx], steps };
+                      setPaymentPlans(updated);
+                    }}
+                    className="h-7 text-xs bg-secondary/50 flex-1"
+                  />
+                  <Button
+                    type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0"
+                    onClick={() => {
+                      const updated = [...paymentPlans];
+                      updated[planIdx] = { ...updated[planIdx], steps: (updated[planIdx].steps ?? []).filter((_, i) => i !== stepIdx) };
+                      setPaymentPlans(updated);
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+
+              <Button
+                type="button" variant="ghost" size="sm" className="h-6 text-xs"
+                onClick={() => {
+                  const updated = [...paymentPlans];
+                  updated[planIdx] = {
+                    ...updated[planIdx],
+                    steps: [...(updated[planIdx].steps ?? []), { id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                  };
+                  setPaymentPlans(updated);
+                }}
+              >
+                <Plus className="h-3 w-3 mr-1" /> Add Step
+              </Button>
+            </div>
+          ))}
+        </section>
+
         {/* Submit */}
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => navigate("/company/properties")}>Cancel</Button>
