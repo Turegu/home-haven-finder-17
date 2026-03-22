@@ -149,6 +149,8 @@ const PerformanceInsightsTab = ({ listingId, listingType = 'property', listingTi
   const { data: stats, isLoading: statsLoading } = useListingStats(listingId, listingType);
   const { data: phase, isLoading: phaseLoading } = useAnalyticsPhase();
 
+  if (phase === 'off') return null;
+
   if (statsLoading || phaseLoading || !stats) {
     return (
       <div className="flex items-center justify-center py-12 text-muted-foreground">
