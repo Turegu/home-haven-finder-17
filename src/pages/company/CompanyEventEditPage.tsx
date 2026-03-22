@@ -99,6 +99,7 @@ const CompanyEventEditPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [pdfUrl, setPdfUrl] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
