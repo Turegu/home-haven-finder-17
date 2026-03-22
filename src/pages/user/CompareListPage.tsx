@@ -380,7 +380,17 @@ const CompareListPage = () => {
         <p className="text-xs text-muted-foreground">Maximum 3 properties allowed for comparison.</p>
 
         {loading ? (
-          <p className="text-muted-foreground text-sm">Loading...</p>
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
+                <Skeleton className="h-12 w-16 rounded shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <p className="text-muted-foreground">No properties to compare.</p>

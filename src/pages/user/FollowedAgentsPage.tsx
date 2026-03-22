@@ -26,7 +26,8 @@ const FollowedAgentsPage = () => {
   const [page, setPage] = useState(1);
 
   const load = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return;
     const { data } = await supabase
       .from("agent_followers")
