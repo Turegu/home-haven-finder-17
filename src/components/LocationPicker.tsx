@@ -86,6 +86,12 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 
   const dn = (item: NamePair) => isRtl && item.ar ? item.ar : item.name;
 
+  // Normalize for accent/Turkish-insensitive search
+  const normalize = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+      .replace(/ı/g, "i").replace(/İ/gi, "i").replace(/ş/g, "s").replace(/ç/g, "c")
+      .replace(/ğ/g, "g").replace(/ö/g, "o").replace(/ü/g, "u");
+
   const summaryText = () => {
     const parts: string[] = [];
     if (value.province) {
@@ -149,10 +155,10 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   const current = stepConfig[step];
 
   const filtered = filter
-    ? current.items.filter(i =>
-        i.name.toLowerCase().includes(filter.toLowerCase()) ||
-        i.ar.includes(filter)
-      )
+    ? current.items.filter(i => {
+        const nf = normalize(filter);
+        return normalize(i.name).includes(nf) || i.ar.includes(filter);
+      })
     : current.items;
 
   // Breadcrumb navigation
