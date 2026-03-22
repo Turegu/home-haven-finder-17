@@ -496,6 +496,20 @@ const CompanyPropertiesPage = () => {
           onAssigned={fetchProperties}
         />
       )}
+      {insightsDialog.property && (
+        <Dialog open={insightsDialog.open} onOpenChange={(open) => setInsightsDialog({ open, property: open ? insightsDialog.property : null })}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Performance Insights — {insightsDialog.property.title}</DialogTitle>
+            </DialogHeader>
+            <PerformanceInsightsTab
+              listingId={insightsDialog.property.id}
+              listingType="property"
+              listingTitle={insightsDialog.property.title}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </CompanyLayout>
   );
 };
