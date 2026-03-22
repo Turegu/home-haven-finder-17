@@ -103,6 +103,7 @@ const CompanyEventEditPage = () => {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
     title: "",
