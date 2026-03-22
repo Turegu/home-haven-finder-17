@@ -192,7 +192,7 @@ function InteractiveMapPicker({
       if (markerRef.current) {
         markerRef.current.setLatLng([latitude, longitude]);
       } else if (L) {
-        markerRef.current = L.marker([latitude, longitude], { draggable: true }).addTo(mapRef.current);
+        markerRef.current = L.marker([latitude, longitude], { draggable: true, icon: createPinIcon(L) }).addTo(mapRef.current);
         markerRef.current.on("dragend", () => {
           const p = markerRef.current.getLatLng();
           onPinLocationChange(`${p.lat.toFixed(6)},${p.lng.toFixed(6)}`);
