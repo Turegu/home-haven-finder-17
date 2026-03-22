@@ -49,6 +49,7 @@ export interface MapListing {
   units?: number;
   rentDuration?: string | null;
   listingType?: 'buy' | 'rent';
+  pinLocation?: string | null;
 }
 
 function getRentSuffix(rentDuration?: string | null): string {
