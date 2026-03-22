@@ -40,7 +40,8 @@ const AccountSettingsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) return;
       setEmail(user.email || "");
       const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).limit(1).maybeSingle();
@@ -64,7 +65,8 @@ const AccountSettingsPage = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) throw new Error("Not logged in");
       const { error } = await supabase.from("profiles").update({
         first_name: profile.first_name,

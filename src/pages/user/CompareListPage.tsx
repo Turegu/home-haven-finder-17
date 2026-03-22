@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Trash2, MapPin, Sparkles, Loader2, TrendingUp, DollarSign,
   Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star, Plane
@@ -121,7 +122,8 @@ const CompareListPage = () => {
   };
 
   const load = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return;
     const { data } = await supabase
       .from("property_comparisons")
@@ -148,7 +150,8 @@ const CompareListPage = () => {
   };
 
   const handleDeleteAll = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return;
     await supabase.from("property_comparisons").delete().eq("user_id", user.id);
     setItems([]);
@@ -378,7 +381,17 @@ const CompareListPage = () => {
         <p className="text-xs text-muted-foreground">Maximum 3 properties allowed for comparison.</p>
 
         {loading ? (
-          <p className="text-muted-foreground text-sm">Loading...</p>
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
+                <Skeleton className="h-12 w-16 rounded shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-48" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <p className="text-muted-foreground">No properties to compare.</p>
