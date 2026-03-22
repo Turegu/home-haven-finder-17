@@ -403,7 +403,7 @@ const BuyPage = () => {
           <h1 className="text-lg font-bold text-foreground">
             {title} in <span className="text-primary">{totalCount} Properties</span>
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
