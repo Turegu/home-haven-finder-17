@@ -128,7 +128,7 @@ const UpgradeMembershipDialog = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-primary">
-            <ArrowUpCircle className="h-5 w-5" /> Upgrade Membership
+            <ArrowUpCircle className="h-5 w-5" /> Change Membership
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
