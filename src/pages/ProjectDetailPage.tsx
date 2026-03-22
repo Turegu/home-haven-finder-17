@@ -29,6 +29,7 @@ const ProjectDetailPage = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [projectUnits, setProjectUnits] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
