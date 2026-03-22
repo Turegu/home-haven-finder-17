@@ -352,9 +352,9 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">Description & Information</h2>
           </div>
           <div className="space-y-5">
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="title">
               <Label className="text-foreground font-medium">Property Title *</Label>
-              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
+              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
               <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
             </div>
             <div className="space-y-2">
