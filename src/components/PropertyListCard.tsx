@@ -100,9 +100,10 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
           <div className="flex h-[190px]">
             {/* Left image */}
             <div className="relative flex-1 overflow-hidden">
-              <img
-                src={property.images[currentImage]}
-                alt={property.title}
+                <img
+                  src={property.images[currentImage]}
+                  alt={property.title}
+                  loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
@@ -179,9 +180,10 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
 
             {/* Right image — equal size */}
             <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
-              <img
-                src={secondaryImages[0] || property.images[currentImage]}
-                alt={`${property.title} 2`}
+                <img
+                  src={secondaryImages[0] || property.images[currentImage]}
+                  alt={`${property.title} 2`}
+                  loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 

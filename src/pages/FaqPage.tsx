@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import DOMPurify from "dompurify";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,7 +80,7 @@ const FaqPage = () => {
                 <AccordionContent>
                   <div
                     className="prose prose-sm max-w-none text-muted-foreground"
-                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
                   />
                 </AccordionContent>
               </AccordionItem>
