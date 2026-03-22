@@ -36,7 +36,7 @@ const AgentInboxPage = () => {
     setLoading(false);
   };
 
-  const filtered = items.filter((i) => i.inbox_type === tab && (i.full_name.toLowerCase().includes(search.toLowerCase()) || i.email.toLowerCase().includes(search.toLowerCase())));
+  const filtered = items.filter((i) => i.inbox_type === tab && (turkishIncludes(i.full_name, search) || turkishIncludes(i.email, search)));
 
   const handleView = async (item: any) => {
     setViewItem(item);

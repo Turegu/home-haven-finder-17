@@ -95,7 +95,7 @@ const AgentPropertiesPage = () => {
   };
 
   const filtered = useMemo(() => properties.filter((p) => {
-    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+    if (search && !turkishIncludes(p.title, search) && !p.listing_id.includes(search)) return false;
     if (filterStatus !== "all" && p.status !== filterStatus) return false;
     return true;
   }), [properties, search, filterStatus]);

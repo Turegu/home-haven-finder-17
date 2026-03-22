@@ -74,7 +74,7 @@ const AgentFollowersPage = () => {
   };
 
   const sorted = [...followers].sort((a, b) => sortOrder === "newest" ? new Date(b.created_at).getTime() - new Date(a.created_at).getTime() : new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-  const filtered = sorted.filter((f) => (f.profile?.display_name || "").toLowerCase().includes(search.toLowerCase()));
+  const filtered = sorted.filter((f) => turkishIncludes(f.profile?.display_name || "", search));
 
   return (
     <AgentLayout>
