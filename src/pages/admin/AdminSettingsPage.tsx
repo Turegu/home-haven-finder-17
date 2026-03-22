@@ -20,6 +20,7 @@ const AdminSettingsPage = () => {
   const [salesEmail, setSalesEmail] = useState("");
   const [salesAddress, setSalesAddress] = useState("");
   const [mapProvider, setMapProvider] = useState("google");
+  const [analyticsPhase, setAnalyticsPhase] = useState<AnalyticsPhase>("phase1");
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
