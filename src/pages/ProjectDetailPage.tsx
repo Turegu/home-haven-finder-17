@@ -364,7 +364,6 @@ const ProjectDetailPage = () => {
                             <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><Icon className="h-3.5 w-3.5 text-primary" /> {a}</span>
                           );
                         })}
-                        ))}
                       </div>
                     </div>
                   )}
