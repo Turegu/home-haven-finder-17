@@ -1,0 +1,1 @@
+ALTER TABLE public.project_units ADD COLUMN IF NOT EXISTS advertising_tags text[] DEFAULT '{}'::text[];

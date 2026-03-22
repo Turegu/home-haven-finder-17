@@ -1368,6 +1368,7 @@ export type Database = {
       }
       project_units: {
         Row: {
+          advertising_tags: string[] | null
           area: number | null
           area_unit: string | null
           bathrooms: number | null
@@ -1387,6 +1388,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          advertising_tags?: string[] | null
           area?: number | null
           area_unit?: string | null
           bathrooms?: number | null
@@ -1406,6 +1408,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          advertising_tags?: string[] | null
           area?: number | null
           area_unit?: string | null
           bathrooms?: number | null
