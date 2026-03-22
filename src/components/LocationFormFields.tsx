@@ -266,6 +266,9 @@ function InteractiveMapPicker({
     return true;
   }, [boundaryPolygons, town, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
 
+  // Keep ref in sync so map event handlers always use latest closure
+  trySetPinRef.current = trySetPin;
+
   // Load Leaflet dynamically
   useEffect(() => {
     import("leaflet").then((mod) => {
