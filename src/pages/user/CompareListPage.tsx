@@ -149,7 +149,8 @@ const CompareListPage = () => {
   };
 
   const handleDeleteAll = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
     if (!user) return;
     await supabase.from("property_comparisons").delete().eq("user_id", user.id);
     setItems([]);
