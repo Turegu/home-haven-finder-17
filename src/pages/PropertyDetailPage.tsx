@@ -185,6 +185,29 @@ const PropertyDetailPage = () => {
             advertisingTags: s.advertising_tags ?? [],
           })));
         }
+
+        // Fetch property payment plans
+        const { data: plans } = await supabase
+          .from("property_payment_plans")
+          .select("*")
+          .eq("property_id", id)
+          .eq("is_active", true)
+          .order("sort_order");
+        if (plans && plans.length > 0) {
+          const planIds = plans.map((pl: any) => pl.id);
+          const { data: steps } = await supabase
+            .from("property_payment_plan_steps")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("sort_order");
+          setPropertyPaymentPlans(plans.map((pl: any) => ({
+            id: pl.id,
+            plan_name: pl.plan_name,
+            steps: (steps || []).filter((s: any) => s.plan_id === pl.id).map((s: any) => ({
+              id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
+            })),
+          })));
+        }
       }
       setLoading(false);
     };
