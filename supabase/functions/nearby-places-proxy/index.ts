@@ -58,7 +58,7 @@ const capLimit = (query: string, maxItems: number) => {
 
 // Try endpoints sequentially with short timeouts
 async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Promise<{ data: unknown } | { error: string }> {
-  const prepared = capLimit(replaceQueryTimeout(capRadius(query.trim(), 3000), 15), 10);
+  const prepared = capLimit(replaceQueryTimeout(capRadius(query.trim(), 3000), 25), 10);
   const errors: string[] = [];
 
   for (const url of OVERPASS_URLS) {
