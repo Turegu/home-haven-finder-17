@@ -291,6 +291,8 @@ interface ListingMapViewProps {
   listings: MapListing[];
   className?: string;
   focusListingId?: string | null;
+  selectedProvince?: string;
+  selectedDistrict?: string;
 }
 
 const ListingMapView = ({ listings, className = '', focusListingId = null }: ListingMapViewProps) => {
