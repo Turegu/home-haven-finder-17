@@ -12,6 +12,33 @@ interface NamePair { name: string; ar: string }
 // Module-level cache for provinces (same as LocationPicker)
 let provincesCache: NamePair[] | null = null;
 
+// Metropolitan provinces whose "city center" is split into multiple districts
+// When user selects "{Province} (Central)", we fetch neighborhoods from all these districts
+const METRO_CENTRAL_DISTRICTS: Record<string, string[]> = {
+  'Adana': ['Seyhan', 'Çukurova', 'Yüreğir', 'Sarıçam'],
+  'Ankara': ['Çankaya', 'Keçiören', 'Etimesgut', 'Yenimahalle', 'Mamak', 'Altındağ', 'Sincan', 'Pursaklar'],
+  'İstanbul': ['Kadıköy', 'Beşiktaş', 'Beyoğlu', 'Fatih', 'Şişli', 'Üsküdar', 'Bakırköy', 'Sarıyer', 'Ataşehir', 'Maltepe', 'Zeytinburnu', 'Eyüpsultan', 'Bayrampaşa', 'Kağıthane'],
+  'İzmir': ['Konak', 'Bornova', 'Karşıyaka', 'Buca', 'Bayraklı', 'Çiğli', 'Gaziemir', 'Balçova', 'Narlıdere'],
+  'Bursa': ['Osmangazi', 'Nilüfer', 'Yıldırım'],
+  'Antalya': ['Muratpaşa', 'Konyaaltı', 'Kepez', 'Döşemealtı', 'Aksu'],
+  'Gaziantep': ['Şahinbey', 'Şehitkamil', 'Oğuzeli'],
+  'Konya': ['Selçuklu', 'Meram', 'Karatay'],
+  'Mersin': ['Yenişehir', 'Toroslar', 'Akdeniz', 'Mezitli'],
+  'Kayseri': ['Melikgazi', 'Kocasinan', 'Talas'],
+};
+
+function getCentralLabel(province: string): string {
+  return `${province} (Central)`;
+}
+
+function isCentralOption(townValue: string): boolean {
+  return townValue.endsWith(' (Central)');
+}
+
+function getCentralDistricts(province: string): string[] | null {
+  return METRO_CENTRAL_DISTRICTS[province] || null;
+}
+
 // City coordinate lookup for auto-centering
 const cityCoords: Record<string, [number, number]> = {
   'istanbul': [41.0082, 28.9784],
