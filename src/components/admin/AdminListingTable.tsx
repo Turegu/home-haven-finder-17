@@ -45,6 +45,7 @@ interface AdminListingTableProps {
   columns: { key: string; label: string }[];
   renderCell: (item: ListingItem, key: string) => React.ReactNode;
   onView?: (item: ListingItem) => void;
+  initialCompanyFilter?: string;
 }
 
 const ITEMS_PER_PAGE = 10;
