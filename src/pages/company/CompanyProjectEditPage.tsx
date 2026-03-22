@@ -547,15 +547,22 @@ const CompanyProjectEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
       return false;
     }
-    if (!form.title.trim()) { toast.error("Project name is required"); return false; }
-    if (!form.project_type) { toast.error("Project type is required"); return false; }
-    if (!form.project_status) { toast.error("Project status is required"); return false; }
-    if (!form.province) { toast.error("Province is required"); return false; }
-    if (!form.town) { toast.error("Town/District is required"); return false; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
-    if (!form.min_price && !form.max_price) { toast.error("At least one price value is required"); return false; }
-    if (!form.min_area && !form.max_area) { toast.error("At least one area value is required"); return false; }
-    return true;
+    const rules = [
+      { field: "title", check: !form.title.trim(), message: "Project name is required" },
+      { field: "project_type", check: !form.project_type, message: "Project type is required" },
+      { field: "project_status", check: !form.project_status, message: "Project status is required" },
+      { field: "province", check: !form.province, message: "Province is required" },
+      { field: "town", check: !form.town, message: "Town/District is required" },
+      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      { field: "min_price", check: !form.min_price && !form.max_price, message: "At least one price value is required" },
+      { field: "min_area", check: !form.min_area && !form.max_area, message: "At least one area value is required" },
+    ];
+    const valid = validate(rules);
+    if (!valid) {
+      const firstError = rules.find(r => r.check);
+      if (firstError) toast.error(firstError.message);
+    }
+    return valid;
   };
 
   const handlePublishClick = () => {
