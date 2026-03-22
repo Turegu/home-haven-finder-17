@@ -7,6 +7,7 @@ import {
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
+import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { Button } from '@/components/ui/button';
