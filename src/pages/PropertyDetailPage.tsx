@@ -883,7 +883,7 @@ const PropertyDetailPage = () => {
         listingId={property.listingId}
         listingTitle={property.title}
       />
-    </>
+    </div>
   );
 };
 
