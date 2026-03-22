@@ -23,6 +23,7 @@ import {
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import AmenitiesViewAllDialog from "@/components/AmenitiesViewAllDialog";
+import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 /* ─── Options aligned with front-end search filters ─── */
