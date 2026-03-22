@@ -148,6 +148,18 @@ const BuyPage = () => {
   const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
+  // Track impressions when search results change
+  const trackedPageRef = useRef<string>('');
+  useEffect(() => {
+    if (allProperties.length > 0) {
+      const key = allProperties.map((p: any) => p.id).join(',');
+      if (key !== trackedPageRef.current) {
+        trackedPageRef.current = key;
+        trackImpressions(allProperties.map((p: any) => p.id), 'property');
+      }
+    }
+  }, [allProperties]);
+
   useEffect(() => {
     document.title = `${isRent ? 'Rent' : 'Buy'} | Turegu`;
   }, [isRent]);
