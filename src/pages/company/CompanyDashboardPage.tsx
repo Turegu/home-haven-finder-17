@@ -9,7 +9,7 @@ import {
   Building2, FolderKanban, Calendar, CreditCard, Phone,
   TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle
 } from "lucide-react";
-import { format, differenceInDays, startOfMonth, startOfYear } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import { useSalesContact } from "@/hooks/useSalesContact";
 
