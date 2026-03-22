@@ -666,6 +666,57 @@ export type Database = {
           },
         ]
       }
+      credit_transactions: {
+        Row: {
+          agent_id: string | null
+          amount: number
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          listing_id: string | null
+          listing_type: string | null
+          transaction_type: string
+        }
+        Insert: {
+          agent_id?: string | null
+          amount: number
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          listing_id?: string | null
+          listing_type?: string | null
+          transaction_type?: string
+        }
+        Update: {
+          agent_id?: string | null
+          amount?: number
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          listing_id?: string | null
+          listing_type?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       currencies: {
         Row: {
           code: string

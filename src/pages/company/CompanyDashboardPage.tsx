@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Phone,
-  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle
+  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle,
+  ArrowDownRight, ArrowUpRight, History
 } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, startOfMonth, startOfYear } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 const membershipIcons: Record<string, React.ElementType> = {
@@ -41,12 +42,30 @@ interface CreditUsage {
   featured_projects: number;
 }
 
+interface CreditTransaction {
+  id: string;
+  amount: number;
+  transaction_type: string;
+  description: string | null;
+  listing_type: string | null;
+  created_at: string;
+}
+
+interface CreditSummary {
+  totalTopups: number;
+  totalSpent: number;
+  thisMonthSpent: number;
+  thisYearSpent: number;
+}
+
 const CompanyDashboardPage = () => {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [counts, setCounts] = useState<ListingCounts>({ properties: 0, projects: 0, events: 0 });
   const [creditUsage, setCreditUsage] = useState<CreditUsage>({ premium_properties: 0, featured_properties: 0, premium_projects: 0, featured_projects: 0 });
+  const [creditSummary, setCreditSummary] = useState<CreditSummary>({ totalTopups: 0, totalSpent: 0, thisMonthSpent: 0, thisYearSpent: 0 });
+  const [recentTransactions, setRecentTransactions] = useState<CreditTransaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const { usage, limits, membership } = useMembershipLimits(company?.id || null);
+  const { usage, limits } = useMembershipLimits(company?.id || null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +82,11 @@ const CompanyDashboardPage = () => {
       if (!companyData) return;
       setCompany(companyData);
 
-      const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes] = await Promise.all([
+      const now = new Date();
+      const monthStart = startOfMonth(now).toISOString();
+      const yearStart = startOfYear(now).toISOString();
+
+      const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
         supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
         supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
         supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
@@ -71,6 +94,7 @@ const CompanyDashboardPage = () => {
         supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
         supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
         supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
+        supabase.from("credit_transactions").select("id, amount, transaction_type, description, listing_type, created_at").eq("company_id", companyData.id).order("created_at", { ascending: false }).limit(200),
       ]);
 
       setCounts({
@@ -84,6 +108,27 @@ const CompanyDashboardPage = () => {
         premium_projects: premProjRes.count || 0,
         featured_projects: featProjRes.count || 0,
       });
+
+      const transactions = (txRes.data || []) as CreditTransaction[];
+      setRecentTransactions(transactions.slice(0, 10));
+
+      let totalTopups = 0;
+      let totalSpent = 0;
+      let thisMonthSpent = 0;
+      let thisYearSpent = 0;
+
+      for (const tx of transactions) {
+        if (tx.amount > 0) {
+          totalTopups += tx.amount;
+        } else {
+          const spent = Math.abs(tx.amount);
+          totalSpent += spent;
+          if (tx.created_at >= monthStart) thisMonthSpent += spent;
+          if (tx.created_at >= yearStart) thisYearSpent += spent;
+        }
+      }
+
+      setCreditSummary({ totalTopups, totalSpent, thisMonthSpent, thisYearSpent });
       setLoading(false);
     };
     fetchData();
@@ -115,6 +160,7 @@ const CompanyDashboardPage = () => {
   const totalListings = counts.properties + counts.projects;
   const premiumPercent = totalListings > 0 ? Math.round((totalPremium / totalListings) * 100) : 0;
   const featuredPercent = totalListings > 0 ? Math.round((totalFeatured / totalListings) * 100) : 0;
+  const creditBarPercent = creditSummary.totalTopups > 0 ? Math.round(((company?.credit_balance || 0) / creditSummary.totalTopups) * 100) : 0;
 
   return (
     <CompanyLayout>
@@ -175,13 +221,22 @@ const CompanyDashboardPage = () => {
           );
         })()}
 
-        {/* Credit Balance */}
+        {/* Credit Balance with bar */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Credit Balance</h3>
             <CreditCard className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{company?.credit_balance || 0}</p>
+          {creditSummary.totalTopups > 0 && (
+            <div className="mt-2">
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
+                <span>Remaining</span>
+                <span>{company?.credit_balance || 0} / {creditSummary.totalTopups} total</span>
+              </div>
+              <Progress value={creditBarPercent} className="h-1.5" />
+            </div>
+          )}
           <Button variant="link" size="sm" className="mt-1 p-0 h-auto text-xs text-primary">
             <Phone className="h-3 w-3 mr-1" /> Contact Sales
           </Button>
@@ -215,6 +270,66 @@ const CompanyDashboardPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Credit Spending Summary */}
+      {(creditSummary.totalTopups > 0 || creditSummary.totalSpent > 0 || recentTransactions.length > 0) && (
+        <div className="bg-card rounded-xl border border-border p-5 mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <History className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-foreground">Credit Spending</h2>
+          </div>
+          
+          {/* Spending summary cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3">
+              <p className="text-[11px] font-medium text-muted-foreground mb-1">Total Topped Up</p>
+              <p className="text-lg font-bold text-emerald-700">{creditSummary.totalTopups}</p>
+            </div>
+            <div className="rounded-lg bg-rose-50 border border-rose-200 p-3">
+              <p className="text-[11px] font-medium text-muted-foreground mb-1">Total Spent</p>
+              <p className="text-lg font-bold text-rose-700">{creditSummary.totalSpent}</p>
+            </div>
+            <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+              <p className="text-[11px] font-medium text-muted-foreground mb-1">This Month</p>
+              <p className="text-lg font-bold text-amber-700">{creditSummary.thisMonthSpent}</p>
+            </div>
+            <div className="rounded-lg bg-blue-50 border border-blue-200 p-3">
+              <p className="text-[11px] font-medium text-muted-foreground mb-1">This Year</p>
+              <p className="text-lg font-bold text-blue-700">{creditSummary.thisYearSpent}</p>
+            </div>
+          </div>
+
+          {/* Recent transactions */}
+          {recentTransactions.length > 0 ? (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">Recent Transactions</p>
+              <div className="space-y-1.5">
+                {recentTransactions.map((tx) => (
+                  <div key={tx.id} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/40 text-sm">
+                    <div className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 ${tx.amount > 0 ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"}`}>
+                      {tx.amount > 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {tx.description || (tx.amount > 0 ? "Credit Top-up" : "Credit Spent")}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {format(new Date(tx.created_at), "MMM dd, yyyy")}
+                        {tx.listing_type && ` · ${tx.listing_type}`}
+                      </p>
+                    </div>
+                    <span className={`text-sm font-semibold shrink-0 ${tx.amount > 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                      {tx.amount > 0 ? "+" : ""}{tx.amount}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">No credit transactions yet</p>
+          )}
+        </div>
+      )}
 
       {/* Membership Usage Bars */}
       {limits && (
