@@ -224,18 +224,11 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     }
   }, [lat, lng]);
 
-  // Prefetch ALL categories in parallel (all at once)
+  // Prefetch ALL categories in parallel
   useEffect(() => {
     if (prefetchedRef.current) return;
     prefetchedRef.current = true;
-
-    const prefetchAll = async () => {
-      const results = await Promise.allSettled(
-        categories.map(cat => fetchSingleCategory(cat.key))
-      );
-    };
-
-    prefetchAll();
+    Promise.allSettled(categories.map(cat => fetchSingleCategory(cat.key)));
   }, [fetchSingleCategory]);
 
   const handleCategoryClick = useCallback((key: string) => {
