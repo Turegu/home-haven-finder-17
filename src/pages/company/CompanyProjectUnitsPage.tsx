@@ -56,7 +56,7 @@ const CompanyProjectUnitsPage = () => {
   const [form, setForm] = useState<UnitForm>({ ...emptyUnit });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
+  
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
 
