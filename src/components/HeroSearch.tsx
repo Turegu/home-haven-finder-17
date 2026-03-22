@@ -101,7 +101,7 @@ const HeroSearch = () => {
           </div>
 
           {/* Filter Row */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
             <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
             <AreaDropdown minArea={minArea} maxArea={maxArea} onChange={(min, max) => { setMinArea(min); setMaxArea(max); }} />
@@ -111,6 +111,7 @@ const HeroSearch = () => {
             ) : (
               <RentDurationDropdown value={rentDuration} onChange={setRentDuration} />
             )}
+            <div className="flex-1" />
             <PropertyFiltersModal
               filters={moreFilters}
               onFiltersChange={setMoreFilters}
