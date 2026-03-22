@@ -310,9 +310,9 @@ const CompanyEventEditPage = () => {
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="title">
                 <Label className="text-foreground font-medium">Event Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required placeholder="Event Title" maxLength={60} />
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required placeholder="Event Title" maxLength={60} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
               </div>
               <div className="space-y-2">
