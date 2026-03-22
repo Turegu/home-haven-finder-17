@@ -272,7 +272,7 @@ const CompanyPropertyEditPage = () => {
       title: form.title.trim(),
       description: form.description || null,
       property_purpose: form.property_purpose,
-      property_classification: form.property_classification,
+      property_classification: classificationOverride || form.property_classification,
       rent_duration: isRent ? (form.rent_duration || null) : null,
       property_type: form.property_type,
       price: form.price ? parseFloat(form.price) : null,
