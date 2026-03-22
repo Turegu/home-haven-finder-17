@@ -22,6 +22,7 @@ import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  useTrackPageView(id, 'project');
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
