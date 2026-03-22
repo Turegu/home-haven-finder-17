@@ -357,12 +357,14 @@ const CompanyEventEditPage = () => {
               value={form.event_type}
               onChange={(v) => updateField("event_type", v)}
               options={eventTypes.map((t) => ({ value: t.value, label: t.label }))}
+              fieldName="event_type"
+              error={errorClass("event_type") !== ""}
             />
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="event_date">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time *
               </Label>
-              <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className="bg-secondary/50" />
+              <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className={`bg-secondary/50 ${errorClass("event_date")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
