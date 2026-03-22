@@ -126,7 +126,7 @@ serve(async (req) => {
     }
 
     // ── Fetch from Overpass — 8s per request, sequential ──────
-    const result = await fetchFromOverpass(query, 8000);
+    const result = await fetchFromOverpass(query, 12000);
 
     if ("error" in result) {
       // Return empty elements instead of 504 so the UI doesn't break
