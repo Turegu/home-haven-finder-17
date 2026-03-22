@@ -420,9 +420,9 @@ const LocationFormFields = ({
           />
         </div>
 
-        {/* City/Town */}
+        {/* City/Town (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">City/Town</Label>
+          <Label className="text-foreground font-medium">City/Town <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={town}
             onValueChange={handleTownChange}
