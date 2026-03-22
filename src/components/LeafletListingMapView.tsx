@@ -122,8 +122,6 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
   const formatPrice = (price: number | null, currency: string) => {
     const sym = currency === 'USD' ? '$' : currency + ' ';
     return `${sym}${(price ?? 0).toLocaleString()}`;
-    const sym = currency === 'USD' ? '$' : currency + ' ';
-    return `${sym}${price.toLocaleString()}`;
   };
 
   return (
