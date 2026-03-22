@@ -244,10 +244,10 @@ const CompanyPropertyEditPage = () => {
     }
     const rules = [
       { field: "title", check: !form.title.trim(), message: "Title is required" },
-      { field: "price", check: !form.price, message: "Price is required" },
       { field: "area", check: !form.area, message: "Area is required" },
+      { field: "price", check: !form.price, message: "Price is required" },
+      ...(isRent ? [{ field: "rent_duration", check: !form.rent_duration, message: "Rent duration is required" }] : []),
       { field: "rooms", check: !form.rooms, message: "Rooms selection is required" },
-      
       { field: "bathrooms", check: !form.bathrooms, message: "Bathrooms is required" },
       { field: "floor_level", check: !form.floor_level, message: "Floor level is required" },
       { field: "furniture", check: !form.furniture, message: "Furniture status is required" },
@@ -257,7 +257,6 @@ const CompanyPropertyEditPage = () => {
       { field: "province", check: !form.province, message: "Province is required" },
       { field: "town", check: !form.town, message: "Town/District is required" },
       { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
-      ...(isRent ? [{ field: "rent_duration", check: !form.rent_duration, message: "Rent duration is required" }] : []),
     ];
     const valid = validate(rules);
     if (!valid) {
