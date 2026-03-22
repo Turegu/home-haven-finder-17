@@ -69,6 +69,7 @@ const CompanyPropertiesPage = () => {
 
   const [upgradeDialog, setUpgradeDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
   const [assignDialog, setAssignDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
+  const [insightsDialog, setInsightsDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
 
   const { options: filterOpts } = useFilterOptions("property");
   const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
