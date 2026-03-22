@@ -387,6 +387,7 @@ const CompanyProjectEditPage = () => {
       area_unit: unit.area_unit || "m²",
       interior_amenities: unit.interior_amenities || [],
       exterior_amenities: unit.exterior_amenities || [],
+      advertising_tags: (unit as any).advertising_tags || [],
       images: unit.images || [],
       status: unit.status || "available",
     });
