@@ -87,6 +87,7 @@ const PropertyDetailPage = () => {
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [propertyPaymentPlans, setPropertyPaymentPlans] = useState<{ id: string; plan_name: string; steps: { id: string; percentage: number; title: string; subtitle: string | null }[] }[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -182,6 +183,29 @@ const PropertyDetailPage = () => {
             listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
             rentDuration: s.rent_duration ?? null,
             advertisingTags: s.advertising_tags ?? [],
+          })));
+        }
+
+        // Fetch property payment plans
+        const { data: plans } = await supabase
+          .from("property_payment_plans")
+          .select("*")
+          .eq("property_id", id)
+          .eq("is_active", true)
+          .order("sort_order");
+        if (plans && plans.length > 0) {
+          const planIds = plans.map((pl: any) => pl.id);
+          const { data: steps } = await supabase
+            .from("property_payment_plan_steps")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("sort_order");
+          setPropertyPaymentPlans(plans.map((pl: any) => ({
+            id: pl.id,
+            plan_name: pl.plan_name,
+            steps: (steps || []).filter((s: any) => s.plan_id === pl.id).map((s: any) => ({
+              id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
+            })),
           })));
         }
       }
@@ -787,6 +811,36 @@ const PropertyDetailPage = () => {
             <BannerDisplay pageName="buy-detail" bannerType="vertical" className="" />
           </div>
         </div>
+
+        {/* Payment Plans */}
+        {propertyPaymentPlans.length > 0 && (
+          <section className="mt-8 bg-card rounded-xl border border-border p-6">
+            <h2 className="text-lg font-bold text-foreground mb-4">Payment Plan</h2>
+            {propertyPaymentPlans.map((plan) => (
+              <div key={plan.id} className="mb-4 last:mb-0">
+                {propertyPaymentPlans.length > 1 && (
+                  <h3 className="text-sm font-semibold text-foreground mb-2">{plan.plan_name}</h3>
+                )}
+                <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
+                  {plan.steps.map((step, idx) => (
+                    <div key={step.id} className="flex items-stretch flex-shrink-0">
+                      <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center">
+                        <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
+                        <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
+                        {step.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>}
+                      </div>
+                      {idx < plan.steps.length - 1 && (
+                        <div className="flex items-center px-1.5">
+                          <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </section>
+        )}
 
         {/* Horizontal Banner */}
         <BannerDisplay pageName="buy-detail" bannerType="horizontal" className="mt-8" />

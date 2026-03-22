@@ -19,13 +19,17 @@ import {
   Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
   Calendar, Compass, ScrollText, Activity, Tag, TreePine,
   DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
-  ChevronDown, Bold, Italic, Underline, List, Heading
+  ChevronDown, Bold, Italic, Underline, List, Heading, Plus, Trash2
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+
+/* ─── Types ─── */
+interface LocalPaymentPlanStep { id: string; percentage: number; title: string; subtitle: string; }
+interface LocalPaymentPlan { id: string; plan_name: string; is_active: boolean; steps: LocalPaymentPlanStep[]; }
 
 /* ─── Options aligned with front-end search filters ─── */
 
@@ -59,6 +63,7 @@ const CompanyPropertyEditPage = () => {
   const [uploadingPlans, setUploadingPlans] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const { validate, clearError, errorClass } = useFieldValidation();
+  const [paymentPlans, setPaymentPlans] = useState<LocalPaymentPlan[]>([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -193,6 +198,29 @@ const CompanyPropertyEditPage = () => {
       });
       setImages(data.images || []);
       setPlanFiles((data as any).plans || []);
+
+      // Load payment plans
+      const { data: plansData } = await supabase
+        .from("property_payment_plans")
+        .select("*")
+        .eq("property_id", id)
+        .order("sort_order");
+      if (plansData && plansData.length > 0) {
+        const planIds = plansData.map((p: any) => p.id);
+        const { data: stepsData } = await supabase
+          .from("property_payment_plan_steps")
+          .select("*")
+          .in("plan_id", planIds)
+          .order("sort_order");
+        setPaymentPlans(plansData.map((p: any) => ({
+          id: p.id,
+          plan_name: p.plan_name,
+          is_active: p.is_active,
+          steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+            id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
+          })),
+        })));
+      }
     };
     fetchProperty();
   }, [isEdit, id]);
@@ -319,15 +347,58 @@ const CompanyPropertyEditPage = () => {
     };
 
     try {
+      let propertyId = id;
       if (isEdit) {
         const { error } = await supabase.from("properties").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       } else {
-        const { error } = await supabase.from("properties").insert(payload);
+        const { data: inserted, error } = await supabase.from("properties").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
+        propertyId = inserted.id;
       }
+
+      // Save payment plans
+      if (propertyId && paymentPlans.length > 0) {
+        for (let pi = 0; pi < paymentPlans.length; pi++) {
+          const plan = paymentPlans[pi];
+          const isExisting = !plan.id.startsWith("local-");
+          let planId = plan.id;
+
+          if (isExisting) {
+            await supabase.from("property_payment_plans").update({
+              plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).eq("id", planId);
+            await supabase.from("property_payment_plan_steps").delete().eq("plan_id", planId);
+          } else {
+            const { data: newPlan, error: planErr } = await supabase.from("property_payment_plans").insert({
+              property_id: propertyId, plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).select("id").single();
+            if (planErr) throw planErr;
+            planId = newPlan.id;
+          }
+
+          if ((plan.steps ?? []).length > 0) {
+            const stepsPayload = (plan.steps ?? []).map((s, si) => ({
+              plan_id: planId, percentage: s.percentage, title: s.title,
+              subtitle: s.subtitle || null, sort_order: si,
+            }));
+            await supabase.from("property_payment_plan_steps").insert(stepsPayload);
+          }
+        }
+      }
+
+      // Delete removed plans (for editing)
+      if (isEdit && propertyId) {
+        const { data: dbPlans } = await supabase.from("property_payment_plans").select("id").eq("property_id", propertyId);
+        const keptIds = paymentPlans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
+        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        for (const d of toDelete) {
+          await supabase.from("property_payment_plan_steps").delete().eq("plan_id", d.id);
+          await supabase.from("property_payment_plans").delete().eq("id", d.id);
+        }
+      }
+
+      toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       navigate("/company/properties");
     } catch (err: any) {
       toast.error(err.message || "Save failed");
@@ -708,6 +779,126 @@ const CompanyPropertyEditPage = () => {
               <Input type="datetime-local" value={form.open_house_end} onChange={(e) => updateField("open_house_end", e.target.value)} className="bg-secondary/50" />
             </div>
           </div>
+        </section>
+
+        {/* ─── Payment Plans ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
+            <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Payment Plans</h2>
+            <Button
+              type="button" variant="outline" size="sm" className="h-7 text-xs ml-auto"
+              onClick={() => setPaymentPlans(prev => [...prev, {
+                id: `local-${Date.now()}`,
+                plan_name: `Option ${prev.length + 1}`,
+                is_active: true,
+                steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+              }])}
+            >
+              <Plus className="h-3 w-3 mr-1" /> Add Plan
+            </Button>
+          </div>
+
+          {paymentPlans.length === 0 && (
+            <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options on this property.</p>
+          )}
+
+          {paymentPlans.map((plan, planIdx) => (
+            <div key={plan.id} className="border border-border rounded-lg bg-muted/20 p-3 space-y-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Input
+                  value={plan.plan_name}
+                  onChange={(e) => {
+                    const updated = [...paymentPlans];
+                    updated[planIdx] = { ...updated[planIdx], plan_name: e.target.value };
+                    setPaymentPlans(updated);
+                  }}
+                  className="h-7 text-sm font-medium max-w-[180px] bg-secondary/50"
+                />
+                <label className="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={plan.is_active}
+                    onChange={() => {
+                      const updated = [...paymentPlans];
+                      updated[planIdx] = { ...updated[planIdx], is_active: !plan.is_active };
+                      setPaymentPlans(updated);
+                    }}
+                    className="rounded"
+                  />
+                  Active
+                </label>
+                <Button
+                  type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
+                  onClick={() => setPaymentPlans(prev => prev.filter((_, i) => i !== planIdx))}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+
+              {(plan.steps ?? []).map((step, stepIdx) => (
+                <div key={step.id} className="flex items-center gap-1.5">
+                  <Input
+                    type="number" placeholder="%" value={step.percentage || ""}
+                    onChange={(e) => {
+                      const updated = [...paymentPlans];
+                      const steps = [...(updated[planIdx].steps ?? [])];
+                      steps[stepIdx] = { ...steps[stepIdx], percentage: parseFloat(e.target.value) || 0 };
+                      updated[planIdx] = { ...updated[planIdx], steps };
+                      setPaymentPlans(updated);
+                    }}
+                    className="h-7 text-xs w-16 bg-secondary/50 text-center"
+                  />
+                  <Input
+                    placeholder="e.g. Down payment" value={step.title}
+                    onChange={(e) => {
+                      const updated = [...paymentPlans];
+                      const steps = [...(updated[planIdx].steps ?? [])];
+                      steps[stepIdx] = { ...steps[stepIdx], title: e.target.value };
+                      updated[planIdx] = { ...updated[planIdx], steps };
+                      setPaymentPlans(updated);
+                    }}
+                    className="h-7 text-xs bg-secondary/50 flex-1"
+                  />
+                  <Input
+                    placeholder="e.g. At signing" value={step.subtitle}
+                    onChange={(e) => {
+                      const updated = [...paymentPlans];
+                      const steps = [...(updated[planIdx].steps ?? [])];
+                      steps[stepIdx] = { ...steps[stepIdx], subtitle: e.target.value };
+                      updated[planIdx] = { ...updated[planIdx], steps };
+                      setPaymentPlans(updated);
+                    }}
+                    className="h-7 text-xs bg-secondary/50 flex-1"
+                  />
+                  <Button
+                    type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0"
+                    onClick={() => {
+                      const updated = [...paymentPlans];
+                      updated[planIdx] = { ...updated[planIdx], steps: (updated[planIdx].steps ?? []).filter((_, i) => i !== stepIdx) };
+                      setPaymentPlans(updated);
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+
+              <Button
+                type="button" variant="ghost" size="sm" className="h-6 text-xs"
+                onClick={() => {
+                  const updated = [...paymentPlans];
+                  updated[planIdx] = {
+                    ...updated[planIdx],
+                    steps: [...(updated[planIdx].steps ?? []), { id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                  };
+                  setPaymentPlans(updated);
+                }}
+              >
+                <Plus className="h-3 w-3 mr-1" /> Add Step
+              </Button>
+            </div>
+          ))}
         </section>
 
         {/* Submit */}

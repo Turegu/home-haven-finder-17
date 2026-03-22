@@ -1760,6 +1760,79 @@ export type Database = {
           },
         ]
       }
+      property_payment_plan_steps: {
+        Row: {
+          created_at: string
+          id: string
+          percentage: number
+          plan_id: string
+          sort_order: number
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          percentage?: number
+          plan_id: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          percentage?: number
+          plan_id?: string
+          sort_order?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_payment_plan_steps_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "property_payment_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_payment_plans: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          plan_name: string
+          property_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          plan_name?: string
+          property_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          plan_name?: string
+          property_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_payment_plans_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_reports: {
         Row: {
           created_at: string
