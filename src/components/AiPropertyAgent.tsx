@@ -267,8 +267,8 @@ const AiPropertyAgent = () => {
             </div>
           </div>
         </div>
+        </>
       )}
-    </>
   );
 };
 
