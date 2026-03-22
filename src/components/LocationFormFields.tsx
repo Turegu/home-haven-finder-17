@@ -180,7 +180,7 @@ function InteractiveMapPicker({
     });
   }, []);
 
-  // Validate and set pin, returns true if valid
+  // Validate and set pin, returns true if valid. Also triggers reverse geocoding.
   const trySetPin = useCallback((lat: number, lng: number) => {
     const cityCenter = getCityCenter(province, town);
     if (!cityCenter) return false;
@@ -194,8 +194,21 @@ function InteractiveMapPicker({
     
     setBoundsError(null);
     onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+    
+    // Auto-detect neighbourhood via reverse geocoding
+    if (neighborhoods.length > 0) {
+      reverseGeocode(lat, lng).then((nominatimName) => {
+        if (nominatimName) {
+          const match = findBestNeighbourhoodMatch(nominatimName, neighborhoods);
+          if (match) {
+            onNeighbourhoodChange(match);
+          }
+        }
+      });
+    }
+    
     return true;
-  }, [province, town, hasTown, onPinLocationChange]);
+  }, [province, town, hasTown, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
 
   // Load Leaflet dynamically
   useEffect(() => {
