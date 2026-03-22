@@ -82,6 +82,7 @@ const AdminPropertiesPage = () => {
             columns={columns}
             renderCell={renderCell}
             onView={(item) => navigate(`/property/${item.id}`)}
+            initialCompanyFilter={initialCompanyFilter}
           />
         )}
       </div>
