@@ -1801,6 +1801,96 @@ export type Database = {
           },
         ]
       }
+      property_requests: {
+        Row: {
+          additional_requests: string | null
+          area_sqm: string | null
+          area_street: string | null
+          bathrooms: string | null
+          budget: string | null
+          contact_method: string
+          created_at: string
+          district: string | null
+          email: string
+          enquiry_type: string
+          exterior_amenities: string[] | null
+          floor_level: string | null
+          full_name: string
+          furnishing: string | null
+          id: string
+          interior_amenities: string[] | null
+          neighbourhood: string | null
+          parking_space: string | null
+          phone: string
+          property_status: string | null
+          property_type: string | null
+          province: string | null
+          rooms: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          view_orientation: string | null
+        }
+        Insert: {
+          additional_requests?: string | null
+          area_sqm?: string | null
+          area_street?: string | null
+          bathrooms?: string | null
+          budget?: string | null
+          contact_method?: string
+          created_at?: string
+          district?: string | null
+          email: string
+          enquiry_type?: string
+          exterior_amenities?: string[] | null
+          floor_level?: string | null
+          full_name: string
+          furnishing?: string | null
+          id?: string
+          interior_amenities?: string[] | null
+          neighbourhood?: string | null
+          parking_space?: string | null
+          phone: string
+          property_status?: string | null
+          property_type?: string | null
+          province?: string | null
+          rooms?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          view_orientation?: string | null
+        }
+        Update: {
+          additional_requests?: string | null
+          area_sqm?: string | null
+          area_street?: string | null
+          bathrooms?: string | null
+          budget?: string | null
+          contact_method?: string
+          created_at?: string
+          district?: string | null
+          email?: string
+          enquiry_type?: string
+          exterior_amenities?: string[] | null
+          floor_level?: string | null
+          full_name?: string
+          furnishing?: string | null
+          id?: string
+          interior_amenities?: string[] | null
+          neighbourhood?: string | null
+          parking_space?: string | null
+          phone?: string
+          property_status?: string | null
+          property_type?: string | null
+          province?: string | null
+          rooms?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          view_orientation?: string | null
+        }
+        Relationships: []
+      }
       property_types: {
         Row: {
           created_at: string
