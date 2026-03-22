@@ -77,31 +77,33 @@ const HeroSearch = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="flex items-center gap-2 mb-4">
-            <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Enter Search Area, City, Address"
-                className="w-full h-10 px-4 pr-8 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              {keyword && (
-                <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                  <X className="h-4 w-4" />
-                </button>
-              )}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <LocationPicker value={location} onChange={setLocation} compact />
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="Search Area, City, Address"
+                  className="w-full h-10 px-4 pr-8 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                {keyword && (
+                  <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
-            <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
+            <Button className="h-10 px-6 font-semibold shrink-0" onClick={handleSearch}>
               <Search className="h-4 w-4 mr-1.5" />
               Search
             </Button>
           </div>
 
           {/* Filter Row */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
             <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
             <AreaDropdown minArea={minArea} maxArea={maxArea} onChange={(min, max) => { setMinArea(min); setMaxArea(max); }} />

@@ -292,7 +292,7 @@ const Header = () => {
                 )}
               </button>
               {openDropdown === 'notifications' && (
-                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                     <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
                     {unreadCount > 0 && (
@@ -365,7 +365,7 @@ const Header = () => {
                 )}
               </button>
               {openDropdown === 'saved' && (
-                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                     <h3 className="text-sm font-semibold text-foreground">Saved Properties</h3>
                     <span className="text-xs text-muted-foreground">{counts.savedProperties} saved</span>
@@ -444,7 +444,7 @@ const Header = () => {
                 )}
               </button>
               {openDropdown === 'compare' && (
-                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[340px] z-[60] animate-fade-in">
+                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                     <h3 className="text-sm font-semibold text-foreground">Compare List</h3>
                     <span className="text-xs text-muted-foreground">{counts.compare}/3</span>
