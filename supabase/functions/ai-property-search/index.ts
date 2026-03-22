@@ -46,14 +46,14 @@ serve(async (req) => {
 
     if (companyIds.length === 0) {
       return new Response(JSON.stringify({
-        analysis: "No properties are currently included in AI search. Properties from eligible membership plans will appear here.",
+        analysis: "No properties or projects are currently included in AI search. Listings from eligible membership plans will appear here.",
         picks: [],
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Fetch only properties belonging to eligible companies
+    // Fetch properties belonging to eligible companies
     const { data: properties, error: dbError } = await supabase
       .from("properties")
       .select("id, title, price, currency, location, province, town, neighbourhood, property_type, property_purpose, area, area_unit, bedrooms, bathrooms, rooms, images, listing_id, floor_level, furniture, property_age, parking_spaces, rent_duration, interior_amenities, exterior_amenities, property_classification, created_at, description, pin_location, agents(name, avatar_url), companies(name, logo_url)")

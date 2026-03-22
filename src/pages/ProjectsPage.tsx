@@ -633,6 +633,7 @@ const ProjectsPage = () => {
         location={location}
         keyword={keyword}
       />
+      <AiPropertyAgent />
     </div>
   );
 };
