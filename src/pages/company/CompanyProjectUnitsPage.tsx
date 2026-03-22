@@ -32,13 +32,22 @@ interface UnitForm {
   area_unit: string;
   interior_amenities: string[];
   exterior_amenities: string[];
+  advertising_tags: string[];
   images: string[];
 }
+
+const advertisingTagOptions = [
+  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
+  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
+  "Lower Price", "Below Market", "Reduced", "Cash Only",
+  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
+  "Fully Renovated", "Motivated Seller", "Open House",
+];
 
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
-  interior_amenities: [], exterior_amenities: [], images: [],
+  interior_amenities: [], exterior_amenities: [], advertising_tags: [], images: [],
 };
 
 const CompanyProjectUnitsPage = () => {
