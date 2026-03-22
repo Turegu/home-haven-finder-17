@@ -27,7 +27,6 @@ import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import SearchablePillSelect from "@/components/ui/searchable-pill-select";
-import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
@@ -472,9 +471,9 @@ const CompanyProjectEditPage = () => {
       }
 
       // Save payment plans
-      if (unitId && unitForm.payment_plans.length > 0) {
-        for (let pi = 0; pi < unitForm.payment_plans.length; pi++) {
-          const plan = unitForm.payment_plans[pi];
+      if (unitId && paymentPlans.length > 0) {
+        for (let pi = 0; pi < paymentPlans.length; pi++) {
+          const plan = paymentPlans[pi];
           const isExisting = !plan.id.startsWith("local-");
           let planId = plan.id;
 
@@ -492,8 +491,8 @@ const CompanyProjectEditPage = () => {
             planId = newPlan.id;
           }
 
-          if (plan.steps.length > 0) {
-            const stepsPayload = plan.steps.map((s, si) => ({
+          if ((plan.steps ?? []).length > 0) {
+            const stepsPayload = (plan.steps ?? []).map((s, si) => ({
               plan_id: planId, percentage: s.percentage, title: s.title,
               subtitle: s.subtitle || null, sort_order: si,
             }));
@@ -505,7 +504,7 @@ const CompanyProjectEditPage = () => {
       // Delete plans that were removed (for editing)
       if (editingUnitId) {
         const { data: dbPlans } = await supabase.from("unit_payment_plans").select("id").eq("unit_id", editingUnitId);
-        const keptIds = unitForm.payment_plans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
+        const keptIds = paymentPlans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
         const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
         for (const d of toDelete) {
           await supabase.from("unit_payment_plan_steps").delete().eq("plan_id", d.id);
@@ -602,6 +601,8 @@ const CompanyProjectEditPage = () => {
     updateField("description", newText);
     setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
   };
+
+  const paymentPlans = unitForm.payment_plans ?? [];
 
   return (
     <CompanyLayout>
@@ -1147,9 +1148,9 @@ const CompanyProjectEditPage = () => {
                     onClick={() => {
                       setUnitForm(prev => ({
                         ...prev,
-                        payment_plans: [...prev.payment_plans, {
+                        payment_plans: [...(prev.payment_plans ?? []), {
                           id: `local-${Date.now()}`,
-                          plan_name: `Option ${prev.payment_plans.length + 1}`,
+                          plan_name: `Option ${(prev.payment_plans ?? []).length + 1}`,
                           is_active: true,
                           steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
                         }],
@@ -1160,17 +1161,17 @@ const CompanyProjectEditPage = () => {
                   </Button>
                 </div>
 
-                {unitForm.payment_plans.length === 0 && (
+                {paymentPlans.length === 0 && (
                   <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options.</p>
                 )}
 
-                {unitForm.payment_plans.map((plan, planIdx) => (
+                {paymentPlans.map((plan, planIdx) => (
                   <div key={plan.id} className="border border-border rounded-lg bg-muted/20 p-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <Input
                         value={plan.plan_name}
                         onChange={(e) => {
-                          const updated = [...unitForm.payment_plans];
+                          const updated = [...(unitForm.payment_plans ?? [])];
                           updated[planIdx] = { ...updated[planIdx], plan_name: e.target.value };
                           setUnitForm(prev => ({ ...prev, payment_plans: updated }));
                         }}
@@ -1181,7 +1182,7 @@ const CompanyProjectEditPage = () => {
                           type="checkbox"
                           checked={plan.is_active}
                           onChange={() => {
-                            const updated = [...unitForm.payment_plans];
+                            const updated = [...(unitForm.payment_plans ?? [])];
                             updated[planIdx] = { ...updated[planIdx], is_active: !plan.is_active };
                             setUnitForm(prev => ({ ...prev, payment_plans: updated }));
                           }}
@@ -1191,19 +1192,19 @@ const CompanyProjectEditPage = () => {
                       </label>
                       <Button
                         type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
-                        onClick={() => setUnitForm(prev => ({ ...prev, payment_plans: prev.payment_plans.filter((_, i) => i !== planIdx) }))}
+                        onClick={() => setUnitForm(prev => ({ ...prev, payment_plans: (prev.payment_plans ?? []).filter((_, i) => i !== planIdx) }))}
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
 
-                    {plan.steps.map((step, stepIdx) => (
+                    {(plan.steps ?? []).map((step, stepIdx) => (
                       <div key={step.id} className="flex items-center gap-1.5">
                         <Input
                           type="number" placeholder="%" value={step.percentage || ""}
                           onChange={(e) => {
-                            const updated = [...unitForm.payment_plans];
-                            const steps = [...updated[planIdx].steps];
+                            const updated = [...(unitForm.payment_plans ?? [])];
+                            const steps = [...(updated[planIdx].steps ?? [])];
                             steps[stepIdx] = { ...steps[stepIdx], percentage: parseFloat(e.target.value) || 0 };
                             updated[planIdx] = { ...updated[planIdx], steps };
                             setUnitForm(prev => ({ ...prev, payment_plans: updated }));
@@ -1213,8 +1214,8 @@ const CompanyProjectEditPage = () => {
                         <Input
                           placeholder="e.g. Down payment" value={step.title}
                           onChange={(e) => {
-                            const updated = [...unitForm.payment_plans];
-                            const steps = [...updated[planIdx].steps];
+                            const updated = [...(unitForm.payment_plans ?? [])];
+                            const steps = [...(updated[planIdx].steps ?? [])];
                             steps[stepIdx] = { ...steps[stepIdx], title: e.target.value };
                             updated[planIdx] = { ...updated[planIdx], steps };
                             setUnitForm(prev => ({ ...prev, payment_plans: updated }));
@@ -1224,8 +1225,8 @@ const CompanyProjectEditPage = () => {
                         <Input
                           placeholder="e.g. At signing" value={step.subtitle}
                           onChange={(e) => {
-                            const updated = [...unitForm.payment_plans];
-                            const steps = [...updated[planIdx].steps];
+                            const updated = [...(unitForm.payment_plans ?? [])];
+                            const steps = [...(updated[planIdx].steps ?? [])];
                             steps[stepIdx] = { ...steps[stepIdx], subtitle: e.target.value };
                             updated[planIdx] = { ...updated[planIdx], steps };
                             setUnitForm(prev => ({ ...prev, payment_plans: updated }));
@@ -1235,8 +1236,8 @@ const CompanyProjectEditPage = () => {
                         <Button
                           type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0"
                           onClick={() => {
-                            const updated = [...unitForm.payment_plans];
-                            updated[planIdx] = { ...updated[planIdx], steps: updated[planIdx].steps.filter((_, i) => i !== stepIdx) };
+                            const updated = [...(unitForm.payment_plans ?? [])];
+                            updated[planIdx] = { ...updated[planIdx], steps: (updated[planIdx].steps ?? []).filter((_, i) => i !== stepIdx) };
                             setUnitForm(prev => ({ ...prev, payment_plans: updated }));
                           }}
                         >
@@ -1248,10 +1249,10 @@ const CompanyProjectEditPage = () => {
                     <Button
                       type="button" variant="ghost" size="sm" className="h-6 text-xs"
                       onClick={() => {
-                        const updated = [...unitForm.payment_plans];
+                        const updated = [...(unitForm.payment_plans ?? [])];
                         updated[planIdx] = {
                           ...updated[planIdx],
-                          steps: [...updated[planIdx].steps, { id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                          steps: [...(updated[planIdx].steps ?? []), { id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
                         };
                         setUnitForm(prev => ({ ...prev, payment_plans: updated }));
                       }}
