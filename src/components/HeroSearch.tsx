@@ -79,7 +79,7 @@ const HeroSearch = () => {
           {/* Search Bar */}
           <div className="flex items-center gap-2 mb-4">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 max-w-[220px]">
+            <div className="relative flex-1">
               <input
                 type="text"
                 value={keyword}
@@ -94,10 +94,6 @@ const HeroSearch = () => {
                 </button>
               )}
             </div>
-            <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
-              <Search className="h-4 w-4 mr-1.5" />
-              Search
-            </Button>
           </div>
 
           {/* Filter Row */}
@@ -128,6 +124,11 @@ const HeroSearch = () => {
                 setMoreFilters(emptyMoreFilters);
               }}
             />
+            <div className="flex-1" />
+            <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
+              <Search className="h-4 w-4 mr-1.5" />
+              Search
+            </Button>
           </div>
         </div>
       </div>
