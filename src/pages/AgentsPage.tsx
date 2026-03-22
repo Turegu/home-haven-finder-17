@@ -140,13 +140,14 @@ const AgentsPage = () => {
     if (selectedProvince && c.province !== selectedProvince) return false;
     if (selectedTown && c.town !== selectedTown) return false;
     return true;
-  });
+  }).sort((a, b) => tierOrder(a.profile_classification) - tierOrder(b.profile_classification));
+
   const filteredAgents = agents.filter(a => {
     if (searchQuery && !turkishIncludes(a.name, searchQuery)) return false;
     if (selectedProvince && !a.service_areas?.some(area => turkishIncludes(area, selectedProvince))) return false;
     if (selectedTown && !a.service_areas?.some(area => turkishIncludes(area, selectedTown))) return false;
     return true;
-  });
+  }).sort((a, b) => tierOrder(a.profile_classification) - tierOrder(b.profile_classification));
 
   const typeLabel = (t: string | null) => {
     if (!t) return 'Real Estate Company';
