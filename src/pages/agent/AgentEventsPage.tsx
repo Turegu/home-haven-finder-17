@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Input } from "@/components/ui/input";
@@ -58,7 +59,7 @@ const AgentEventsPage = () => {
   }), [events]);
 
   const filtered = useMemo(() => events.filter((e) => {
-    if (search && !e.title?.toLowerCase().includes(search.toLowerCase()) && !e.listing_id?.includes(search)) return false;
+    if (search && !turkishIncludes(e.title || '', search) && !e.listing_id?.includes(search)) return false;
     if (filterType !== "all" && e.event_type !== filterType) return false;
     if (filterEntry !== "all" && e.entry_type !== filterEntry) return false;
     if (filterStatus !== "all" && e.status !== filterStatus) return false;

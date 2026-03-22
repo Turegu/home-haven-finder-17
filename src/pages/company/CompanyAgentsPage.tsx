@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
@@ -78,7 +79,7 @@ const CompanyAgentsPage = () => {
   useEffect(() => { if (companyId) fetchAgents(); }, [companyId, sortOrder]);
 
   const filtered = agents.filter(
-    (a) => a.name.toLowerCase().includes(search.toLowerCase()) || a.email.toLowerCase().includes(search.toLowerCase())
+    (a) => turkishIncludes(a.name, search) || turkishIncludes(a.email, search)
   );
 
   const handleDelete = async (agentId: string) => {

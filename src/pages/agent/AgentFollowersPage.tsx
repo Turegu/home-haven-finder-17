@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { turkishIncludes } from "@/lib/utils";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -73,7 +74,7 @@ const AgentFollowersPage = () => {
   };
 
   const sorted = [...followers].sort((a, b) => sortOrder === "newest" ? new Date(b.created_at).getTime() - new Date(a.created_at).getTime() : new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-  const filtered = sorted.filter((f) => (f.profile?.display_name || "").toLowerCase().includes(search.toLowerCase()));
+  const filtered = sorted.filter((f) => turkishIncludes(f.profile?.display_name || "", search));
 
   return (
     <AgentLayout>

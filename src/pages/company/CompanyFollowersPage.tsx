@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { turkishIncludes } from "@/lib/utils";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -179,7 +180,7 @@ const CompanyFollowersPage = () => {
 
   const filtered = sorted.filter((f) => {
     const name = f.profile?.display_name || "";
-    return name.toLowerCase().includes(search.toLowerCase());
+    return turkishIncludes(name, search);
   });
 
   return (

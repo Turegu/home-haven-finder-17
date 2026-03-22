@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
+import { turkishIncludes } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,7 +18,7 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
   const [search, setSearch] = useState("");
 
   const filtered = search
-    ? roomOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    ? roomOptions.filter(o => turkishIncludes(o, search))
     : roomOptions;
 
   function toggle(opt: string) {

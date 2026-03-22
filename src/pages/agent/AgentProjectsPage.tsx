@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Input } from "@/components/ui/input";
@@ -58,7 +59,7 @@ const AgentProjectsPage = () => {
   }), [projects]);
 
   const filtered = useMemo(() => projects.filter((p) => {
-    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+    if (search && !turkishIncludes(p.title, search) && !p.listing_id.includes(search)) return false;
     if (filterType !== "all" && p.project_type !== filterType) return false;
     if (filterProjectStatus !== "all" && p.project_status !== filterProjectStatus) return false;
     if (filterStatus !== "all" && p.status !== filterStatus) return false;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -81,7 +82,7 @@ const AdminFaqsPage = () => {
   };
 
   const filtered = faqs.filter(f =>
-    (f.question || "").toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(f.question || "", search)
   );
 
   return (

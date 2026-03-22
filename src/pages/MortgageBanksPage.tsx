@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { turkishIncludes } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
@@ -51,7 +52,7 @@ const MortgageBanksPage = () => {
   }, []);
 
   const filtered = banks.filter((b) =>
-    b.name.toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(b.name, search)
   );
 
   const selectedBank = banks.find((b) => b.id === selectedBankId) || null;

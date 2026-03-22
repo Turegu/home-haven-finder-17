@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,7 +176,7 @@ const AdminBannersPage = () => {
   };
 
   const filtered = banners.filter(
-    (b) => b.name.toLowerCase().includes(search.toLowerCase())
+    (b) => turkishIncludes(b.name, search)
   );
 
   return (

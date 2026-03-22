@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { turkishIncludes } from "@/lib/utils";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,7 +53,7 @@ function MultiSelectLanguages({
   selected, onToggle
 }: { selected: string[]; onToggle: (lang: string) => void }) {
   const [search, setSearch] = useState("");
-  const filtered = search ? languageOptions.filter(l => l.toLowerCase().includes(search.toLowerCase())) : languageOptions;
+  const filtered = search ? languageOptions.filter(l => turkishIncludes(l, search)) : languageOptions;
 
   return (
     <div className="space-y-2">

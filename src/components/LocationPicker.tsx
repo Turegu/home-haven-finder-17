@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { turkishIncludes } from "@/lib/utils";
 import { MapPin, ChevronDown, X, Check, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -86,12 +87,6 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 
   const dn = (item: NamePair) => isRtl && item.ar ? item.ar : item.name;
 
-  // Normalize for accent/Turkish-insensitive search
-  const normalize = (s: string) =>
-    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-      .replace(/ı/g, "i").replace(/İ/gi, "i").replace(/ş/g, "s").replace(/ç/g, "c")
-      .replace(/ğ/g, "g").replace(/ö/g, "o").replace(/ü/g, "u");
-
   const summaryText = () => {
     const parts: string[] = [];
     if (value.province) {
@@ -155,10 +150,9 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   const current = stepConfig[step];
 
   const filtered = filter
-    ? current.items.filter(i => {
-        const nf = normalize(filter);
-        return normalize(i.name).includes(nf) || i.ar.includes(filter);
-      })
+    ? current.items.filter(i =>
+        turkishIncludes(i.name, filter) || i.ar.includes(filter)
+      )
     : current.items;
 
   // Breadcrumb navigation

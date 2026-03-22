@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { turkishIncludes } from "@/lib/utils";
 
 interface SearchablePillSelectProps {
   options: string[];
@@ -18,7 +19,7 @@ const SearchablePillSelect = ({
   const [search, setSearch] = useState("");
 
   const filtered = search
-    ? options.filter((o) => o.toLowerCase().includes(search.toLowerCase()))
+    ? options.filter((o) => turkishIncludes(o, search))
     : options;
 
   return (

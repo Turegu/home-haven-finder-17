@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { turkishIncludes } from '@/lib/utils';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
@@ -306,10 +307,10 @@ const ProjectsPage = () => {
                       onWheel={(e) => { const el = e.currentTarget; if (el.scrollHeight <= el.clientHeight) return; e.stopPropagation(); }}
                     >
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {intAmenityOptions.filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).length === 0 && (
+                        {intAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).length === 0 && (
                           <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
                         )}
-                        {intAmenityOptions.filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).map((opt) => {
+                        {intAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).map((opt) => {
                           const IconComp = getIcon(opt, 'interior');
                           const isChecked = interiorAmenities.includes(opt);
                           return (
@@ -340,10 +341,10 @@ const ProjectsPage = () => {
                       onWheel={(e) => { const el = e.currentTarget; if (el.scrollHeight <= el.clientHeight) return; e.stopPropagation(); }}
                     >
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {extAmenityOptions.filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).length === 0 && (
+                        {extAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).length === 0 && (
                           <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
                         )}
-                        {extAmenityOptions.filter(o => o.toLowerCase().includes(amenitySearch.toLowerCase())).map((opt) => {
+                        {extAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).map((opt) => {
                           const IconComp = getIcon(opt, 'exterior');
                           const isChecked = exteriorAmenities.includes(opt);
                           return (

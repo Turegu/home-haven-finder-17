@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -56,8 +57,8 @@ const AdminCompaniesPage = () => {
   useEffect(() => { fetchCompanies(); }, [sortOrder]);
 
   const filteredCompanies = companies.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.email.toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(c.name, search) ||
+    turkishIncludes(c.email, search)
   );
 
   const toggleSelect = (id: string) => {

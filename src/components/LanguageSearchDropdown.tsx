@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, Globe } from 'lucide-react';
+import { turkishIncludes } from '@/lib/utils';
 import {
   Popover, PopoverContent, PopoverTrigger,
 } from '@/components/ui/popover';
@@ -49,7 +50,7 @@ export default function LanguageSearchDropdown({
   const restLanguages = allLanguages.filter((l) => !prioritySet.has(l));
 
   const filterFn = (lang: string) =>
-    !search || lang.toLowerCase().includes(search.toLowerCase());
+    !search || turkishIncludes(lang, search);
 
   const filteredPriority = PRIORITY_LANGUAGES.filter(filterFn);
   const filteredRest = restLanguages.filter(filterFn);

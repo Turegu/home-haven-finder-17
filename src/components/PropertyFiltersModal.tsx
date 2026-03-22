@@ -4,6 +4,7 @@ import {
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
   Home, BedDouble, Bath, DollarSign, Ruler, Clock,
 } from 'lucide-react';
+import { turkishIncludes } from '@/lib/utils';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -214,7 +215,7 @@ export default function PropertyFiltersModal({
   const currentTab = visibleTabs.find(t => t.key === activeTab) ?? visibleTabs[0];
   const rawOptions = allOptions[currentTab.optionKey] || [];
   const filteredOptions = search
-    ? rawOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    ? rawOptions.filter(o => turkishIncludes(o, search))
     : rawOptions;
 
   function renderTabButton(tab: FilterTab) {
