@@ -1,14 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowDownRight, ArrowUpRight, ArrowLeft, CreditCard, Phone
+  ArrowDownRight, ArrowUpRight, ArrowLeft, CreditCard, Phone, Filter
 } from "lucide-react";
 import { format, startOfMonth, startOfYear } from "date-fns";
 import { useSalesContact } from "@/hooks/useSalesContact";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface CreditTransaction {
   id: string;
@@ -19,6 +26,11 @@ interface CreditTransaction {
   created_at: string;
 }
 
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
 const CompanyCreditHistoryPage = () => {
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [balance, setBalance] = useState(0);
@@ -27,6 +39,8 @@ const CompanyCreditHistoryPage = () => {
   const [thisMonthSpent, setThisMonthSpent] = useState(0);
   const [thisYearSpent, setThisYearSpent] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [filterMonth, setFilterMonth] = useState<string>("all");
+  const [filterYear, setFilterYear] = useState<string>("all");
   const { openSalesWhatsApp } = useSalesContact();
 
   useEffect(() => {
@@ -81,7 +95,25 @@ const CompanyCreditHistoryPage = () => {
     load();
   }, []);
 
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    for (const tx of transactions) {
+      years.add(new Date(tx.created_at).getFullYear());
+    }
+    return Array.from(years).sort((a, b) => b - a);
+  }, [transactions]);
+
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      const d = new Date(tx.created_at);
+      if (filterYear !== "all" && d.getFullYear() !== Number(filterYear)) return false;
+      if (filterMonth !== "all" && d.getMonth() !== Number(filterMonth)) return false;
+      return true;
+    });
+  }, [transactions, filterMonth, filterYear]);
+
   const creditBarPercent = totalTopups > 0 ? Math.round((balance / totalTopups) * 100) : 0;
+  const hasActiveFilter = filterMonth !== "all" || filterYear !== "all";
 
   if (loading) {
     return (
@@ -145,10 +177,42 @@ const CompanyCreditHistoryPage = () => {
 
       {/* Transactions list */}
       <div className="bg-card rounded-xl border border-border p-5">
-        <h2 className="text-sm font-semibold text-foreground mb-4">All Transactions</h2>
-        {transactions.length > 0 ? (
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-foreground">All Transactions</h2>
+          <div className="flex items-center gap-2">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+            <Select value={filterMonth} onValueChange={setFilterMonth}>
+              <SelectTrigger className="h-8 w-[120px] text-xs">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="text-xs">All Months</SelectItem>
+                {MONTHS.map((m, i) => (
+                  <SelectItem key={i} value={String(i)} className="text-xs">{m}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={filterYear} onValueChange={setFilterYear}>
+              <SelectTrigger className="h-8 w-[90px] text-xs">
+                <SelectValue placeholder="Year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="text-xs">All Years</SelectItem>
+                {availableYears.map((y) => (
+                  <SelectItem key={y} value={String(y)} className="text-xs">{y}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {hasActiveFilter && (
+              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-muted-foreground" onClick={() => { setFilterMonth("all"); setFilterYear("all"); }}>
+                Clear
+              </Button>
+            )}
+          </div>
+        </div>
+        {filteredTransactions.length > 0 ? (
           <div className="space-y-1.5">
-            {transactions.map((tx) => (
+            {filteredTransactions.map((tx) => (
               <div key={tx.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-muted/40 text-sm">
                 <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${tx.amount > 0 ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"}`}>
                   {tx.amount > 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
@@ -171,7 +235,9 @@ const CompanyCreditHistoryPage = () => {
         ) : (
           <div className="text-center py-10">
             <CreditCard className="h-10 w-10 text-muted-foreground/20 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">No credit transactions yet</p>
+            <p className="text-sm text-muted-foreground">
+              {hasActiveFilter ? "No transactions found for the selected period" : "No credit transactions yet"}
+            </p>
           </div>
         )}
       </div>
