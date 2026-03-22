@@ -401,8 +401,31 @@ const CompanyProjectEditPage = () => {
     setUnitDialogOpen(true);
   };
 
-  const openEditUnit = (unit: any) => {
+  const openEditUnit = async (unit: any) => {
     setEditingUnitId(unit.id);
+    // Fetch existing payment plans for this unit
+    let existingPlans: LocalPaymentPlan[] = [];
+    const { data: plansData } = await supabase
+      .from("unit_payment_plans")
+      .select("*")
+      .eq("unit_id", unit.id)
+      .order("sort_order");
+    if (plansData && plansData.length > 0) {
+      const planIds = plansData.map((p: any) => p.id);
+      const { data: stepsData } = await supabase
+        .from("unit_payment_plan_steps")
+        .select("*")
+        .in("plan_id", planIds)
+        .order("sort_order");
+      existingPlans = plansData.map((p: any) => ({
+        id: p.id,
+        plan_name: p.plan_name,
+        is_active: p.is_active,
+        steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+          id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
+        })),
+      }));
+    }
     setUnitForm({
       unit_name: unit.unit_name || "", unit_type: unit.unit_type || "apartment",
       rooms: unit.rooms || "", bathrooms: unit.bathrooms?.toString() || "",
@@ -414,6 +437,7 @@ const CompanyProjectEditPage = () => {
       advertising_tags: (unit as any).advertising_tags || [],
       images: unit.images || [],
       status: unit.status || "available",
+      payment_plans: existingPlans,
     });
     setUnitDialogOpen(true);
   };
