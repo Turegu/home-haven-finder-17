@@ -165,57 +165,69 @@ const UpgradeMembershipDialog = ({
             </Select>
           </div>
 
-          {/* Test Mode Toggle */}
-          <div className="flex items-center justify-between rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-3">
-            <div className="flex items-center gap-2">
-              <FlaskConical className="h-4 w-4 text-orange-500" />
-              <Label htmlFor="test-mode" className="text-sm font-medium text-orange-700 dark:text-orange-400">
-                Test Mode (Minutes)
-              </Label>
-            </div>
-            <Switch
-              id="test-mode"
-              checked={testMode}
-              onCheckedChange={setTestMode}
-            />
-          </div>
+          {!isToBasic && (
+            <>
+              {/* Test Mode Toggle */}
+              <div className="flex items-center justify-between rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-3">
+                <div className="flex items-center gap-2">
+                  <FlaskConical className="h-4 w-4 text-orange-500" />
+                  <Label htmlFor="test-mode" className="text-sm font-medium text-orange-700 dark:text-orange-400">
+                    Test Mode (Minutes)
+                  </Label>
+                </div>
+                <Switch
+                  id="test-mode"
+                  checked={testMode}
+                  onCheckedChange={setTestMode}
+                />
+              </div>
 
-          {testMode ? (
-            <div>
-              <label className="text-sm font-medium text-orange-600 mb-1 block">Duration in Minutes</label>
-              <Input
-                type="number"
-                min={1}
-                max={1440}
-                value={testMinutes}
-                onChange={(e) => setTestMinutes(Number(e.target.value))}
-                className="border-orange-300"
-                placeholder="Enter minutes"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Expires at: {format(addMinutes(new Date(), testMinutes), "hh:mm a, dd MMM yyyy")}
-              </p>
-            </div>
-          ) : (
-            <div>
-              <label className="text-sm font-medium text-primary mb-1 block">Duration</label>
-              <Select value={selectedDuration} onValueChange={setSelectedDuration}>
-                <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
-                <SelectContent>
-                  {DURATIONS.map(d => (
-                    <SelectItem key={d.key} value={d.key}>{d.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              {testMode ? (
+                <div>
+                  <label className="text-sm font-medium text-orange-600 mb-1 block">Duration in Minutes</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={1440}
+                    value={testMinutes}
+                    onChange={(e) => setTestMinutes(Number(e.target.value))}
+                    className="border-orange-300"
+                    placeholder="Enter minutes"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Expires at: {format(addMinutes(new Date(), testMinutes), "hh:mm a, dd MMM yyyy")}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <label className="text-sm font-medium text-primary mb-1 block">Duration</label>
+                  <Select value={selectedDuration} onValueChange={setSelectedDuration}>
+                    <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
+                    <SelectContent>
+                      {DURATIONS.map(d => (
+                        <SelectItem key={d.key} value={d.key}>{d.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {price !== null && (
+                <div className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3">
+                  <span className="text-muted-foreground">Package Price</span>
+                  <span className="font-bold text-foreground">
+                    {testMode ? "Free (Test)" : `$${price}`}
+                  </span>
+                </div>
+              )}
+            </>
           )}
 
-          {price !== null && (
-            <div className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3">
-              <span className="text-muted-foreground">Package Price</span>
-              <span className="font-bold text-foreground">
-                {testMode ? "Free (Test)" : `$${price}`}
-              </span>
+          {isToBasic && (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+              <p className="text-sm text-destructive font-medium">
+                ⚠️ Downgrading to Basic will remove the expiry date. Active listings may be deactivated if they exceed Basic limits.
+              </p>
             </div>
           )}
         </div>
