@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
+  Wallet, HardHat, KeyRound, Banknote, CalendarCheck,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
@@ -41,6 +42,17 @@ const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; l
     </div>
   </div>
 );
+
+const getPaymentStepIcon = (title: string, index: number) => {
+  const t = title.toLowerCase();
+  if (t.includes('down') || t.includes('booking') || t.includes('deposit')) return Wallet;
+  if (t.includes('construct') || t.includes('during') || t.includes('progress')) return HardHat;
+  if (t.includes('handover') || t.includes('delivery') || t.includes('key')) return KeyRound;
+  if (t.includes('completion') || t.includes('complete') || t.includes('finish')) return CalendarCheck;
+  if (t.includes('post') || t.includes('installment') || t.includes('monthly')) return Banknote;
+  const fallbacks = [Wallet, HardHat, CalendarCheck, KeyRound, Banknote];
+  return fallbacks[index % fallbacks.length];
+};
 
 const emptyPropertyState = {
   ...mockPropertyDetail,
@@ -445,6 +457,7 @@ const PropertyDetailPage = () => {
       </div>
 
 
+
       {/* Lightbox */}
       {lightboxOpen && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
@@ -617,20 +630,26 @@ const PropertyDetailPage = () => {
                       <h3 className="text-sm font-semibold text-foreground mb-2">{plan.plan_name}</h3>
                     )}
                     <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
-                      {plan.steps.map((step, idx) => (
-                        <div key={step.id} className="flex items-stretch flex-shrink-0">
-                          <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center">
-                            <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
-                            <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
-                            {step.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>}
-                          </div>
-                          {idx < plan.steps.length - 1 && (
-                            <div className="flex items-center px-1.5">
-                              <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+                      {plan.steps.map((step, idx) => {
+                        const StepIcon = getPaymentStepIcon(step.title, idx);
+                        return (
+                          <div key={step.id} className="flex items-stretch flex-shrink-0">
+                            <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center flex flex-col items-center">
+                              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                                <StepIcon className="h-4.5 w-4.5 text-primary" />
+                              </div>
+                              <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
+                              <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
+                              {step.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>}
                             </div>
-                          )}
-                        </div>
-                      ))}
+                            {idx < plan.steps.length - 1 && (
+                              <div className="flex items-center px-1.5">
+                                <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
