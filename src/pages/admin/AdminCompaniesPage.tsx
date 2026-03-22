@@ -225,6 +225,15 @@ const AdminCompaniesPage = () => {
                           <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}/agents`)}>
                             <Users className="h-4 w-4 mr-2" /> View Agents
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/properties?company=${encodeURIComponent(company.name)}`)}>
+                            <Home className="h-4 w-4 mr-2" /> View Properties
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/projects?company=${encodeURIComponent(company.name)}`)}>
+                            <FolderKanban className="h-4 w-4 mr-2" /> View Projects
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/admin/events?company=${encodeURIComponent(company.name)}`)}>
+                            <CalendarDays className="h-4 w-4 mr-2" /> View Events
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
