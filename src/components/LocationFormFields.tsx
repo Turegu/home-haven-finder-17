@@ -107,9 +107,13 @@ function InteractiveMapPicker({
 }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const circleRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mapReady, setMapReady] = useState(false);
   const [L, setL] = useState<any>(null);
+  const [boundsError, setBoundsError] = useState<string | null>(null);
+
+  const hasTown = Boolean(town);
 
   // Parse existing pin_location "lat,lng" string
   const parsedCoords = useMemo(() => {
@@ -121,7 +125,6 @@ function InteractiveMapPicker({
     return null;
   }, [pinLocation]);
 
-  // Create a reliable custom marker icon using divIcon (avoids broken default icon)
   const createPinIcon = useCallback((leaflet: any) => {
     return leaflet.divIcon({
       className: "",
@@ -132,6 +135,23 @@ function InteractiveMapPicker({
       iconAnchor: [16, 32],
     });
   }, []);
+
+  // Validate and set pin, returns true if valid
+  const trySetPin = useCallback((lat: number, lng: number) => {
+    const cityCenter = getCityCenter(province, town);
+    if (!cityCenter) return false;
+    
+    if (!isWithinBounds(lat, lng, cityCenter, hasTown)) {
+      const areaName = town || province;
+      setBoundsError(`Pin must be placed within ${areaName} boundaries.`);
+      setTimeout(() => setBoundsError(null), 3000);
+      return false;
+    }
+    
+    setBoundsError(null);
+    onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+    return true;
+  }, [province, town, hasTown, onPinLocationChange]);
 
   // Load Leaflet dynamically
   useEffect(() => {
@@ -144,7 +164,6 @@ function InteractiveMapPicker({
   useEffect(() => {
     if (!L || !containerRef.current || mapRef.current) return;
 
-    // Determine initial center
     const cityCenter = getCityCenter(province, town);
     const initial = parsedCoords
       ? [parsedCoords.lat, parsedCoords.lng] as [number, number]
@@ -163,19 +182,37 @@ function InteractiveMapPicker({
       maxZoom: 19,
     }).addTo(map);
 
+    // Draw boundary circle
+    if (cityCenter) {
+      const radiusKm = hasTown ? CITY_RADIUS_DEG * 111 : PROVINCE_RADIUS_DEG * 111;
+      circleRef.current = L.circle(cityCenter, {
+        radius: radiusKm * 1000,
+        color: '#0d9488',
+        fillColor: '#0d9488',
+        fillOpacity: 0.05,
+        weight: 1,
+        dashArray: '5, 5',
+      }).addTo(map);
+    }
+
     // Add marker if we have coords
     if (parsedCoords) {
       markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
-        onPinLocationChange(`${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`);
+        if (!trySetPin(pos.lat, pos.lng)) {
+          // Revert marker to previous position
+          if (parsedCoords) {
+            markerRef.current.setLatLng([parsedCoords.lat, parsedCoords.lng]);
+          }
+        }
       });
     }
 
-    // Click to place/move pin
+    // Click to place/move pin — enforce bounds
     map.on("click", (e: any) => {
       const { lat, lng } = e.latlng;
-      onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+      if (!trySetPin(lat, lng)) return;
 
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
@@ -183,7 +220,9 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([lat, lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
         markerRef.current.on("dragend", () => {
           const pos = markerRef.current.getLatLng();
-          onPinLocationChange(`${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`);
+          if (!trySetPin(pos.lat, pos.lng)) {
+            markerRef.current.setLatLng([lat, lng]);
+          }
         });
       }
     });
@@ -195,15 +234,39 @@ function InteractiveMapPicker({
       map.remove();
       mapRef.current = null;
       markerRef.current = null;
+      circleRef.current = null;
     };
-  }, [L]); // Only init once when L loads
+  }, [L]);
 
-  // Update map center when province/town changes — always re-center
+  // Update map center + boundary when province/town changes
   useEffect(() => {
     if (!mapRef.current || !L) return;
     const cityCenter = getCityCenter(province, town);
     if (cityCenter) {
       mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
+      
+      // Update boundary circle
+      if (circleRef.current) {
+        mapRef.current.removeLayer(circleRef.current);
+      }
+      const radiusKm = hasTown ? CITY_RADIUS_DEG * 111 : PROVINCE_RADIUS_DEG * 111;
+      circleRef.current = L.circle(cityCenter, {
+        radius: radiusKm * 1000,
+        color: '#0d9488',
+        fillColor: '#0d9488',
+        fillOpacity: 0.05,
+        weight: 1,
+        dashArray: '5, 5',
+      }).addTo(mapRef.current);
+    }
+    
+    // Clear pin if it's now outside bounds
+    if (parsedCoords && cityCenter && !isWithinBounds(parsedCoords.lat, parsedCoords.lng, cityCenter, hasTown)) {
+      onPinLocationChange("");
+      if (markerRef.current) {
+        mapRef.current.removeLayer(markerRef.current);
+        markerRef.current = null;
+      }
     }
   }, [province, town, L]);
 
@@ -223,7 +286,8 @@ function InteractiveMapPicker({
     if (!navigator.geolocation || !mapRef.current) return;
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
-      onPinLocationChange(`${latitude.toFixed(6)},${longitude.toFixed(6)}`);
+      if (!trySetPin(latitude, longitude)) return;
+      
       mapRef.current.setView([latitude, longitude], 15);
       if (markerRef.current) {
         markerRef.current.setLatLng([latitude, longitude]);
@@ -231,44 +295,31 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([latitude, longitude], { draggable: true, icon: createPinIcon(L) }).addTo(mapRef.current);
         markerRef.current.on("dragend", () => {
           const p = markerRef.current.getLatLng();
-          onPinLocationChange(`${p.lat.toFixed(6)},${p.lng.toFixed(6)}`);
+          if (!trySetPin(p.lat, p.lng)) {
+            markerRef.current.setLatLng([latitude, longitude]);
+          }
         });
       }
     });
   };
 
-  // Check if pin is far from selected area
-  const pinWarning = useMemo(() => {
-    if (!parsedCoords || !province) return null;
-    const cityCenter = getCityCenter(province, town);
-    if (!cityCenter) return null;
-    const dist = Math.sqrt(
-      Math.pow(parsedCoords.lat - cityCenter[0], 2) + Math.pow(parsedCoords.lng - cityCenter[1], 2)
-    );
-    // ~0.5 degree ≈ 50km threshold
-    if (dist > 0.5) {
-      return `Pin location appears to be far from ${town || province}. Please verify.`;
-    }
-    return null;
-  }, [parsedCoords, province, town]);
-
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <MapPin className="h-3 w-3" /> Click on the map to place your listing pin
+          <MapPin className="h-3 w-3" /> Click on the map to place your listing pin within {town || province}
         </p>
         <Button type="button" variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleLocateMe}>
           <Navigation className="h-3 w-3" /> My Location
         </Button>
       </div>
       <div ref={containerRef} className="h-[280px] rounded-lg border border-border overflow-hidden z-0" />
-      {pinWarning && (
-        <p className="text-xs text-destructive flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" /> {pinWarning}
+      {boundsError && (
+        <p className="text-xs text-destructive flex items-center gap-1 animate-in fade-in">
+          <AlertTriangle className="h-3 w-3" /> {boundsError}
         </p>
       )}
-      {pinLocation && parsedCoords && !pinWarning && (
+      {pinLocation && parsedCoords && !boundsError && (
         <p className="text-xs text-muted-foreground">
           📍 {parsedCoords.lat.toFixed(6)}, {parsedCoords.lng.toFixed(6)}
         </p>
