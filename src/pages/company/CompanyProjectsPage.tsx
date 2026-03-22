@@ -30,6 +30,7 @@ interface Project {
   location: string | null;
   status: string;
   created_at: string;
+  agent_name: string | null;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -64,11 +65,11 @@ const CompanyProjectsPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("projects")
-      .select("id, listing_id, title, project_type, project_status, location, status, created_at")
+      .select("id, listing_id, title, project_type, project_status, location, status, created_at, agent_id, agents(name)")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
     if (error) toast.error("Failed to fetch projects");
-    else setProjects(data || []);
+    else setProjects((data || []).map((p: any) => ({ ...p, agent_name: p.agents?.name || null })));
     setLoading(false);
   };
 
@@ -246,6 +247,7 @@ const CompanyProjectsPage = () => {
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Project Status</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Assigned Agent</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
@@ -253,9 +255,9 @@ const CompanyProjectsPage = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : paginated.length === 0 ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No projects found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">No projects found.</TableCell></TableRow>
               ) : (
                 paginated.map((proj) => (
                   <TableRow key={proj.id} className="hover:bg-muted/30">
@@ -267,6 +269,7 @@ const CompanyProjectsPage = () => {
                       <Badge variant="secondary" className="bg-blue-100 text-blue-800">{formatType(proj.project_status)}</Badge>
                     </TableCell>
                     <TableCell className="font-medium text-foreground max-w-[200px] truncate">{proj.title}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{proj.agent_name || "—"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{proj.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(proj.status)} variant="secondary">

@@ -30,6 +30,7 @@ interface EventRow {
   status: string;
   created_at: string;
   entry_type: string;
+  agent_name: string | null;
 }
 
 const ITEMS_PER_PAGE = 10;
@@ -64,11 +65,11 @@ const CompanyEventsPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("events")
-      .select("id, listing_id, title, event_type, location, status, created_at, entry_type")
+      .select("id, listing_id, title, event_type, location, status, created_at, entry_type, agent_id, agents(name)")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
     if (error) toast.error("Failed to fetch events");
-    else setEvents((data as EventRow[]) || []);
+    else setEvents((data || []).map((e: any) => ({ ...e, agent_name: e.agents?.name || null })) as EventRow[]);
     setLoading(false);
   };
 
@@ -251,6 +252,7 @@ const CompanyEventsPage = () => {
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Assigned Agent</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
@@ -258,9 +260,9 @@ const CompanyEventsPage = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : paginated.length === 0 ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-12 text-muted-foreground">No events found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No events found.</TableCell></TableRow>
               ) : (
                 paginated.map((evt) => (
                   <TableRow key={evt.id} className="hover:bg-muted/30">
@@ -269,6 +271,7 @@ const CompanyEventsPage = () => {
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{format(new Date(evt.created_at), "dd/MM/yyyy hh:mm a")}</TableCell>
                     <TableCell className="text-sm capitalize">{formatType(evt.event_type)}</TableCell>
                     <TableCell className="font-medium text-foreground max-w-[200px] truncate">{evt.title}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{evt.agent_name || "—"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{evt.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(evt.status)} variant="secondary">
