@@ -12,14 +12,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Trash2, Pencil, Upload, X, ArrowLeft } from "lucide-react";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
-
-// Hardcoded arrays removed — now fetched dynamically
+import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
 
 interface UnitForm {
   unit_name: string;
@@ -57,6 +56,7 @@ const CompanyProjectUnitsPage = () => {
   const [form, setForm] = useState<UnitForm>({ ...emptyUnit });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [expandedUnit, setExpandedUnit] = useState<string | null>(null);
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -181,56 +181,46 @@ const CompanyProjectUnitsPage = () => {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-primary/5">
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Unit Name</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Rooms</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Bathrooms</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Parking</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Price</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Area</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
-              ) : units.length === 0 ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No units yet. Click "Add Unit" to create one.</TableCell></TableRow>
-              ) : (
-                units.map((unit) => (
-                  <TableRow key={unit.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium">{unit.unit_name}</TableCell>
-                    <TableCell className="capitalize text-sm">{unit.unit_type}</TableCell>
-                    <TableCell className="text-sm">{unit.rooms || "—"}</TableCell>
-                    <TableCell className="text-sm">{unit.bathrooms ?? "—"}</TableCell>
-                    <TableCell className="text-sm">{unit.car_parking ?? "—"}</TableCell>
-                    <TableCell className="text-sm">{unit.price ? `${unit.currency} ${unit.price.toLocaleString()}` : "—"}</TableCell>
-                    <TableCell className="text-sm">{unit.area ? `${unit.area} ${unit.area_unit}` : "—"}</TableCell>
-                    <TableCell>
-                      <Badge className={statusColor(unit.status)} variant="secondary">
-                        {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right space-x-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(unit)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(unit.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+      <div className="space-y-3">
+        {loading ? (
+          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">Loading...</div>
+        ) : units.length === 0 ? (
+          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">No units yet. Click "Add Unit" to create one.</div>
+        ) : (
+          units.map((unit) => (
+            <div key={unit.id} className="bg-card rounded-xl border border-border overflow-hidden">
+              {/* Unit row */}
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="flex-1 grid grid-cols-8 gap-2 items-center text-sm">
+                  <span className="font-medium text-foreground col-span-2">{unit.unit_name}</span>
+                  <span className="capitalize text-muted-foreground">{unit.unit_type}</span>
+                  <span className="text-muted-foreground">{unit.rooms || "—"}</span>
+                  <span className="text-muted-foreground">{unit.bathrooms ?? "—"} bath</span>
+                  <span className="text-muted-foreground">{unit.price ? `${unit.currency} ${unit.price.toLocaleString()}` : "—"}</span>
+                  <span className="text-muted-foreground">{unit.area ? `${unit.area} ${unit.area_unit}` : "—"}</span>
+                  <div>
+                    <Badge className={statusColor(unit.status)} variant="secondary">
+                      {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(unit)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(unit.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Payment Plan Manager */}
+              <div className="px-4 pb-3">
+                <UnitPaymentPlanManager unitId={unit.id} unitName={unit.unit_name} />
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Unit Dialog */}
