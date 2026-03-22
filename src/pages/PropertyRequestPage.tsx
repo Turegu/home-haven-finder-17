@@ -216,39 +216,6 @@ const PropertyRequestPage = () => {
     );
   };
 
-  const AmenityGrid = ({ label, field, options }: { label: string; field: 'interiorAmenities' | 'exteriorAmenities'; options: string[] }) => (
-    <div className="md:col-span-2">
-      <label className="block text-sm font-medium text-foreground mb-2">{label}</label>
-      <div className="max-h-[200px] overflow-y-auto border border-input rounded-md p-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {options.map((opt) => {
-          const selected = formData[field].includes(opt);
-          return (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => toggleAmenity(field, opt)}
-              className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors text-left ${
-                selected
-                  ? 'bg-primary/10 text-primary border border-primary/30'
-                  : 'bg-muted/50 text-foreground hover:bg-muted border border-transparent'
-              }`}
-            >
-              <div className={`h-4 w-4 rounded border flex items-center justify-center shrink-0 ${
-                selected ? 'bg-primary border-primary' : 'border-muted-foreground/40'
-              }`}>
-                {selected && <Check className="h-3 w-3 text-primary-foreground" />}
-              </div>
-              <span className="line-clamp-1">{opt}</span>
-            </button>
-          );
-        })}
-        {options.length === 0 && <p className="text-xs text-muted-foreground col-span-full">No options available</p>}
-      </div>
-      {formData[field].length > 0 && (
-        <p className="text-xs text-muted-foreground mt-1">{formData[field].length} selected</p>
-      )}
-    </div>
-  );
 
   const defaultSteps = [
     { icon: FileText, title: 'Fill the form', desc: 'Fill the form with dream home requirements' },
