@@ -136,7 +136,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
-          message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
+          message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
           inbox_type: `${listingType}_inquiry`,
         };
         if (listingType === 'property') inboxData.property_id = property.id;
