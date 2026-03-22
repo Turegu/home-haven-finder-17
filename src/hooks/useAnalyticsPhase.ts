@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AnalyticsPhase = 'phase1' | 'phase2' | 'phase3';
+export type AnalyticsPhase = 'off' | 'phase1' | 'phase2' | 'phase3';
 
 export function useAnalyticsPhase() {
   return useQuery({

@@ -196,6 +196,7 @@ const AdminSettingsPage = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="off">Off — Hide Performance Insights entirely</SelectItem>
                 <SelectItem value="phase1">Phase 1: Soft Labels (Recommended for new platforms)</SelectItem>
                 <SelectItem value="phase2">Phase 2: Relative + Masked Numbers</SelectItem>
                 <SelectItem value="phase3">Phase 3: Full Analytics + Funnel Chart</SelectItem>
