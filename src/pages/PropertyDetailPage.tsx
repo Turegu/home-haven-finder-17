@@ -488,14 +488,14 @@ const PropertyDetailPage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Title & Price Block */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-center justify-between gap-4 mb-1">
-                <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
-                <div className="flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground line-clamp-2">{property.title.slice(0, 40)}</h1>
+                <div className="flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border shrink-0 overflow-x-auto">
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => handleMediaTabClick(tab.id)}
-                      className={`p-2 rounded-md transition-all active:scale-95 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
+                      className={`p-2 rounded-md transition-all active:scale-95 shrink-0 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
                       <tab.icon className="h-4.5 w-4.5" />

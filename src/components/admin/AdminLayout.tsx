@@ -123,10 +123,17 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       </aside>
 
       {/* Main */}
-      <div className="flex-1 lg:ml-60">
+      <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
         {/* Top bar */}
-        <header className="h-16 bg-card border-b border-border flex items-center justify-end px-6">
-          <div className="flex items-center gap-3">
+        <header className="h-14 bg-card border-b border-border flex items-center justify-between px-4 lg:px-6 sticky top-0 z-20">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 rounded-md hover:bg-secondary"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <span className="text-sm font-semibold text-foreground lg:hidden">Admin Panel</span>
+          <div className="flex items-center gap-3 ml-auto">
             <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
             <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-semibold text-sm">
@@ -137,7 +144,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="flex-1 p-4 md:p-6">
           {children}
         </main>
       </div>

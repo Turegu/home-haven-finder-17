@@ -282,7 +282,7 @@ const BuyPage = () => {
           {/* Search row */}
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative flex-1 min-w-[140px] sm:min-w-[200px]">
               <input
                 type="text"
                 value={keyword}
