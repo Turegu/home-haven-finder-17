@@ -798,24 +798,6 @@ const CompanyProjectEditPage = () => {
           )}
         </section>
 
-        {/* ─── Listing Classification ─── */}
-        <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Activity className="h-4 w-4" />} title="Listing Classification" />
-          <div className="max-w-xs">
-            <FormSelect
-              label="Classification"
-              icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
-              value={form.property_classification}
-              onChange={(v) => updateField("property_classification", v)}
-              options={[
-                { value: "standard", label: "Standard" },
-                { value: "featured", label: "Featured" },
-                { value: "premium", label: "Premium" },
-              ]}
-              placeholder="Select classification"
-            />
-          </div>
-        </section>
 
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
