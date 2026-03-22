@@ -6,9 +6,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, Building, Maximize, Bath, BedDouble, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+interface ProjectUnitOption {
+  id: string;
+  unit_name: string;
+  unit_type: string;
+  price: number | null;
+  currency: string | null;
+  rooms: string | null;
+  area: number | null;
+  area_unit: string | null;
+}
 
 interface ContactCompanyDialogProps {
   open: boolean;
