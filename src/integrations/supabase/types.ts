@@ -1150,6 +1150,75 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_impressions: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          listing_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          listing_type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          listing_type?: string
+        }
+        Relationships: []
+      }
+      listing_inquiry_clicks: {
+        Row: {
+          click_type: string
+          created_at: string
+          id: string
+          listing_id: string
+          listing_type: string
+        }
+        Insert: {
+          click_type?: string
+          created_at?: string
+          id?: string
+          listing_id: string
+          listing_type?: string
+        }
+        Update: {
+          click_type?: string
+          created_at?: string
+          id?: string
+          listing_id?: string
+          listing_type?: string
+        }
+        Relationships: []
+      }
+      listing_views: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          listing_type: string
+          viewer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          listing_type?: string
+          viewer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          listing_type?: string
+          viewer_id?: string | null
+        }
+        Relationships: []
+      }
       location_settings: {
         Row: {
           created_at: string
