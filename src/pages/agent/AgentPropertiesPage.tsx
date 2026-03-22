@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, MoreVertical, Pencil, Eye, RefreshCw, Ban, ArrowUpCircle, Crown, Star } from "lucide-react";
+import { Search, MoreVertical, Pencil, Eye, RefreshCw, Ban, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
@@ -32,6 +32,8 @@ interface AgentProperty {
   property_classification: string | null;
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const AgentPropertiesPage = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<AgentProperty[]>([]);
@@ -40,6 +42,8 @@ const AgentPropertiesPage = () => {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [upgradeDialog, setUpgradeDialog] = useState<{ open: boolean; property: AgentProperty | null }>({ open: false, property: null });
+  const [page, setPage] = useState(1);
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const fetchData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -51,7 +55,7 @@ const AgentPropertiesPage = () => {
     const { data, error } = await supabase
       .from("properties")
       .select("id, listing_id, title, property_type, property_purpose, status, price, currency, created_at, property_classification")
-      .eq("company_id", agent.company_id)
+      .eq("agent_id", agent.id)
       .order("created_at", { ascending: sortOrder === "oldest" });
 
     if (error) toast.error("Failed to load");
@@ -73,32 +77,69 @@ const AgentPropertiesPage = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [sortOrder]);
+  useEffect(() => { fetchData(); }, [sortOrder]);
+
+  const stats = useMemo(() => ({
+    total: properties.length,
+    active: properties.filter(p => p.status === "active").length,
+    inactive: properties.filter(p => p.status === "inactive").length,
+    draft: properties.filter(p => p.status === "draft").length,
+  }), [properties]);
 
   const handleDeactivate = async (prop: AgentProperty) => {
     const newStatus = prop.status === "active" ? "inactive" : "active";
     const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", prop.id);
     if (error) toast.error("Failed to update status");
-    else {
-      toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`);
-      fetchData();
-    }
+    else { toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`); fetchData(); }
   };
 
-  const filtered = properties.filter((p) =>
-    p.title.toLowerCase().includes(search.toLowerCase()) || p.listing_id.includes(search)
-  );
+  const filtered = useMemo(() => properties.filter((p) => {
+    if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.listing_id.includes(search)) return false;
+    if (filterStatus !== "all" && p.status !== filterStatus) return false;
+    return true;
+  }), [properties, search, filterStatus]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
     <AgentLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Properties</h1>
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <h1 className="text-2xl font-bold text-foreground mb-6">My Properties</h1>
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-primary/10 p-2"><LayoutList className="h-4 w-4 text-primary" /></div>
+          <div><p className="text-xs text-muted-foreground">Total</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-emerald-100 p-2"><CheckCircle className="h-4 w-4 text-emerald-700" /></div>
+          <div><p className="text-xs text-muted-foreground">Active</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-red-100 p-2"><XCircle className="h-4 w-4 text-red-700" /></div>
+          <div><p className="text-xs text-muted-foreground">Inactive</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
+        </div>
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+          <div className="rounded-full bg-amber-100 p-2"><FileText className="h-4 w-4 text-amber-700" /></div>
+          <div><p className="text-xs text-muted-foreground">Draft</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+          <Input placeholder="Search by Title or ID" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
         </div>
+        <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
+          <SelectTrigger className="w-[140px] bg-secondary/50"><SelectValue placeholder="All Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="draft">Draft</SelectItem>
+          </SelectContent>
+        </Select>
         <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
           <SelectTrigger className="w-[190px] bg-secondary/50"><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -109,6 +150,9 @@ const AgentPropertiesPage = () => {
           </SelectContent>
         </Select>
       </div>
+
+      <p className="text-xs text-muted-foreground mb-2">Showing {paginated.length} of {filtered.length} property(ies)</p>
+
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <Table>
           <TableHeader>
@@ -127,31 +171,25 @@ const AgentPropertiesPage = () => {
           <TableBody>
             {loading ? (
               <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
-            ) : filtered.length === 0 ? (
-              <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No properties found.</TableCell></TableRow>
-            ) : filtered.map((p) => (
+            ) : paginated.length === 0 ? (
+              <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No properties assigned to you.</TableCell></TableRow>
+            ) : paginated.map((p) => (
               <TableRow key={p.id} className="hover:bg-muted/30">
                 <TableCell className="font-mono text-xs">{p.listing_id}</TableCell>
                 <TableCell className="font-medium">{p.title}</TableCell>
                 <TableCell className="capitalize text-sm">{p.property_type}</TableCell>
                 <TableCell>
                   {p.property_classification === "premium" ? (
-                    <Badge className="bg-purple-100 text-purple-800 gap-1" variant="secondary">
-                      <Crown className="h-3 w-3" /> Premium
-                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-800 gap-1" variant="secondary"><Crown className="h-3 w-3" /> Premium</Badge>
                   ) : p.property_classification === "featured" ? (
-                    <Badge className="bg-teal-100 text-teal-800 gap-1" variant="secondary">
-                      <Star className="h-3 w-3" /> Featured
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">Standard</span>
-                  )}
+                    <Badge className="bg-teal-100 text-teal-800 gap-1" variant="secondary"><Star className="h-3 w-3" /> Featured</Badge>
+                  ) : <span className="text-xs text-muted-foreground">Standard</span>}
                 </TableCell>
                 <TableCell className="capitalize text-sm">{p.property_purpose}</TableCell>
                 <TableCell className="text-sm">{p.price ? `${p.currency} ${p.price.toLocaleString()}` : "—"}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary" className={p.status === "active" ? "bg-emerald-100 text-emerald-800" : p.status === "inactive" ? "bg-red-100 text-red-800" : "bg-muted text-muted-foreground"}>
-                    {p.status}
+                  <Badge variant="secondary" className={p.status === "active" ? "bg-emerald-100 text-emerald-800" : p.status === "inactive" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}>
+                    {p.status === "draft" ? "Unpublished" : p.status.charAt(0).toUpperCase() + p.status.slice(1)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{format(new Date(p.created_at), "dd/MM/yyyy")}</TableCell>
@@ -161,22 +199,12 @@ const AgentPropertiesPage = () => {
                       <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => navigate(`/property/${p.id}`)}>
-                        <Eye className="h-4 w-4 mr-2" /> View
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => fetchData()}>
-                        <RefreshCw className="h-4 w-4 mr-2" /> Refresh
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate(`/company/properties/${p.id}/edit`)}>
-                        <Pencil className="h-4 w-4 mr-2" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeactivate(p)}>
-                        <Ban className="h-4 w-4 mr-2" /> {p.status === "active" ? "Deactivate" : "Activate"}
-                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`/property/${p.id}`)}><Eye className="h-4 w-4 mr-2" /> View</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => fetchData()}><RefreshCw className="h-4 w-4 mr-2" /> Refresh</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`/company/properties/${p.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeactivate(p)}><Ban className="h-4 w-4 mr-2" /> {p.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: p })}>
-                        <ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured
-                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: p })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -185,6 +213,16 @@ const AgentPropertiesPage = () => {
           </TableBody>
         </Table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <Button variant="ghost" size="icon" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Button key={p} variant={p === page ? "default" : "ghost"} size="sm" onClick={() => setPage(p)} className="w-8 h-8">{p}</Button>
+          ))}
+          <Button variant="ghost" size="icon" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}><ChevronRight className="h-4 w-4" /></Button>
+        </div>
+      )}
 
       {upgradeDialog.property && companyId && (
         <UpgradeListingDialog
