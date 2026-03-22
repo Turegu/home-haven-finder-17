@@ -571,7 +571,7 @@ const CompanyProjectEditPage = () => {
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
       advertising_tags: form.advertising_tags,
-      property_classification: form.property_classification || null,
+      property_classification: classificationOverride || form.property_classification || null,
       province: form.province || null, town: form.town || null,
       neighbourhood: form.neighbourhood || null, pin_location: form.pin_location || null,
       location: form.location || null,
