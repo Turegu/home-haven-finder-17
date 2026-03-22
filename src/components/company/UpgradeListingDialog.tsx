@@ -83,6 +83,16 @@ const UpgradeListingDialog = ({
         .eq("id", companyId);
       if (creditErr) throw creditErr;
 
+      // Log transaction
+      await supabase.from("credit_transactions").insert({
+        company_id: companyId,
+        amount: -opt.credits,
+        transaction_type: "spend",
+        description: `Upgrade to ${opt.classification} (${opt.key.includes("3") ? "3 months" : "1 month"})`,
+        listing_type: listingType,
+        listing_id: listingId,
+      });
+
       toast.success(`Listing upgraded to ${opt.classification.charAt(0).toUpperCase() + opt.classification.slice(1)}!`);
       onUpgraded();
       onOpenChange(false);
