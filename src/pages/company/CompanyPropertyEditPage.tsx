@@ -27,6 +27,10 @@ import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
+/* ─── Types ─── */
+interface LocalPaymentPlanStep { id: string; percentage: number; title: string; subtitle: string; }
+interface LocalPaymentPlan { id: string; plan_name: string; is_active: boolean; steps: LocalPaymentPlanStep[]; }
+
 /* ─── Options aligned with front-end search filters ─── */
 
 const contractTypes = [
