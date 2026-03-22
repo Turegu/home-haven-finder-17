@@ -17,13 +17,15 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Progress } from "@/components/ui/progress";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, RefreshCw, Home, Filter, X, Ban, UserPlus, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
 import AssignAgentDialog from "@/components/company/AssignAgentDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
 
 interface Property {
   id: string;
@@ -67,6 +69,7 @@ const CompanyPropertiesPage = () => {
 
   const [upgradeDialog, setUpgradeDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
   const [assignDialog, setAssignDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
+  const [insightsDialog, setInsightsDialog] = useState<{ open: boolean; property: Property | null }>({ open: false, property: null });
 
   const { options: filterOpts } = useFilterOptions("property");
   const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
@@ -444,6 +447,8 @@ const CompanyPropertiesPage = () => {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => setAssignDialog({ open: true, property: prop })}><UserPlus className="h-4 w-4 mr-2" /> Assign To Agent</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: prop })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: prop })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -490,6 +495,20 @@ const CompanyPropertiesPage = () => {
           currentAgentId={assignDialog.property.agent_id}
           onAssigned={fetchProperties}
         />
+      )}
+      {insightsDialog.property && (
+        <Dialog open={insightsDialog.open} onOpenChange={(open) => setInsightsDialog({ open, property: open ? insightsDialog.property : null })}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Performance Insights — {insightsDialog.property.title}</DialogTitle>
+            </DialogHeader>
+            <PerformanceInsightsTab
+              listingId={insightsDialog.property.id}
+              listingType="property"
+              listingTitle={insightsDialog.property.title}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </CompanyLayout>
   );

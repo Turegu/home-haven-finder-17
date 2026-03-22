@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe } from "lucide-react";
+import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe, BarChart3 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
+import type { AnalyticsPhase } from "@/hooks/useAnalyticsPhase";
 
 const AdminSettingsPage = () => {
   const { toast } = useToast();
@@ -19,6 +20,7 @@ const AdminSettingsPage = () => {
   const [salesEmail, setSalesEmail] = useState("");
   const [salesAddress, setSalesAddress] = useState("");
   const [mapProvider, setMapProvider] = useState("google");
+  const [analyticsPhase, setAnalyticsPhase] = useState<AnalyticsPhase>("phase1");
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
@@ -38,6 +40,7 @@ const AdminSettingsPage = () => {
         setSalesEmail(map.sales_email || "");
         setSalesAddress(map.sales_address || "");
         setMapProvider(map.map_provider || "google");
+        setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
@@ -64,6 +67,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_email", salesEmail),
       saveSetting("sales_address", salesAddress),
       saveSetting("map_provider", mapProvider),
+      saveSetting("analytics_display_phase", analyticsPhase),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
@@ -174,6 +178,39 @@ const AdminSettingsPage = () => {
           <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
             <span>Changing the admin email requires a secure verification process (OTP). This feature is planned for a future update.</span>
+          </div>
+        </div>
+
+        {/* Analytics Display Phase */}
+        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" /> Analytics Display Mode
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Controls what companies and agents see in their Performance Insights tab.
+          </p>
+          <div className="space-y-2">
+            <Label>Active Phase</Label>
+            <Select value={analyticsPhase} onValueChange={(v) => setAnalyticsPhase(v as AnalyticsPhase)}>
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="phase1">Phase 1: Soft Labels (Recommended for new platforms)</SelectItem>
+                <SelectItem value="phase2">Phase 2: Relative + Masked Numbers</SelectItem>
+                <SelectItem value="phase3">Phase 3: Full Analytics + Funnel Chart</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border">
+              <Info className="h-4 w-4 mt-0.5 shrink-0" />
+              <div className="space-y-1">
+                <p><strong>Phase 1:</strong> Shows qualitative tiers only (e.g. "Growing Interest", "Building Momentum"). Low numbers hidden behind "Analyzing Market Data..."</p>
+                <p><strong>Phase 2:</strong> Shows tiers + masked stats. Numbers below thresholds display as "Initial Exposure Phase" instead of raw counts.</p>
+                <p><strong>Phase 3:</strong> Full raw numbers, breakdown by channel (WhatsApp/Call/Email), and conversion funnel chart.</p>
+              </div>
+            </div>
           </div>
         </div>
 

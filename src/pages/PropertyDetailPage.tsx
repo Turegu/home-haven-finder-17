@@ -7,6 +7,7 @@ import {
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
+import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { Button } from '@/components/ui/button';
@@ -79,6 +80,7 @@ const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { formatArea } = useAreaUnit();
+  useTrackPageView(id, 'property');
   const [property, setProperty] = useState(emptyPropertyState);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
@@ -790,17 +792,17 @@ const PropertyDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => { trackInquiryClick(id!, 'property', 'call'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Phone className="h-4 w-4" />
                   Call
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => { trackInquiryClick(id!, 'property', 'email'); setEmailDialogOpen(true); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Mail className="h-4 w-4" />
                   Email
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => { trackInquiryClick(id!, 'property', 'whatsapp'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
                 </button>

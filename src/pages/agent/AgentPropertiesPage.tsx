@@ -15,10 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, MoreVertical, Pencil, Eye, RefreshCw, Ban, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, MoreVertical, Pencil, Eye, RefreshCw, Ban, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
 
 interface AgentProperty {
   id: string;
@@ -43,6 +45,7 @@ const AgentPropertiesPage = () => {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [upgradeDialog, setUpgradeDialog] = useState<{ open: boolean; property: AgentProperty | null }>({ open: false, property: null });
+  const [insightsDialog, setInsightsDialog] = useState<{ open: boolean; property: AgentProperty | null }>({ open: false, property: null });
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -206,6 +209,8 @@ const AgentPropertiesPage = () => {
                       <DropdownMenuItem onClick={() => handleDeactivate(p)}><Ban className="h-4 w-4 mr-2" /> {p.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: p })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: p })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -236,6 +241,20 @@ const AgentPropertiesPage = () => {
           currentClassification={upgradeDialog.property.property_classification}
           onUpgraded={fetchData}
         />
+      )}
+      {insightsDialog.property && (
+        <Dialog open={insightsDialog.open} onOpenChange={(open) => setInsightsDialog({ open, property: open ? insightsDialog.property : null })}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Performance Insights — {insightsDialog.property.title}</DialogTitle>
+            </DialogHeader>
+            <PerformanceInsightsTab
+              listingId={insightsDialog.property.id}
+              listingType="property"
+              listingTitle={insightsDialog.property.title}
+            />
+          </DialogContent>
+        </Dialog>
       )}
     </AgentLayout>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy } from 'react';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
@@ -25,6 +25,7 @@ import { SelectedFilterBadges } from '@/components/SearchFilters';
 import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
+import { trackImpressions } from '@/hooks/useListingAnalytics';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
@@ -146,6 +147,18 @@ const BuyPage = () => {
   const LIST_ITEMS = 21;
   const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  // Track impressions when search results change
+  const trackedPageRef = useRef<string>('');
+  useEffect(() => {
+    if (allProperties.length > 0) {
+      const key = allProperties.map((p: any) => p.id).join(',');
+      if (key !== trackedPageRef.current) {
+        trackedPageRef.current = key;
+        trackImpressions(allProperties.map((p: any) => p.id), 'property');
+      }
+    }
+  }, [allProperties]);
 
   useEffect(() => {
     document.title = `${isRent ? 'Rent' : 'Buy'} | Turegu`;

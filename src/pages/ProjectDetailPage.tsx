@@ -17,10 +17,12 @@ import StreetView from '@/components/StreetView';
 import defaultProjectLogo from '@/assets/default-project-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
+import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  useTrackPageView(id, 'project');
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
