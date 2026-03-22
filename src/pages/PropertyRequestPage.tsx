@@ -96,13 +96,11 @@ const PropertyRequestPage = () => {
   const handleChange = (field: string, value: string) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-  const toggleAmenity = (field: 'interiorAmenities' | 'exteriorAmenities', value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field].filter(v => v !== value)
-        : [...prev[field], value],
-    }));
+  const toggleMulti = (field: string, value: string) => {
+    setFormData(prev => {
+      const arr = (prev as any)[field] as string[];
+      return { ...prev, [field]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] };
+    });
   };
 
   // Determine which property types to show based on enquiry type
