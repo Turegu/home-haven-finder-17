@@ -26,7 +26,7 @@ const SearchableSelect = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const filtered = search
-    ? options.filter((o) => o.label.toLowerCase().includes(search.toLowerCase()))
+    ? options.filter((o) => turkishIncludes(o.label, search))
     : options;
 
   const selectedLabel = options.find((o) => o.value === value)?.label;

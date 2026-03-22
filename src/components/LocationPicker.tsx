@@ -150,10 +150,9 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   const current = stepConfig[step];
 
   const filtered = filter
-    ? current.items.filter(i => {
-        const nf = normalize(filter);
-        return normalize(i.name).includes(nf) || i.ar.includes(filter);
-      })
+    ? current.items.filter(i =>
+        turkishIncludes(i.name, filter) || i.ar.includes(filter)
+      )
     : current.items;
 
   // Breadcrumb navigation

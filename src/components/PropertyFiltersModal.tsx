@@ -215,7 +215,7 @@ export default function PropertyFiltersModal({
   const currentTab = visibleTabs.find(t => t.key === activeTab) ?? visibleTabs[0];
   const rawOptions = allOptions[currentTab.optionKey] || [];
   const filteredOptions = search
-    ? rawOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    ? rawOptions.filter(o => turkishIncludes(o, search))
     : rawOptions;
 
   function renderTabButton(tab: FilterTab) {

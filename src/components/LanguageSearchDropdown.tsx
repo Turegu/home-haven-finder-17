@@ -50,7 +50,7 @@ export default function LanguageSearchDropdown({
   const restLanguages = allLanguages.filter((l) => !prioritySet.has(l));
 
   const filterFn = (lang: string) =>
-    !search || lang.toLowerCase().includes(search.toLowerCase());
+    !search || turkishIncludes(lang, search);
 
   const filteredPriority = PRIORITY_LANGUAGES.filter(filterFn);
   const filteredRest = restLanguages.filter(filterFn);
