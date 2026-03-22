@@ -209,6 +209,8 @@ const AgentPropertiesPage = () => {
                       <DropdownMenuItem onClick={() => handleDeactivate(p)}><Ban className="h-4 w-4 mr-2" /> {p.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: p })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: p })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
