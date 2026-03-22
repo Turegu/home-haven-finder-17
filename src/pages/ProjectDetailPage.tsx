@@ -2,9 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
-  Globe, Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2, Share2, Heart,
+  Globe, Video, Phone, Mail, MessageCircle, UserPlus, Share2, Heart,
   PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity, Home
 } from 'lucide-react';
+import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -344,9 +345,12 @@ const ProjectDetailPage = () => {
                     <div>
                       <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {project.interiorAmenities.map((a: string) => (
-                          <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> {a}</span>
-                        ))}
+                        {project.interiorAmenities.map((a: string) => {
+                          const Icon = getIcon(a, 'interior');
+                          return (
+                            <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><Icon className="h-3.5 w-3.5 text-primary" /> {a}</span>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -354,9 +358,12 @@ const ProjectDetailPage = () => {
                     <div>
                       <h3 className="font-semibold text-foreground text-sm mb-2">Exterior Amenities</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {project.exteriorAmenities.map((a: string) => (
-                          <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> {a}</span>
-                        ))}
+                        {project.exteriorAmenities.map((a: string) => {
+                          const Icon = getIcon(a, 'exterior');
+                          return (
+                            <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground"><Icon className="h-3.5 w-3.5 text-primary" /> {a}</span>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

@@ -3,12 +3,13 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
-  Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
+  Video, Phone, Mail, MessageCircle, UserPlus,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   Wallet, HardHat, KeyRound, Banknote, CalendarCheck,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
+import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { Button } from '@/components/ui/button';
@@ -597,23 +598,29 @@ const PropertyDetailPage = () => {
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {property.interiorAmenities.map((a) => (
-                      <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                        {a}
-                      </span>
-                    ))}
+                    {property.interiorAmenities.map((a) => {
+                      const Icon = getIcon(a, 'interior');
+                      return (
+                        <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <Icon className="h-3.5 w-3.5 text-primary" />
+                          {a}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-2">Exterior Amenities</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {property.exteriorAmenities.map((a) => (
-                      <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                        {a}
-                      </span>
-                    ))}
+                    {property.exteriorAmenities.map((a) => {
+                      const Icon = getIcon(a, 'exterior');
+                      return (
+                        <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <Icon className="h-3.5 w-3.5 text-primary" />
+                          {a}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
