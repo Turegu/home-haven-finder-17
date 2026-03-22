@@ -28,6 +28,7 @@ import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import SearchablePillSelect from "@/components/ui/searchable-pill-select";
+import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
@@ -249,6 +250,7 @@ const CompanyProjectEditPage = () => {
   const [savingUnit, setSavingUnit] = useState(false);
   const [uploadingUnitImages, setUploadingUnitImages] = useState(false);
   const [savedProjectId, setSavedProjectId] = useState<string | null>(isEdit ? (id as string) : null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   const [form, setForm] = useState({
     title: "", tagline: "", description: "", developer: "",
@@ -531,15 +533,27 @@ const CompanyProjectEditPage = () => {
     switch (s) { case "available": return "bg-emerald-100 text-emerald-800"; case "reserved": return "bg-orange-100 text-orange-800"; case "sold": return "bg-red-100 text-red-800"; default: return "bg-muted text-muted-foreground"; }
   };
 
-  const handleSave = async (publishStatus: "draft" | "active") => {
-    if (!companyId) { toast.error("Company not found"); return; }
+  const validateProjectForm = (): boolean => {
+    if (!companyId) { toast.error("Company not found"); return false; }
     if (!isEdit && !membershipLimits.canCreate("projects")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
-      return;
+      return false;
     }
-    if (!form.title.trim()) { toast.error("Project name is required"); return; }
-    if (!form.title.trim()) { toast.error("Project name is required"); return; }
-    setLoading(true);
+    if (!form.title.trim()) { toast.error("Project name is required"); return false; }
+    return true;
+  };
+
+  const handlePublishClick = () => {
+    if (!validateProjectForm()) return;
+    setShowUpgradeDialog(true);
+  };
+
+  const handleSave = async (publishStatus: "draft" | "active", classificationOverride?: string) => {
+    if (publishStatus === "active" && !validateProjectForm()) return;
+    if (publishStatus === "draft") {
+      if (!companyId) { toast.error("Company not found"); return; }
+      if (!form.title.trim()) { toast.error("Project name is required"); return; }
+    }
 
     const payload: any = {
       title: form.title.trim(), description: form.description || null,
@@ -557,7 +571,7 @@ const CompanyProjectEditPage = () => {
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
       advertising_tags: form.advertising_tags,
-      property_classification: form.property_classification || null,
+      property_classification: classificationOverride || form.property_classification || null,
       province: form.province || null, town: form.town || null,
       neighbourhood: form.neighbourhood || null, pin_location: form.pin_location || null,
       location: form.location || null,
@@ -798,24 +812,6 @@ const CompanyProjectEditPage = () => {
           )}
         </section>
 
-        {/* ─── Listing Classification ─── */}
-        <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Activity className="h-4 w-4" />} title="Listing Classification" />
-          <div className="max-w-xs">
-            <FormSelect
-              label="Classification"
-              icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
-              value={form.property_classification}
-              onChange={(v) => updateField("property_classification", v)}
-              options={[
-                { value: "standard", label: "Standard" },
-                { value: "featured", label: "Featured" },
-                { value: "premium", label: "Premium" },
-              ]}
-              placeholder="Select classification"
-            />
-          </div>
-        </section>
 
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
@@ -1024,11 +1020,21 @@ const CompanyProjectEditPage = () => {
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Saving..." : "Save as Draft"}
           </Button>
-          <Button type="button" disabled={loading} onClick={() => handleSave("active")}>
+          <Button type="button" disabled={loading} onClick={handlePublishClick}>
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
           </Button>
         </div>
+
+        <PrePublishUpgradeDialog
+          open={showUpgradeDialog}
+          onOpenChange={setShowUpgradeDialog}
+          companyId={companyId || ""}
+          listingId={isEdit ? (id as string || null) : savedProjectId}
+          listingTitle={form.title}
+          listingType="project"
+          onPublish={(classification) => handleSave("active", classification)}
+        />
 
         {/* Unit Dialog */}
         <Dialog open={unitDialogOpen} onOpenChange={setUnitDialogOpen}>

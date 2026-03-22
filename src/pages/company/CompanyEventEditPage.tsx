@@ -16,6 +16,7 @@ import {
   CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { getEventTypeIcon } from "@/data/eventTypes";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
@@ -98,6 +99,7 @@ const CompanyEventEditPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [pdfUrl, setPdfUrl] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
@@ -196,14 +198,27 @@ const CompanyEventEditPage = () => {
     if (urls[0]) setPdfUrl(urls[0]);
   };
 
-  const handleSave = async (publishStatus: "draft" | "active") => {
-    if (!companyId) { toast.error("Company not found"); return; }
+  const validateEventForm = (): boolean => {
+    if (!companyId) { toast.error("Company not found"); return false; }
     if (!isEdit && !membershipLimits.canCreate("events")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more events. Please upgrade.`);
-      return;
+      return false;
     }
-    if (!form.title.trim()) { toast.error("Event name is required"); return; }
-    if (!form.title.trim()) { toast.error("Event name is required"); return; }
+    if (!form.title.trim()) { toast.error("Event name is required"); return false; }
+    return true;
+  };
+
+  const handlePublishClick = () => {
+    if (!validateEventForm()) return;
+    setShowUpgradeDialog(true);
+  };
+
+  const handleSave = async (publishStatus: "draft" | "active") => {
+    if (publishStatus === "active" && !validateEventForm()) return;
+    if (publishStatus === "draft") {
+      if (!companyId) { toast.error("Company not found"); return; }
+      if (!form.title.trim()) { toast.error("Event name is required"); return; }
+    }
     setLoading(true);
 
     const locationStr = [form.province, form.town, form.neighbourhood].filter(Boolean).join(", ");
@@ -502,11 +517,21 @@ const CompanyEventEditPage = () => {
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Saving..." : "Save as Draft"}
           </Button>
-          <Button type="button" disabled={loading} onClick={() => handleSave("active")}>
+          <Button type="button" disabled={loading} onClick={handlePublishClick}>
             <Save className="h-4 w-4 mr-2" />
             {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
           </Button>
         </div>
+
+        <PrePublishUpgradeDialog
+          open={showUpgradeDialog}
+          onOpenChange={setShowUpgradeDialog}
+          companyId={companyId || ""}
+          listingId={isEdit ? (id as string || null) : null}
+          listingTitle={form.title}
+          listingType="event"
+          onPublish={() => handleSave("active")}
+        />
       </form>
     </CompanyLayout>
   );
