@@ -8,6 +8,7 @@ import aiAgentIcon from "@/assets/ai-agent-icon.png";
 
 interface AiPick {
   score: number;
+  listing_type?: string;
   property: {
     id: string;
     title: string;
