@@ -147,7 +147,7 @@ const AiPropertyAgent = () => {
           </div>
 
           {/* Body */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4" style={{ minHeight: 200 }}>
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4" style={{ minHeight: 280 }}>
             {/* Initial state */}
             {!analysis && !isLoading && !error && picks.length === 0 && (
               <div className="space-y-3">
