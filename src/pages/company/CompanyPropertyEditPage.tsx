@@ -414,20 +414,20 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">Pricing & Size</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="area">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
-                Net Area ({form.area_unit})
+                Net Area ({form.area_unit}) *
               </Label>
-              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
+              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                {isRent ? "Rent Price" : "Price"} ({form.currency})
+                {isRent ? "Rent Price" : "Price"} ({form.currency}) *
               </Label>
-              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder={isRent ? "Enter rent price" : "Enter price"} />
+              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? "Enter rent price" : "Enter price"} />
             </div>
 
             {isRent && (
