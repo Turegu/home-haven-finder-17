@@ -87,6 +87,7 @@ const PropertyDetailPage = () => {
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [propertyPaymentPlans, setPropertyPaymentPlans] = useState<{ id: string; plan_name: string; steps: { id: string; percentage: number; title: string; subtitle: string | null }[] }[]>([]);
 
   useEffect(() => {
     if (!id) return;
