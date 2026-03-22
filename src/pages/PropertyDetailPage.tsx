@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
