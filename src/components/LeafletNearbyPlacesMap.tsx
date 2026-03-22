@@ -198,48 +198,6 @@ const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapP
     Promise.allSettled(categories.map(cat => fetchSingleCategory(cat.key, true)));
   }, [fetchSingleCategory]);
 
-  const fetchSingleCategory = useCallback(async (categoryKey: string) => {
-    setLoadingCategory(categoryKey);
-    const cat = categories.find(c => c.key === categoryKey);
-    if (!cat) { setLoadingCategory(null); return; }
-
-    try {
-      const radius = 3000;
-      const nodeParts = cat.osmQueries.map(q => {
-        const tildeIdx = q.indexOf('~');
-        if (tildeIdx === -1) return `node[${q}](around:${radius},${lat},${lng});`;
-        const key = q.substring(0, tildeIdx);
-        const rawVal = q.substring(tildeIdx + 1);
-        return `node[${key}~${rawVal}](around:${radius},${lat},${lng});`;
-      });
-      const query = `[out:json][timeout:12];(${nodeParts.join('')});out body 10;`;
-      const { data, error } = await supabase.functions.invoke('nearby-places-proxy', { body: { query } });
-      if (error) throw new Error(error.message);
-      if (!mountedRef.current) return;
-
-      const elements = Array.isArray(data?.elements)
-        ? data.elements
-        : Array.isArray(data?.data?.elements)
-          ? data.data.elements
-          : [];
-
-      const results: NearbyPlace[] = elements
-        .filter((el: any) => el?.lat && el?.lon && el?.tags?.name)
-        .map((el: any) => mapElementToPlace(el, categoryKey))
-        .sort((a: NearbyPlace, b: NearbyPlace) => (a.distance || 0) - (b.distance || 0))
-        .slice(0, 15);
-
-      setPlaces(prev => ({ ...prev, [categoryKey]: results }));
-      setLoadErrors(prev => { const next = { ...prev }; delete next[categoryKey]; return next; });
-    } catch (err) {
-      if (!mountedRef.current) return;
-      console.error('Failed to fetch nearby places:', err);
-      setLoadErrors(prev => ({ ...prev, [categoryKey]: 'Could not load nearby places. Tap again to retry.' }));
-    } finally {
-      if (mountedRef.current) setLoadingCategory(null);
-    }
-  }, [lat, lng, mapElementToPlace]);
-
   const handleCategoryClick = (key: string) => {
     if (activeCategory === key) {
       setActiveCategory(null);
