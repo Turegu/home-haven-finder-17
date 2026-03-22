@@ -31,16 +31,21 @@ const SavedPropertiesPage = () => {
   const [page, setPage] = useState(1);
 
   const load = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
-    if (!user) { setLoading(false); return; }
-    const { data } = await supabase
-      .from("saved_properties")
-      .select("id, property_id, created_at, properties(title, price, currency, images, location, rooms, property_type, area, area_unit)")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    setItems((data ?? []).map((d: any) => ({ id: d.id, property_id: d.property_id, property: d.properties })));
-    setLoading(false);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("saved_properties")
+        .select("id, property_id, created_at, properties(title, price, currency, images, location, rooms, property_type, area, area_unit)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      setItems((data ?? []).map((d: any) => ({ id: d.id, property_id: d.property_id, property: d.properties })));
+    } catch (err) {
+      console.error("Failed to load saved properties:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);

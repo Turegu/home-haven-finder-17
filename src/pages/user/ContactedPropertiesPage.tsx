@@ -28,16 +28,21 @@ const ContactedPropertiesPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) return;
-      const { data } = await supabase
-        .from("user_inquiries")
-        .select("id, property_id, inquiry_type, message, email, phone, full_name, created_at, properties(title, location)")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false }) as any;
-      setItems((data || []).map((d: any) => ({ ...d, property: d.properties })));
-      setLoading(false);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
+        if (!user) { setLoading(false); return; }
+        const { data } = await supabase
+          .from("user_inquiries")
+          .select("id, property_id, inquiry_type, message, email, phone, full_name, created_at, properties(title, location)")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false }) as any;
+        setItems((data || []).map((d: any) => ({ ...d, property: d.properties })));
+      } catch (err) {
+        console.error("Failed to load inquiries:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);

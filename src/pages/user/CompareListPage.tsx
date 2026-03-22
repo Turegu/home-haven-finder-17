@@ -122,20 +122,25 @@ const CompareListPage = () => {
   };
 
   const load = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
-    if (!user) return;
-    const { data } = await supabase
-      .from("property_comparisons")
-      .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces, province, town, neighbourhood, property_purpose)")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false }) as any;
-    const mappedItems: CompareItem[] = (data || []).map((d: any) => ({ ...d, property: d.properties }));
-    setItems(mappedItems);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("property_comparisons")
+        .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces, province, town, neighbourhood, property_purpose)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }) as any;
+      const mappedItems: CompareItem[] = (data || []).map((d: any) => ({ ...d, property: d.properties }));
+      setItems(mappedItems);
 
-    // Fetch real rental market data for each property's area
-    await fetchRentalData(mappedItems);
-    setLoading(false);
+      // Fetch real rental market data for each property's area
+      await fetchRentalData(mappedItems);
+    } catch (err) {
+      console.error("Failed to load compare list:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
