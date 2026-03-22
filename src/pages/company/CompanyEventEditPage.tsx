@@ -16,6 +16,7 @@ import {
   CalendarDays, Users, Video, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { getEventTypeIcon } from "@/data/eventTypes";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
