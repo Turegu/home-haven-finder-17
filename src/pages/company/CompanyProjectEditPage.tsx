@@ -171,6 +171,20 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
 
 // Unit types and amenities now fetched dynamically via filterOpts
 
+interface LocalPaymentStep {
+  id: string;
+  percentage: number;
+  title: string;
+  subtitle: string;
+}
+
+interface LocalPaymentPlan {
+  id: string;
+  plan_name: string;
+  is_active: boolean;
+  steps: LocalPaymentStep[];
+}
+
 interface UnitForm {
   unit_name: string;
   unit_type: string;
@@ -186,6 +200,7 @@ interface UnitForm {
   advertising_tags: string[];
   images: string[];
   status: string;
+  payment_plans: LocalPaymentPlan[];
 }
 
 const unitStatuses = [
@@ -198,6 +213,7 @@ const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
   interior_amenities: [], exterior_amenities: [], advertising_tags: [], images: [], status: "available",
+  payment_plans: [],
 };
 
 const CompanyProjectEditPage = () => {
