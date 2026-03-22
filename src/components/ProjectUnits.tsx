@@ -36,33 +36,41 @@ interface ProjectUnitsProps {
   projectId: string;
 }
 
+const GENERIC_IMAGES = [
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
+];
+
 const MOCK_UNITS: ProjectUnit[] = [
   {
     id: "mock-1", unit_name: "Villa 1", unit_type: "Villa", price: 285000, currency: "$",
     area: 180, area_unit: "m²", rooms: "3+1", bathrooms: 2, car_parking: 1,
-    images: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-    ],
-    status: "available",
+    images: [GENERIC_IMAGES[0], GENERIC_IMAGES[1], GENERIC_IMAGES[5]],
+    status: "available", advertising_tags: ["Hot Deal", "Sea View"],
   },
   {
     id: "mock-2", unit_name: "Apartment A2", unit_type: "Apartment", price: 145000, currency: "$",
     area: 95, area_unit: "m²", rooms: "2+1", bathrooms: 1, car_parking: 1,
-    images: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    ],
-    status: "available",
+    images: [GENERIC_IMAGES[2], GENERIC_IMAGES[3], GENERIC_IMAGES[0]],
+    status: "available", advertising_tags: ["New Launch"],
   },
   {
     id: "mock-3", unit_name: "Penthouse B1", unit_type: "Penthouse", price: 520000, currency: "$",
     area: 310, area_unit: "m²", rooms: "4+1", bathrooms: 3, car_parking: 2,
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop"],
-    status: "reserved",
+    images: [GENERIC_IMAGES[4], GENERIC_IMAGES[1], GENERIC_IMAGES[3]],
+    status: "reserved", advertising_tags: ["Exclusive", "Premium Location"],
+  },
+  {
+    id: "mock-4", unit_name: "Studio C3", unit_type: "Studio", price: 78000, currency: "$",
+    area: 45, area_unit: "m²", rooms: "Studio", bathrooms: 1, car_parking: 0,
+    images: [GENERIC_IMAGES[5], GENERIC_IMAGES[2], GENERIC_IMAGES[4]],
+    status: "available", advertising_tags: ["Best Seller"],
   },
 ];
-
 const statusColors: Record<string, string> = {
   available: "bg-emerald-100 text-emerald-800 border-emerald-200",
   reserved: "bg-amber-100 text-amber-800 border-amber-200",
