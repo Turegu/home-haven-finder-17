@@ -78,19 +78,19 @@ export default function AmenitiesPickerDialog({
           </DialogHeader>
 
           <Tabs value={tab} onValueChange={(v) => { setTab(v); setSearch(''); }} className="flex flex-col flex-1 min-h-0">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="exterior" className="flex items-center gap-1.5">
+            <TabsList className="grid w-full grid-cols-2 bg-muted/50">
+              <TabsTrigger value="exterior" className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <TreePine className="h-3.5 w-3.5" />
                 Exterior
                 {selectedExterior.length > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] text-[10px]">{selectedExterior.length}</Badge>
+                  <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] text-[10px] data-[state=active]:bg-primary-foreground data-[state=active]:text-primary">{selectedExterior.length}</Badge>
                 )}
               </TabsTrigger>
-              <TabsTrigger value="interior" className="flex items-center gap-1.5">
+              <TabsTrigger value="interior" className="flex items-center gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Lamp className="h-3.5 w-3.5" />
                 Interior
                 {selectedInterior.length > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] text-[10px]">{selectedInterior.length}</Badge>
+                  <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] text-[10px] data-[state=active]:bg-primary-foreground data-[state=active]:text-primary">{selectedInterior.length}</Badge>
                 )}
               </TabsTrigger>
             </TabsList>
