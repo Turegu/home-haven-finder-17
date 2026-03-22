@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, MapPin } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LocationPicker from '@/components/LocationPicker';
 import PropertyTypeDropdown from '@/components/PropertyTypeDropdown';
@@ -51,71 +51,57 @@ const HeroSearch = () => {
   return (
     <section className="relative z-20 -mt-8">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="bg-background/95 backdrop-blur-md rounded-2xl shadow-2xl border border-border overflow-hidden">
-          {/* Top bar: Tabs + Search button */}
-          <div className="flex items-center justify-between px-5 pt-4 pb-3">
-            {/* Buy / Rent Toggle */}
-            <div className="flex gap-0.5 bg-muted rounded-full p-0.5">
-              <button
-                onClick={() => handleTabChange('buy')}
-                className={`px-5 py-1.5 text-sm font-semibold rounded-full transition-all duration-200 ${
-                  activeTab === 'buy'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Buy
-              </button>
-              <button
-                onClick={() => handleTabChange('rent')}
-                className={`px-5 py-1.5 text-sm font-semibold rounded-full transition-all duration-200 ${
-                  activeTab === 'rent'
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Rent
-              </button>
-            </div>
+        <div className="bg-background/95 backdrop-blur-md rounded-xl p-4 shadow-2xl border border-border">
+          {/* Buy / Rent Toggle */}
+          <div className="flex gap-1 mb-4 bg-muted rounded-lg p-1 w-fit">
+            <button
+              onClick={() => handleTabChange('buy')}
+              className={`px-6 py-2 text-sm font-semibold rounded-md transition-all ${
+                activeTab === 'buy'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Buy
+            </button>
+            <button
+              onClick={() => handleTabChange('rent')}
+              className={`px-6 py-2 text-sm font-semibold rounded-md transition-all ${
+                activeTab === 'rent'
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Rent
+            </button>
+          </div>
 
-            <Button className="h-9 px-5 rounded-full font-semibold text-sm shadow-md" onClick={handleSearch}>
+          {/* Search Bar */}
+          <div className="flex items-center gap-2 mb-4">
+            <LocationPicker value={location} onChange={setLocation} compact />
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="Enter Search Area, City, Address"
+                className="w-full h-10 px-4 pr-8 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+              {keyword && (
+                <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <Button className="h-10 px-6 font-semibold" onClick={handleSearch}>
               <Search className="h-4 w-4 mr-1.5" />
               Search
             </Button>
           </div>
 
-          {/* Divider */}
-          <div className="h-px bg-border mx-5" />
-
-          {/* Search inputs row */}
-          <div className="px-5 py-3 flex items-center gap-2">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <LocationPicker value={location} onChange={setLocation} compact />
-              <div className="h-6 w-px bg-border shrink-0" />
-              <div className="relative flex-1 min-w-0 max-w-[240px]">
-                <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="Keyword..."
-                  className="w-full h-9 pl-8 pr-7 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
-                {keyword && (
-                  <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="h-px bg-border mx-5" />
-
           {/* Filter Row */}
-          <div className="px-5 py-2.5 flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-2">
             <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
             <AreaDropdown minArea={minArea} maxArea={maxArea} onChange={(min, max) => { setMinArea(min); setMaxArea(max); }} />
@@ -125,7 +111,6 @@ const HeroSearch = () => {
             ) : (
               <RentDurationDropdown value={rentDuration} onChange={setRentDuration} />
             )}
-            <div className="h-5 w-px bg-border shrink-0 mx-0.5" />
             <PropertyFiltersModal
               filters={moreFilters}
               onFiltersChange={setMoreFilters}
