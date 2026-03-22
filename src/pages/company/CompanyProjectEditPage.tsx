@@ -1136,12 +1136,132 @@ const CompanyProjectEditPage = () => {
                 />
               </div>
 
-              {/* Payment Plans - only for existing units */}
-              {editingUnitId && (
-                <div className="border-t border-border pt-4">
-                  <UnitPaymentPlanManager unitId={editingUnitId} unitName={unitForm.unit_name} />
+              {/* Inline Payment Plans */}
+              <div className="border-t border-border pt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-foreground font-medium flex items-center gap-1.5">
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Payment Plans
+                  </Label>
+                  <Button
+                    type="button" variant="outline" size="sm" className="h-7 text-xs"
+                    onClick={() => {
+                      setUnitForm(prev => ({
+                        ...prev,
+                        payment_plans: [...prev.payment_plans, {
+                          id: `local-${Date.now()}`,
+                          plan_name: `Option ${prev.payment_plans.length + 1}`,
+                          is_active: true,
+                          steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                        }],
+                      }));
+                    }}
+                  >
+                    <Plus className="h-3 w-3 mr-1" /> Add Plan
+                  </Button>
                 </div>
-              )}
+
+                {unitForm.payment_plans.length === 0 && (
+                  <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options.</p>
+                )}
+
+                {unitForm.payment_plans.map((plan, planIdx) => (
+                  <div key={plan.id} className="border border-border rounded-lg bg-muted/20 p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={plan.plan_name}
+                        onChange={(e) => {
+                          const updated = [...unitForm.payment_plans];
+                          updated[planIdx] = { ...updated[planIdx], plan_name: e.target.value };
+                          setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                        }}
+                        className="h-7 text-sm font-medium max-w-[180px] bg-secondary/50"
+                      />
+                      <label className="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={plan.is_active}
+                          onChange={() => {
+                            const updated = [...unitForm.payment_plans];
+                            updated[planIdx] = { ...updated[planIdx], is_active: !plan.is_active };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="rounded"
+                        />
+                        Active
+                      </label>
+                      <Button
+                        type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
+                        onClick={() => setUnitForm(prev => ({ ...prev, payment_plans: prev.payment_plans.filter((_, i) => i !== planIdx) }))}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                    {plan.steps.map((step, stepIdx) => (
+                      <div key={step.id} className="flex items-center gap-1.5">
+                        <Input
+                          type="number" placeholder="%" value={step.percentage || ""}
+                          onChange={(e) => {
+                            const updated = [...unitForm.payment_plans];
+                            const steps = [...updated[planIdx].steps];
+                            steps[stepIdx] = { ...steps[stepIdx], percentage: parseFloat(e.target.value) || 0 };
+                            updated[planIdx] = { ...updated[planIdx], steps };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="h-7 text-xs w-16 bg-secondary/50 text-center"
+                        />
+                        <Input
+                          placeholder="e.g. Down payment" value={step.title}
+                          onChange={(e) => {
+                            const updated = [...unitForm.payment_plans];
+                            const steps = [...updated[planIdx].steps];
+                            steps[stepIdx] = { ...steps[stepIdx], title: e.target.value };
+                            updated[planIdx] = { ...updated[planIdx], steps };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="h-7 text-xs bg-secondary/50 flex-1"
+                        />
+                        <Input
+                          placeholder="e.g. At signing" value={step.subtitle}
+                          onChange={(e) => {
+                            const updated = [...unitForm.payment_plans];
+                            const steps = [...updated[planIdx].steps];
+                            steps[stepIdx] = { ...steps[stepIdx], subtitle: e.target.value };
+                            updated[planIdx] = { ...updated[planIdx], steps };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="h-7 text-xs bg-secondary/50 flex-1"
+                        />
+                        <Button
+                          type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0"
+                          onClick={() => {
+                            const updated = [...unitForm.payment_plans];
+                            updated[planIdx] = { ...updated[planIdx], steps: updated[planIdx].steps.filter((_, i) => i !== stepIdx) };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button" variant="ghost" size="sm" className="h-6 text-xs"
+                      onClick={() => {
+                        const updated = [...unitForm.payment_plans];
+                        updated[planIdx] = {
+                          ...updated[planIdx],
+                          steps: [...updated[planIdx].steps, { id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                        };
+                        setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                      }}
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> Add Step
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
 
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setUnitDialogOpen(false)}>Cancel</Button>
