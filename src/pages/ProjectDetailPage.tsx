@@ -5,6 +5,7 @@ import {
   Globe, Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2, Share2, Heart,
   PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity, Home
 } from 'lucide-react';
+import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
