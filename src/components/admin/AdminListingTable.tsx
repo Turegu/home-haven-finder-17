@@ -101,7 +101,10 @@ const AdminListingTable = ({
         const matchesSearch =
           item.title.toLowerCase().includes(q) ||
           item.listing_id.toLowerCase().includes(q) ||
-          (item.company_name || "").toLowerCase().includes(q);
+          (item.company_name || "").toLowerCase().includes(q) ||
+          (item.province || "").toLowerCase().includes(q) ||
+          (item.town || "").toLowerCase().includes(q) ||
+          (item.location || "").toLowerCase().includes(q);
         const matchesStatus = statusFilter === "all" || item.status === statusFilter;
         const matchesCompany = companyFilter === "all" || item.company_name === companyFilter;
         return matchesSearch && matchesStatus && matchesCompany;
@@ -265,7 +268,7 @@ const AdminListingTable = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search By Title, ID, or Company"
+              placeholder="Search by Title, ID, Company, or Location"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="pl-9 w-64"
