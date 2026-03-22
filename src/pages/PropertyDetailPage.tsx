@@ -618,20 +618,26 @@ const PropertyDetailPage = () => {
                       <h3 className="text-sm font-semibold text-foreground mb-2">{plan.plan_name}</h3>
                     )}
                     <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
-                      {plan.steps.map((step, idx) => (
-                        <div key={step.id} className="flex items-stretch flex-shrink-0">
-                          <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center">
-                            <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
-                            <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
-                            {step.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>}
-                          </div>
-                          {idx < plan.steps.length - 1 && (
-                            <div className="flex items-center px-1.5">
-                              <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+                      {plan.steps.map((step, idx) => {
+                        const StepIcon = getPaymentStepIcon(step.title, idx);
+                        return (
+                          <div key={step.id} className="flex items-stretch flex-shrink-0">
+                            <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center flex flex-col items-center">
+                              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                                <StepIcon className="h-4.5 w-4.5 text-primary" />
+                              </div>
+                              <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
+                              <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
+                              {step.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>}
                             </div>
-                          )}
-                        </div>
-                      ))}
+                            {idx < plan.steps.length - 1 && (
+                              <div className="flex items-center px-1.5">
+                                <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
