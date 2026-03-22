@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FileText, Send, Handshake, ChevronDown, Loader2,
+  FileText, Send, Handshake, ChevronDown, Check, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,9 +49,10 @@ const PropertyRequestPage = () => {
   const [formData, setFormData] = useState({
     fullName: '', email: '', phone: '', contactMethod: '',
     enquiryType: '', propertyType: '', province: '', district: '', neighbourhood: '',
-    areaStreet: '', budget: '', areaSqm: '', rooms: '', bathrooms: '',
-    furnishing: '', floorLevel: '', propertyStatus: '', parkingSpace: '',
-    viewOrientation: '', interiorAmenities: [] as string[], exteriorAmenities: [] as string[],
+    areaStreet: '', budget: '', areaSqm: '',
+    rooms: [] as string[], bathrooms: [] as string[],
+    furnishing: [] as string[], floorLevel: [] as string[], propertyStatus: [] as string[], parkingSpace: [] as string[],
+    viewOrientation: [] as string[], interiorAmenities: [] as string[], exteriorAmenities: [] as string[],
     additionalRequests: '',
   });
 
@@ -95,13 +96,11 @@ const PropertyRequestPage = () => {
   const handleChange = (field: string, value: string) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-  const toggleAmenity = (field: 'interiorAmenities' | 'exteriorAmenities', value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].includes(value)
-        ? prev[field].filter(v => v !== value)
-        : [...prev[field], value],
-    }));
+  const toggleMulti = (field: string, value: string) => {
+    setFormData(prev => {
+      const arr = (prev as any)[field] as string[];
+      return { ...prev, [field]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] };
+    });
   };
 
   // Determine which property types to show based on enquiry type
@@ -140,13 +139,13 @@ const PropertyRequestPage = () => {
         area_street: formData.areaStreet || null,
         budget: formData.budget || null,
         area_sqm: formData.areaSqm || null,
-        rooms: formData.rooms || null,
-        bathrooms: formData.bathrooms || null,
-        furnishing: formData.furnishing || null,
-        floor_level: formData.floorLevel || null,
-        property_status: formData.propertyStatus || null,
-        parking_space: formData.parkingSpace || null,
-        view_orientation: formData.viewOrientation || null,
+        rooms: formData.rooms.join(', ') || null,
+        bathrooms: formData.bathrooms.join(', ') || null,
+        furnishing: formData.furnishing.join(', ') || null,
+        floor_level: formData.floorLevel.join(', ') || null,
+        property_status: formData.propertyStatus.join(', ') || null,
+        parking_space: formData.parkingSpace.join(', ') || null,
+        view_orientation: formData.viewOrientation.join(', ') || null,
         interior_amenities: formData.interiorAmenities,
         exterior_amenities: formData.exteriorAmenities,
         additional_requests: formData.additionalRequests || null,
@@ -159,9 +158,10 @@ const PropertyRequestPage = () => {
       setFormData({
         fullName: '', email: '', phone: '', contactMethod: '',
         enquiryType: '', propertyType: '', province: '', district: '', neighbourhood: '',
-        areaStreet: '', budget: '', areaSqm: '', rooms: '', bathrooms: '',
-        furnishing: '', floorLevel: '', propertyStatus: '', parkingSpace: '',
-        viewOrientation: '', interiorAmenities: [], exteriorAmenities: [],
+        areaStreet: '', budget: '', areaSqm: '',
+        rooms: [], bathrooms: [],
+        furnishing: [], floorLevel: [], propertyStatus: [], parkingSpace: [],
+        viewOrientation: [], interiorAmenities: [], exteriorAmenities: [],
         additionalRequests: '',
       });
     } catch {
@@ -189,6 +189,50 @@ const PropertyRequestPage = () => {
             {options.map((o) => <option key={o} value={o} className="text-foreground">{o}</option>)}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        </div>
+      </div>
+    );
+  };
+
+  const MultiSelectField = ({ label, field, options }: { label: string; field: string; options: string[] }) => {
+    const selected = (formData as any)[field] as string[];
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">
+          {label}
+          {selected.length > 0 && <span className="text-xs text-primary ml-1">({selected.length})</span>}
+        </label>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {}}
+            className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-left appearance-none focus:outline-none focus:ring-2 focus:ring-ring text-muted-foreground"
+            style={{ display: 'none' }}
+          />
+          <div className="max-h-[160px] overflow-y-auto rounded-md border border-input bg-background p-2 grid grid-cols-2 gap-1">
+            {options.map((opt) => {
+              const isSelected = selected.includes(opt);
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => toggleMulti(field, opt)}
+                  className={`flex items-center gap-1.5 text-xs px-2 py-1.5 rounded transition-colors text-left ${
+                    isSelected
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <div className={`h-3.5 w-3.5 rounded border flex items-center justify-center shrink-0 ${
+                    isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/40'
+                  }`}>
+                    {isSelected && <Check className="h-2.5 w-2.5 text-primary-foreground" />}
+                  </div>
+                  <span className="line-clamp-1">{opt}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -296,23 +340,23 @@ const PropertyRequestPage = () => {
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" /></div>
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
-              <SelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
-              <SelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
-              <SelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
-              <SelectField label="Floor Level" field="floorLevel" options={filterOpts['floor_level'] || []} />
-              <SelectField label="Property Status" field="propertyStatus" options={filterOpts['property_status'] || []} />
-              <SelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
-              <SelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
+              <MultiSelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
+              <MultiSelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
+              <MultiSelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
+              <MultiSelectField label="Floor Level" field="floorLevel" options={filterOpts['floor_level'] || []} />
+              <MultiSelectField label="Property Status" field="propertyStatus" options={filterOpts['property_status'] || []} />
+              <MultiSelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
+              <MultiSelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
 
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">Amenities</label>
                 <AmenitiesPickerDialog
                   interiorOptions={filterOpts['interior_amenities'] || []}
                   exteriorOptions={filterOpts['exterior_amenities'] || []}
                   selectedInterior={formData.interiorAmenities}
                   selectedExterior={formData.exteriorAmenities}
-                  onToggleInterior={(v) => toggleAmenity('interiorAmenities', v)}
-                  onToggleExterior={(v) => toggleAmenity('exteriorAmenities', v)}
+                  onToggleInterior={(v) => toggleMulti('interiorAmenities', v)}
+                  onToggleExterior={(v) => toggleMulti('exteriorAmenities', v)}
                 />
               </div>
             </div>
