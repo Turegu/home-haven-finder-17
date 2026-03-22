@@ -110,6 +110,8 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       return;
     }
     setSending(true);
+    const selectedUnit = projectUnits?.find(u => u.id === selectedUnitId);
+    const unitSuffix = selectedUnit ? `\n[Interested in unit: ${selectedUnit.unit_name} (${selectedUnit.unit_type})]` : '';
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -121,7 +123,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
-          message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
+          message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
         };
         if (listingType === 'property') inquiryData.property_id = property.id;
         else if (listingType === 'project') inquiryData.project_id = property.id;
