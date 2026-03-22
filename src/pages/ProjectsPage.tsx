@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { turkishIncludes } from '@/lib/utils';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
