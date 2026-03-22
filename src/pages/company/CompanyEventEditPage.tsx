@@ -123,7 +123,10 @@ const CompanyEventEditPage = () => {
     organizer: "",
   });
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
 
   useEffect(() => {
     const init = async () => {
