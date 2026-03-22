@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { format, differenceInDays, startOfMonth, startOfYear } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import { useSalesContact } from "@/hooks/useSalesContact";
 
 const membershipIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
