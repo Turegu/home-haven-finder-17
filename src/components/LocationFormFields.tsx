@@ -12,6 +12,33 @@ interface NamePair { name: string; ar: string }
 // Module-level cache for provinces (same as LocationPicker)
 let provincesCache: NamePair[] | null = null;
 
+// Metropolitan provinces whose "city center" is split into multiple districts
+// When user selects "{Province} (Central)", we fetch neighborhoods from all these districts
+const METRO_CENTRAL_DISTRICTS: Record<string, string[]> = {
+  'Adana': ['Seyhan', 'Çukurova', 'Yüreğir', 'Sarıçam'],
+  'Ankara': ['Çankaya', 'Keçiören', 'Etimesgut', 'Yenimahalle', 'Mamak', 'Altındağ', 'Sincan', 'Pursaklar'],
+  'İstanbul': ['Kadıköy', 'Beşiktaş', 'Beyoğlu', 'Fatih', 'Şişli', 'Üsküdar', 'Bakırköy', 'Sarıyer', 'Ataşehir', 'Maltepe', 'Zeytinburnu', 'Eyüpsultan', 'Bayrampaşa', 'Kağıthane'],
+  'İzmir': ['Konak', 'Bornova', 'Karşıyaka', 'Buca', 'Bayraklı', 'Çiğli', 'Gaziemir', 'Balçova', 'Narlıdere'],
+  'Bursa': ['Osmangazi', 'Nilüfer', 'Yıldırım'],
+  'Antalya': ['Muratpaşa', 'Konyaaltı', 'Kepez', 'Döşemealtı', 'Aksu'],
+  'Gaziantep': ['Şahinbey', 'Şehitkamil', 'Oğuzeli'],
+  'Konya': ['Selçuklu', 'Meram', 'Karatay'],
+  'Mersin': ['Yenişehir', 'Toroslar', 'Akdeniz', 'Mezitli'],
+  'Kayseri': ['Melikgazi', 'Kocasinan', 'Talas'],
+};
+
+function getCentralLabel(province: string): string {
+  return `${province} (Central)`;
+}
+
+function isCentralOption(townValue: string): boolean {
+  return townValue.endsWith(' (Central)');
+}
+
+function getCentralDistricts(province: string): string[] | null {
+  return METRO_CENTRAL_DISTRICTS[province] || null;
+}
+
 // City coordinate lookup for auto-centering
 const cityCoords: Record<string, [number, number]> = {
   'istanbul': [41.0082, 28.9784],
@@ -225,17 +252,33 @@ function InteractiveMapPicker({
     });
   }, []);
 
-  // Fetch boundary when province+town changes
+  // Fetch boundary when province+town changes — handle "(Central)" option
   useEffect(() => {
     if (!province || !town) {
       setBoundaryPolygons(null);
       return;
     }
     setLoadingBoundary(true);
-    fetchDistrictBoundary(province, town).then((polys) => {
-      setBoundaryPolygons(polys);
-      setLoadingBoundary(false);
-    });
+
+    if (isCentralOption(town)) {
+      // Fetch boundaries for all central districts and merge
+      const centralDistricts = getCentralDistricts(province) || [];
+      Promise.all(
+        centralDistricts.map(d => fetchDistrictBoundary(province, d))
+      ).then((results) => {
+        const merged: number[][][] = [];
+        for (const polys of results) {
+          if (polys) merged.push(...polys);
+        }
+        setBoundaryPolygons(merged.length > 0 ? merged : null);
+        setLoadingBoundary(false);
+      });
+    } else {
+      fetchDistrictBoundary(province, town).then((polys) => {
+        setBoundaryPolygons(polys);
+        setLoadingBoundary(false);
+      });
+    }
   }, [province, town]);
 
   // Validate and set pin using polygon boundary
@@ -491,7 +534,7 @@ const LocationFormFields = ({
     });
   }, []);
 
-  // Load districts when province changes
+  // Load districts when province changes — add "(Central)" option for metro cities
   useEffect(() => {
     if (!province) {
       setDistricts([]);
@@ -500,22 +543,53 @@ const LocationFormFields = ({
     }
     setLoadingDistricts(true);
     supabase.rpc("get_distinct_districts", { p_province: province }).then(({ data }) => {
-      if (data) setDistricts(data as NamePair[]);
+      if (data) {
+        const list = data as NamePair[];
+        // If this province has central districts, prepend a virtual option
+        if (METRO_CENTRAL_DISTRICTS[province]) {
+          const centralOption: NamePair = { name: getCentralLabel(province), ar: '' };
+          setDistricts([centralOption, ...list]);
+        } else {
+          setDistricts(list);
+        }
+      }
       setLoadingDistricts(false);
     });
   }, [province]);
 
-  // Load neighborhoods when district changes
+  // Load neighborhoods when district changes — handle "(Central)" virtual option
   useEffect(() => {
     if (!province || !town) {
       setNeighborhoods([]);
       return;
     }
     setLoadingNeighborhoods(true);
-    supabase.rpc("get_neighborhoods", { p_province: province, p_district: town }).then(({ data }) => {
-      if (data) setNeighborhoods(data as NamePair[]);
-      setLoadingNeighborhoods(false);
-    });
+
+    if (isCentralOption(town)) {
+      // Fetch neighborhoods from ALL central districts
+      const centralDistricts = getCentralDistricts(province) || [];
+      Promise.all(
+        centralDistricts.map(d =>
+          supabase.rpc("get_neighborhoods", { p_province: province, p_district: d }).then(({ data }) => (data || []) as NamePair[])
+        )
+      ).then((results) => {
+        // Merge, deduplicate by name, sort
+        const merged = new Map<string, NamePair>();
+        for (const list of results) {
+          for (const n of list) {
+            if (!merged.has(n.name)) merged.set(n.name, n);
+          }
+        }
+        const sorted = Array.from(merged.values()).sort((a, b) => a.name.localeCompare(b.name));
+        setNeighborhoods(sorted);
+        setLoadingNeighborhoods(false);
+      });
+    } else {
+      supabase.rpc("get_neighborhoods", { p_province: province, p_district: town }).then(({ data }) => {
+        if (data) setNeighborhoods(data as NamePair[]);
+        setLoadingNeighborhoods(false);
+      });
+    }
   }, [province, town]);
 
   const handleProvinceChange = useCallback((v: string) => {
