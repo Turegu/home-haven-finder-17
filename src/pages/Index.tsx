@@ -318,6 +318,7 @@ const Index = () => {
         </section>
       )}
 
+      <AiPropertyAgent />
       <Footer />
     </div>
   );

@@ -52,6 +52,22 @@ const AiPropertyAgent = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
 
+  // Check global AI search toggle
+  const { data: aiEnabled = true } = useQuery({
+    queryKey: ['ai-search-enabled'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('admin_settings')
+        .select('setting_value')
+        .eq('setting_key', 'ai_search_enabled')
+        .maybeSingle();
+      return data?.setting_value !== 'false';
+    },
+    staleTime: 60_000,
+  });
+
+  if (!aiEnabled) return null;
+
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();

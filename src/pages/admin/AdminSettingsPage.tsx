@@ -70,6 +70,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_address", salesAddress),
       saveSetting("map_provider", mapProvider),
       saveSetting("analytics_display_phase", analyticsPhase),
+      saveSetting("ai_search_enabled", aiSearchEnabled ? 'true' : 'false'),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
