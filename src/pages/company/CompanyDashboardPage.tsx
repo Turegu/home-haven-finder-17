@@ -124,7 +124,7 @@ const CompanyDashboardPage = () => {
   const totalListings = counts.properties + counts.projects;
   const premiumPercent = totalListings > 0 ? Math.round((totalPremium / totalListings) * 100) : 0;
   const featuredPercent = totalListings > 0 ? Math.round((totalFeatured / totalListings) * 100) : 0;
-  const creditBarPercent = creditSummary.totalTopups > 0 ? Math.round(((company?.credit_balance || 0) / creditSummary.totalTopups) * 100) : 0;
+  const creditBarPercent = creditTopups > 0 ? Math.round(((company?.credit_balance || 0) / creditTopups) * 100) : 0;
 
   return (
     <CompanyLayout>
