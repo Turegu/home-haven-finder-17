@@ -93,6 +93,7 @@ const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { formatArea } = useAreaUnit();
+  const isMobile = useIsMobile();
   useTrackPageView(id, 'property');
   const [property, setProperty] = useState(emptyPropertyState);
   const [loading, setLoading] = useState(true);
