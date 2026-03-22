@@ -14,7 +14,8 @@ interface UserLayoutProps {
 }
 
 const sidebarLinks = [
-  { label: "Account Settings", path: "/account", icon: Settings, countKey: null },
+  { label: "Dashboard", path: "/account", icon: Home, countKey: null },
+  { label: "Account Settings", path: "/account/settings", icon: Settings, countKey: null },
   { label: "Followed Agents", path: "/account/followed-agents", icon: Users2, countKey: "followed" },
   { label: "Saved Properties", path: "/account/saved-properties", icon: Heart, countKey: "saved" },
   { label: "Saved Searches", path: "/account/saved-searches", icon: Search, countKey: "searches" },

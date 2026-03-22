@@ -36,6 +36,7 @@ const ForgotPasswordPage = lazy(() => import("./pages/user/ForgotPasswordPage.ts
 const ResetPasswordPage = lazy(() => import("./pages/user/ResetPasswordPage.tsx"));
 
 // User dashboard pages
+const UserDashboardPage = lazy(() => import("./pages/user/UserDashboardPage.tsx"));
 const AccountSettingsPage = lazy(() => import("./pages/user/AccountSettingsPage.tsx"));
 const FollowedAgentsPage = lazy(() => import("./pages/user/FollowedAgentsPage.tsx"));
 const SavedPropertiesPage = lazy(() => import("./pages/user/SavedPropertiesPage.tsx"));
@@ -160,7 +161,8 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* User dashboard */}
-            <Route path="/account" element={<AccountSettingsPage />} />
+            <Route path="/account" element={<UserDashboardPage />} />
+            <Route path="/account/settings" element={<AccountSettingsPage />} />
             <Route path="/account/followed-agents" element={<FollowedAgentsPage />} />
             <Route path="/account/saved-properties" element={<SavedPropertiesPage />} />
             <Route path="/account/saved-searches" element={<SavedSearchesPage />} />

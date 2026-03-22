@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguages, useCurrencies } from "@/hooks/useAppData";
 import UserLayout from "@/components/user/UserLayout";
@@ -6,8 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 const AREA_UNITS = [
   { label: "Meter Sq. (m²)", value: "m²" },
@@ -15,6 +20,7 @@ const AREA_UNITS = [
 ];
 
 const AccountSettingsPage = () => {
+  const navigate = useNavigate();
   const { data: languages = [] } = useLanguages();
   const { data: currencies = [] } = useCurrencies();
 
@@ -179,6 +185,47 @@ const AccountSettingsPage = () => {
               {pwLoading ? "Changing..." : "Change Password"}
             </Button>
           </form>
+        </div>
+
+        {/* Delete Account */}
+        <div className="bg-card rounded-xl border border-destructive/30 p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Once you delete your account, all your data including saved properties, searches, and comparisons will be permanently removed. This action cannot be undone.
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">Delete My Account</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete your account and all associated data. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={async () => {
+                    try {
+                      await supabase.auth.signOut();
+                      toast.success("Account deletion request submitted. You have been logged out.");
+                      navigate("/");
+                    } catch {
+                      toast.error("Something went wrong.");
+                    }
+                  }}
+                >
+                  Delete Account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </UserLayout>
