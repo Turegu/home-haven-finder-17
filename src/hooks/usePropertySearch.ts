@@ -137,25 +137,30 @@ export function usePropertySearch(params: PropertySearchParams) {
         }
       }
 
-      // Sorting — tier priority handled client-side after fetch for correct premium > featured > standard
-      // Server sort: display_on_homepage DESC, then user-selected sort
-      query = query.order("display_on_homepage", { ascending: false });
+      // Sorting: when user picks a specific sort (price/area), it takes priority.
+      // Tier ordering (premium > featured > standard) is secondary.
+      // For default sort ("newest"), tier ordering is primary.
+      const isDefaultSort = !params.sortBy || params.sortBy === 'newest';
 
-      switch (params.sortBy) {
-        case "price_asc":
-          query = query.order("price", { ascending: true, nullsFirst: false });
-          break;
-        case "price_desc":
-          query = query.order("price", { ascending: false, nullsFirst: false });
-          break;
-        case "area_desc":
-          query = query.order("area", { ascending: false, nullsFirst: false });
-          break;
-        case "area_asc":
-          query = query.order("area", { ascending: true, nullsFirst: false });
-          break;
-        default:
-          query = query.order("created_at", { ascending: false });
+      if (isDefaultSort) {
+        query = query.order("display_on_homepage", { ascending: false });
+        query = query.order("created_at", { ascending: false });
+      } else {
+        switch (params.sortBy) {
+          case "price_asc":
+            query = query.order("price", { ascending: true, nullsFirst: false });
+            break;
+          case "price_desc":
+            query = query.order("price", { ascending: false, nullsFirst: false });
+            break;
+          case "area_desc":
+            query = query.order("area", { ascending: false, nullsFirst: false });
+            break;
+          case "area_asc":
+            query = query.order("area", { ascending: true, nullsFirst: false });
+            break;
+        }
+        query = query.order("display_on_homepage", { ascending: false });
       }
 
       // Pagination
@@ -168,18 +173,19 @@ export function usePropertySearch(params: PropertySearchParams) {
       const { data, error, count } = await query;
       if (error) throw error;
 
-      // Re-sort results to enforce premium > featured > standard tier ordering
       const tierOrder = (cls: string | null) => {
         if (cls === "premium") return 0;
         if (cls === "featured") return 1;
         return 2;
       };
-      const sorted = (data ?? []).sort((a: any, b: any) => {
-        const ta = tierOrder(a.property_classification);
-        const tb = tierOrder(b.property_classification);
-        if (ta !== tb) return ta - tb;
-        return 0; // preserve server order for same tier
-      });
+
+      // Only apply client-side tier re-sort for default sort
+      let sorted = data ?? [];
+      if (isDefaultSort) {
+        sorted = [...sorted].sort((a: any, b: any) => {
+          return tierOrder(a.property_classification) - tierOrder(b.property_classification);
+        });
+      }
 
       return {
         properties: sorted as PropertyResult[],
