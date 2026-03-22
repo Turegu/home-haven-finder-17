@@ -4,6 +4,7 @@ import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
+import HomepageSpotlight from '@/components/HomepageSpotlight';
 
 import Footer from '@/components/Footer';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
