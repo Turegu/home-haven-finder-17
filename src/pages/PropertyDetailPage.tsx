@@ -43,15 +43,14 @@ const OverviewItem = ({ icon: Icon, label, value }: { icon: React.ElementType; l
   </div>
 );
 
-const getPaymentStepIcon = (title: string, index: number) => {
+const getPaymentStepIcon = (title: string) => {
   const t = title.toLowerCase();
   if (t.includes('down') || t.includes('booking') || t.includes('deposit')) return Wallet;
-  if (t.includes('construct') || t.includes('during') || t.includes('progress')) return HardHat;
   if (t.includes('handover') || t.includes('delivery') || t.includes('key')) return KeyRound;
-  if (t.includes('completion') || t.includes('complete') || t.includes('finish')) return CalendarCheck;
-  if (t.includes('post') || t.includes('installment') || t.includes('monthly')) return Banknote;
-  const fallbacks = [Wallet, HardHat, CalendarCheck, KeyRound, Banknote];
-  return fallbacks[index % fallbacks.length];
+  if (t.includes('construct') || t.includes('progress')) return HardHat;
+  if (t.includes('completion') || t.includes('complete')) return CalendarCheck;
+  if (t.includes('post') || t.includes('monthly')) return Banknote;
+  return DollarSign;
 };
 
 const emptyPropertyState = {
