@@ -314,7 +314,7 @@ function InteractiveMapPicker({
     // Click to place/move pin — enforce boundary
     map.on("click", (e: any) => {
       const { lat, lng } = e.latlng;
-      if (!trySetPin(lat, lng)) return;
+      if (!trySetPinRef.current(lat, lng)) return;
 
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
@@ -322,7 +322,7 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([lat, lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
         markerRef.current.on("dragend", () => {
           const pos = markerRef.current.getLatLng();
-          if (!trySetPin(pos.lat, pos.lng)) {
+          if (!trySetPinRef.current(pos.lat, pos.lng)) {
             markerRef.current.setLatLng([lat, lng]);
           }
         });
