@@ -19,7 +19,7 @@ import {
   Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
   Calendar, Compass, ScrollText, Activity, Tag, TreePine,
   DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
-  ChevronDown, Bold, Italic, Underline, List, Heading
+  ChevronDown, Bold, Italic, Underline, List, Heading, Plus, Trash2
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
