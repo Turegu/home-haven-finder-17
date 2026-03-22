@@ -18,7 +18,7 @@ export default function RoomsDropdown({ value, onChange, label = 'Rooms' }: Room
   const [search, setSearch] = useState("");
 
   const filtered = search
-    ? roomOptions.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    ? roomOptions.filter(o => turkishIncludes(o, search))
     : roomOptions;
 
   function toggle(opt: string) {

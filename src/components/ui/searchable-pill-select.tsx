@@ -19,7 +19,7 @@ const SearchablePillSelect = ({
   const [search, setSearch] = useState("");
 
   const filtered = search
-    ? options.filter((o) => o.toLowerCase().includes(search.toLowerCase()))
+    ? options.filter((o) => turkishIncludes(o, search))
     : options;
 
   return (

@@ -99,16 +99,14 @@ const AdminListingTable = ({
   const filtered = useMemo(() => {
     return items
       .filter((item) => {
-        const q = search.toLowerCase();
-        const matchesSearch = !q ||
-          item.title.toLowerCase().includes(q) ||
-          item.listing_id.toLowerCase().includes(q) ||
-          (item.company_name || "").toLowerCase().includes(q);
-        const loc = locationSearch.toLowerCase();
-        const matchesLocation = !loc ||
-          (item.province || "").toLowerCase().includes(loc) ||
-          (item.town || "").toLowerCase().includes(loc) ||
-          (item.location || "").toLowerCase().includes(loc);
+        const matchesSearch = !search ||
+          turkishIncludes(item.title, search) ||
+          turkishIncludes(item.listing_id, search) ||
+          turkishIncludes(item.company_name || "", search);
+        const matchesLocation = !locationSearch ||
+          turkishIncludes(item.province || "", locationSearch) ||
+          turkishIncludes(item.town || "", locationSearch) ||
+          turkishIncludes(item.location || "", locationSearch);
         const matchesStatus = statusFilter === "all" || item.status === statusFilter;
         const matchesCompany = companyFilter === "all" || item.company_name === companyFilter;
         return matchesSearch && matchesLocation && matchesStatus && matchesCompany;

@@ -145,7 +145,7 @@ export default function AmenitiesViewAllDialog({ type, options, selected, onTogg
   const [search, setSearch] = useState('');
 
   const filtered = search
-    ? options.filter(o => o.toLowerCase().includes(search.toLowerCase()))
+    ? options.filter(o => turkishIncludes(o, search))
     : options;
 
   const title = type === 'exterior' ? 'Exterior Amenities' : 'Interior Amenities';
