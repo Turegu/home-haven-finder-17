@@ -736,11 +736,11 @@ const CompanyProjectEditPage = () => {
               </Label>
               <Input type="number" value={form.min_units} onChange={(e) => updateField("min_units", e.target.value)} className="bg-secondary/50" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="min_area">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Min Area ({form.area_unit})
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Min Area ({form.area_unit}) *
               </Label>
-              <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className="bg-secondary/50" />
+              <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className={`bg-secondary/50 ${errorClass("min_area")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
