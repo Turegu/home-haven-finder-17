@@ -53,6 +53,7 @@ const ITEMS_PER_PAGE = 10;
 
 const CompanyPropertiesPage = () => {
   const navigate = useNavigate();
+  const { data: analyticsPhase } = useAnalyticsPhase();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
