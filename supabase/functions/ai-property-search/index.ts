@@ -220,13 +220,13 @@ ${listingSummaries}`;
 
     // Extract PICK lines
     const pickRegex = /PICK\|(\d+)\|(\d+)/g;
-    const picks: { index: number; score: number; property: any }[] = [];
+    const picks: { index: number; score: number; listing: any }[] = [];
     let match;
     while ((match = pickRegex.exec(fullText)) !== null) {
       const idx = parseInt(match[1]);
       const score = parseInt(match[2]);
-      if (idx >= 0 && idx < sorted.length) {
-        picks.push({ index: idx, score, property: sorted[idx] });
+      if (idx >= 0 && idx < allListings.length) {
+        picks.push({ index: idx, score, listing: allListings[idx] });
       }
     }
 
