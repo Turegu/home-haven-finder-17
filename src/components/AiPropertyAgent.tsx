@@ -78,6 +78,8 @@ const AiPropertyAgent = () => {
     }
   }, [analysis, picks]);
 
+  if (!aiEnabled) return null;
+
   const handleSearch = async (searchQuery?: string) => {
     const q = searchQuery || query;
     if (!q.trim() || isLoading) return;
