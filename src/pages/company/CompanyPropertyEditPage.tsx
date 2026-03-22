@@ -58,6 +58,7 @@ const CompanyPropertyEditPage = () => {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
     title: "",
