@@ -40,7 +40,8 @@ const AccountSettingsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) return;
       setEmail(user.email || "");
       const { data } = await supabase.from("profiles").select("*").eq("user_id", user.id).limit(1).maybeSingle();
