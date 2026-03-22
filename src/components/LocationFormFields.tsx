@@ -528,6 +528,8 @@ const LocationFormFields = ({
           onPinLocationChange={onPinLocationChange}
           province={province}
           town={town}
+          neighborhoods={neighborhoods}
+          onNeighbourhoodChange={onNeighbourhoodChange}
         />
       )}
       {showMap && showPinLocation && onPinLocationChange && (!province || !town) && (
