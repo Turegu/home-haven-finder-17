@@ -15,10 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, MoreVertical, Pencil, Eye, RefreshCw, Ban, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, MoreVertical, Pencil, Eye, RefreshCw, Ban, ArrowUpCircle, Crown, Star, LayoutList, CheckCircle, XCircle, FileText, ChevronLeft, ChevronRight, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
 
 interface AgentProperty {
   id: string;
