@@ -48,23 +48,31 @@ serve(async (req) => {
 
     // Build a compact summary for the AI
     const propertySummaries = sorted.map((p: any, i: number) => {
-      return `[${i}] "${p.title}" | ${p.property_classification || 'standard'} | ${p.property_purpose} | ${p.property_type} | ${p.currency || 'USD'} ${p.price?.toLocaleString() || 'N/A'} | ${p.area || '?'} ${p.area_unit || 'm²'} | Rooms: ${p.rooms || '?'} | Beds: ${p.bedrooms ?? '?'} | Baths: ${p.bathrooms ?? '?'} | Location: ${[p.neighbourhood, p.town, p.province].filter(Boolean).join(', ')} | Parking: ${p.parking_spaces ?? '?'} | Furniture: ${p.furniture || '?'} | Floor: ${p.floor_level || '?'} | Age: ${p.property_age || '?'} | Interior: ${(p.interior_amenities || []).join(', ') || 'N/A'} | Exterior: ${(p.exterior_amenities || []).join(', ') || 'N/A'} | Desc: ${(p.description || '').substring(0, 150)}`;
+      const desc = (p.description || '').substring(0, 500);
+      const pin = p.pin_location || '';
+      return `[${i}] "${p.title}" | ${p.property_classification || 'standard'} | ${p.property_purpose} | ${p.property_type} | ${p.currency || 'USD'} ${p.price?.toLocaleString() || 'N/A'} | ${p.area || '?'} ${p.area_unit || 'm²'} | Rooms: ${p.rooms || '?'} | Beds: ${p.bedrooms ?? '?'} | Baths: ${p.bathrooms ?? '?'} | Location: ${[p.neighbourhood, p.town, p.province].filter(Boolean).join(', ')} | Pin: ${pin} | Parking: ${p.parking_spaces ?? '?'} | Furniture: ${p.furniture || '?'} | Floor: ${p.floor_level || '?'} | Age: ${p.property_age || '?'} | Interior: ${(p.interior_amenities || []).join(', ') || 'N/A'} | Exterior: ${(p.exterior_amenities || []).join(', ') || 'N/A'} | Desc: ${desc}`;
     }).join("\n");
 
     const systemPrompt = `You are an expert real estate AI assistant. A user will describe their dream property. Your job is to find the TOP 3 best matching properties from the available listings.
 
 CRITICAL RULES:
-- ONLY match properties that have ACTUAL EVIDENCE in their data (title, description, location, amenities) supporting the user's request.
+- READ THE FULL DESCRIPTION AND ALL AMENITIES of every property carefully before scoring. The description often contains crucial details about views, proximity to landmarks, nearby features, finishes, and lifestyle benefits.
+- ONLY match properties that have ACTUAL EVIDENCE in their data (title, description, location, amenities, pin coordinates) supporting the user's request.
 - NEVER assume a property has features that are not explicitly mentioned in its data. If a property has no description, no amenities, and no relevant keywords, it is NOT a match — even if the property type matches.
 - A property with null/empty description and no amenities should get a very low score (below 20) unless its title or location explicitly contains the requested feature.
-- If the user asks for "sea view", "beach", "lake", etc., the property MUST have those words in its title, description, location, or amenities to be considered a match.
 - Always prioritize "premium" listings first, then "featured", then "standard" — but ONLY among properties that actually match.
 - Return UP TO 3 picks. If fewer than 3 properties genuinely match, return fewer. It's better to return 1 great match than 3 poor ones.
 - Be honest: if no properties match well, say so clearly.
 
+PROXIMITY & GEOGRAPHIC REASONING:
+- Properties have "Pin" coordinates (lat,lng). Use these to reason about proximity to geographic features (beaches, lakes, mountains, city centers, etc.).
+- If a user asks for "beach property" or "sea view" and no property explicitly mentions it, check if any properties are located in known coastal cities/towns or have pin coordinates near coastlines.
+- If an exact match isn't found, BE HELPFUL: suggest the closest alternatives. For example: "I didn't find a property directly on the beach, but this villa in [coastal town] is in a seaside area and could be very close to the shore — worth checking out!"
+- Use your geographic knowledge of the region (Turkey, etc.) to infer proximity. E.g., properties in Antalya, Bodrum, Alanya, Mersin coast areas are likely near the sea.
+
 SCORING GUIDE:
 - 90-100: Property explicitly has the exact features requested (e.g., "sea view" in title/description when user asks for sea view)
-- 70-89: Property strongly implies the features (e.g., coastal location when user asks for sea view)
+- 70-89: Property strongly implies the features (e.g., coastal location, or pin coordinates in a known beach area)
 - 50-69: Property partially matches (right type/area but missing key requested features)
 - Below 50: Weak match — only include if nothing better exists
 - DO NOT score above 50 if the property has no data supporting the user's specific request
