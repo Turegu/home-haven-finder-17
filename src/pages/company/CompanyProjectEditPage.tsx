@@ -1052,6 +1052,13 @@ const CompanyProjectEditPage = () => {
                 />
               </div>
 
+              {/* Payment Plans - only for existing units */}
+              {editingUnitId && (
+                <div className="border-t border-border pt-4">
+                  <UnitPaymentPlanManager unitId={editingUnitId} unitName={unitForm.unit_name} />
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setUnitDialogOpen(false)}>Cancel</Button>
                 <Button type="button" onClick={handleSubmitUnit} disabled={savingUnit}>
