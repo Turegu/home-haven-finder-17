@@ -24,23 +24,28 @@ const NotificationsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) return;
-      const { data } = await supabase
-        .from("user_notifications")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(200);
-      setItems((data || []) as UserNotification[]);
-      setLoading(false);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
+        if (!user) { setLoading(false); return; }
+        const { data } = await supabase
+          .from("user_notifications")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(200);
+        setItems((data || []) as UserNotification[]);
+        setLoading(false);
 
-      if (data && data.length > 0) {
-        const unread = data.filter((n: any) => !n.is_read).map((n: any) => n.id);
-        if (unread.length > 0) {
-          await supabase.from("user_notifications").update({ is_read: true }).in("id", unread);
+        if (data && data.length > 0) {
+          const unread = data.filter((n: any) => !n.is_read).map((n: any) => n.id);
+          if (unread.length > 0) {
+            await supabase.from("user_notifications").update({ is_read: true }).in("id", unread);
+          }
         }
+      } catch (err) {
+        console.error("Failed to load notifications:", err);
+        setLoading(false);
       }
     };
     load();

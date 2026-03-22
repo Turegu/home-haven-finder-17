@@ -26,16 +26,21 @@ const FollowedAgentsPage = () => {
   const [page, setPage] = useState(1);
 
   const load = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
-    if (!user) return;
-    const { data } = await supabase
-      .from("agent_followers")
-      .select("id, agent_id, created_at, agents(id, name, avatar_url, designation, company_id)")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false }) as any;
-    setItems((data || []).map((d: any) => ({ ...d, agent: d.agents })));
-    setLoading(false);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("agent_followers")
+        .select("id, agent_id, created_at, agents(id, name, avatar_url, designation, company_id)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false }) as any;
+      setItems((data || []).map((d: any) => ({ ...d, agent: d.agents })));
+    } catch (err) {
+      console.error("Failed to load followed agents:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);

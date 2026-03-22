@@ -28,16 +28,21 @@ const PropertyRequestsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
-      if (!user) return;
-      const { data } = await supabase
-        .from("property_requests")
-        .select("id, full_name, email, phone, enquiry_type, property_type, province, budget, status, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-      setItems((data || []) as RequestItem[]);
-      setLoading(false);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
+        if (!user) { setLoading(false); return; }
+        const { data } = await supabase
+          .from("property_requests")
+          .select("id, full_name, email, phone, enquiry_type, property_type, province, budget, status, created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
+        setItems((data || []) as RequestItem[]);
+      } catch (err) {
+        console.error("Failed to load property requests:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
