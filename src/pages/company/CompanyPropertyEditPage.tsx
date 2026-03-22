@@ -758,7 +758,7 @@ function MultiSelectDropdown({
   searchable?: boolean;
 }) {
   const [search, setSearch] = useState("");
-  const filtered = search ? options.filter(o => o.toLowerCase().includes(search.toLowerCase())) : options;
+  const filtered = search ? options.filter(o => turkishIncludes(o, search)) : options;
 
   return (
     <div className="space-y-2">

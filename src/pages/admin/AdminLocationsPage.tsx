@@ -408,7 +408,7 @@ export default function AdminLocationsPage() {
             /* Province list */
             <ScrollArea className="h-[500px]">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 p-4">
-                {provinces.filter(p => !searchQuery || p.toLowerCase().includes(searchQuery.toLowerCase())).map((province) => (
+                {provinces.filter(p => !searchQuery || turkishIncludes(p, searchQuery)).map((province) => (
                   <button
                     key={province}
                     onClick={() => setSelectedProvince(province)}

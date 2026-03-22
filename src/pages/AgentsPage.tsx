@@ -128,15 +128,15 @@ const AgentsPage = () => {
   }, []);
 
   const filteredCompanies = companies.filter(c => {
-    if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (searchQuery && !turkishIncludes(c.name, searchQuery)) return false;
     if (selectedProvince && c.province !== selectedProvince) return false;
     if (selectedTown && c.town !== selectedTown) return false;
     return true;
   });
   const filteredAgents = agents.filter(a => {
-    if (searchQuery && !a.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    if (selectedProvince && !a.service_areas?.some(area => area.toLowerCase().includes(selectedProvince.toLowerCase()))) return false;
-    if (selectedTown && !a.service_areas?.some(area => area.toLowerCase().includes(selectedTown.toLowerCase()))) return false;
+    if (searchQuery && !turkishIncludes(a.name, searchQuery)) return false;
+    if (selectedProvince && !a.service_areas?.some(area => turkishIncludes(area, selectedProvince))) return false;
+    if (selectedTown && !a.service_areas?.some(area => turkishIncludes(area, selectedTown))) return false;
     return true;
   });
 
