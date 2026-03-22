@@ -21,6 +21,7 @@ interface CompanyRow {
   province: string | null;
   town: string | null;
   neighbourhood: string | null;
+  profile_classification?: string;
 }
 
 interface AgentRow {
@@ -31,8 +32,15 @@ interface AgentRow {
   company_id: string;
   languages: string[] | null;
   service_areas: string[] | null;
+  profile_classification?: string;
   companies: { name: string; logo_url: string | null } | null;
 }
+
+const tierOrder = (cls?: string) => {
+  if (cls === "premium") return 0;
+  if (cls === "featured") return 1;
+  return 2;
+};
 
 const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
