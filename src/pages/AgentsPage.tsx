@@ -76,14 +76,14 @@ const AgentsPage = () => {
       // Companies
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
       // Agents with company join
       const { data: agentData } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, company_id, languages, service_areas, companies(name, logo_url)")
+        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, companies(name, logo_url)")
         .eq("status", "active");
       setAgents((agentData ?? []) as unknown as AgentRow[]);
 
