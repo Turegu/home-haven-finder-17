@@ -146,6 +146,7 @@ const CompanyProjectUnitsPage = () => {
       area_unit: form.area_unit,
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
+      advertising_tags: form.advertising_tags,
       images: form.images, project_id: projectId,
     };
 
