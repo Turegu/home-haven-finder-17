@@ -461,15 +461,59 @@ const CompanyProjectEditPage = () => {
       images: unitForm.images, project_id: projId, status: unitForm.status,
     };
     try {
+      let unitId = editingUnitId;
       if (editingUnitId) {
         const { error } = await supabase.from("project_units").update(payload).eq("id", editingUnitId);
         if (error) throw error;
-        toast.success("Unit updated!");
       } else {
-        const { error } = await supabase.from("project_units").insert(payload);
+        const { data, error } = await supabase.from("project_units").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success("Unit added!");
+        unitId = data.id;
       }
+
+      // Save payment plans
+      if (unitId && unitForm.payment_plans.length > 0) {
+        for (let pi = 0; pi < unitForm.payment_plans.length; pi++) {
+          const plan = unitForm.payment_plans[pi];
+          const isExisting = !plan.id.startsWith("local-");
+          let planId = plan.id;
+
+          if (isExisting) {
+            await supabase.from("unit_payment_plans").update({
+              plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).eq("id", planId);
+            // Delete old steps and re-insert
+            await supabase.from("unit_payment_plan_steps").delete().eq("plan_id", planId);
+          } else {
+            const { data: newPlan, error: planErr } = await supabase.from("unit_payment_plans").insert({
+              unit_id: unitId, plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).select("id").single();
+            if (planErr) throw planErr;
+            planId = newPlan.id;
+          }
+
+          if (plan.steps.length > 0) {
+            const stepsPayload = plan.steps.map((s, si) => ({
+              plan_id: planId, percentage: s.percentage, title: s.title,
+              subtitle: s.subtitle || null, sort_order: si,
+            }));
+            await supabase.from("unit_payment_plan_steps").insert(stepsPayload);
+          }
+        }
+      }
+
+      // Delete plans that were removed (for editing)
+      if (editingUnitId) {
+        const { data: dbPlans } = await supabase.from("unit_payment_plans").select("id").eq("unit_id", editingUnitId);
+        const keptIds = unitForm.payment_plans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
+        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        for (const d of toDelete) {
+          await supabase.from("unit_payment_plan_steps").delete().eq("plan_id", d.id);
+          await supabase.from("unit_payment_plans").delete().eq("id", d.id);
+        }
+      }
+
+      toast.success(editingUnitId ? "Unit updated!" : "Unit added!");
       setUnitDialogOpen(false);
       fetchUnits(projId);
     } catch (err: any) {
