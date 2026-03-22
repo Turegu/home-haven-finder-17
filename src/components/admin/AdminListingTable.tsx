@@ -65,7 +65,7 @@ const MEMBERSHIP_COLORS: Record<string, string> = {
 };
 
 const AdminListingTable = ({
-  tableName, queryKey, items, columns, renderCell, onView,
+  tableName, queryKey, items, columns, renderCell, onView, initialCompanyFilter,
 }: AdminListingTableProps) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
