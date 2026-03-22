@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -59,7 +60,7 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
 
 /* ─── Reusable Form Select with Icon ─── */
 function FormSelect({
-  label, icon, value, onChange, options, placeholder,
+  label, icon, value, onChange, options, placeholder, fieldName, error,
 }: {
   label: string;
   icon: React.ReactNode;
@@ -67,14 +68,16 @@ function FormSelect({
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  fieldName?: string;
+  error?: boolean;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-field={fieldName}>
       <Label className="text-foreground font-medium flex items-center gap-1.5">
         {icon} {label}
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectTrigger className={`bg-secondary/50 ${error ? "ring-2 ring-destructive/70" : ""}`}><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
         <SelectContent>
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
@@ -102,6 +105,7 @@ const CompanyEventEditPage = () => {
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
     title: "",
@@ -121,7 +125,10 @@ const CompanyEventEditPage = () => {
     organizer: "",
   });
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -204,14 +211,21 @@ const CompanyEventEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more events. Please upgrade.`);
       return false;
     }
-    if (!form.title.trim()) { toast.error("Event name is required"); return false; }
-    if (!form.event_type) { toast.error("Event type is required"); return false; }
-    if (!form.event_date) { toast.error("Event date is required"); return false; }
-    if (!form.province) { toast.error("Province is required"); return false; }
-    if (!form.town) { toast.error("Town/District is required"); return false; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
-    if (form.entry_type === "paid" && !form.price) { toast.error("Price is required for paid events"); return false; }
-    return true;
+    const rules = [
+      { field: "title", check: !form.title.trim(), message: "Event name is required" },
+      { field: "event_type", check: !form.event_type, message: "Event type is required" },
+      { field: "event_date", check: !form.event_date, message: "Event date is required" },
+      { field: "province", check: !form.province, message: "Province is required" },
+      { field: "town", check: !form.town, message: "Town/District is required" },
+      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      ...(form.entry_type === "paid" ? [{ field: "price", check: !form.price, message: "Price is required for paid events" }] : []),
+    ];
+    const valid = validate(rules);
+    if (!valid) {
+      const firstError = rules.find(r => r.check);
+      if (firstError) toast.error(firstError.message);
+    }
+    return valid;
   };
 
   const handlePublishClick = () => {
@@ -298,9 +312,9 @@ const CompanyEventEditPage = () => {
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="title">
                 <Label className="text-foreground font-medium">Event Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required placeholder="Event Title" maxLength={60} />
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required placeholder="Event Title" maxLength={60} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
               </div>
               <div className="space-y-2">
@@ -345,12 +359,14 @@ const CompanyEventEditPage = () => {
               value={form.event_type}
               onChange={(v) => updateField("event_type", v)}
               options={eventTypes.map((t) => ({ value: t.value, label: t.label }))}
+              fieldName="event_type"
+              error={errorClass("event_type") !== ""}
             />
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="event_date">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time *
               </Label>
-              <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className="bg-secondary/50" />
+              <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className={`bg-secondary/50 ${errorClass("event_date")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -400,18 +416,20 @@ const CompanyEventEditPage = () => {
         </section>
 
         {/* ─── Location ─── */}
-        <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
+        <section className="bg-card rounded-xl border border-border p-6" data-field="province">
+          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location *" />
+          <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
             province={form.province}
             town={form.town}
             neighbourhood={form.neighbourhood}
             pinLocation={form.pin_location}
-            onProvinceChange={(v) => updateField("province", v)}
+            onProvinceChange={(v) => { updateField("province", v); clearError("town"); clearError("neighbourhood"); }}
             onTownChange={(v) => updateField("town", v)}
             onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
             onPinLocationChange={(v) => updateField("pin_location", v)}
           />
+          </div>
         </section>
 
         {/* ─── Event Logo ─── */}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,7 +68,7 @@ function RichTextToolbar({ onAction }: { onAction: (tag: string) => void }) {
 
 /* ─── Reusable Form Select with Icon ─── */
 function FormSelect({
-  label, icon, value, onChange, options, placeholder,
+  label, icon, value, onChange, options, placeholder, fieldName, error,
 }: {
   label: string;
   icon: React.ReactNode;
@@ -75,14 +76,16 @@ function FormSelect({
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  fieldName?: string;
+  error?: boolean;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-field={fieldName}>
       <Label className="text-foreground font-medium flex items-center gap-1.5">
         {icon} {label}
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectTrigger className={`bg-secondary/50 ${error ? "ring-2 ring-destructive/70" : ""}`}><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
         <SelectContent>
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
@@ -252,6 +255,7 @@ const CompanyProjectEditPage = () => {
   const [uploadingUnitImages, setUploadingUnitImages] = useState(false);
   const [savedProjectId, setSavedProjectId] = useState<string | null>(isEdit ? (id as string) : null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
     title: "", tagline: "", description: "", developer: "",
@@ -267,7 +271,10 @@ const CompanyProjectEditPage = () => {
     location: "", video_link: "", view_360_link: "",
   });
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
 
   const toggleAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
     setForm((prev) => ({
@@ -540,15 +547,22 @@ const CompanyProjectEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
       return false;
     }
-    if (!form.title.trim()) { toast.error("Project name is required"); return false; }
-    if (!form.project_type) { toast.error("Project type is required"); return false; }
-    if (!form.project_status) { toast.error("Project status is required"); return false; }
-    if (!form.province) { toast.error("Province is required"); return false; }
-    if (!form.town) { toast.error("Town/District is required"); return false; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
-    if (!form.min_price && !form.max_price) { toast.error("At least one price value is required"); return false; }
-    if (!form.min_area && !form.max_area) { toast.error("At least one area value is required"); return false; }
-    return true;
+    const rules = [
+      { field: "title", check: !form.title.trim(), message: "Project name is required" },
+      { field: "project_type", check: !form.project_type, message: "Project type is required" },
+      { field: "project_status", check: !form.project_status, message: "Project status is required" },
+      { field: "province", check: !form.province, message: "Province is required" },
+      { field: "town", check: !form.town, message: "Town/District is required" },
+      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      { field: "min_price", check: !form.min_price && !form.max_price, message: "At least one price value is required" },
+      { field: "min_area", check: !form.min_area && !form.max_area, message: "At least one area value is required" },
+    ];
+    const valid = validate(rules);
+    if (!valid) {
+      const firstError = rules.find(r => r.check);
+      if (firstError) toast.error(firstError.message);
+    }
+    return valid;
   };
 
   const handlePublishClick = () => {
@@ -638,9 +652,9 @@ const CompanyProjectEditPage = () => {
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="title">
                 <Label className="text-foreground font-medium">Project Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={20} />
+                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={20} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/20 characters</p>
               </div>
               <div className="space-y-2">
@@ -667,13 +681,17 @@ const CompanyProjectEditPage = () => {
               value={form.project_type}
               onChange={(v) => updateField("project_type", v)}
               options={projectTypes.map((t) => ({ value: t.value, label: t.label }))}
+              fieldName="project_type"
+              error={errorClass("project_type") !== ""}
             />
             <FormSelect
-              label="Project Status"
+              label="Project Status *"
               icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
               value={form.project_status}
               onChange={(v) => updateField("project_status", v)}
               options={projectStatuses.map((s) => ({ value: s, label: s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) }))}
+              fieldName="project_status"
+              error={errorClass("project_status") !== ""}
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -688,11 +706,11 @@ const CompanyProjectEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<DollarSign className="h-4 w-4" />} title="Pricing & Size" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="min_price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Starting Price ({form.currency})
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Starting Price ({form.currency}) *
               </Label>
-              <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className="bg-secondary/50" />
+              <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className={`bg-secondary/50 ${errorClass("min_price")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -718,11 +736,11 @@ const CompanyProjectEditPage = () => {
               </Label>
               <Input type="number" value={form.min_units} onChange={(e) => updateField("min_units", e.target.value)} className="bg-secondary/50" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="min_area">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Min Area ({form.area_unit})
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Min Area ({form.area_unit}) *
               </Label>
-              <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className="bg-secondary/50" />
+              <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className={`bg-secondary/50 ${errorClass("min_area")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -811,18 +829,20 @@ const CompanyProjectEditPage = () => {
         </section>
 
 
-        <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
+        <section className="bg-card rounded-xl border border-border p-6" data-field="province">
+          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location *" />
+          <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
             province={form.province}
             town={form.town}
             neighbourhood={form.neighbourhood}
             pinLocation={form.pin_location}
-            onProvinceChange={(v) => updateField("province", v)}
+            onProvinceChange={(v) => { updateField("province", v); clearError("town"); clearError("neighbourhood"); }}
             onTownChange={(v) => updateField("town", v)}
             onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
             onPinLocationChange={(v) => updateField("pin_location", v)}
           />
+          </div>
         </section>
 
         {/* ─── Media ─── */}

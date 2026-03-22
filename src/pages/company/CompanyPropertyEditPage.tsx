@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,6 +58,7 @@ const CompanyPropertyEditPage = () => {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
     title: "",
@@ -101,7 +103,10 @@ const CompanyPropertyEditPage = () => {
   const commercialPropertyTypes = filterOpts["commercial_property_types"] || [];
   const availablePropertyTypes = isCommercial ? commercialPropertyTypes : residentialPropertyTypes;
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
 
   const handleContractChange = (value: string) => {
     const info = contractTypes.find(c => c.value === value);
@@ -237,22 +242,29 @@ const CompanyPropertyEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more properties. Please upgrade your membership.`);
       return false;
     }
-    if (!form.title.trim()) { toast.error("Title is required"); return false; }
-    if (!form.price) { toast.error("Price is required"); return false; }
-    if (!form.area) { toast.error("Area is required"); return false; }
-    if (!form.rooms) { toast.error("Rooms selection is required"); return false; }
-    if (!form.bedrooms) { toast.error("Bedrooms is required"); return false; }
-    if (!form.bathrooms) { toast.error("Bathrooms is required"); return false; }
-    if (!form.floor_level) { toast.error("Floor level is required"); return false; }
-    if (!form.furniture) { toast.error("Furniture status is required"); return false; }
-    if (!form.property_age) { toast.error("Property age is required"); return false; }
-    if (!form.property_orientation) { toast.error("Property orientation is required"); return false; }
-    if (!form.title_deed) { toast.error("Title deed is required"); return false; }
-    if (!form.province) { toast.error("Province is required"); return false; }
-    if (!form.town) { toast.error("Town/District is required"); return false; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
-    if (isRent && !form.rent_duration) { toast.error("Rent duration is required"); return false; }
-    return true;
+    const rules = [
+      { field: "title", check: !form.title.trim(), message: "Title is required" },
+      { field: "price", check: !form.price, message: "Price is required" },
+      { field: "area", check: !form.area, message: "Area is required" },
+      { field: "rooms", check: !form.rooms, message: "Rooms selection is required" },
+      
+      { field: "bathrooms", check: !form.bathrooms, message: "Bathrooms is required" },
+      { field: "floor_level", check: !form.floor_level, message: "Floor level is required" },
+      { field: "furniture", check: !form.furniture, message: "Furniture status is required" },
+      { field: "property_age", check: !form.property_age, message: "Property age is required" },
+      { field: "property_orientation", check: !form.property_orientation, message: "Property orientation is required" },
+      { field: "title_deed", check: !form.title_deed, message: "Title deed is required" },
+      { field: "province", check: !form.province, message: "Province is required" },
+      { field: "town", check: !form.town, message: "Town/District is required" },
+      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      ...(isRent ? [{ field: "rent_duration", check: !form.rent_duration, message: "Rent duration is required" }] : []),
+    ];
+    const valid = validate(rules);
+    if (!valid) {
+      const firstError = rules.find(r => r.check);
+      if (firstError) toast.error(firstError.message);
+    }
+    return valid;
   };
 
   const handlePublishClick = () => {
@@ -340,9 +352,9 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">Description & Information</h2>
           </div>
           <div className="space-y-5">
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="title">
               <Label className="text-foreground font-medium">Property Title *</Label>
-              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className="bg-secondary/50" required maxLength={60} />
+              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
               <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
             </div>
             <div className="space-y-2">
@@ -402,30 +414,32 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">Pricing & Size</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="area">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
-                Net Area ({form.area_unit})
+                Net Area ({form.area_unit}) *
               </Label>
-              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
+              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                {isRent ? "Rent Price" : "Price"} ({form.currency})
+                {isRent ? "Rent Price" : "Price"} ({form.currency}) *
               </Label>
-              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder={isRent ? "Enter rent price" : "Enter price"} />
+              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? "Enter rent price" : "Enter price"} />
             </div>
 
             {isRent && (
               <FormSelect
-                label="Rental Duration"
+                label="Rental Duration *"
                 icon={<Clock className="h-4 w-4 text-muted-foreground" />}
                 value={form.rent_duration}
                 onChange={(v) => updateField("rent_duration", v)}
                 options={(filterOpts["rent_duration"] || []).map(d => ({ value: d, label: d }))}
                 placeholder="Select duration"
+                fieldName="rent_duration"
+                error={errorClass("rent_duration") !== ""}
               />
             )}
           </div>
@@ -446,36 +460,44 @@ const CompanyPropertyEditPage = () => {
               options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
             <FormSelect
-              label="No. Of Rooms"
+              label="No. Of Rooms *"
               icon={<BedDouble className="h-4 w-4 text-muted-foreground" />}
               value={form.rooms}
               onChange={(v) => updateField("rooms", v)}
               options={(filterOpts["rooms"] || []).map(r => ({ value: r, label: r }))}
               placeholder="Select rooms"
+              fieldName="rooms"
+              error={errorClass("rooms") !== ""}
             />
             <FormSelect
-              label="No. Of Bathrooms"
+              label="No. Of Bathrooms *"
               icon={<Bath className="h-4 w-4 text-muted-foreground" />}
               value={form.bathrooms}
               onChange={(v) => updateField("bathrooms", v)}
               options={(filterOpts["bathrooms"] || []).map(b => ({ value: b, label: b }))}
               placeholder="Select bathrooms"
+              fieldName="bathrooms"
+              error={errorClass("bathrooms") !== ""}
             />
             <FormSelect
-              label="Floor Level"
+              label="Floor Level *"
               icon={<Layers className="h-4 w-4 text-muted-foreground" />}
               value={form.floor_level}
               onChange={(v) => updateField("floor_level", v)}
               options={(filterOpts["floor_level"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select floor"
+              fieldName="floor_level"
+              error={errorClass("floor_level") !== ""}
             />
             <FormSelect
-              label="Furniture"
+              label="Furniture *"
               icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
               value={form.furniture}
               onChange={(v) => updateField("furniture", v)}
               options={(filterOpts["furniture"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select"
+              fieldName="furniture"
+              error={errorClass("furniture") !== ""}
             />
             <FormSelect
               label="Parking Spaces"
@@ -485,28 +507,34 @@ const CompanyPropertyEditPage = () => {
               options={(filterOpts["parking"] || []).map(p => ({ value: p, label: p }))}
             />
             <FormSelect
-              label="Property Age"
+              label="Property Age *"
               icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
               value={form.property_age}
               onChange={(v) => updateField("property_age", v)}
               options={(filterOpts["property_age"] || []).map(a => ({ value: a, label: a }))}
               placeholder="Select"
+              fieldName="property_age"
+              error={errorClass("property_age") !== ""}
             />
             <FormSelect
-              label="Orientation"
+              label="Orientation *"
               icon={<Compass className="h-4 w-4 text-muted-foreground" />}
               value={form.property_orientation}
               onChange={(v) => updateField("property_orientation", v)}
               options={(filterOpts["orientation"] || []).map(o => ({ value: o, label: o }))}
               placeholder="Select"
+              fieldName="property_orientation"
+              error={errorClass("property_orientation") !== ""}
             />
             <FormSelect
-              label="Title Deed"
+              label="Title Deed *"
               icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
               value={form.title_deed}
               onChange={(v) => updateField("title_deed", v)}
               options={(filterOpts["title_deed"] || []).map(t => ({ value: t, label: t }))}
               placeholder="Select"
+              fieldName="title_deed"
+              error={errorClass("title_deed") !== ""}
             />
           </div>
         </section>
@@ -597,16 +625,18 @@ const CompanyPropertyEditPage = () => {
         </section>
 
         {/* ─── Location ─── */}
-        <section className="bg-card rounded-xl border border-border p-6">
+        <section className="bg-card rounded-xl border border-border p-6" data-field="province">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Compass className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Location</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Location *</h2>
           </div>
+          <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
             province={form.province} town={form.town} neighbourhood={form.neighbourhood} pinLocation={form.pin_location}
-            onProvinceChange={(v) => updateField("province", v)} onTownChange={(v) => updateField("town", v)}
+            onProvinceChange={(v) => { updateField("province", v); clearError("town"); clearError("neighbourhood"); }} onTownChange={(v) => updateField("town", v)}
             onNeighbourhoodChange={(v) => updateField("neighbourhood", v)} onPinLocationChange={(v) => updateField("pin_location", v)}
           />
+          </div>
         </section>
 
         {/* ─── Media ─── */}
@@ -710,7 +740,7 @@ const CompanyPropertyEditPage = () => {
 
 /* ─── Reusable Form Select with Icon ─── */
 function FormSelect({
-  label, icon, value, onChange, options, placeholder,
+  label, icon, value, onChange, options, placeholder, fieldName, error,
 }: {
   label: string;
   icon: React.ReactNode;
@@ -718,14 +748,16 @@ function FormSelect({
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  fieldName?: string;
+  error?: boolean;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-field={fieldName}>
       <Label className="text-foreground font-medium flex items-center gap-1.5">
         {icon} {label}
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectTrigger className={`bg-secondary/50 ${error ? "ring-2 ring-destructive/70" : ""}`}><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
         <SelectContent>
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
