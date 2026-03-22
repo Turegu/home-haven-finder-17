@@ -192,25 +192,28 @@ const PropertyRequestPage = () => {
     );
   };
 
-  const EnquirySelect = () => (
-    <div>
-      <label className="block text-sm font-medium text-foreground mb-1.5">Enquiry Type*</label>
-      <div className="relative">
-        <select
-          value={formData.enquiryType}
-          onChange={(e) => {
-            handleChange('enquiryType', e.target.value);
-            handleChange('propertyType', '');
-          }}
-          className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Select</option>
-          {ENQUIRY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+  const EnquirySelect = () => {
+    const currentValue = formData.enquiryType;
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">Enquiry Type*</label>
+        <div className="relative">
+          <select
+            value={currentValue}
+            onChange={(e) => {
+              handleChange('enquiryType', e.target.value);
+              handleChange('propertyType', '');
+            }}
+            className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            <option value="" disabled hidden>Select</option>
+            {ENQUIRY_TYPES.map((t) => <option key={t.value} value={t.value} className="text-foreground">{t.label}</option>)}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const AmenityGrid = ({ label, field, options }: { label: string; field: 'interiorAmenities' | 'exteriorAmenities'; options: string[] }) => (
     <div className="md:col-span-2">
