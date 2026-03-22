@@ -48,7 +48,9 @@ serve(async (req) => {
 
     // Build a compact summary for the AI
     const propertySummaries = sorted.map((p: any, i: number) => {
-      return `[${i}] "${p.title}" | ${p.property_classification || 'standard'} | ${p.property_purpose} | ${p.property_type} | ${p.currency || 'USD'} ${p.price?.toLocaleString() || 'N/A'} | ${p.area || '?'} ${p.area_unit || 'm²'} | Rooms: ${p.rooms || '?'} | Beds: ${p.bedrooms ?? '?'} | Baths: ${p.bathrooms ?? '?'} | Location: ${[p.neighbourhood, p.town, p.province].filter(Boolean).join(', ')} | Parking: ${p.parking_spaces ?? '?'} | Furniture: ${p.furniture || '?'} | Floor: ${p.floor_level || '?'} | Age: ${p.property_age || '?'} | Interior: ${(p.interior_amenities || []).join(', ') || 'N/A'} | Exterior: ${(p.exterior_amenities || []).join(', ') || 'N/A'} | Desc: ${(p.description || '').substring(0, 150)}`;
+      const desc = (p.description || '').substring(0, 500);
+      const pin = p.pin_location || '';
+      return `[${i}] "${p.title}" | ${p.property_classification || 'standard'} | ${p.property_purpose} | ${p.property_type} | ${p.currency || 'USD'} ${p.price?.toLocaleString() || 'N/A'} | ${p.area || '?'} ${p.area_unit || 'm²'} | Rooms: ${p.rooms || '?'} | Beds: ${p.bedrooms ?? '?'} | Baths: ${p.bathrooms ?? '?'} | Location: ${[p.neighbourhood, p.town, p.province].filter(Boolean).join(', ')} | Pin: ${pin} | Parking: ${p.parking_spaces ?? '?'} | Furniture: ${p.furniture || '?'} | Floor: ${p.floor_level || '?'} | Age: ${p.property_age || '?'} | Interior: ${(p.interior_amenities || []).join(', ') || 'N/A'} | Exterior: ${(p.exterior_amenities || []).join(', ') || 'N/A'} | Desc: ${desc}`;
     }).join("\n");
 
     const systemPrompt = `You are an expert real estate AI assistant. A user will describe their dream property. Your job is to find the TOP 3 best matching properties from the available listings.
