@@ -245,38 +245,22 @@ const CompanyDashboardPage = () => {
         <h2 className="text-lg font-semibold text-foreground">Your Listings</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Link to="/company/properties" className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
-          <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Building2 className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <p className="text-2xl font-bold text-foreground">{counts.properties}</p>
-            <p className="text-sm text-muted-foreground">Properties</p>
-          </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-        </Link>
-
-        <Link to="/company/projects" className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
-          <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <FolderKanban className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <p className="text-2xl font-bold text-foreground">{counts.projects}</p>
-            <p className="text-sm text-muted-foreground">Projects</p>
-          </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-        </Link>
-
-        <Link to="/company/events" className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
-          <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Calendar className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <p className="text-2xl font-bold text-foreground">{counts.events}</p>
-            <p className="text-sm text-muted-foreground">Events</p>
-          </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-        </Link>
+        {[
+          { to: "/company/properties", icon: Building2, count: counts.properties, label: "Properties", color: "text-amber-500", bg: "bg-amber-500/10" },
+          { to: "/company/projects", icon: FolderKanban, count: counts.projects, label: "Projects", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { to: "/company/events", icon: Calendar, count: counts.events, label: "Events", color: "text-purple-500", bg: "bg-purple-500/10" },
+        ].map((card) => (
+          <Link key={card.to} to={card.to} className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
+            <div className={`w-11 h-11 rounded-lg ${card.bg} flex items-center justify-center transition-colors`}>
+              <card.icon className={`h-5 w-5 ${card.color}`} />
+            </div>
+            <div className="flex-1">
+              <p className="text-2xl font-bold text-foreground">{card.count}</p>
+              <p className="text-sm text-muted-foreground">{card.label}</p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+          </Link>
+        ))}
       </div>
     </CompanyLayout>
   );
