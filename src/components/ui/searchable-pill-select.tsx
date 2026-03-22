@@ -34,7 +34,15 @@ const SearchablePillSelect = ({
           />
         </div>
       )}
-      <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto">
+      <div
+        className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto"
+        onWheel={(e) => {
+          const el = e.currentTarget;
+          if (el.scrollHeight <= el.clientHeight) return;
+          e.stopPropagation();
+          el.scrollTop += e.deltaY;
+        }}
+      >
         {filtered.map((opt) => (
           <button
             key={opt}

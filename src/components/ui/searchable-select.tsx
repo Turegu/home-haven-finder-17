@@ -69,30 +69,36 @@ const SearchableSelect = ({
             />
           </div>
         </div>
-        <ScrollArea className="max-h-[240px]">
-          <div className="p-1 space-y-0.5">
-            {filtered.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => {
-                  onValueChange(opt.value);
-                  setOpen(false);
-                }}
-                className={cn(
-                  "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors flex items-center justify-between",
-                  value === opt.value && "bg-primary/10 text-primary font-medium",
-                )}
-              >
-                <span>{opt.label}</span>
-                {value === opt.value && <Check className="h-3.5 w-3.5 shrink-0" />}
-              </button>
-            ))}
-            {filtered.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-6">No results found</p>
-            )}
-          </div>
-        </ScrollArea>
+        <div
+          className="max-h-[240px] overflow-y-auto p-1 space-y-0.5"
+          onWheel={(e) => {
+            const el = e.currentTarget;
+            if (el.scrollHeight <= el.clientHeight) return;
+            e.stopPropagation();
+            el.scrollTop += e.deltaY;
+          }}
+        >
+          {filtered.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onValueChange(opt.value);
+                setOpen(false);
+              }}
+              className={cn(
+                "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent transition-colors flex items-center justify-between",
+                value === opt.value && "bg-primary/10 text-primary font-medium",
+              )}
+            >
+              <span>{opt.label}</span>
+              {value === opt.value && <Check className="h-3.5 w-3.5 shrink-0" />}
+            </button>
+          ))}
+          {filtered.length === 0 && (
+            <p className="text-xs text-muted-foreground text-center py-6">No results found</p>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   );
