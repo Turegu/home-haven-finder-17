@@ -151,6 +151,9 @@ export function usePropertySearch(params: PropertySearchParams) {
         case "area_desc":
           query = query.order("area", { ascending: false, nullsFirst: false });
           break;
+        case "area_asc":
+          query = query.order("area", { ascending: true, nullsFirst: false });
+          break;
         default:
           query = query.order("created_at", { ascending: false });
       }
