@@ -195,10 +195,12 @@ const AiPropertyAgent = () => {
                     const p = pick.property;
                     const img = p.images?.[0];
                     const medal = i === 0 ? "🏆" : i === 1 ? "🥈" : "🥉";
+                    const isProject = pick.listing_type === 'project';
+                    const detailUrl = isProject ? `/projects/${p.id}` : `/property/${p.id}`;
                     return (
                       <button
                         key={p.id}
-                        onClick={() => navigate(`/property/${p.id}`)}
+                        onClick={() => navigate(detailUrl)}
                         className="w-full text-left rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow group flex"
                       >
                         {/* Thumbnail */}
