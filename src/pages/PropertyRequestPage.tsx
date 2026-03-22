@@ -194,6 +194,50 @@ const PropertyRequestPage = () => {
     );
   };
 
+  const MultiSelectField = ({ label, field, options }: { label: string; field: string; options: string[] }) => {
+    const selected = (formData as any)[field] as string[];
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">
+          {label}
+          {selected.length > 0 && <span className="text-xs text-primary ml-1">({selected.length})</span>}
+        </label>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {}}
+            className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-left appearance-none focus:outline-none focus:ring-2 focus:ring-ring text-muted-foreground"
+            style={{ display: 'none' }}
+          />
+          <div className="max-h-[160px] overflow-y-auto rounded-md border border-input bg-background p-2 grid grid-cols-2 gap-1">
+            {options.map((opt) => {
+              const isSelected = selected.includes(opt);
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => toggleMulti(field, opt)}
+                  className={`flex items-center gap-1.5 text-xs px-2 py-1.5 rounded transition-colors text-left ${
+                    isSelected
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <div className={`h-3.5 w-3.5 rounded border flex items-center justify-center shrink-0 ${
+                    isSelected ? 'bg-primary border-primary' : 'border-muted-foreground/40'
+                  }`}>
+                    {isSelected && <Check className="h-2.5 w-2.5 text-primary-foreground" />}
+                  </div>
+                  <span className="line-clamp-1">{opt}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const EnquirySelect = () => {
     const currentValue = formData.enquiryType;
     return (
