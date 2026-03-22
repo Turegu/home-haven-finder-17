@@ -231,33 +231,41 @@ const CompanyPropertyEditPage = () => {
   const removeImage = (url: string) => setImages((prev) => prev.filter((u) => u !== url));
   const removePlan = (url: string) => setPlanFiles((prev) => prev.filter((u) => u !== url));
 
-  const handleSave = async (publishStatus: "draft" | "active") => {
-    if (!companyId) { toast.error("Company not found"); return; }
-    // For new properties (not editing), check membership limits
+  const validateForm = (): boolean => {
+    if (!companyId) { toast.error("Company not found"); return false; }
     if (!isEdit && !membershipLimits.canCreate("properties")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more properties. Please upgrade your membership.`);
-      return;
+      return false;
     }
-    // For reactivating from inactive/draft to active, also check limits
-    if (publishStatus === "active" && !membershipLimits.canCreate("properties") && !isEdit) {
-      toast.error(`Your ${membershipLimits.membership} membership limit reached. Please upgrade.`);
-      return;
+    if (!form.title.trim()) { toast.error("Title is required"); return false; }
+    if (!form.price) { toast.error("Price is required"); return false; }
+    if (!form.area) { toast.error("Area is required"); return false; }
+    if (!form.rooms) { toast.error("Rooms selection is required"); return false; }
+    if (!form.bedrooms) { toast.error("Bedrooms is required"); return false; }
+    if (!form.bathrooms) { toast.error("Bathrooms is required"); return false; }
+    if (!form.floor_level) { toast.error("Floor level is required"); return false; }
+    if (!form.furniture) { toast.error("Furniture status is required"); return false; }
+    if (!form.property_age) { toast.error("Property age is required"); return false; }
+    if (!form.property_orientation) { toast.error("Property orientation is required"); return false; }
+    if (!form.title_deed) { toast.error("Title deed is required"); return false; }
+    if (!form.province) { toast.error("Province is required"); return false; }
+    if (!form.town) { toast.error("Town/District is required"); return false; }
+    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
+    if (isRent && !form.rent_duration) { toast.error("Rent duration is required"); return false; }
+    return true;
+  };
+
+  const handlePublishClick = () => {
+    if (!validateForm()) return;
+    setShowUpgradeDialog(true);
+  };
+
+  const handleSave = async (publishStatus: "draft" | "active", classificationOverride?: string) => {
+    if (publishStatus === "active" && !validateForm()) return;
+    if (publishStatus === "draft") {
+      if (!companyId) { toast.error("Company not found"); return; }
+      if (!form.title.trim()) { toast.error("Title is required"); return; }
     }
-    if (!form.title.trim()) { toast.error("Title is required"); return; }
-    if (!form.price) { toast.error("Price is required"); return; }
-    if (!form.area) { toast.error("Area is required"); return; }
-    if (!form.rooms) { toast.error("Rooms selection is required"); return; }
-    if (!form.bedrooms) { toast.error("Bedrooms is required"); return; }
-    if (!form.bathrooms) { toast.error("Bathrooms is required"); return; }
-    if (!form.floor_level) { toast.error("Floor level is required"); return; }
-    if (!form.furniture) { toast.error("Furniture status is required"); return; }
-    if (!form.property_age) { toast.error("Property age is required"); return; }
-    if (!form.property_orientation) { toast.error("Property orientation is required"); return; }
-    if (!form.title_deed) { toast.error("Title deed is required"); return; }
-    if (!form.province) { toast.error("Province is required"); return; }
-    if (!form.town) { toast.error("Town/District is required"); return; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return; }
-    if (isRent && !form.rent_duration) { toast.error("Rent duration is required"); return; }
     setLoading(true);
 
     const payload: any = {
