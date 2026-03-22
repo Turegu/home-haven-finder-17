@@ -183,23 +183,6 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     mapRef.current = map;
   }, []);
 
-  const classifyElement = useCallback((el: any): string | null => {
-    const tags = el?.tags;
-    if (!tags) return null;
-    if (tags.amenity === 'school' || tags.amenity === 'university') return 'education';
-    if (tags.amenity === 'hospital' || tags.amenity === 'clinic') return 'health';
-    if (tags.amenity === 'pharmacy') return 'pharmacy';
-    if (tags.leisure === 'park' || tags.leisure === 'garden') return 'park';
-    if (tags.shop === 'supermarket' || tags.shop === 'grocery') return 'market';
-    if (tags.shop === 'mall' || tags.shop === 'department_store') return 'shopping';
-    if (tags.amenity === 'place_of_worship') return 'worship';
-    if (tags.amenity === 'restaurant' || tags.amenity === 'fast_food') return 'restaurant';
-    if (tags.amenity === 'cafe') return 'cafe';
-    if (tags.leisure === 'fitness_centre' || tags.leisure === 'sports_centre') return 'gym';
-    if (tags.railway === 'station' || tags.railway === 'halt' || tags.amenity === 'bus_station') return 'transport';
-    return null;
-  }, []);
-
   const fetchSingleCategory = useCallback(async (categoryKey: string) => {
     if (inFlightRef.current.has(categoryKey)) return;
     inFlightRef.current.add(categoryKey);
@@ -241,61 +224,12 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     }
   }, [lat, lng]);
 
-  // Prefetch ALL categories in a single combined Overpass query
+  // Prefetch ALL categories in parallel
   useEffect(() => {
     if (prefetchedRef.current) return;
     prefetchedRef.current = true;
-
-    const prefetchAll = async () => {
-      const radius = 3000;
-      // Build one big union query for all categories
-      const allNodeParts: string[] = [];
-      for (const cat of categories) {
-        for (const q of cat.osmQueries) {
-          const tildeIdx = q.indexOf('~');
-          if (tildeIdx === -1) {
-            allNodeParts.push(`node[${q}](around:${radius},${lat},${lng});`);
-          } else {
-            const key = q.substring(0, tildeIdx);
-            const rawVal = q.substring(tildeIdx + 1);
-            allNodeParts.push(`node[${key}~${rawVal}](around:${radius},${lat},${lng});`);
-          }
-        }
-      }
-      // Request up to 120 results (roughly 10 per category)
-      const query = `[out:json][timeout:25];(${allNodeParts.join('')});out body 120;`;
-
-      try {
-        const { data, error } = await supabase.functions.invoke('nearby-places-proxy', { body: { query } });
-        if (!mountedRef.current) return;
-        if (error) throw new Error(error.message);
-
-        const elements = parseOverpassElements(data);
-        // Classify each element into its category
-        const grouped: Record<string, NearbyPlace[]> = {};
-        for (const cat of categories) grouped[cat.key] = [];
-
-        for (const el of elements) {
-          if (!el?.lat || !el?.lon || !el?.tags?.name) continue;
-          const catKey = classifyElement(el);
-          if (catKey && grouped[catKey]) {
-            grouped[catKey].push(mapElementToPlace(el, lat, lng, catKey));
-          }
-        }
-
-        // Sort and cap each category
-        const result: Record<string, NearbyPlace[]> = {};
-        for (const [key, items] of Object.entries(grouped)) {
-          result[key] = items.sort((a, b) => (a.distance || 0) - (b.distance || 0)).slice(0, 15);
-        }
-        setPlaces(result);
-      } catch (err) {
-        console.error('Bulk prefetch failed, will fetch on demand:', err);
-      }
-    };
-
-    prefetchAll();
-  }, [lat, lng, classifyElement]);
+    Promise.allSettled(categories.map(cat => fetchSingleCategory(cat.key)));
+  }, [fetchSingleCategory]);
 
   const handleCategoryClick = useCallback((key: string) => {
     setActiveCategory(prev => {
