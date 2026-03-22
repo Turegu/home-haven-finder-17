@@ -67,6 +67,7 @@ const CompanyDashboardPage = () => {
   const [recentTransactions, setRecentTransactions] = useState<CreditTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const { usage, limits } = useMembershipLimits(company?.id || null);
+  const { openSalesWhatsApp } = useSalesContact();
 
   useEffect(() => {
     const fetchData = async () => {
