@@ -32,6 +32,31 @@ const cityCoords: Record<string, [number, number]> = {
   'denizli': [37.7765, 29.0864],
   'dubai': [25.2048, 55.2708],
   'abu dhabi': [24.4539, 54.3773],
+  // Districts
+  'konyaaltı': [36.8693, 30.6377],
+  'kepez': [37.0833, 30.7167],
+  'muratpaşa': [36.8857, 30.7041],
+  'alanya': [36.5437, 31.9954],
+  'manavgat': [36.7867, 31.4434],
+  'kaş': [36.2013, 29.6383],
+  'belek': [36.8593, 31.0565],
+  'kadıköy': [40.9927, 29.0278],
+  'beşiktaş': [41.0422, 29.0067],
+  'beyoğlu': [41.0370, 28.9770],
+  'üsküdar': [41.0242, 29.0153],
+  'bakırköy': [40.9819, 28.8772],
+  'sarıyer': [41.1667, 29.05],
+  'ataşehir': [40.9833, 29.1167],
+  'fatih': [41.0186, 28.9397],
+  'şişli': [41.0602, 28.9877],
+  'çankaya': [39.9179, 32.8627],
+  'keçiören': [39.9833, 32.8667],
+  'etimesgut': [39.9500, 32.6833],
+  'bornova': [38.4667, 27.2167],
+  'karşıyaka': [38.4569, 27.1094],
+  'konak': [38.4167, 27.1333],
+  'nilüfer': [40.2121, 28.8932],
+  'osmangazi': [40.1833, 29.0667],
 };
 
 function getCityCenter(province: string, town: string): [number, number] | null {
@@ -162,12 +187,12 @@ function InteractiveMapPicker({
     };
   }, [L]); // Only init once when L loads
 
-  // Update map center when province/town changes (if no pin yet)
+  // Update map center when province/town changes — always re-center
   useEffect(() => {
-    if (!mapRef.current || !L || parsedCoords) return;
+    if (!mapRef.current || !L) return;
     const cityCenter = getCityCenter(province, town);
     if (cityCenter) {
-      mapRef.current.setView(cityCenter, 12);
+      mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
     }
   }, [province, town, L]);
 
@@ -201,6 +226,21 @@ function InteractiveMapPicker({
     });
   };
 
+  // Check if pin is far from selected area
+  const pinWarning = useMemo(() => {
+    if (!parsedCoords || !province) return null;
+    const cityCenter = getCityCenter(province, town);
+    if (!cityCenter) return null;
+    const dist = Math.sqrt(
+      Math.pow(parsedCoords.lat - cityCenter[0], 2) + Math.pow(parsedCoords.lng - cityCenter[1], 2)
+    );
+    // ~0.5 degree ≈ 50km threshold
+    if (dist > 0.5) {
+      return `Pin location appears to be far from ${town || province}. Please verify.`;
+    }
+    return null;
+  }, [parsedCoords, province, town]);
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -212,7 +252,12 @@ function InteractiveMapPicker({
         </Button>
       </div>
       <div ref={containerRef} className="h-[280px] rounded-lg border border-border overflow-hidden z-0" />
-      {pinLocation && parsedCoords && (
+      {pinWarning && (
+        <p className="text-xs text-destructive flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" /> {pinWarning}
+        </p>
+      )}
+      {pinLocation && parsedCoords && !pinWarning && (
         <p className="text-xs text-muted-foreground">
           📍 {parsedCoords.lat.toFixed(6)}, {parsedCoords.lng.toFixed(6)}
         </p>
