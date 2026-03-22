@@ -277,7 +277,7 @@ const BuyPage = () => {
       <Header />
 
       {/* Search Bar + Filters */}
-      <div className="sticky top-[104px] z-40 bg-background border-b border-border">
+      <div className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           {/* Search row */}
           <div className="flex flex-wrap items-center gap-2">
