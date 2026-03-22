@@ -233,8 +233,8 @@ const UpgradeMembershipDialog = ({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleUpgrade} disabled={!canSubmit || loading}>
-            {loading ? "Upgrading..." : testMode ? "Upgrade (Test)" : "Upgrade Package"}
+          <Button onClick={handleChange} disabled={!canSubmit || loading} variant={isToBasic ? "destructive" : "default"}>
+            {loading ? "Processing..." : isToBasic ? "Downgrade to Basic" : testMode ? "Change (Test)" : "Change Package"}
           </Button>
         </DialogFooter>
       </DialogContent>
