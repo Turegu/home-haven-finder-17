@@ -5,6 +5,7 @@ import {
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle, UserPlus, CheckCircle2,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
+  Home, Wallet, HardHat, KeyRound, Banknote, CalendarCheck, type LucideIcon,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
