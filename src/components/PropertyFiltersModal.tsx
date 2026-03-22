@@ -258,7 +258,7 @@ export default function PropertyFiltersModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background text-foreground/70 hover:text-foreground">
+        <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-muted text-foreground/70 hover:text-foreground">
           <SlidersHorizontal className="h-4 w-4" />
           Filters
           {committedCount > 0 && (
