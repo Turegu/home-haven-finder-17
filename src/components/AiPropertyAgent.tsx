@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import aiAgentIcon from "@/assets/ai-agent-icon.png";
+import { useQuery } from "@tanstack/react-query";
 
 interface AiPick {
   score: number;
@@ -51,6 +52,20 @@ const AiPropertyAgent = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const navigate = useNavigate();
 
+  // Check global AI search toggle
+  const { data: aiEnabled = true } = useQuery({
+    queryKey: ['ai-search-enabled'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('admin_settings')
+        .select('setting_value')
+        .eq('setting_key', 'ai_search_enabled')
+        .maybeSingle();
+      return data?.setting_value !== 'false';
+    },
+    staleTime: 60_000,
+  });
+
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
@@ -62,6 +77,8 @@ const AiPropertyAgent = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [analysis, picks]);
+
+  if (!aiEnabled) return null;
 
   const handleSearch = async (searchQuery?: string) => {
     const q = searchQuery || query;

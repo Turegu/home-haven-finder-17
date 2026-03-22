@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe, BarChart3 } from "lucide-react";
+import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe, BarChart3, Bot } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
 import type { AnalyticsPhase } from "@/hooks/useAnalyticsPhase";
@@ -21,6 +21,7 @@ const AdminSettingsPage = () => {
   const [salesAddress, setSalesAddress] = useState("");
   const [mapProvider, setMapProvider] = useState("google");
   const [analyticsPhase, setAnalyticsPhase] = useState<AnalyticsPhase>("phase1");
+  const [aiSearchEnabled, setAiSearchEnabled] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
 
   // Pattern
@@ -41,6 +42,7 @@ const AdminSettingsPage = () => {
         setSalesAddress(map.sales_address || "");
         setMapProvider(map.map_provider || "google");
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
+        setAiSearchEnabled(map.ai_search_enabled !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
@@ -68,6 +70,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_address", salesAddress),
       saveSetting("map_provider", mapProvider),
       saveSetting("analytics_display_phase", analyticsPhase),
+      saveSetting("ai_search_enabled", aiSearchEnabled ? 'true' : 'false'),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
@@ -143,7 +146,32 @@ const AdminSettingsPage = () => {
           </Button>
         </div>
 
-        {/* Map Provider */}
+        {/* AI Search */}
+        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Bot className="h-5 w-5" /> AI Property Search
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Enable or disable the AI Property Agent button across all pages.
+          </p>
+          <div className="space-y-2">
+            <Label>AI Search Status</Label>
+            <Select value={aiSearchEnabled ? 'true' : 'false'} onValueChange={(v) => setAiSearchEnabled(v === 'true')}>
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>When disabled, the floating AI agent button will be hidden on the homepage, Buy, Rent, and Projects pages.</span>
+          </div>
+        </div>
+
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Globe className="h-5 w-5" /> Map Provider
