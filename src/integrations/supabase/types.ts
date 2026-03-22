@@ -1376,6 +1376,7 @@ export type Database = {
           created_at: string
           currency: string | null
           exterior_amenities: string[] | null
+          floor_plans: string[] | null
           id: string
           images: string[] | null
           interior_amenities: string[] | null
@@ -1396,6 +1397,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           exterior_amenities?: string[] | null
+          floor_plans?: string[] | null
           id?: string
           images?: string[] | null
           interior_amenities?: string[] | null
@@ -1416,6 +1418,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           exterior_amenities?: string[] | null
+          floor_plans?: string[] | null
           id?: string
           images?: string[] | null
           interior_amenities?: string[] | null
