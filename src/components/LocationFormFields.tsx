@@ -59,6 +59,11 @@ const cityCoords: Record<string, [number, number]> = {
   'osmangazi': [40.1833, 29.0667],
 };
 
+// Approximate radius in degrees for city/town boundaries (~25km ≈ 0.25°)
+const CITY_RADIUS_DEG = 0.25;
+// Province-level radius (~100km ≈ 1.0°)
+const PROVINCE_RADIUS_DEG = 1.0;
+
 function getCityCenter(province: string, town: string): [number, number] | null {
   const lookups = [town, province].filter(Boolean);
   for (const name of lookups) {
@@ -66,6 +71,12 @@ function getCityCenter(province: string, town: string): [number, number] | null 
     if (cityCoords[key]) return cityCoords[key];
   }
   return null;
+}
+
+function isWithinBounds(lat: number, lng: number, center: [number, number], hasTown: boolean): boolean {
+  const radius = hasTown ? CITY_RADIUS_DEG : PROVINCE_RADIUS_DEG;
+  const dist = Math.sqrt(Math.pow(lat - center[0], 2) + Math.pow(lng - center[1], 2));
+  return dist <= radius;
 }
 
 interface LocationFormFieldsProps {
