@@ -877,7 +877,6 @@ const PropertyDetailPage = () => {
           images: property.images,
           listingId: property.listingId,
           floorLevel: property.floorLevel,
-          rooms: property.rooms,
         }}
         companyId={realCompanyId}
         agentId={realAgentId}
