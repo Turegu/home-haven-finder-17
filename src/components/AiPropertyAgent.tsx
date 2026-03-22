@@ -8,6 +8,7 @@ import aiAgentIcon from "@/assets/ai-agent-icon.png";
 
 interface AiPick {
   score: number;
+  listing_type?: string;
   property: {
     id: string;
     title: string;
@@ -194,10 +195,12 @@ const AiPropertyAgent = () => {
                     const p = pick.property;
                     const img = p.images?.[0];
                     const medal = i === 0 ? "🏆" : i === 1 ? "🥈" : "🥉";
+                    const isProject = pick.listing_type === 'project';
+                    const detailUrl = isProject ? `/projects/${p.id}` : `/property/${p.id}`;
                     return (
                       <button
                         key={p.id}
-                        onClick={() => navigate(`/property/${p.id}`)}
+                        onClick={() => navigate(detailUrl)}
                         className="w-full text-left rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow group flex"
                       >
                         {/* Thumbnail */}
@@ -211,6 +214,9 @@ const AiPropertyAgent = () => {
                             <span className="text-lg">{medal}</span>
                             {tierBadge(p.property_classification)}
                           </div>
+                          {isProject && (
+                            <div className="absolute bottom-2 left-2 bg-accent/90 backdrop-blur-sm rounded px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">PROJECT</div>
+                          )}
                         </div>
                         {/* Details */}
                         <div className="p-3 flex-1 flex flex-col justify-between min-w-0">

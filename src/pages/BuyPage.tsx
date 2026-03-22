@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy } from 'react';
+import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
@@ -602,6 +603,7 @@ const BuyPage = () => {
         location={location}
         keyword={keyword}
       />
+      <AiPropertyAgent />
     </div>
   );
 };
