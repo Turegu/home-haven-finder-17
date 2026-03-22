@@ -134,9 +134,10 @@ const AiPropertyAgent = () => {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[500px] max-w-[calc(100vw-2rem)] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300"
-          style={{ maxHeight: "min(800px, calc(100vh - 8rem))", height: "calc(100vh - 10rem)" }}
-        >
+        <>
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsOpen(false)} />
+          <div className="fixed inset-4 sm:inset-8 md:inset-12 lg:inset-16 z-50 bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 fade-in duration-300"
+          >
           {/* Header */}
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3">
             <img src={aiAgentIcon} alt="AI Agent" className="h-11 w-11 rounded-full object-cover border-2 border-primary-foreground/30 bg-primary-foreground/10" />
