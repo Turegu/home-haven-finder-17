@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FileText, Send, Handshake, ChevronDown, Check, Loader2,
+  FileText, Send, Handshake, ChevronDown, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
+import AmenitiesPickerDialog from '@/components/company/AmenitiesPickerDialog';
 
 interface CmsData {
   main_title?: string;
@@ -215,39 +216,6 @@ const PropertyRequestPage = () => {
     );
   };
 
-  const AmenityGrid = ({ label, field, options }: { label: string; field: 'interiorAmenities' | 'exteriorAmenities'; options: string[] }) => (
-    <div className="md:col-span-2">
-      <label className="block text-sm font-medium text-foreground mb-2">{label}</label>
-      <div className="max-h-[200px] overflow-y-auto border border-input rounded-md p-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {options.map((opt) => {
-          const selected = formData[field].includes(opt);
-          return (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => toggleAmenity(field, opt)}
-              className={`flex items-center gap-2 text-sm px-3 py-2 rounded-md transition-colors text-left ${
-                selected
-                  ? 'bg-primary/10 text-primary border border-primary/30'
-                  : 'bg-muted/50 text-foreground hover:bg-muted border border-transparent'
-              }`}
-            >
-              <div className={`h-4 w-4 rounded border flex items-center justify-center shrink-0 ${
-                selected ? 'bg-primary border-primary' : 'border-muted-foreground/40'
-              }`}>
-                {selected && <Check className="h-3 w-3 text-primary-foreground" />}
-              </div>
-              <span className="line-clamp-1">{opt}</span>
-            </button>
-          );
-        })}
-        {options.length === 0 && <p className="text-xs text-muted-foreground col-span-full">No options available</p>}
-      </div>
-      {formData[field].length > 0 && (
-        <p className="text-xs text-muted-foreground mt-1">{formData[field].length} selected</p>
-      )}
-    </div>
-  );
 
   const defaultSteps = [
     { icon: FileText, title: 'Fill the form', desc: 'Fill the form with dream home requirements' },
@@ -335,8 +303,17 @@ const PropertyRequestPage = () => {
               <SelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
               <SelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
 
-              <AmenityGrid label="Interior Amenities" field="interiorAmenities" options={filterOpts['interior_amenities'] || []} />
-              <AmenityGrid label="Exterior Amenities" field="exteriorAmenities" options={filterOpts['exterior_amenities'] || []} />
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-foreground mb-1.5">Amenities</label>
+                <AmenitiesPickerDialog
+                  interiorOptions={filterOpts['interior_amenities'] || []}
+                  exteriorOptions={filterOpts['exterior_amenities'] || []}
+                  selectedInterior={formData.interiorAmenities}
+                  selectedExterior={formData.exteriorAmenities}
+                  onToggleInterior={(v) => toggleAmenity('interiorAmenities', v)}
+                  onToggleExterior={(v) => toggleAmenity('exteriorAmenities', v)}
+                />
+              </div>
             </div>
           )}
 
