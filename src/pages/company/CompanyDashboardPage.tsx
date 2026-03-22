@@ -239,7 +239,7 @@ const CompanyDashboardPage = () => {
               <Progress value={creditBarPercent} className="h-1.5" />
             </div>
           )}
-          <Button variant="link" size="sm" className="mt-1 p-0 h-auto text-xs text-primary">
+          <Button variant="link" size="sm" className="mt-1 p-0 h-auto text-xs text-primary" onClick={() => openSalesWhatsApp("Hi, I'd like to top up my credits.")}>
             <Phone className="h-3 w-3 mr-1" /> Contact Sales
           </Button>
         </div>
