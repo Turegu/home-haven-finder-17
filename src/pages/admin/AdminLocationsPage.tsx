@@ -61,7 +61,7 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
   const [search, setSearch] = useState("");
 
   const filtered = search
-    ? COUNTRIES.filter(c => c.toLowerCase().includes(search.toLowerCase()))
+    ? COUNTRIES.filter(c => turkishIncludes(c, search))
     : COUNTRIES;
 
   return (
