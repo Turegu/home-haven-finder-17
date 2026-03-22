@@ -226,6 +226,21 @@ function InteractiveMapPicker({
     });
   };
 
+  // Check if pin is far from selected area
+  const pinWarning = useMemo(() => {
+    if (!parsedCoords || !province) return null;
+    const cityCenter = getCityCenter(province, town);
+    if (!cityCenter) return null;
+    const dist = Math.sqrt(
+      Math.pow(parsedCoords.lat - cityCenter[0], 2) + Math.pow(parsedCoords.lng - cityCenter[1], 2)
+    );
+    // ~0.5 degree ≈ 50km threshold
+    if (dist > 0.5) {
+      return `Pin location appears to be far from ${town || province}. Please verify.`;
+    }
+    return null;
+  }, [parsedCoords, province, town]);
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -237,7 +252,12 @@ function InteractiveMapPicker({
         </Button>
       </div>
       <div ref={containerRef} className="h-[280px] rounded-lg border border-border overflow-hidden z-0" />
-      {pinLocation && parsedCoords && (
+      {pinWarning && (
+        <p className="text-xs text-destructive flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" /> {pinWarning}
+        </p>
+      )}
+      {pinLocation && parsedCoords && !pinWarning && (
         <p className="text-xs text-muted-foreground">
           📍 {parsedCoords.lat.toFixed(6)}, {parsedCoords.lng.toFixed(6)}
         </p>
