@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
+import AmenitiesPickerDialog from '@/components/company/AmenitiesPickerDialog';
 
 interface CmsData {
   main_title?: string;
