@@ -868,11 +868,19 @@ const PropertyDetailPage = () => {
           title: property.title,
           location: property.location,
           type: property.type,
+          area: property.area,
+          areaUnit: property.areaUnit,
+          bathrooms: property.bathrooms,
+          bedrooms: property.bedrooms,
           price: property.price,
           currency: property.currency,
+          images: property.images,
+          listingId: property.listingId,
+          floorLevel: property.floorLevel,
+          rooms: property.rooms,
         }}
-        companyId={property.companyId || null}
-        agentId={property.agentId || null}
+        companyId={realCompanyId}
+        agentId={realAgentId}
         companyName={property.agentCompany}
       />
 
