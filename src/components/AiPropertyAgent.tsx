@@ -66,8 +66,6 @@ const AiPropertyAgent = () => {
     staleTime: 60_000,
   });
 
-  if (!aiEnabled) return null;
-
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
