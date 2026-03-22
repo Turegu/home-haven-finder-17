@@ -66,7 +66,7 @@ const CompanyDashboardPage = () => {
       if (!companyData) return;
       setCompany(companyData);
 
-      const now = new Date();
+      
 
       const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
         supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
