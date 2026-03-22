@@ -56,6 +56,7 @@ const CompanyPropertyEditPage = () => {
   const [planFiles, setPlanFiles] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadingPlans, setUploadingPlans] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
