@@ -115,7 +115,7 @@ const PropertyRequestPage = () => {
   })();
 
   const handleSubmit = async () => {
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.enquiryType) {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.enquiryType || !formData.propertyType || !formData.province || !formData.areaSqm || !formData.budget) {
       toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" });
       return;
     }
@@ -320,13 +320,13 @@ const PropertyRequestPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <EnquirySelect />
-              <SelectField label="Property Type" field="propertyType" options={propertyTypeOptions} />
-              <SelectField label="Province / City" field="province" options={provinces} showAny={false} />
+              <SelectField label="Property Type" field="propertyType" options={propertyTypeOptions} required showAny={false} />
+              <SelectField label="Province / City" field="province" options={provinces} required showAny={false} />
               <SelectField label="District" field="district" options={districts} showAny={false} />
               <SelectField label="Neighbourhood" field="neighbourhood" options={neighbourhoods} showAny={false} />
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
               <SelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
               <SelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
               <SelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
