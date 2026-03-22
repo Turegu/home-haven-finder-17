@@ -93,17 +93,61 @@ interface LocationFormFieldsProps {
   className?: string;
 }
 
+// Reverse geocode using Nominatim (free, no API key needed)
+async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&accept-language=en,tr`,
+      { headers: { 'User-Agent': 'LovableRealEstate/1.0' } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const addr = data.address;
+    // Try multiple fields that could contain the neighbourhood name
+    return addr?.neighbourhood || addr?.suburb || addr?.quarter || addr?.hamlet || addr?.village || null;
+  } catch {
+    return null;
+  }
+}
+
+// Fuzzy match: normalize Turkish chars and compare
+function normalizeForMatch(s: string): string {
+  return s.toLowerCase()
+    .replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g')
+    .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u')
+    .replace(/â/g, 'a').replace(/î/g, 'i').replace(/û/g, 'u')
+    .replace(/\s+/g, ' ').trim();
+}
+
+function findBestNeighbourhoodMatch(nominatimName: string, options: NamePair[]): string | null {
+  const needle = normalizeForMatch(nominatimName);
+  // Exact match first
+  for (const opt of options) {
+    if (normalizeForMatch(opt.name) === needle) return opt.name;
+  }
+  // Contains match
+  for (const opt of options) {
+    const norm = normalizeForMatch(opt.name);
+    if (norm.includes(needle) || needle.includes(norm)) return opt.name;
+  }
+  return null;
+}
+
 /* ─── Interactive Leaflet Map for pin placement ─── */
 function InteractiveMapPicker({
   pinLocation,
   onPinLocationChange,
   province,
   town,
+  neighborhoods,
+  onNeighbourhoodChange,
 }: {
   pinLocation: string;
   onPinLocationChange: (value: string) => void;
   province: string;
   town: string;
+  neighborhoods: NamePair[];
+  onNeighbourhoodChange: (value: string) => void;
 }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -136,7 +180,7 @@ function InteractiveMapPicker({
     });
   }, []);
 
-  // Validate and set pin, returns true if valid
+  // Validate and set pin, returns true if valid. Also triggers reverse geocoding.
   const trySetPin = useCallback((lat: number, lng: number) => {
     const cityCenter = getCityCenter(province, town);
     if (!cityCenter) return false;
@@ -150,8 +194,21 @@ function InteractiveMapPicker({
     
     setBoundsError(null);
     onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+    
+    // Auto-detect neighbourhood via reverse geocoding
+    if (neighborhoods.length > 0) {
+      reverseGeocode(lat, lng).then((nominatimName) => {
+        if (nominatimName) {
+          const match = findBestNeighbourhoodMatch(nominatimName, neighborhoods);
+          if (match) {
+            onNeighbourhoodChange(match);
+          }
+        }
+      });
+    }
+    
     return true;
-  }, [province, town, hasTown, onPinLocationChange]);
+  }, [province, town, hasTown, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
 
   // Load Leaflet dynamically
   useEffect(() => {
@@ -471,6 +528,8 @@ const LocationFormFields = ({
           onPinLocationChange={onPinLocationChange}
           province={province}
           town={town}
+          neighborhoods={neighborhoods}
+          onNeighbourhoodChange={onNeighbourhoodChange}
         />
       )}
       {showMap && showPinLocation && onPinLocationChange && (!province || !town) && (
