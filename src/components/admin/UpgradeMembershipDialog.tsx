@@ -148,11 +148,11 @@ const UpgradeMembershipDialog = ({
           </div>
 
           <div>
-            <label className="text-sm font-medium text-primary mb-1 block">Upgrade To</label>
+            <label className="text-sm font-medium text-primary mb-1 block">Change To</label>
             <Select value={selectedPackage} onValueChange={setSelectedPackage}>
               <SelectTrigger><SelectValue placeholder="Select Package" /></SelectTrigger>
               <SelectContent>
-                {packages.filter(p => p.package_type !== "basic").map(p => (
+                {packages.filter(p => p.package_type !== currentMembership).map(p => (
                   <SelectItem key={p.package_type} value={p.package_type}>{p.name}</SelectItem>
                 ))}
               </SelectContent>
