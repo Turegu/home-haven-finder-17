@@ -127,7 +127,7 @@ const UpgradeMembershipDialog = ({
   };
 
   const price = getPrice();
-  const canSubmit = selectedPackage && (testMode ? testMinutes >= 1 : !!selectedDuration);
+  const canSubmit = selectedPackage && (isToBasic || testMode ? testMinutes >= 1 : !!selectedDuration);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
