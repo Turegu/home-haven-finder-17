@@ -179,7 +179,7 @@ const CompanyDashboardPage = () => {
                 ? "Your listings have been deactivated. All listings will be permanently deleted 3 months after expiry. Please renew your package to restore access."
                 : `Your package expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid listing deactivation. Listings are permanently deleted 3 months after expiry.`}
             </p>
-            <Button variant="default" size="sm" className="mt-2">
+            <Button variant="default" size="sm" className="mt-2" onClick={() => openSalesWhatsApp("Hi, I'd like to renew my membership package.")}>
               <Phone className="h-3 w-3 mr-1" /> Contact Sales to Renew
             </Button>
           </div>
