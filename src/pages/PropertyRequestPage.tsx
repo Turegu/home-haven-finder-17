@@ -49,9 +49,10 @@ const PropertyRequestPage = () => {
   const [formData, setFormData] = useState({
     fullName: '', email: '', phone: '', contactMethod: '',
     enquiryType: '', propertyType: '', province: '', district: '', neighbourhood: '',
-    areaStreet: '', budget: '', areaSqm: '', rooms: '', bathrooms: '',
-    furnishing: '', floorLevel: '', propertyStatus: '', parkingSpace: '',
-    viewOrientation: '', interiorAmenities: [] as string[], exteriorAmenities: [] as string[],
+    areaStreet: '', budget: '', areaSqm: '',
+    rooms: [] as string[], bathrooms: [] as string[],
+    furnishing: [] as string[], floorLevel: [] as string[], propertyStatus: [] as string[], parkingSpace: [] as string[],
+    viewOrientation: [] as string[], interiorAmenities: [] as string[], exteriorAmenities: [] as string[],
     additionalRequests: '',
   });
 
