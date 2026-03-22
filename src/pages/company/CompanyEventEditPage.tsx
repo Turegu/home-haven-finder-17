@@ -209,14 +209,21 @@ const CompanyEventEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more events. Please upgrade.`);
       return false;
     }
-    if (!form.title.trim()) { toast.error("Event name is required"); return false; }
-    if (!form.event_type) { toast.error("Event type is required"); return false; }
-    if (!form.event_date) { toast.error("Event date is required"); return false; }
-    if (!form.province) { toast.error("Province is required"); return false; }
-    if (!form.town) { toast.error("Town/District is required"); return false; }
-    if (!form.neighbourhood) { toast.error("Neighbourhood is required"); return false; }
-    if (form.entry_type === "paid" && !form.price) { toast.error("Price is required for paid events"); return false; }
-    return true;
+    const rules = [
+      { field: "title", check: !form.title.trim(), message: "Event name is required" },
+      { field: "event_type", check: !form.event_type, message: "Event type is required" },
+      { field: "event_date", check: !form.event_date, message: "Event date is required" },
+      { field: "province", check: !form.province, message: "Province is required" },
+      { field: "town", check: !form.town, message: "Town/District is required" },
+      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      ...(form.entry_type === "paid" ? [{ field: "price", check: !form.price, message: "Price is required for paid events" }] : []),
+    ];
+    const valid = validate(rules);
+    if (!valid) {
+      const firstError = rules.find(r => r.check);
+      if (firstError) toast.error(firstError.message);
+    }
+    return valid;
   };
 
   const handlePublishClick = () => {
