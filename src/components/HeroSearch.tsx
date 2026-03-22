@@ -50,7 +50,7 @@ const HeroSearch = () => {
 
   return (
     <section className="relative z-20 -mt-8">
-      <div className="container mx-auto px-4 max-w-3xl">
+      <div className="container mx-auto px-4 max-w-[700px]">
         <div className="bg-background/95 backdrop-blur-md rounded-xl p-4 shadow-2xl border border-border">
           {/* Buy / Rent Toggle */}
           <div className="flex gap-1 mb-4 bg-muted rounded-lg p-1 w-fit">
