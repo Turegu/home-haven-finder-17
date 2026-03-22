@@ -198,30 +198,36 @@ const AiPropertyAgent = () => {
                       <button
                         key={p.id}
                         onClick={() => navigate(`/property/${p.id}`)}
-                        className="w-full text-left rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow group"
+                        className="w-full text-left rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow group flex"
                       >
-                        <div className="relative">
+                        {/* Thumbnail */}
+                        <div className="relative w-36 min-w-[9rem] shrink-0">
                           {img ? (
-                            <img src={img} alt={p.title} className="w-full h-32 object-cover" />
+                            <img src={img} alt={p.title} className="w-full h-full object-cover min-h-[120px]" />
                           ) : (
-                            <div className="w-full h-32 bg-muted flex items-center justify-center text-muted-foreground text-xs">No Image</div>
+                            <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs min-h-[120px]">No Image</div>
                           )}
                           <div className="absolute top-2 left-2 flex items-center gap-1.5">
                             <span className="text-lg">{medal}</span>
                             {tierBadge(p.property_classification)}
                           </div>
-                          <div className="absolute top-2 right-2 bg-background/90 backdrop-blur-sm rounded-full px-2 py-0.5 text-xs font-semibold text-primary">
-                            {pick.score}% match
-                          </div>
                         </div>
-                        <div className="p-3 space-y-1.5">
-                          <h4 className="font-semibold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">{p.title}</h4>
-                          <p className="text-sm font-bold text-primary">{formatPrice(p.price, p.currency)}</p>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <MapPin className="h-3 w-3" />
-                            <span className="line-clamp-1">{[p.neighbourhood, p.town, p.province].filter(Boolean).join(", ") || p.location || "—"}</span>
+                        {/* Details */}
+                        <div className="p-3 flex-1 flex flex-col justify-between min-w-0">
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <h4 className="font-semibold text-sm text-foreground line-clamp-1 group-hover:text-primary transition-colors">{p.title}</h4>
+                              <span className="shrink-0 bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs font-semibold">
+                                {pick.score}%
+                              </span>
+                            </div>
+                            <p className="text-sm font-bold text-primary">{formatPrice(p.price, p.currency)}</p>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <MapPin className="h-3 w-3 shrink-0" />
+                              <span className="line-clamp-1">{[p.neighbourhood, p.town, p.province].filter(Boolean).join(", ") || p.location || "—"}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1">
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1.5 border-t border-border/50 mt-1.5">
                             {p.rooms && <span className="flex items-center gap-1"><Bed className="h-3 w-3" />{p.rooms}</span>}
                             {p.bathrooms && <span className="flex items-center gap-1"><Bath className="h-3 w-3" />{p.bathrooms}</span>}
                             {p.area && <span className="flex items-center gap-1"><Maximize2 className="h-3 w-3" />{p.area} {p.area_unit || "m²"}</span>}
