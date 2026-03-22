@@ -129,7 +129,7 @@ function InteractiveMapPicker({
 
     // Add marker if we have coords
     if (parsedCoords) {
-      markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true }).addTo(map);
+      markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
         onPinLocationChange(`${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`);
