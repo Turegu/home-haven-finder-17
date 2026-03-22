@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAreaUnit } from "@/hooks/useAreaUnit";
 import {
   ChevronLeft, ChevronRight, Building, Maximize,
-  BedDouble, Bath, Car, Eye, DollarSign, Home, CheckCircle
+  BedDouble, Bath, Car, Eye, DollarSign, CheckCircle
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -72,7 +72,6 @@ const statusColors: Record<string, string> = {
 const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [units, setUnits] = useState<ProjectUnit[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all");
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [paymentPlans, setPaymentPlans] = useState<Record<string, PaymentPlan[]>>({});
@@ -90,7 +89,6 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
       setUnits(finalUnits);
       if (finalUnits.length > 0) setSelectedUnit(finalUnits[0].id);
 
-      // Fetch active payment plans for all units
       if (dbUnits.length > 0) {
         const unitIds = dbUnits.map(u => u.id);
         const { data: plans } = await supabase
@@ -127,8 +125,8 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
     fetchUnits();
   }, [projectId]);
 
-  const filtered = filter === "all" ? units : units.filter((u) => u.status === filter);
-  const currentUnit = filtered.find((u) => u.id === selectedUnit) || filtered[0];
+  const currentUnit = units.find((u) => u.id === selectedUnit) || units[0];
+  const otherUnits = units.filter((u) => u.id !== currentUnit?.id);
 
   const nextImage = () => {
     if (!currentUnit?.images?.length) return;
@@ -139,7 +137,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
     setCurrentImageIndex((prev) => (prev - 1 + currentUnit.images!.length) % currentUnit.images!.length);
   };
 
-  useEffect(() => { setCurrentImageIndex(0); }, [selectedUnit, filter]);
+  useEffect(() => { setCurrentImageIndex(0); }, [selectedUnit]);
 
   if (loading) {
     return (
@@ -153,120 +151,108 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   if (units.length === 0) return null;
 
   const currentPlans = currentUnit ? (paymentPlans[currentUnit.id] || []) : [];
+  const images = currentUnit?.images || [];
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
-      {/* Header */}
+      {/* 1. Header with dropdown selector */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-bold text-foreground">Available Units</h2>
-          <p className="text-sm text-muted-foreground">{filtered.length} unit{filtered.length !== 1 ? 's' : ''} found</p>
+          <p className="text-sm text-muted-foreground">{units.length} unit{units.length !== 1 ? 's' : ''} found</p>
         </div>
         <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
-          <SelectTrigger className="w-[200px] h-9 text-sm">
+          <SelectTrigger className="w-[220px] h-9 text-sm">
             <SelectValue placeholder="Select a unit" />
           </SelectTrigger>
           <SelectContent>
             {units.map((unit) => (
-              <SelectItem key={unit.id} value={unit.id}>{unit.unit_name}</SelectItem>
+              <SelectItem key={unit.id} value={unit.id}>
+                <span className="flex items-center gap-2">
+                  {unit.unit_name}
+                  <span className={`inline-block w-2 h-2 rounded-full ${unit.status === 'available' ? 'bg-emerald-500' : unit.status === 'reserved' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                </span>
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {filtered.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">No units match this filter.</p>
-      ) : (
+      {currentUnit && (
         <>
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            {/* Unit List (left) */}
-            <div className="lg:col-span-2">
-              <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
-                {filtered.map((unit) => (
-                  <button
-                    key={unit.id}
-                    onClick={() => setSelectedUnit(unit.id)}
-                    className={`w-full text-left p-3 rounded-lg border transition-all ${
-                      currentUnit?.id === unit.id
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border hover:border-primary/40 hover:bg-muted/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <h4 className="font-semibold text-foreground text-sm">{unit.unit_name}</h4>
-                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[unit.status] || ''}`}>
-                        {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {unit.unit_type}</span>
-                      {unit.area && <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {formatArea(unit.area, unit.area_unit || 'm²')}</span>}
-                      {unit.rooms && <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {unit.rooms}</span>}
-                    </div>
-                    {unit.price != null && (
-                      <p className="text-primary font-bold text-sm mt-1.5">{unit.currency || '$'}{unit.price.toLocaleString()}</p>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Unit Detail (right) */}
-            {currentUnit && (
-              <div className="lg:col-span-3">
-                <div className="relative rounded-xl overflow-hidden bg-muted aspect-[16/10]">
-                  {currentUnit.images && currentUnit.images.length > 0 ? (
+          {/* 2. Full-width image gallery — main + 2 thumbnails */}
+          <div className="mb-6">
+            {images.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 rounded-xl overflow-hidden">
+                {/* Main image */}
+                <div className="md:col-span-2 relative aspect-[16/10] bg-muted group">
+                  <img
+                    src={images[currentImageIndex]}
+                    alt={currentUnit.unit_name}
+                    className="w-full h-full object-cover"
+                  />
+                  {images.length > 1 && (
                     <>
-                      <img src={currentUnit.images[currentImageIndex]} alt={currentUnit.unit_name} className="w-full h-full object-cover" />
-                      {currentUnit.images.length > 1 && (
-                        <>
-                          <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors">
-                            <ChevronLeft className="h-4 w-4" />
-                          </button>
-                          <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors">
-                            <ChevronRight className="h-4 w-4" />
-                          </button>
-                          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                            {currentUnit.images.map((_, i) => (
-                              <button key={i} onClick={() => setCurrentImageIndex(i)} className={`h-2 w-2 rounded-full transition-colors ${i === currentImageIndex ? "bg-primary" : "bg-background/60"}`} />
-                            ))}
-                          </div>
-                        </>
-                      )}
-                      <div className="absolute top-3 right-3">
-                        <Badge variant="outline" className={`${statusColors[currentUnit.status] || ''} text-xs`}>
-                          {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
-                        </Badge>
-                      </div>
+                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors opacity-0 group-hover:opacity-100">
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors opacity-0 group-hover:opacity-100">
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
                     </>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      <Building className="h-12 w-12" />
-                    </div>
                   )}
+                  <div className="absolute top-3 right-3">
+                    <Badge variant="outline" className={`${statusColors[currentUnit.status] || ''} text-xs`}>
+                      {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="absolute bottom-3 left-3 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
+                    {currentImageIndex + 1} / {images.length}
+                  </div>
                 </div>
+                {/* Thumbnails column */}
+                <div className="hidden md:flex flex-col gap-2">
+                  {images.slice(0, 2).map((img, i) => {
+                    const thumbIdx = i === 0 ? (currentImageIndex + 1) % images.length : (currentImageIndex + 2) % images.length;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentImageIndex(thumbIdx)}
+                        className={`flex-1 rounded-lg overflow-hidden border-2 transition-all ${thumbIdx === currentImageIndex ? 'border-primary' : 'border-transparent hover:border-primary/40'}`}
+                      >
+                        <img
+                          src={images[thumbIdx]}
+                          alt={`${currentUnit.unit_name} ${thumbIdx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="w-full aspect-[16/6] bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
+                <Building className="h-12 w-12" />
               </div>
             )}
           </div>
 
-          {/* Fact boxes */}
-          {currentUnit && (
-            <div className="grid grid-cols-4 gap-3 mt-6">
-              <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
-              <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
-              <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? formatArea(currentUnit.area, currentUnit.area_unit || 'm²') : '—'} />
-              <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
-              <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
-              <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />
-              <UnitSpecCard icon={CheckCircle} label="Available" value={`${units.filter(u => u.status === 'available').length} — ${currentUnit.unit_name}`} />
-              <UnitSpecCard icon={Eye} label="Status" value={currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)} />
-            </div>
-          )}
+          {/* 3. Eight info spec cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <UnitSpecCard icon={Building} label="Type" value={currentUnit.unit_type} />
+            <UnitSpecCard icon={DollarSign} label="Price" value={currentUnit.price != null ? `${currentUnit.currency || '$'}${currentUnit.price.toLocaleString()}` : '—'} />
+            <UnitSpecCard icon={Maximize} label="Area" value={currentUnit.area != null ? formatArea(currentUnit.area, currentUnit.area_unit || 'm²') : '—'} />
+            <UnitSpecCard icon={BedDouble} label="Rooms" value={currentUnit.rooms || '—'} />
+            <UnitSpecCard icon={Bath} label="Bathrooms" value={currentUnit.bathrooms != null ? String(currentUnit.bathrooms) : '—'} />
+            <UnitSpecCard icon={Car} label="Parking" value={currentUnit.car_parking != null ? String(currentUnit.car_parking) : '—'} />
+            <UnitSpecCard icon={CheckCircle} label="Available" value={`${units.filter(u => u.status === 'available').length} — ${currentUnit.unit_name}`} />
+            <UnitSpecCard icon={Eye} label="Status" value={currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)} />
+          </div>
 
-          {/* Payment Plan Section */}
-          {currentUnit && currentPlans.length > 0 && (
-            <div className="mt-8">
-              <h3 className="text-lg font-bold text-foreground mb-4">Payment Plan</h3>
+          {/* 4. Payment Plan */}
+          {currentPlans.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-base font-bold text-foreground mb-4">Payment Plan</h3>
               {currentPlans.length === 1 ? (
                 <PaymentPlanDisplay plan={currentPlans[0]} />
               ) : (
@@ -285,6 +271,47 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
               )}
             </div>
           )}
+
+          {/* 5. Other units horizontal scroll */}
+          {otherUnits.length > 0 && (
+            <div>
+              <h3 className="text-base font-bold text-foreground mb-3">Other Units</h3>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                {otherUnits.map((unit) => (
+                  <button
+                    key={unit.id}
+                    onClick={() => setSelectedUnit(unit.id)}
+                    className="flex-shrink-0 w-[200px] text-left p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-muted/50 transition-all group"
+                  >
+                    {/* Thumbnail */}
+                    <div className="w-full aspect-[16/10] rounded-lg overflow-hidden bg-muted mb-2">
+                      {unit.images && unit.images.length > 0 ? (
+                        <img src={unit.images[0]} alt={unit.unit_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          <Building className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-semibold text-foreground text-sm truncate">{unit.unit_name}</h4>
+                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusColors[unit.status] || ''}`}>
+                        {unit.status.charAt(0).toUpperCase() + unit.status.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span>{unit.unit_type}</span>
+                      {unit.area && <span>• {formatArea(unit.area, unit.area_unit || 'm²')}</span>}
+                      {unit.rooms && <span>• {unit.rooms}</span>}
+                    </div>
+                    {unit.price != null && (
+                      <p className="text-primary font-bold text-sm mt-1">{unit.currency || '$'}{unit.price.toLocaleString()}</p>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
@@ -295,10 +322,10 @@ const PaymentPlanDisplay = ({ plan }: { plan: PaymentPlan }) => {
   if (plan.steps.length === 0) return null;
 
   return (
-    <div className="flex items-stretch gap-0">
+    <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
       {plan.steps.map((step, idx) => (
-        <div key={step.id} className="flex items-stretch">
-          <div className="flex-1 min-w-[140px] rounded-xl bg-muted/50 border border-border p-4 text-center">
+        <div key={step.id} className="flex items-stretch flex-shrink-0">
+          <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center">
             <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
             <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
             {step.subtitle && (
@@ -306,7 +333,7 @@ const PaymentPlanDisplay = ({ plan }: { plan: PaymentPlan }) => {
             )}
           </div>
           {idx < plan.steps.length - 1 && (
-            <div className="flex items-center px-2">
+            <div className="flex items-center px-1.5">
               <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
             </div>
           )}
@@ -321,9 +348,9 @@ const UnitSpecCard = ({ icon: Icon, label, value }: { icon: React.ElementType; l
     <div className="h-9 w-9 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
       <Icon className="h-4 w-4 text-primary" />
     </div>
-    <div>
+    <div className="min-w-0">
       <p className="text-[11px] text-muted-foreground leading-tight">{label}</p>
-      <p className="font-semibold text-foreground text-sm">{value}</p>
+      <p className="font-semibold text-foreground text-sm truncate">{value}</p>
     </div>
   </div>
 );
