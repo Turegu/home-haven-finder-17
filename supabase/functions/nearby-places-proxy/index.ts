@@ -9,6 +9,7 @@ const OVERPASS_URLS = [
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
   "https://overpass.private.coffee/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
 ];
 
 // ── In-memory cache ──────────────────────────────────────────────
@@ -51,7 +52,7 @@ const capRadius = (query: string, maxRadius: number) => {
 
 // Try endpoints sequentially — first success wins, avoids hammering all at once
 async function fetchFromOverpass(query: string, perRequestTimeoutMs: number): Promise<{ data: unknown } | { error: string }> {
-  const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 15);
+  const prepared = replaceQueryTimeout(capRadius(query.trim(), 3000), 25);
   const errors: string[] = [];
 
   for (const url of OVERPASS_URLS) {
@@ -119,7 +120,7 @@ serve(async (req) => {
     }
 
     // ── Fetch from Overpass (race all endpoints) ───────────────
-    const result = await fetchFromOverpass(query, 25000);
+    const result = await fetchFromOverpass(query, 30000);
 
     if ("error" in result) {
       return new Response(
