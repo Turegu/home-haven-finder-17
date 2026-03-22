@@ -99,23 +99,25 @@ const AdminListingTable = ({
     return items
       .filter((item) => {
         const q = search.toLowerCase();
-        const matchesSearch =
+        const matchesSearch = !q ||
           item.title.toLowerCase().includes(q) ||
           item.listing_id.toLowerCase().includes(q) ||
-          (item.company_name || "").toLowerCase().includes(q) ||
-          (item.province || "").toLowerCase().includes(q) ||
-          (item.town || "").toLowerCase().includes(q) ||
-          (item.location || "").toLowerCase().includes(q);
+          (item.company_name || "").toLowerCase().includes(q);
+        const loc = locationSearch.toLowerCase();
+        const matchesLocation = !loc ||
+          (item.province || "").toLowerCase().includes(loc) ||
+          (item.town || "").toLowerCase().includes(loc) ||
+          (item.location || "").toLowerCase().includes(loc);
         const matchesStatus = statusFilter === "all" || item.status === statusFilter;
         const matchesCompany = companyFilter === "all" || item.company_name === companyFilter;
-        return matchesSearch && matchesStatus && matchesCompany;
+        return matchesSearch && matchesLocation && matchesStatus && matchesCompany;
       })
       .sort((a, b) => {
         const da = new Date(a.created_at).getTime();
         const db = new Date(b.created_at).getTime();
         return sortOrder === "newest" ? db - da : da - db;
       });
-  }, [items, search, statusFilter, companyFilter, sortOrder]);
+  }, [items, search, locationSearch, statusFilter, companyFilter, sortOrder]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
