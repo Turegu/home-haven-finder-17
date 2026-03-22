@@ -56,10 +56,12 @@ const AdminListingTable = ({
 
   // Filter & sort
   const filtered = items
-    .filter((item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.listing_id.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((item) => {
+      const q = search.toLowerCase();
+      return item.title.toLowerCase().includes(q) ||
+        item.listing_id.toLowerCase().includes(q) ||
+        (item.company_name || "").toLowerCase().includes(q);
+    })
     .sort((a, b) => {
       const da = new Date(a.created_at).getTime();
       const db = new Date(b.created_at).getTime();
