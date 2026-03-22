@@ -24,6 +24,7 @@ interface ProjectUnit {
   car_parking: number | null;
   images: string[] | null;
   status: string;
+  advertising_tags?: string[] | null;
 }
 
 interface PaymentPlan {
