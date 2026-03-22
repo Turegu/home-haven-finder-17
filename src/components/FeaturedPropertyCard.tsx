@@ -67,7 +67,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
   return (
     <div className="group relative flex flex-col rounded-2xl overflow-hidden bg-card">
       {/* Full-bleed image */}
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative aspect-[3/4] overflow-hidden">
         <img
           src={property.images[currentImage]}
           alt={property.title}
