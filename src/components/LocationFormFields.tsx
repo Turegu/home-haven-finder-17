@@ -144,7 +144,7 @@ function InteractiveMapPicker({
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
       } else {
-        markerRef.current = L.marker([lat, lng], { draggable: true }).addTo(map);
+        markerRef.current = L.marker([lat, lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
         markerRef.current.on("dragend", () => {
           const pos = markerRef.current.getLatLng();
           onPinLocationChange(`${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`);
