@@ -16,13 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
-  Calendar, Compass, ScrollText, Activity, Tag, TreePine, Lamp,
+  Calendar, Compass, ScrollText, Activity, Tag, TreePine,
   DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
   ChevronDown, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
-import AmenitiesViewAllDialog from "@/components/AmenitiesViewAllDialog";
+import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
@@ -511,50 +511,20 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
-        {/* ─── Amenities (multi-select dropdowns) ─── */}
+        {/* ─── Amenities ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><TreePine className="h-4 w-4" /></span>
             <h2 className="text-base font-semibold text-foreground tracking-tight">Amenities</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <MultiSelectDropdown
-                  label="Interior Amenities"
-                  icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
-                  options={filterOpts["interior_amenities"] || []}
-                  selected={form.interior_amenities}
-                  onToggle={(val) => toggleArrayField("interior_amenities", val)}
-                  searchable
-                />
-              </div>
-              <AmenitiesViewAllDialog
-                type="interior"
-                options={filterOpts["interior_amenities"] || []}
-                selected={form.interior_amenities}
-                onToggle={(val) => toggleArrayField("interior_amenities", val)}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <MultiSelectDropdown
-                  label="Exterior Amenities"
-                  icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
-                  options={filterOpts["exterior_amenities"] || []}
-                  selected={form.exterior_amenities}
-                  onToggle={(val) => toggleArrayField("exterior_amenities", val)}
-                  searchable
-                />
-              </div>
-              <AmenitiesViewAllDialog
-                type="exterior"
-                options={filterOpts["exterior_amenities"] || []}
-                selected={form.exterior_amenities}
-                onToggle={(val) => toggleArrayField("exterior_amenities", val)}
-              />
-            </div>
-          </div>
+          <AmenitiesPickerDialog
+            interiorOptions={filterOpts["interior_amenities"] || []}
+            exteriorOptions={filterOpts["exterior_amenities"] || []}
+            selectedInterior={form.interior_amenities}
+            selectedExterior={form.exterior_amenities}
+            onToggleInterior={(val) => toggleArrayField("interior_amenities", val)}
+            onToggleExterior={(val) => toggleArrayField("exterior_amenities", val)}
+          />
         </section>
 
         {/* ─── Advertising Tags ─── */}

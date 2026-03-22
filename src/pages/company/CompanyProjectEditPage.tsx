@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import {
   Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
-  Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
+  Ruler, TreePine, Layers, Search, ChevronDown,
   Bold, Italic, Underline, List, Heading, Activity, Video,
   Plus, Trash2, Pencil, Package, Tag
 } from "lucide-react";
@@ -27,6 +27,7 @@ import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import SearchablePillSelect from "@/components/ui/searchable-pill-select";
 import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 
@@ -728,24 +729,14 @@ const CompanyProjectEditPage = () => {
         {/* ─── Amenities ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<TreePine className="h-4 w-4" />} title="Amenities" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <MultiSelectDropdown
-              label="Exterior Amenities"
-              icon={<TreePine className="h-4 w-4 text-muted-foreground" />}
-              options={exteriorAmenities}
-              selected={form.exterior_amenities}
-              onToggle={(val) => toggleAmenity("exterior_amenities", val)}
-              searchable
-            />
-            <MultiSelectDropdown
-              label="Interior Amenities"
-              icon={<Lamp className="h-4 w-4 text-muted-foreground" />}
-              options={interiorAmenities}
-              selected={form.interior_amenities}
-              onToggle={(val) => toggleAmenity("interior_amenities", val)}
-              searchable
-            />
-          </div>
+          <AmenitiesPickerDialog
+            interiorOptions={interiorAmenities}
+            exteriorOptions={exteriorAmenities}
+            selectedInterior={form.interior_amenities}
+            selectedExterior={form.exterior_amenities}
+            onToggleInterior={(val) => toggleAmenity("interior_amenities", val)}
+            onToggleExterior={(val) => toggleAmenity("exterior_amenities", val)}
+          />
         </section>
 
         {/* ─── Advertising Tags ─── */}
@@ -1110,25 +1101,16 @@ const CompanyProjectEditPage = () => {
               </div>
 
               {/* Unit Amenities */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="font-medium">Exterior Amenities</Label>
-                  <SearchablePillSelect
-                    options={unitExteriorAmenities}
-                    selected={unitForm.exterior_amenities}
-                    onToggle={(a) => toggleUnitAmenity("exterior_amenities", a)}
-                    placeholder="Search exterior amenities..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="font-medium">Interior Amenities</Label>
-                  <SearchablePillSelect
-                    options={unitInteriorAmenities}
-                    selected={unitForm.interior_amenities}
-                    onToggle={(a) => toggleUnitAmenity("interior_amenities", a)}
-                    placeholder="Search interior amenities..."
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label className="font-medium">Amenities</Label>
+                <AmenitiesPickerDialog
+                  interiorOptions={unitInteriorAmenities}
+                  exteriorOptions={unitExteriorAmenities}
+                  selectedInterior={unitForm.interior_amenities}
+                  selectedExterior={unitForm.exterior_amenities}
+                  onToggleInterior={(a) => toggleUnitAmenity("interior_amenities", a)}
+                  onToggleExterior={(a) => toggleUnitAmenity("exterior_amenities", a)}
+                />
               </div>
 
               {/* Advertising Tags */}
