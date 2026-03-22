@@ -198,6 +198,29 @@ const CompanyPropertyEditPage = () => {
       });
       setImages(data.images || []);
       setPlanFiles((data as any).plans || []);
+
+      // Load payment plans
+      const { data: plansData } = await supabase
+        .from("property_payment_plans")
+        .select("*")
+        .eq("property_id", id)
+        .order("sort_order");
+      if (plansData && plansData.length > 0) {
+        const planIds = plansData.map((p: any) => p.id);
+        const { data: stepsData } = await supabase
+          .from("property_payment_plan_steps")
+          .select("*")
+          .in("plan_id", planIds)
+          .order("sort_order");
+        setPaymentPlans(plansData.map((p: any) => ({
+          id: p.id,
+          plan_name: p.plan_name,
+          is_active: p.is_active,
+          steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+            id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
+          })),
+        })));
+      }
     };
     fetchProperty();
   }, [isEdit, id]);
