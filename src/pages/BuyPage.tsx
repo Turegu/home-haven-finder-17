@@ -603,6 +603,7 @@ const BuyPage = () => {
         location={location}
         keyword={keyword}
       />
+      <AiPropertyAgent />
     </div>
   );
 };
