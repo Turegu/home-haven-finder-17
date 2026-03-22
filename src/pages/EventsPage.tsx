@@ -96,11 +96,11 @@ const EventsPage = () => {
       <Header />
 
       {/* Search Bar */}
-      <div className="sticky top-[104px] z-40 bg-background border-b border-border">
+      <div className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative flex-1 min-w-[140px] sm:min-w-[200px]">
               <input
                 type="text"
                 value={keyword}
@@ -119,7 +119,7 @@ const EventsPage = () => {
             {/* Event Type Dropdown */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
+                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[120px] sm:min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
                   <span className={!selectedEventType ? 'text-muted-foreground' : 'text-foreground'}>
                     {selectedEventType || 'Event Type'}
                   </span>
@@ -148,7 +148,7 @@ const EventsPage = () => {
             {/* Date Range Picker */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[160px] text-sm hover:border-primary/50 transition-colors bg-background">
+                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[120px] sm:min-w-[160px] text-sm hover:border-primary/50 transition-colors bg-background">
                   <CalendarDays className="h-4 w-4 text-muted-foreground" />
                   <span className={dateRange.from ? 'text-foreground' : 'text-muted-foreground'}>
                     {dateRange.from

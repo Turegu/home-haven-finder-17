@@ -277,12 +277,12 @@ const BuyPage = () => {
       <Header />
 
       {/* Search Bar + Filters */}
-      <div className="sticky top-[104px] z-40 bg-background border-b border-border">
+      <div className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           {/* Search row */}
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative flex-1 min-w-[140px] sm:min-w-[200px]">
               <input
                 type="text"
                 value={keyword}
@@ -403,7 +403,7 @@ const BuyPage = () => {
           <h1 className="text-lg font-bold text-foreground">
             {title} in <span className="text-primary">{totalCount} Properties</span>
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -428,7 +428,7 @@ const BuyPage = () => {
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
-              Save Search
+              <span className="hidden sm:inline">Save Search</span>
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
               <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>

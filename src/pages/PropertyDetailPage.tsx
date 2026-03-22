@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
@@ -92,6 +93,7 @@ const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { formatArea } = useAreaUnit();
+  const isMobile = useIsMobile();
   useTrackPageView(id, 'property');
   const [property, setProperty] = useState(emptyPropertyState);
   const [loading, setLoading] = useState(true);
@@ -332,19 +334,23 @@ const PropertyDetailPage = () => {
       </div>
 
       {/* Media Gallery — swaps between photos, map, etc. */}
-      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
+      <div className="relative w-full h-[250px] sm:h-[300px] md:h-[450px] bg-muted overflow-hidden">
         {/* Photos — default view */}
         <div className={activeTab === 'photos' ? 'h-full' : 'hidden'}>
           <div className="flex h-full">
-            {property.images.slice(currentImage, currentImage + 3).concat(
-              currentImage + 3 > property.images.length
-                ? property.images.slice(0, (currentImage + 3) - property.images.length)
-                : []
-            ).map((img, i) => (
-              <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
-                <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
-              </div>
-            ))}
+            {(() => {
+              const visibleCount = isMobile ? 1 : 3;
+              const visibleImages = property.images.slice(currentImage, currentImage + visibleCount).concat(
+                currentImage + visibleCount > property.images.length
+                  ? property.images.slice(0, (currentImage + visibleCount) - property.images.length)
+                  : []
+              );
+              return visibleImages.map((img, i) => (
+                <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
+                  <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ));
+            })()}
           </div>
           <button onClick={prevImage} className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2.5 rounded-full shadow-lg z-10">
             <ChevronLeft className="h-5 w-5" />
@@ -488,14 +494,14 @@ const PropertyDetailPage = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Title & Price Block */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <div className="flex items-center justify-between gap-4 mb-1">
-                <h1 className="text-xl font-bold text-foreground">{property.title.slice(0, 40)}</h1>
-                <div className="flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground line-clamp-2">{property.title.slice(0, 40)}</h1>
+                <div className="flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border shrink-0 overflow-x-auto">
                   {mediaTabs.map((tab) => (
                     <button
                       key={tab.id}
                       onClick={() => handleMediaTabClick(tab.id)}
-                      className={`p-2 rounded-md transition-all active:scale-95 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
+                      className={`p-2 rounded-md transition-all active:scale-95 shrink-0 ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background'}`}
                       title={tab.label}
                     >
                       <tab.icon className="h-4.5 w-4.5" />
