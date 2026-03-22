@@ -29,6 +29,7 @@ const ProjectDetailPage = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [projectUnits, setProjectUnits] = useState<any[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -79,6 +80,15 @@ const ProjectDetailPage = () => {
         });
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+
+        // Fetch project units for contact dialog
+        const { data: units } = await supabase
+          .from('project_units')
+          .select('id, unit_name, unit_type, price, currency, rooms, area, area_unit')
+          .eq('project_id', id)
+          .eq('status', 'available')
+          .order('unit_name');
+        setProjectUnits(units || []);
       }
       setLoading(false);
     };
@@ -449,6 +459,7 @@ const ProjectDetailPage = () => {
         agentId={realAgentId}
         companyName={project.agentCompany}
         listingType="project"
+        projectUnits={projectUnits}
       />
 
       <Footer />

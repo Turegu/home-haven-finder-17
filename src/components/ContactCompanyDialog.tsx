@@ -6,9 +6,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, Building, Maximize, Bath, BedDouble, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+interface ProjectUnitOption {
+  id: string;
+  unit_name: string;
+  unit_type: string;
+  price: number | null;
+  currency: string | null;
+  rooms: string | null;
+  area: number | null;
+  area_unit: string | null;
+}
 
 interface ContactCompanyDialogProps {
   open: boolean;
@@ -33,9 +45,10 @@ interface ContactCompanyDialogProps {
   agentId: string | null;
   companyName?: string;
   listingType?: 'property' | 'project' | 'event';
+  projectUnits?: ProjectUnitOption[];
 }
 
-const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property' }: ContactCompanyDialogProps) => {
+const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property', projectUnits }: ContactCompanyDialogProps) => {
   const defaultMessages: Record<string, string> = {
     property: 'Hi!, I am interested in your property please contact me.',
     project: 'Hi!, I am interested in your project please contact me.',
@@ -49,10 +62,12 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   const [phone, setPhone] = useState('');
   const [preferredContact, setPreferredContact] = useState('email');
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [selectedUnitId, setSelectedUnitId] = useState<string>('');
 
   useEffect(() => {
     if (open) {
       setSent(false);
+      setSelectedUnitId('');
       setMessage(defaultMessages[listingType]);
       const loadUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -73,6 +88,18 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
     }
   }, [open, listingType]);
 
+  // Update message when unit selection changes
+  useEffect(() => {
+    if (listingType === 'project' && selectedUnitId && selectedUnitId !== 'none' && projectUnits) {
+      const unit = projectUnits.find(u => u.id === selectedUnitId);
+      if (unit) {
+        setMessage(`Hi!, I am interested in unit "${unit.unit_name}" (${unit.unit_type}${unit.price ? `, ${unit.currency || '$'}${unit.price.toLocaleString()}` : ''}) in your project, please contact me.`);
+      }
+    } else if (listingType === 'project' && (!selectedUnitId || selectedUnitId === 'none')) {
+      setMessage(defaultMessages['project']);
+    }
+  }, [selectedUnitId, projectUnits, listingType]);
+
   const handleSend = async () => {
     if (!fullName.trim() || !email.trim()) {
       toast.error('Please fill in your name and email.');
@@ -83,6 +110,8 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       return;
     }
     setSending(true);
+    const selectedUnit = projectUnits?.find(u => u.id === selectedUnitId);
+    const unitSuffix = selectedUnit ? `\n[Interested in unit: ${selectedUnit.unit_name} (${selectedUnit.unit_type})]` : '';
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -94,7 +123,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
-          message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
+          message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
         };
         if (listingType === 'property') inquiryData.property_id = property.id;
         else if (listingType === 'project') inquiryData.project_id = property.id;
@@ -107,7 +136,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
-          message: `${message}\n\n[Preferred contact: ${preferredContact}]`,
+          message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
           inbox_type: `${listingType}_inquiry`,
         };
         if (listingType === 'property') inboxData.property_id = property.id;
@@ -188,6 +217,32 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             <p className="font-bold text-foreground text-sm mt-1.5">{formatPrice(property.price, property.currency)}</p>
           </div>
         </div>
+
+        {/* Unit selector for projects */}
+        {listingType === 'project' && projectUnits && projectUnits.length > 0 && (
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-foreground">I'm interested in a specific unit</Label>
+            <Select value={selectedUnitId} onValueChange={setSelectedUnitId}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue placeholder="Select a unit (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No specific unit</SelectItem>
+                {projectUnits.map((unit) => (
+                  <SelectItem key={unit.id} value={unit.id}>
+                    <span className="flex items-center gap-2">
+                      {unit.unit_name}
+                      <span className="text-muted-foreground text-xs">
+                        {unit.unit_type}{unit.price ? ` · ${unit.currency || '$'}${unit.price.toLocaleString()}` : ''}
+                        {unit.rooms ? ` · ${unit.rooms}` : ''}
+                      </span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         {/* Message */}
         <Textarea
