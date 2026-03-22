@@ -255,6 +255,7 @@ const CompanyProjectEditPage = () => {
   const [uploadingUnitImages, setUploadingUnitImages] = useState(false);
   const [savedProjectId, setSavedProjectId] = useState<string | null>(isEdit ? (id as string) : null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
     title: "", tagline: "", description: "", developer: "",
