@@ -42,28 +42,11 @@ interface CreditUsage {
   featured_projects: number;
 }
 
-interface CreditTransaction {
-  id: string;
-  amount: number;
-  transaction_type: string;
-  description: string | null;
-  listing_type: string | null;
-  created_at: string;
-}
-
-interface CreditSummary {
-  totalTopups: number;
-  totalSpent: number;
-  thisMonthSpent: number;
-  thisYearSpent: number;
-}
-
 const CompanyDashboardPage = () => {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [counts, setCounts] = useState<ListingCounts>({ properties: 0, projects: 0, events: 0 });
   const [creditUsage, setCreditUsage] = useState<CreditUsage>({ premium_properties: 0, featured_properties: 0, premium_projects: 0, featured_projects: 0 });
-  const [creditSummary, setCreditSummary] = useState<CreditSummary>({ totalTopups: 0, totalSpent: 0, thisMonthSpent: 0, thisYearSpent: 0 });
-  const [recentTransactions, setRecentTransactions] = useState<CreditTransaction[]>([]);
+  const [creditTopups, setCreditTopups] = useState(0);
   const [loading, setLoading] = useState(true);
   const { usage, limits } = useMembershipLimits(company?.id || null);
   const { openSalesWhatsApp } = useSalesContact();
