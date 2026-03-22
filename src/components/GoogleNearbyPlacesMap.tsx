@@ -241,61 +241,19 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     }
   }, [lat, lng]);
 
-  // Prefetch ALL categories in a single combined Overpass query
+  // Prefetch ALL categories in parallel (all at once)
   useEffect(() => {
     if (prefetchedRef.current) return;
     prefetchedRef.current = true;
 
     const prefetchAll = async () => {
-      const radius = 3000;
-      // Build one big union query for all categories
-      const allNodeParts: string[] = [];
-      for (const cat of categories) {
-        for (const q of cat.osmQueries) {
-          const tildeIdx = q.indexOf('~');
-          if (tildeIdx === -1) {
-            allNodeParts.push(`node[${q}](around:${radius},${lat},${lng});`);
-          } else {
-            const key = q.substring(0, tildeIdx);
-            const rawVal = q.substring(tildeIdx + 1);
-            allNodeParts.push(`node[${key}~${rawVal}](around:${radius},${lat},${lng});`);
-          }
-        }
-      }
-      // Request up to 120 results (roughly 10 per category)
-      const query = `[out:json][timeout:25];(${allNodeParts.join('')});out body 120;`;
-
-      try {
-        const { data, error } = await supabase.functions.invoke('nearby-places-proxy', { body: { query } });
-        if (!mountedRef.current) return;
-        if (error) throw new Error(error.message);
-
-        const elements = parseOverpassElements(data);
-        // Classify each element into its category
-        const grouped: Record<string, NearbyPlace[]> = {};
-        for (const cat of categories) grouped[cat.key] = [];
-
-        for (const el of elements) {
-          if (!el?.lat || !el?.lon || !el?.tags?.name) continue;
-          const catKey = classifyElement(el);
-          if (catKey && grouped[catKey]) {
-            grouped[catKey].push(mapElementToPlace(el, lat, lng, catKey));
-          }
-        }
-
-        // Sort and cap each category
-        const result: Record<string, NearbyPlace[]> = {};
-        for (const [key, items] of Object.entries(grouped)) {
-          result[key] = items.sort((a, b) => (a.distance || 0) - (b.distance || 0)).slice(0, 15);
-        }
-        setPlaces(result);
-      } catch (err) {
-        console.error('Bulk prefetch failed, will fetch on demand:', err);
-      }
+      const results = await Promise.allSettled(
+        categories.map(cat => fetchSingleCategory(cat.key))
+      );
     };
 
     prefetchAll();
-  }, [lat, lng, classifyElement]);
+  }, [fetchSingleCategory]);
 
   const handleCategoryClick = useCallback((key: string) => {
     setActiveCategory(prev => {
