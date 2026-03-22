@@ -80,7 +80,7 @@ const FaqPage = () => {
                 <AccordionContent>
                   <div
                     className="prose prose-sm max-w-none text-muted-foreground"
-                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
                   />
                 </AccordionContent>
               </AccordionItem>

@@ -107,6 +107,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               <img
                 src={secondaryImages[0] || property.images[currentImage]}
                 alt={`${property.title} 2`}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
 

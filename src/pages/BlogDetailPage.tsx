@@ -80,7 +80,7 @@ const BlogDetailPage = () => {
 
         <div
           className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground"
-          dangerouslySetInnerHTML={{ __html: translation?.description || "" }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translation?.description || "") }}
         />
       </div>
       <Footer />
