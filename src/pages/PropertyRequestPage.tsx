@@ -158,9 +158,10 @@ const PropertyRequestPage = () => {
       setFormData({
         fullName: '', email: '', phone: '', contactMethod: '',
         enquiryType: '', propertyType: '', province: '', district: '', neighbourhood: '',
-        areaStreet: '', budget: '', areaSqm: '', rooms: '', bathrooms: '',
-        furnishing: '', floorLevel: '', propertyStatus: '', parkingSpace: '',
-        viewOrientation: '', interiorAmenities: [], exteriorAmenities: [],
+        areaStreet: '', budget: '', areaSqm: '',
+        rooms: [], bathrooms: [],
+        furnishing: [], floorLevel: [], propertyStatus: [], parkingSpace: [],
+        viewOrientation: [], interiorAmenities: [], exteriorAmenities: [],
         additionalRequests: '',
       });
     } catch {
