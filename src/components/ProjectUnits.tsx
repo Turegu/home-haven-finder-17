@@ -176,27 +176,39 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
-      {/* 1. Header with dropdown selector */}
+      {/* 1. Header with dropdown selector + unit arrows */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-bold text-foreground">Available Units</h2>
           <p className="text-sm text-muted-foreground">{units.length} unit{units.length !== 1 ? 's' : ''} found</p>
         </div>
-        <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
-          <SelectTrigger className="w-[220px] h-9 text-sm">
-            <SelectValue placeholder="Select a unit" />
-          </SelectTrigger>
-          <SelectContent>
-            {units.map((unit) => (
-              <SelectItem key={unit.id} value={unit.id}>
-                <span className="flex items-center gap-2">
-                  {unit.unit_name}
-                  <span className={`inline-block w-2 h-2 rounded-full ${unit.status === 'available' ? 'bg-emerald-500' : unit.status === 'reserved' ? 'bg-amber-500' : 'bg-red-500'}`} />
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          {units.length > 1 && (
+            <>
+              <button onClick={goToPrevUnit} className="h-9 w-9 rounded-lg border border-border bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors" title="Previous unit">
+                <ChevronLeft className="h-4 w-4 text-foreground" />
+              </button>
+              <button onClick={goToNextUnit} className="h-9 w-9 rounded-lg border border-border bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors" title="Next unit">
+                <ChevronRight className="h-4 w-4 text-foreground" />
+              </button>
+            </>
+          )}
+          <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
+            <SelectTrigger className="w-[220px] h-9 text-sm">
+              <SelectValue placeholder="Select a unit" />
+            </SelectTrigger>
+            <SelectContent>
+              {units.map((unit) => (
+                <SelectItem key={unit.id} value={unit.id}>
+                  <span className="flex items-center gap-2">
+                    {unit.unit_name}
+                    <span className={`inline-block w-2 h-2 rounded-full ${unit.status === 'available' ? 'bg-emerald-500' : unit.status === 'reserved' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {currentUnit && (
@@ -222,13 +234,24 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                       </button>
                     </>
                   )}
+                  {/* Advertising tag top-left */}
+                  {currentUnit.advertising_tags && currentUnit.advertising_tags.length > 0 && (
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-primary text-primary-foreground text-xs font-semibold shadow-md">
+                        {currentUnit.advertising_tags[0]}
+                      </Badge>
+                    </div>
+                  )}
+                  {/* Status badge top-right */}
                   <div className="absolute top-3 right-3">
                     <Badge variant="outline" className={`${statusColors[currentUnit.status] || ''} text-xs`}>
                       {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
                     </Badge>
                   </div>
-                  <div className="absolute bottom-3 left-3 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
-                    {currentImageIndex + 1} / {images.length}
+                  {/* Unit title + image counter bottom-left */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <h3 className="text-white font-bold text-lg drop-shadow-lg">{currentUnit.unit_name}</h3>
+                    <span className="text-white/80 text-xs">{currentImageIndex + 1} / {images.length}</span>
                   </div>
                 </div>
                 {/* Thumbnails column */}
