@@ -271,7 +271,10 @@ const CompanyProjectEditPage = () => {
     location: "", video_link: "", view_360_link: "",
   });
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    clearError(field);
+  };
 
   const toggleAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
     setForm((prev) => ({
