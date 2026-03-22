@@ -59,11 +59,6 @@ const cityCoords: Record<string, [number, number]> = {
   'osmangazi': [40.1833, 29.0667],
 };
 
-// Approximate radius in degrees for city/town boundaries (~25km ≈ 0.25°)
-const CITY_RADIUS_DEG = 0.25;
-// Province-level radius (~100km ≈ 1.0°)
-const PROVINCE_RADIUS_DEG = 1.0;
-
 function getCityCenter(province: string, town: string): [number, number] | null {
   const lookups = [town, province].filter(Boolean);
   for (const name of lookups) {
@@ -73,10 +68,67 @@ function getCityCenter(province: string, town: string): [number, number] | null 
   return null;
 }
 
-function isWithinBounds(lat: number, lng: number, center: [number, number], hasTown: boolean): boolean {
-  const radius = hasTown ? CITY_RADIUS_DEG : PROVINCE_RADIUS_DEG;
-  const dist = Math.sqrt(Math.pow(lat - center[0], 2) + Math.pow(lng - center[1], 2));
-  return dist <= radius;
+// Fetch admin boundary polygon from OSM Nominatim
+let boundaryCache: Record<string, number[][][] | null> = {};
+
+async function fetchDistrictBoundary(province: string, town: string): Promise<number[][][] | null> {
+  const cacheKey = `${province}|${town}`;
+  if (cacheKey in boundaryCache) return boundaryCache[cacheKey];
+  
+  try {
+    // Search for the district within the province
+    const query = `${town}, ${province}`;
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+      { headers: { 'User-Agent': 'LovableRealEstate/1.0' } }
+    );
+    if (!res.ok) { boundaryCache[cacheKey] = null; return null; }
+    const data = await res.json();
+    if (!data?.[0]?.geojson) { boundaryCache[cacheKey] = null; return null; }
+    
+    const geo = data[0].geojson;
+    let polygons: number[][][] = [];
+    
+    if (geo.type === 'Polygon') {
+      polygons = geo.coordinates;
+    } else if (geo.type === 'MultiPolygon') {
+      // Flatten multi-polygon into array of rings
+      for (const poly of geo.coordinates) {
+        polygons.push(...poly);
+      }
+    } else {
+      boundaryCache[cacheKey] = null;
+      return null;
+    }
+    
+    boundaryCache[cacheKey] = polygons;
+    return polygons;
+  } catch {
+    boundaryCache[cacheKey] = null;
+    return null;
+  }
+}
+
+// Ray-casting point-in-polygon check
+function isPointInPolygons(lat: number, lng: number, polygons: number[][][]): boolean {
+  // Check if point is inside any of the polygon rings (first ring = outer boundary)
+  // For simplicity, check outer rings only
+  for (const ring of polygons) {
+    if (isPointInRing(lat, lng, ring)) return true;
+  }
+  return false;
+}
+
+function isPointInRing(lat: number, lng: number, ring: number[][]): boolean {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    // GeoJSON coordinates are [lng, lat]
+    const xi = ring[i][1], yi = ring[i][0];
+    const xj = ring[j][1], yj = ring[j][0];
+    const intersect = ((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
 }
 
 interface LocationFormFieldsProps {
