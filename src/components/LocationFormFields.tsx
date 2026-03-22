@@ -196,6 +196,7 @@ function InteractiveMapPicker({
 }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const trySetPinRef = useRef<(lat: number, lng: number) => boolean>(() => false);
   const boundaryLayerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [L, setL] = useState<any>(null);
@@ -265,6 +266,9 @@ function InteractiveMapPicker({
     return true;
   }, [boundaryPolygons, town, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
 
+  // Keep ref in sync so map event handlers always use latest closure
+  trySetPinRef.current = trySetPin;
+
   // Load Leaflet dynamically
   useEffect(() => {
     import("leaflet").then((mod) => {
@@ -299,7 +303,7 @@ function InteractiveMapPicker({
       markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
-        if (!trySetPin(pos.lat, pos.lng)) {
+        if (!trySetPinRef.current(pos.lat, pos.lng)) {
           if (parsedCoords) {
             markerRef.current.setLatLng([parsedCoords.lat, parsedCoords.lng]);
           }
@@ -310,7 +314,7 @@ function InteractiveMapPicker({
     // Click to place/move pin — enforce boundary
     map.on("click", (e: any) => {
       const { lat, lng } = e.latlng;
-      if (!trySetPin(lat, lng)) return;
+      if (!trySetPinRef.current(lat, lng)) return;
 
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
@@ -318,7 +322,7 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([lat, lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
         markerRef.current.on("dragend", () => {
           const pos = markerRef.current.getLatLng();
-          if (!trySetPin(pos.lat, pos.lng)) {
+          if (!trySetPinRef.current(pos.lat, pos.lng)) {
             markerRef.current.setLatLng([lat, lng]);
           }
         });
@@ -403,7 +407,7 @@ function InteractiveMapPicker({
     if (!navigator.geolocation || !mapRef.current) return;
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
-      if (!trySetPin(latitude, longitude)) return;
+      if (!trySetPinRef.current(latitude, longitude)) return;
 
       mapRef.current.setView([latitude, longitude], 15);
       if (markerRef.current) {
@@ -412,7 +416,7 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([latitude, longitude], { draggable: true, icon: createPinIcon(L) }).addTo(mapRef.current);
         markerRef.current.on("dragend", () => {
           const p = markerRef.current.getLatLng();
-          if (!trySetPin(p.lat, p.lng)) {
+          if (!trySetPinRef.current(p.lat, p.lng)) {
             markerRef.current.setLatLng([latitude, longitude]);
           }
         });
