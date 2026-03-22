@@ -607,6 +607,36 @@ const PropertyDetailPage = () => {
               </div>
             </div>
 
+            {/* Payment Plans */}
+            {propertyPaymentPlans.length > 0 && (
+              <div className="bg-card rounded-xl border border-border p-6">
+                <h2 className="text-lg font-bold text-foreground mb-4">Payment Plan</h2>
+                {propertyPaymentPlans.map((plan) => (
+                  <div key={plan.id} className="mb-4 last:mb-0">
+                    {propertyPaymentPlans.length > 1 && (
+                      <h3 className="text-sm font-semibold text-foreground mb-2">{plan.plan_name}</h3>
+                    )}
+                    <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
+                      {plan.steps.map((step, idx) => (
+                        <div key={step.id} className="flex items-stretch flex-shrink-0">
+                          <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center">
+                            <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
+                            <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
+                            {step.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>}
+                          </div>
+                          {idx < plan.steps.length - 1 && (
+                            <div className="flex items-center px-1.5">
+                              <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
 
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
