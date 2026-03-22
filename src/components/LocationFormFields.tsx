@@ -59,6 +59,11 @@ const cityCoords: Record<string, [number, number]> = {
   'osmangazi': [40.1833, 29.0667],
 };
 
+// Approximate radius in degrees for city/town boundaries (~25km ≈ 0.25°)
+const CITY_RADIUS_DEG = 0.25;
+// Province-level radius (~100km ≈ 1.0°)
+const PROVINCE_RADIUS_DEG = 1.0;
+
 function getCityCenter(province: string, town: string): [number, number] | null {
   const lookups = [town, province].filter(Boolean);
   for (const name of lookups) {
@@ -66,6 +71,12 @@ function getCityCenter(province: string, town: string): [number, number] | null 
     if (cityCoords[key]) return cityCoords[key];
   }
   return null;
+}
+
+function isWithinBounds(lat: number, lng: number, center: [number, number], hasTown: boolean): boolean {
+  const radius = hasTown ? CITY_RADIUS_DEG : PROVINCE_RADIUS_DEG;
+  const dist = Math.sqrt(Math.pow(lat - center[0], 2) + Math.pow(lng - center[1], 2));
+  return dist <= radius;
 }
 
 interface LocationFormFieldsProps {
@@ -96,9 +107,13 @@ function InteractiveMapPicker({
 }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const circleRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mapReady, setMapReady] = useState(false);
   const [L, setL] = useState<any>(null);
+  const [boundsError, setBoundsError] = useState<string | null>(null);
+
+  const hasTown = Boolean(town);
 
   // Parse existing pin_location "lat,lng" string
   const parsedCoords = useMemo(() => {
@@ -110,7 +125,6 @@ function InteractiveMapPicker({
     return null;
   }, [pinLocation]);
 
-  // Create a reliable custom marker icon using divIcon (avoids broken default icon)
   const createPinIcon = useCallback((leaflet: any) => {
     return leaflet.divIcon({
       className: "",
@@ -121,6 +135,23 @@ function InteractiveMapPicker({
       iconAnchor: [16, 32],
     });
   }, []);
+
+  // Validate and set pin, returns true if valid
+  const trySetPin = useCallback((lat: number, lng: number) => {
+    const cityCenter = getCityCenter(province, town);
+    if (!cityCenter) return false;
+    
+    if (!isWithinBounds(lat, lng, cityCenter, hasTown)) {
+      const areaName = town || province;
+      setBoundsError(`Pin must be placed within ${areaName} boundaries.`);
+      setTimeout(() => setBoundsError(null), 3000);
+      return false;
+    }
+    
+    setBoundsError(null);
+    onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+    return true;
+  }, [province, town, hasTown, onPinLocationChange]);
 
   // Load Leaflet dynamically
   useEffect(() => {
@@ -133,7 +164,6 @@ function InteractiveMapPicker({
   useEffect(() => {
     if (!L || !containerRef.current || mapRef.current) return;
 
-    // Determine initial center
     const cityCenter = getCityCenter(province, town);
     const initial = parsedCoords
       ? [parsedCoords.lat, parsedCoords.lng] as [number, number]
@@ -152,19 +182,37 @@ function InteractiveMapPicker({
       maxZoom: 19,
     }).addTo(map);
 
+    // Draw boundary circle
+    if (cityCenter) {
+      const radiusKm = hasTown ? CITY_RADIUS_DEG * 111 : PROVINCE_RADIUS_DEG * 111;
+      circleRef.current = L.circle(cityCenter, {
+        radius: radiusKm * 1000,
+        color: '#0d9488',
+        fillColor: '#0d9488',
+        fillOpacity: 0.05,
+        weight: 1,
+        dashArray: '5, 5',
+      }).addTo(map);
+    }
+
     // Add marker if we have coords
     if (parsedCoords) {
       markerRef.current = L.marker([parsedCoords.lat, parsedCoords.lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
       markerRef.current.on("dragend", () => {
         const pos = markerRef.current.getLatLng();
-        onPinLocationChange(`${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`);
+        if (!trySetPin(pos.lat, pos.lng)) {
+          // Revert marker to previous position
+          if (parsedCoords) {
+            markerRef.current.setLatLng([parsedCoords.lat, parsedCoords.lng]);
+          }
+        }
       });
     }
 
-    // Click to place/move pin
+    // Click to place/move pin — enforce bounds
     map.on("click", (e: any) => {
       const { lat, lng } = e.latlng;
-      onPinLocationChange(`${lat.toFixed(6)},${lng.toFixed(6)}`);
+      if (!trySetPin(lat, lng)) return;
 
       if (markerRef.current) {
         markerRef.current.setLatLng([lat, lng]);
@@ -172,7 +220,9 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([lat, lng], { draggable: true, icon: createPinIcon(L) }).addTo(map);
         markerRef.current.on("dragend", () => {
           const pos = markerRef.current.getLatLng();
-          onPinLocationChange(`${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`);
+          if (!trySetPin(pos.lat, pos.lng)) {
+            markerRef.current.setLatLng([lat, lng]);
+          }
         });
       }
     });
@@ -184,15 +234,39 @@ function InteractiveMapPicker({
       map.remove();
       mapRef.current = null;
       markerRef.current = null;
+      circleRef.current = null;
     };
-  }, [L]); // Only init once when L loads
+  }, [L]);
 
-  // Update map center when province/town changes — always re-center
+  // Update map center + boundary when province/town changes
   useEffect(() => {
     if (!mapRef.current || !L) return;
     const cityCenter = getCityCenter(province, town);
     if (cityCenter) {
       mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
+      
+      // Update boundary circle
+      if (circleRef.current) {
+        mapRef.current.removeLayer(circleRef.current);
+      }
+      const radiusKm = hasTown ? CITY_RADIUS_DEG * 111 : PROVINCE_RADIUS_DEG * 111;
+      circleRef.current = L.circle(cityCenter, {
+        radius: radiusKm * 1000,
+        color: '#0d9488',
+        fillColor: '#0d9488',
+        fillOpacity: 0.05,
+        weight: 1,
+        dashArray: '5, 5',
+      }).addTo(mapRef.current);
+    }
+    
+    // Clear pin if it's now outside bounds
+    if (parsedCoords && cityCenter && !isWithinBounds(parsedCoords.lat, parsedCoords.lng, cityCenter, hasTown)) {
+      onPinLocationChange("");
+      if (markerRef.current) {
+        mapRef.current.removeLayer(markerRef.current);
+        markerRef.current = null;
+      }
     }
   }, [province, town, L]);
 
@@ -212,7 +286,8 @@ function InteractiveMapPicker({
     if (!navigator.geolocation || !mapRef.current) return;
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
-      onPinLocationChange(`${latitude.toFixed(6)},${longitude.toFixed(6)}`);
+      if (!trySetPin(latitude, longitude)) return;
+      
       mapRef.current.setView([latitude, longitude], 15);
       if (markerRef.current) {
         markerRef.current.setLatLng([latitude, longitude]);
@@ -220,44 +295,31 @@ function InteractiveMapPicker({
         markerRef.current = L.marker([latitude, longitude], { draggable: true, icon: createPinIcon(L) }).addTo(mapRef.current);
         markerRef.current.on("dragend", () => {
           const p = markerRef.current.getLatLng();
-          onPinLocationChange(`${p.lat.toFixed(6)},${p.lng.toFixed(6)}`);
+          if (!trySetPin(p.lat, p.lng)) {
+            markerRef.current.setLatLng([latitude, longitude]);
+          }
         });
       }
     });
   };
 
-  // Check if pin is far from selected area
-  const pinWarning = useMemo(() => {
-    if (!parsedCoords || !province) return null;
-    const cityCenter = getCityCenter(province, town);
-    if (!cityCenter) return null;
-    const dist = Math.sqrt(
-      Math.pow(parsedCoords.lat - cityCenter[0], 2) + Math.pow(parsedCoords.lng - cityCenter[1], 2)
-    );
-    // ~0.5 degree ≈ 50km threshold
-    if (dist > 0.5) {
-      return `Pin location appears to be far from ${town || province}. Please verify.`;
-    }
-    return null;
-  }, [parsedCoords, province, town]);
-
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground flex items-center gap-1">
-          <MapPin className="h-3 w-3" /> Click on the map to place your listing pin
+          <MapPin className="h-3 w-3" /> Click on the map to place your listing pin within {town || province}
         </p>
         <Button type="button" variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={handleLocateMe}>
           <Navigation className="h-3 w-3" /> My Location
         </Button>
       </div>
       <div ref={containerRef} className="h-[280px] rounded-lg border border-border overflow-hidden z-0" />
-      {pinWarning && (
-        <p className="text-xs text-destructive flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" /> {pinWarning}
+      {boundsError && (
+        <p className="text-xs text-destructive flex items-center gap-1 animate-in fade-in">
+          <AlertTriangle className="h-3 w-3" /> {boundsError}
         </p>
       )}
-      {pinLocation && parsedCoords && !pinWarning && (
+      {pinLocation && parsedCoords && !boundsError && (
         <p className="text-xs text-muted-foreground">
           📍 {parsedCoords.lat.toFixed(6)}, {parsedCoords.lng.toFixed(6)}
         </p>
@@ -347,9 +409,9 @@ const LocationFormFields = ({
   return (
     <div className={`space-y-5 ${className}`}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Province */}
+        {/* Province (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">Province</Label>
+          <Label className="text-foreground font-medium">Province <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={province}
             onValueChange={handleProvinceChange}
@@ -358,9 +420,9 @@ const LocationFormFields = ({
           />
         </div>
 
-        {/* City/Town */}
+        {/* City/Town (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">City/Town</Label>
+          <Label className="text-foreground font-medium">City/Town <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={town}
             onValueChange={handleTownChange}
@@ -394,22 +456,29 @@ const LocationFormFields = ({
             <Label className="text-foreground font-medium">Pin Coordinates</Label>
             <Input
               value={pinLocation}
-              onChange={(e) => onPinLocationChange?.(e.target.value)}
+              readOnly
               className="bg-secondary/50"
-              placeholder="Click on map or enter lat,lng"
+              placeholder={!province || !town ? "Select province & city first" : "Click on map to set pin"}
             />
           </div>
         )}
       </div>
 
-      {/* Interactive Map */}
-      {showMap && showPinLocation && onPinLocationChange && (
+      {/* Interactive Map — only shown when province + town are selected */}
+      {showMap && showPinLocation && onPinLocationChange && province && town && (
         <InteractiveMapPicker
           pinLocation={pinLocation}
           onPinLocationChange={onPinLocationChange}
           province={province}
           town={town}
         />
+      )}
+      {showMap && showPinLocation && onPinLocationChange && (!province || !town) && (
+        <div className="h-[280px] rounded-lg border border-dashed border-border flex items-center justify-center bg-muted/30">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <MapPin className="h-4 w-4" /> Select province and city/town to enable map pin placement
+          </p>
+        </div>
       )}
     </div>
   );
