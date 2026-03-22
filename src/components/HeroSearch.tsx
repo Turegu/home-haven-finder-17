@@ -79,7 +79,7 @@ const HeroSearch = () => {
           {/* Search Bar */}
           <div className="flex items-center gap-2 mb-4">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative max-w-sm flex-1">
+            <div className="relative flex-1">
               <input
                 type="text"
                 value={keyword}
