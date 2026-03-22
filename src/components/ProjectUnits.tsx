@@ -439,15 +439,14 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   );
 };
 
-const getPaymentStepIcon = (title: string, index: number) => {
+const getPaymentStepIcon = (title: string) => {
   const t = title.toLowerCase();
   if (t.includes('down') || t.includes('booking') || t.includes('deposit')) return Wallet;
-  if (t.includes('construct') || t.includes('during') || t.includes('progress')) return HardHat;
   if (t.includes('handover') || t.includes('delivery') || t.includes('key')) return KeyRound;
-  if (t.includes('completion') || t.includes('complete') || t.includes('finish')) return CalendarCheck;
-  if (t.includes('post') || t.includes('installment') || t.includes('monthly')) return Banknote;
-  const fallbacks = [Wallet, HardHat, CalendarCheck, KeyRound, Banknote];
-  return fallbacks[index % fallbacks.length];
+  if (t.includes('construct') || t.includes('progress')) return HardHat;
+  if (t.includes('completion') || t.includes('complete')) return CalendarCheck;
+  if (t.includes('post') || t.includes('monthly')) return Banknote;
+  return DollarSign;
 };
 
 const PaymentPlanDisplay = ({ plan }: { plan: PaymentPlan }) => {
@@ -456,7 +455,7 @@ const PaymentPlanDisplay = ({ plan }: { plan: PaymentPlan }) => {
   return (
     <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
       {plan.steps.map((step, idx) => {
-        const StepIcon = getPaymentStepIcon(step.title, idx);
+        const StepIcon = getPaymentStepIcon(step.title);
         return (
           <div key={step.id} className="flex items-stretch flex-shrink-0">
             <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center flex flex-col items-center">
