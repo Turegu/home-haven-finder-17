@@ -169,22 +169,28 @@ const PropertyRequestPage = () => {
     }
   };
 
-  const SelectField = ({ label, field, options, required = false }: { label: string; field: string; options: string[]; required?: boolean }) => (
-    <div>
-      <label className="block text-sm font-medium text-foreground mb-1.5">{label}{required && '*'}</label>
-      <div className="relative">
-        <select
-          value={(formData as any)[field] ?? ''}
-          onChange={(e) => handleChange(field, e.target.value)}
-          className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-ring"
-        >
-          <option value="">Select</option>
-          {options.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+  const SelectField = ({ label, field, options, required = false, showAny = true }: { label: string; field: string; options: string[]; required?: boolean; showAny?: boolean }) => {
+    const currentValue = (formData as any)[field] ?? '';
+    const hasAnyInOptions = options.some(o => o.toLowerCase() === 'any');
+    const shouldShowAny = showAny && !hasAnyInOptions;
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">{label}{required && '*'}</label>
+        <div className="relative">
+          <select
+            value={currentValue}
+            onChange={(e) => handleChange(field, e.target.value)}
+            className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            <option value="" disabled hidden>Select</option>
+            {shouldShowAny && <option value="" className="text-foreground">Any</option>}
+            {options.map((o) => <option key={o} value={o} className="text-foreground">{o}</option>)}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const EnquirySelect = () => (
     <div>
