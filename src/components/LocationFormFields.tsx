@@ -187,12 +187,12 @@ function InteractiveMapPicker({
     };
   }, [L]); // Only init once when L loads
 
-  // Update map center when province/town changes (if no pin yet)
+  // Update map center when province/town changes — always re-center
   useEffect(() => {
-    if (!mapRef.current || !L || parsedCoords) return;
+    if (!mapRef.current || !L) return;
     const cityCenter = getCityCenter(province, town);
     if (cityCenter) {
-      mapRef.current.setView(cityCenter, 12);
+      mapRef.current.setView(cityCenter, town ? 13 : 10, { animate: true });
     }
   }, [province, town, L]);
 
