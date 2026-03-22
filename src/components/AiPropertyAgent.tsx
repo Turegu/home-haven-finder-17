@@ -115,7 +115,7 @@ const AiPropertyAgent = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 shadow-xl transition-all duration-300 hover:scale-105 ${
+        className={`fixed bottom-6 right-6 z-[60] flex items-center gap-2 shadow-xl transition-all duration-300 hover:scale-105 ${
           isOpen
             ? "bg-foreground text-background h-12 w-12 justify-center rounded-full"
             : "bg-primary text-primary-foreground pl-1.5 pr-4 py-1.5 rounded-full"
