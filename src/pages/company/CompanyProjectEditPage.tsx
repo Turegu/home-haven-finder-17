@@ -1100,25 +1100,16 @@ const CompanyProjectEditPage = () => {
               </div>
 
               {/* Unit Amenities */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="font-medium">Exterior Amenities</Label>
-                  <SearchablePillSelect
-                    options={unitExteriorAmenities}
-                    selected={unitForm.exterior_amenities}
-                    onToggle={(a) => toggleUnitAmenity("exterior_amenities", a)}
-                    placeholder="Search exterior amenities..."
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="font-medium">Interior Amenities</Label>
-                  <SearchablePillSelect
-                    options={unitInteriorAmenities}
-                    selected={unitForm.interior_amenities}
-                    onToggle={(a) => toggleUnitAmenity("interior_amenities", a)}
-                    placeholder="Search interior amenities..."
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label className="font-medium">Amenities</Label>
+                <AmenitiesPickerDialog
+                  interiorOptions={unitInteriorAmenities}
+                  exteriorOptions={unitExteriorAmenities}
+                  selectedInterior={unitForm.interior_amenities}
+                  selectedExterior={unitForm.exterior_amenities}
+                  onToggleInterior={(a) => toggleUnitAmenity("interior_amenities", a)}
+                  onToggleExterior={(a) => toggleUnitAmenity("exterior_amenities", a)}
+                />
               </div>
 
               {/* Advertising Tags */}
