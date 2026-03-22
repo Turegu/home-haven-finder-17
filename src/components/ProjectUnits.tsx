@@ -24,6 +24,7 @@ interface ProjectUnit {
   car_parking: number | null;
   images: string[] | null;
   status: string;
+  advertising_tags?: string[] | null;
 }
 
 interface PaymentPlan {
@@ -36,33 +37,41 @@ interface ProjectUnitsProps {
   projectId: string;
 }
 
+const GENERIC_IMAGES = [
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop",
+  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
+];
+
 const MOCK_UNITS: ProjectUnit[] = [
   {
     id: "mock-1", unit_name: "Villa 1", unit_type: "Villa", price: 285000, currency: "$",
     area: 180, area_unit: "m²", rooms: "3+1", bathrooms: 2, car_parking: 1,
-    images: [
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-    ],
-    status: "available",
+    images: [GENERIC_IMAGES[0], GENERIC_IMAGES[1], GENERIC_IMAGES[5]],
+    status: "available", advertising_tags: ["Hot Deal", "Sea View"],
   },
   {
     id: "mock-2", unit_name: "Apartment A2", unit_type: "Apartment", price: 145000, currency: "$",
     area: 95, area_unit: "m²", rooms: "2+1", bathrooms: 1, car_parking: 1,
-    images: [
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop",
-    ],
-    status: "available",
+    images: [GENERIC_IMAGES[2], GENERIC_IMAGES[3], GENERIC_IMAGES[0]],
+    status: "available", advertising_tags: ["New Launch"],
   },
   {
     id: "mock-3", unit_name: "Penthouse B1", unit_type: "Penthouse", price: 520000, currency: "$",
     area: 310, area_unit: "m²", rooms: "4+1", bathrooms: 3, car_parking: 2,
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop"],
-    status: "reserved",
+    images: [GENERIC_IMAGES[4], GENERIC_IMAGES[1], GENERIC_IMAGES[3]],
+    status: "reserved", advertising_tags: ["Exclusive", "Premium Location"],
+  },
+  {
+    id: "mock-4", unit_name: "Studio C3", unit_type: "Studio", price: 78000, currency: "$",
+    area: 45, area_unit: "m²", rooms: "Studio", bathrooms: 1, car_parking: 0,
+    images: [GENERIC_IMAGES[5], GENERIC_IMAGES[2], GENERIC_IMAGES[4]],
+    status: "available", advertising_tags: ["Best Seller"],
   },
 ];
-
 const statusColors: Record<string, string> = {
   available: "bg-emerald-100 text-emerald-800 border-emerald-200",
   reserved: "bg-amber-100 text-amber-800 border-amber-200",
@@ -126,7 +135,19 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   }, [projectId]);
 
   const currentUnit = units.find((u) => u.id === selectedUnit) || units[0];
+  const currentUnitIndex = units.findIndex((u) => u.id === selectedUnit);
   const otherUnits = units.filter((u) => u.id !== currentUnit?.id);
+
+  const goToPrevUnit = () => {
+    if (units.length <= 1) return;
+    const prev = (currentUnitIndex - 1 + units.length) % units.length;
+    setSelectedUnit(units[prev].id);
+  };
+  const goToNextUnit = () => {
+    if (units.length <= 1) return;
+    const next = (currentUnitIndex + 1) % units.length;
+    setSelectedUnit(units[next].id);
+  };
 
   const nextImage = () => {
     if (!currentUnit?.images?.length) return;
@@ -151,31 +172,43 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   if (units.length === 0) return null;
 
   const currentPlans = currentUnit ? (paymentPlans[currentUnit.id] || []) : [];
-  const images = currentUnit?.images || [];
+  const images = currentUnit?.images?.length ? currentUnit.images : GENERIC_IMAGES.slice(0, 3);
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
-      {/* 1. Header with dropdown selector */}
+      {/* 1. Header with dropdown selector + unit arrows */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-lg font-bold text-foreground">Available Units</h2>
           <p className="text-sm text-muted-foreground">{units.length} unit{units.length !== 1 ? 's' : ''} found</p>
         </div>
-        <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
-          <SelectTrigger className="w-[220px] h-9 text-sm">
-            <SelectValue placeholder="Select a unit" />
-          </SelectTrigger>
-          <SelectContent>
-            {units.map((unit) => (
-              <SelectItem key={unit.id} value={unit.id}>
-                <span className="flex items-center gap-2">
-                  {unit.unit_name}
-                  <span className={`inline-block w-2 h-2 rounded-full ${unit.status === 'available' ? 'bg-emerald-500' : unit.status === 'reserved' ? 'bg-amber-500' : 'bg-red-500'}`} />
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          {units.length > 1 && (
+            <>
+              <button onClick={goToPrevUnit} className="h-9 w-9 rounded-lg border border-border bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors" title="Previous unit">
+                <ChevronLeft className="h-4 w-4 text-foreground" />
+              </button>
+              <button onClick={goToNextUnit} className="h-9 w-9 rounded-lg border border-border bg-muted/50 hover:bg-muted flex items-center justify-center transition-colors" title="Next unit">
+                <ChevronRight className="h-4 w-4 text-foreground" />
+              </button>
+            </>
+          )}
+          <Select value={selectedUnit || ''} onValueChange={(v) => setSelectedUnit(v)}>
+            <SelectTrigger className="w-[220px] h-9 text-sm">
+              <SelectValue placeholder="Select a unit" />
+            </SelectTrigger>
+            <SelectContent>
+              {units.map((unit) => (
+                <SelectItem key={unit.id} value={unit.id}>
+                  <span className="flex items-center gap-2">
+                    {unit.unit_name}
+                    <span className={`inline-block w-2 h-2 rounded-full ${unit.status === 'available' ? 'bg-emerald-500' : unit.status === 'reserved' ? 'bg-amber-500' : 'bg-red-500'}`} />
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {currentUnit && (
@@ -201,13 +234,24 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                       </button>
                     </>
                   )}
+                  {/* Advertising tag top-left */}
+                  {currentUnit.advertising_tags && currentUnit.advertising_tags.length > 0 && (
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-primary text-primary-foreground text-xs font-semibold shadow-md">
+                        {currentUnit.advertising_tags[0]}
+                      </Badge>
+                    </div>
+                  )}
+                  {/* Status badge top-right */}
                   <div className="absolute top-3 right-3">
                     <Badge variant="outline" className={`${statusColors[currentUnit.status] || ''} text-xs`}>
                       {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
                     </Badge>
                   </div>
-                  <div className="absolute bottom-3 left-3 bg-foreground/60 text-white text-xs px-2 py-1 rounded-md">
-                    {currentImageIndex + 1} / {images.length}
+                  {/* Unit title + image counter bottom-left */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                    <h3 className="text-white font-bold text-lg drop-shadow-lg">{currentUnit.unit_name}</h3>
+                    <span className="text-white/80 text-xs">{currentImageIndex + 1} / {images.length}</span>
                   </div>
                 </div>
                 {/* Thumbnails column */}
