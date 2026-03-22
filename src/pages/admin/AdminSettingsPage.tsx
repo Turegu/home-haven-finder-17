@@ -67,6 +67,7 @@ const AdminSettingsPage = () => {
       saveSetting("sales_email", salesEmail),
       saveSetting("sales_address", salesAddress),
       saveSetting("map_provider", mapProvider),
+      saveSetting("analytics_display_phase", analyticsPhase),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
