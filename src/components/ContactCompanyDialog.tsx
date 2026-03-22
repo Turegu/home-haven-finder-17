@@ -67,6 +67,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   useEffect(() => {
     if (open) {
       setSent(false);
+      setSelectedUnitId('');
       setMessage(defaultMessages[listingType]);
       const loadUser = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -86,6 +87,18 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       loadUser();
     }
   }, [open, listingType]);
+
+  // Update message when unit selection changes
+  useEffect(() => {
+    if (listingType === 'project' && selectedUnitId && projectUnits) {
+      const unit = projectUnits.find(u => u.id === selectedUnitId);
+      if (unit) {
+        setMessage(`Hi!, I am interested in unit "${unit.unit_name}" (${unit.unit_type}${unit.price ? `, ${unit.currency || '$'}${unit.price.toLocaleString()}` : ''}) in your project, please contact me.`);
+      }
+    } else if (listingType === 'project' && !selectedUnitId) {
+      setMessage(defaultMessages['project']);
+    }
+  }, [selectedUnitId, projectUnits, listingType]);
 
   const handleSend = async () => {
     if (!fullName.trim() || !email.trim()) {
