@@ -844,5 +844,47 @@ const PropertyDetailPage = () => {
           </div>
         </div>
 
+        {/* Horizontal Banner */}
+        <BannerDisplay pageName="buy-detail" bannerType="horizontal" className="mt-8" />
+
+        {/* Similar Properties */}
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-foreground mb-6">Similar Properties</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {similarProperties.map((p) => (
+              <Link key={p.id} to={`/property/${p.id}`}>
+                <PropertyCard property={p} />
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <ContactCompanyDialog
+        open={emailDialogOpen}
+        onOpenChange={setEmailDialogOpen}
+        property={{
+          id: property.id,
+          title: property.title,
+          location: property.location,
+          type: property.type,
+          price: property.price,
+          currency: property.currency,
+          companyId: property.companyId,
+          companyName: property.agentCompany,
+          agentName: property.agentName,
+          agentEmail: property.agentEmail,
+        }}
+      />
+
+      <ReportPropertyDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        listingId={property.listingId}
+        listingTitle={property.title}
+      />
+    </>
+  );
+};
 
 export default PropertyDetailPage;
