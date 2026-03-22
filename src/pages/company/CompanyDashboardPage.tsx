@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Phone,
-  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown
+  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
+import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
 const membershipIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
@@ -33,10 +34,19 @@ interface ListingCounts {
   events: number;
 }
 
+interface CreditUsage {
+  premium_properties: number;
+  featured_properties: number;
+  premium_projects: number;
+  featured_projects: number;
+}
+
 const CompanyDashboardPage = () => {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [counts, setCounts] = useState<ListingCounts>({ properties: 0, projects: 0, events: 0 });
+  const [creditUsage, setCreditUsage] = useState<CreditUsage>({ premium_properties: 0, featured_properties: 0, premium_projects: 0, featured_projects: 0 });
   const [loading, setLoading] = useState(true);
+  const { usage, limits, membership } = useMembershipLimits(company?.id || null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,16 +63,26 @@ const CompanyDashboardPage = () => {
       if (!companyData) return;
       setCompany(companyData);
 
-      const [propRes, projRes, eventRes] = await Promise.all([
+      const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes] = await Promise.all([
         supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
         supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
         supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
       ]);
 
       setCounts({
         properties: propRes.count || 0,
         projects: projRes.count || 0,
         events: eventRes.count || 0,
+      });
+      setCreditUsage({
+        premium_properties: premPropRes.count || 0,
+        featured_properties: featPropRes.count || 0,
+        premium_projects: premProjRes.count || 0,
+        featured_projects: featProjRes.count || 0,
       });
       setLoading(false);
     };
@@ -85,9 +105,39 @@ const CompanyDashboardPage = () => {
   }
 
   const mem = membershipConfig[company?.membership || "basic"] || membershipConfig.basic;
+  const daysLeft = company?.package_end_date
+    ? differenceInDays(new Date(company.package_end_date), new Date())
+    : null;
+  const isExpired = daysLeft !== null && daysLeft < 0;
+  const isExpiringSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 30;
+  const totalPremium = creditUsage.premium_properties + creditUsage.premium_projects;
+  const totalFeatured = creditUsage.featured_properties + creditUsage.featured_projects;
+  const totalListings = counts.properties + counts.projects;
+  const premiumPercent = totalListings > 0 ? Math.round((totalPremium / totalListings) * 100) : 0;
+  const featuredPercent = totalListings > 0 ? Math.round((totalFeatured / totalListings) * 100) : 0;
 
   return (
     <CompanyLayout>
+      {/* Renewal Warning Banner */}
+      {(isExpired || isExpiringSoon) && (
+        <div className={`mb-6 rounded-xl border p-4 flex items-start gap-3 ${isExpired ? "bg-destructive/10 border-destructive/30" : "bg-amber-50 border-amber-200"}`}>
+          <AlertTriangle className={`h-5 w-5 mt-0.5 shrink-0 ${isExpired ? "text-destructive" : "text-amber-600"}`} />
+          <div>
+            <p className={`font-semibold text-sm ${isExpired ? "text-destructive" : "text-amber-800"}`}>
+              {isExpired ? "Your package has expired!" : "Your package is expiring soon!"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {isExpired
+                ? "Your listings have been deactivated. All listings will be permanently deleted 3 months after expiry. Please renew your package to restore access."
+                : `Your package expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid listing deactivation. Listings are permanently deleted 3 months after expiry.`}
+            </p>
+            <Button variant="default" size="sm" className="mt-2">
+              <Phone className="h-3 w-3 mr-1" /> Contact Sales to Renew
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Welcome Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-1">
@@ -109,9 +159,6 @@ const CompanyDashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         {(() => {
           const MembershipIcon = membershipIcons[company?.membership || "basic"] || Briefcase;
-          const daysLeft = company?.package_end_date
-            ? differenceInDays(new Date(company.package_end_date), new Date())
-            : null;
           return (
             <div className={`rounded-xl border p-5 ${mem.bg}`}>
               <div className="flex items-center justify-between mb-3">
@@ -146,8 +193,12 @@ const CompanyDashboardPage = () => {
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Premium Listings</h3>
             <TrendingUp className="h-4 w-4 text-muted-foreground/50" />
           </div>
-          <p className="text-2xl font-bold text-foreground mb-2">0%</p>
-          <Progress value={0} className="h-1.5" />
+          <p className="text-2xl font-bold text-foreground mb-1">{totalPremium} <span className="text-sm font-normal text-muted-foreground">({premiumPercent}%)</span></p>
+          <Progress value={premiumPercent} className="h-1.5 mb-2" />
+          <div className="flex gap-3 text-[11px] text-muted-foreground">
+            <span>{creditUsage.premium_properties} properties</span>
+            <span>{creditUsage.premium_projects} projects</span>
+          </div>
         </div>
 
         {/* Featured Listings */}
@@ -156,10 +207,38 @@ const CompanyDashboardPage = () => {
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Featured Listings</h3>
             <Star className="h-4 w-4 text-muted-foreground/50" />
           </div>
-          <p className="text-2xl font-bold text-foreground mb-2">0%</p>
-          <Progress value={0} className="h-1.5" />
+          <p className="text-2xl font-bold text-foreground mb-1">{totalFeatured} <span className="text-sm font-normal text-muted-foreground">({featuredPercent}%)</span></p>
+          <Progress value={featuredPercent} className="h-1.5 mb-2" />
+          <div className="flex gap-3 text-[11px] text-muted-foreground">
+            <span>{creditUsage.featured_properties} properties</span>
+            <span>{creditUsage.featured_projects} projects</span>
+          </div>
         </div>
       </div>
+
+      {/* Membership Usage Bars */}
+      {limits && (
+        <div className="bg-card rounded-xl border border-border p-5 mb-8">
+          <h2 className="text-sm font-semibold text-foreground mb-4">Membership Usage</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {(["properties", "projects", "events", "agents"] as const).map((type) => {
+              const maxKey = `max_${type}` as keyof typeof limits;
+              const max = limits[maxKey];
+              const used = usage[type];
+              const pct = Math.min(100, max > 0 ? (used / max) * 100 : 0);
+              return (
+                <div key={type}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-medium text-muted-foreground capitalize">{type}</span>
+                    <span className="text-xs text-muted-foreground">{used} / {max}</span>
+                  </div>
+                  <Progress value={pct} className="h-2" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Listings Summary */}
       <div className="flex items-center justify-between mb-4">
