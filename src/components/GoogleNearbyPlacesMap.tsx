@@ -183,23 +183,6 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
     mapRef.current = map;
   }, []);
 
-  const classifyElement = useCallback((el: any): string | null => {
-    const tags = el?.tags;
-    if (!tags) return null;
-    if (tags.amenity === 'school' || tags.amenity === 'university') return 'education';
-    if (tags.amenity === 'hospital' || tags.amenity === 'clinic') return 'health';
-    if (tags.amenity === 'pharmacy') return 'pharmacy';
-    if (tags.leisure === 'park' || tags.leisure === 'garden') return 'park';
-    if (tags.shop === 'supermarket' || tags.shop === 'grocery') return 'market';
-    if (tags.shop === 'mall' || tags.shop === 'department_store') return 'shopping';
-    if (tags.amenity === 'place_of_worship') return 'worship';
-    if (tags.amenity === 'restaurant' || tags.amenity === 'fast_food') return 'restaurant';
-    if (tags.amenity === 'cafe') return 'cafe';
-    if (tags.leisure === 'fitness_centre' || tags.leisure === 'sports_centre') return 'gym';
-    if (tags.railway === 'station' || tags.railway === 'halt' || tags.amenity === 'bus_station') return 'transport';
-    return null;
-  }, []);
-
   const fetchSingleCategory = useCallback(async (categoryKey: string) => {
     if (inFlightRef.current.has(categoryKey)) return;
     inFlightRef.current.add(categoryKey);
