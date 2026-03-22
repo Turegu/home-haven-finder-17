@@ -459,6 +459,7 @@ const ProjectDetailPage = () => {
         agentId={realAgentId}
         companyName={project.agentCompany}
         listingType="project"
+        projectUnits={projectUnits}
       />
 
       <Footer />
