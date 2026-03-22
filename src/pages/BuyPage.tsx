@@ -508,8 +508,11 @@ const BuyPage = () => {
                     propertyType: p.property_type,
                     listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
                     rentDuration: p.rent_duration,
+                    pinLocation: p.pin_location,
                   }))}
                   focusListingId={focusListingId}
+                  selectedProvince={location.province}
+                  selectedDistrict={location.district}
                 />
               )}
             </div>

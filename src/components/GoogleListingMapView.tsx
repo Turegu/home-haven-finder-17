@@ -147,21 +147,71 @@ const PopupCard = ({ listing, onClose }: { listing: MapListing; onClose: () => v
   );
 };
 
+function parsePinLocation(pin?: string | null): { lat: number; lng: number } | null {
+  if (!pin) return null;
+  const parts = pin.split(',').map(s => parseFloat(s.trim()));
+  if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && Math.abs(parts[0]) <= 90 && Math.abs(parts[1]) <= 180) {
+    return { lat: parts[0], lng: parts[1] };
+  }
+  return null;
+}
+
+function getGoogleListingCoords(listing: MapListing): { lat: number; lng: number } {
+  const pin = parsePinLocation(listing.pinLocation);
+  if (pin) return pin;
+  return getCoordsFromLocation(listing.location);
+}
+
+// Fetch district boundary from Nominatim
+async function fetchGoogleBoundary(province: string, district: string): Promise<google.maps.LatLng[][] | null> {
+  const queries = [
+    `https://nominatim.openstreetmap.org/search?county=${encodeURIComponent(district)}&state=${encodeURIComponent(province)}&country=Turkey&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${district} district, ${province}, Turkey`)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${district}, ${province}`)}&format=json&polygon_geojson=1&limit=1&accept-language=en,tr`,
+  ];
+
+  for (const url of queries) {
+    try {
+      const res = await fetch(url, { headers: { 'User-Agent': 'LovableRealEstate/1.0' } });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const geo = data?.[0]?.geojson;
+      if (!geo || geo.type === 'Point') continue;
+
+      let rings: number[][][] = [];
+      if (geo.type === 'Polygon') rings = geo.coordinates;
+      else if (geo.type === 'MultiPolygon') {
+        for (const poly of geo.coordinates) rings.push(...poly);
+      }
+
+      if (rings.length > 0) {
+        return rings.map(ring =>
+          ring.map(coord => new google.maps.LatLng(coord[1], coord[0]))
+        );
+      }
+    } catch { /* continue */ }
+  }
+  return null;
+}
+
 interface GoogleListingMapViewProps {
   listings: MapListing[];
   className?: string;
   focusListingId?: string | null;
+  selectedProvince?: string;
+  selectedDistrict?: string;
 }
 
-const GoogleListingMapView = ({ listings, className = '', focusListingId = null }: GoogleListingMapViewProps) => {
+const GoogleListingMapView = ({ listings, className = '', focusListingId = null, selectedProvince, selectedDistrict }: GoogleListingMapViewProps) => {
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const boundaryRef = useRef<google.maps.Polygon[]>([]);
   const { data: allowedCountry = 'Turkey' } = useAllowedCountry();
   const countryConfig = getCountryMapConfig(allowedCountry);
 
   const listingsWithCoords = useMemo(() =>
-    listings.map(l => ({ ...l, coords: getCoordsFromLocation(l.location) })),
+    listings.map(l => ({ ...l, coords: getGoogleListingCoords(l) })),
     [listings]
   );
 
@@ -183,6 +233,34 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null 
     listingsWithCoords.forEach(l => bounds.extend(l.coords));
     map.fitBounds(bounds, 50);
   }, [listingsWithCoords, countryConfig]);
+
+  // Draw district boundary on Google Maps
+  useEffect(() => {
+    // Clear old boundaries
+    boundaryRef.current.forEach(p => p.setMap(null));
+    boundaryRef.current = [];
+
+    if (!selectedProvince || !selectedDistrict || !mapRef.current || !isLoaded) return;
+
+    fetchGoogleBoundary(selectedProvince, selectedDistrict).then(rings => {
+      if (!rings || !mapRef.current) return;
+
+      const bounds = new google.maps.LatLngBounds();
+      rings.forEach(ring => {
+        const poly = new google.maps.Polygon({
+          paths: ring,
+          strokeColor: '#2563eb',
+          strokeWeight: 2,
+          fillColor: '#3b82f6',
+          fillOpacity: 0.08,
+        });
+        poly.setMap(mapRef.current);
+        boundaryRef.current.push(poly);
+        ring.forEach(pt => bounds.extend(pt));
+      });
+      mapRef.current.fitBounds(bounds, 30);
+    });
+  }, [selectedProvince, selectedDistrict, isLoaded]);
 
   // Focus on a specific listing
   useEffect(() => {

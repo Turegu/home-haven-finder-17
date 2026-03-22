@@ -11,6 +11,8 @@ interface ListingMapViewProps {
   listings: import('./LeafletListingMapView').MapListing[];
   className?: string;
   focusListingId?: string | null;
+  selectedProvince?: string;
+  selectedDistrict?: string;
 }
 
 const MapFallback = ({ className = '' }: { className?: string }) => (
@@ -19,15 +21,15 @@ const MapFallback = ({ className = '' }: { className?: string }) => (
   </div>
 );
 
-const ListingMapView = ({ listings, className = '', focusListingId = null }: ListingMapViewProps) => {
+const ListingMapView = ({ listings, className = '', focusListingId = null, selectedProvince, selectedDistrict }: ListingMapViewProps) => {
   const { data: provider = 'google' } = useMapProvider();
 
   return (
     <Suspense fallback={<MapFallback className={className} />}>
       {provider === 'google' ? (
-        <GoogleListingMapView listings={listings} className={className} focusListingId={focusListingId} />
+        <GoogleListingMapView listings={listings} className={className} focusListingId={focusListingId} selectedProvince={selectedProvince} selectedDistrict={selectedDistrict} />
       ) : (
-        <LeafletListingMapView listings={listings} className={className} focusListingId={focusListingId} />
+        <LeafletListingMapView listings={listings} className={className} focusListingId={focusListingId} selectedProvince={selectedProvince} selectedDistrict={selectedDistrict} />
       )}
     </Suspense>
   );

@@ -324,8 +324,11 @@ const EventsPage = () => {
                     subtitle: e.organizer || e.companies?.name || '',
                     meta: `${e.event_type.replace(/_/g, ' ')} • ${e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBA'}`,
                     logo: e.companies?.logo_url || e.logo_url || '',
+                    pinLocation: e.pin_location,
                   }))}
                   focusListingId={focusListingId}
+                  selectedProvince={location.province}
+                  selectedDistrict={location.district}
                 />
               )}
             </div>
