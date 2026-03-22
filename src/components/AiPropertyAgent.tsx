@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, X, Send, Loader2, MapPin, Bed, Bath, Maximize2 } from "lucide-react";
+import { X, Send, Loader2, MapPin, Bed, Bath, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import aiAgentIcon from "@/assets/ai-agent-icon.png";
 
 interface AiPick {
   score: number;
