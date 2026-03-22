@@ -215,10 +215,10 @@ const CompanyEventEditPage = () => {
       { field: "title", check: !form.title.trim(), message: "Event name is required" },
       { field: "event_type", check: !form.event_type, message: "Event type is required" },
       { field: "event_date", check: !form.event_date, message: "Event date is required" },
+      ...(form.entry_type === "paid" ? [{ field: "price", check: !form.price, message: "Price is required for paid events" }] : []),
       { field: "province", check: !form.province, message: "Province is required" },
       { field: "town", check: !form.town, message: "Town/District is required" },
       { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
-      ...(form.entry_type === "paid" ? [{ field: "price", check: !form.price, message: "Price is required for paid events" }] : []),
     ];
     const valid = validate(rules);
     if (!valid) {
