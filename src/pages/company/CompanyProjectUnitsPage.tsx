@@ -213,11 +213,6 @@ const CompanyProjectUnitsPage = () => {
                   </Button>
                 </div>
               </div>
-
-              {/* Payment Plan Manager */}
-              <div className="px-4 pb-3">
-                <UnitPaymentPlanManager unitId={unit.id} unitName={unit.unit_name} />
-              </div>
             </div>
           ))
         )}
