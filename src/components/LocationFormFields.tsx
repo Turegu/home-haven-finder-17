@@ -252,17 +252,33 @@ function InteractiveMapPicker({
     });
   }, []);
 
-  // Fetch boundary when province+town changes
+  // Fetch boundary when province+town changes — handle "(Central)" option
   useEffect(() => {
     if (!province || !town) {
       setBoundaryPolygons(null);
       return;
     }
     setLoadingBoundary(true);
-    fetchDistrictBoundary(province, town).then((polys) => {
-      setBoundaryPolygons(polys);
-      setLoadingBoundary(false);
-    });
+
+    if (isCentralOption(town)) {
+      // Fetch boundaries for all central districts and merge
+      const centralDistricts = getCentralDistricts(province) || [];
+      Promise.all(
+        centralDistricts.map(d => fetchDistrictBoundary(province, d))
+      ).then((results) => {
+        const merged: number[][][] = [];
+        for (const polys of results) {
+          if (polys) merged.push(...polys);
+        }
+        setBoundaryPolygons(merged.length > 0 ? merged : null);
+        setLoadingBoundary(false);
+      });
+    } else {
+      fetchDistrictBoundary(province, town).then((polys) => {
+        setBoundaryPolygons(polys);
+        setLoadingBoundary(false);
+      });
+    }
   }, [province, town]);
 
   // Validate and set pin using polygon boundary
