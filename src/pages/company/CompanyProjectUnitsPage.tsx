@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, Pencil, Upload, X, ArrowLeft, Tag } from "lucide-react";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
+import SearchablePillSelect from "@/components/ui/searchable-pill-select";
 
 interface UnitForm {
   unit_name: string;
@@ -317,25 +318,21 @@ const CompanyProjectUnitsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="font-medium">Exterior Amenities</Label>
-                <div className="flex flex-wrap gap-1.5">
-                  {exteriorAmenities.map((a) => (
-                    <button key={a} type="button" onClick={() => toggleAmenity("exterior_amenities", a)}
-                      className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${form.exterior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                      {a}
-                    </button>
-                  ))}
-                </div>
+                <SearchablePillSelect
+                  options={exteriorAmenities}
+                  selected={form.exterior_amenities}
+                  onToggle={(a) => toggleAmenity("exterior_amenities", a)}
+                  placeholder="Search exterior amenities..."
+                />
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">Interior Amenities</Label>
-                <div className="flex flex-wrap gap-1.5">
-                  {interiorAmenities.map((a) => (
-                    <button key={a} type="button" onClick={() => toggleAmenity("interior_amenities", a)}
-                      className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${form.interior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                      {a}
-                    </button>
-                  ))}
-                </div>
+                <SearchablePillSelect
+                  options={interiorAmenities}
+                  selected={form.interior_amenities}
+                  onToggle={(a) => toggleAmenity("interior_amenities", a)}
+                  placeholder="Search interior amenities..."
+                />
               </div>
             </div>
 
@@ -344,14 +341,12 @@ const CompanyProjectUnitsPage = () => {
               <Label className="font-medium flex items-center gap-1.5">
                 <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
               </Label>
-              <div className="flex flex-wrap gap-1.5">
-                {advertisingTagOptions.map((tag) => (
-                  <button key={tag} type="button" onClick={() => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter(t => t !== tag) : [...form.advertising_tags, tag])}
-                    className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${form.advertising_tags.includes(tag) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                    {tag}
-                  </button>
-                ))}
-              </div>
+              <SearchablePillSelect
+                options={advertisingTagOptions}
+                selected={form.advertising_tags}
+                onToggle={(tag) => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter(t => t !== tag) : [...form.advertising_tags, tag])}
+                placeholder="Search tags..."
+              />
             </div>
 
             {/* Payment Plan — only after unit is saved */}

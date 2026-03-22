@@ -27,6 +27,7 @@ import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import SearchablePillSelect from "@/components/ui/searchable-pill-select";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
@@ -1013,25 +1014,21 @@ const CompanyProjectEditPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="font-medium">Exterior Amenities</Label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {unitExteriorAmenities.map((a) => (
-                      <button key={a} type="button" onClick={() => toggleUnitAmenity("exterior_amenities", a)}
-                        className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${unitForm.exterior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                        {a}
-                      </button>
-                    ))}
-                  </div>
+                  <SearchablePillSelect
+                    options={unitExteriorAmenities}
+                    selected={unitForm.exterior_amenities}
+                    onToggle={(a) => toggleUnitAmenity("exterior_amenities", a)}
+                    placeholder="Search exterior amenities..."
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">Interior Amenities</Label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {unitInteriorAmenities.map((a) => (
-                      <button key={a} type="button" onClick={() => toggleUnitAmenity("interior_amenities", a)}
-                        className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${unitForm.interior_amenities.includes(a) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                        {a}
-                      </button>
-                    ))}
-                  </div>
+                  <SearchablePillSelect
+                    options={unitInteriorAmenities}
+                    selected={unitForm.interior_amenities}
+                    onToggle={(a) => toggleUnitAmenity("interior_amenities", a)}
+                    placeholder="Search interior amenities..."
+                  />
                 </div>
               </div>
 
@@ -1040,14 +1037,12 @@ const CompanyProjectEditPage = () => {
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
                 </Label>
-                <div className="flex flex-wrap gap-1.5">
-                  {advertisingTagOptions.map((tag) => (
-                    <button key={tag} type="button" onClick={() => updateUnitField("advertising_tags", unitForm.advertising_tags.includes(tag) ? unitForm.advertising_tags.filter(t => t !== tag) : [...unitForm.advertising_tags, tag])}
-                      className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${unitForm.advertising_tags.includes(tag) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
-                      {tag}
-                    </button>
-                  ))}
-                </div>
+                <SearchablePillSelect
+                  options={advertisingTagOptions}
+                  selected={unitForm.advertising_tags}
+                  onToggle={(tag) => updateUnitField("advertising_tags", unitForm.advertising_tags.includes(tag) ? unitForm.advertising_tags.filter(t => t !== tag) : [...unitForm.advertising_tags, tag])}
+                  placeholder="Search tags..."
+                />
               </div>
 
               <div className="flex justify-end gap-3 pt-2">
