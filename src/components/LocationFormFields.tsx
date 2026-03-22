@@ -196,6 +196,7 @@ function InteractiveMapPicker({
 }) {
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const trySetPinRef = useRef<(lat: number, lng: number) => boolean>(() => false);
   const boundaryLayerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [L, setL] = useState<any>(null);
