@@ -23,7 +23,7 @@ function formatPrice(price: number | null, currency: string) {
 }
 
 function formatPriceShort(price: number | null, currency: string, rentDuration?: string | null, isRentListing = false) {
-  if (!price) return 'Free';
+  if (!price) return `${currency === 'USD' ? '$' : currency + ' '}0`;
   const sym = currency === 'USD' ? '$' : currency + ' ';
   let base = `${sym}${price.toLocaleString()}`;
   if (isRentListing) base += getRentSuffix(rentDuration);
