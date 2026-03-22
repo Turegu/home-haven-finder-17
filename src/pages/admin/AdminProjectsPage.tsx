@@ -78,6 +78,7 @@ const AdminProjectsPage = () => {
             columns={columns}
             renderCell={renderCell}
             onView={(item) => navigate(`/projects/${item.id}`)}
+            initialCompanyFilter={initialCompanyFilter}
           />
         )}
       </div>

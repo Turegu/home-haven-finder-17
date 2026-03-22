@@ -65,6 +65,7 @@ const AdminEventsPage = () => {
             columns={columns}
             renderCell={renderCell}
             onView={(item) => navigate(`/events/${item.id}`)}
+            initialCompanyFilter={initialCompanyFilter}
           />
         )}
       </div>
