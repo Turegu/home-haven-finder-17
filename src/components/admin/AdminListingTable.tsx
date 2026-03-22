@@ -101,7 +101,10 @@ const AdminListingTable = ({
         const matchesSearch =
           item.title.toLowerCase().includes(q) ||
           item.listing_id.toLowerCase().includes(q) ||
-          (item.company_name || "").toLowerCase().includes(q);
+          (item.company_name || "").toLowerCase().includes(q) ||
+          (item.province || "").toLowerCase().includes(q) ||
+          (item.town || "").toLowerCase().includes(q) ||
+          (item.location || "").toLowerCase().includes(q);
         const matchesStatus = statusFilter === "all" || item.status === statusFilter;
         const matchesCompany = companyFilter === "all" || item.company_name === companyFilter;
         return matchesSearch && matchesStatus && matchesCompany;
