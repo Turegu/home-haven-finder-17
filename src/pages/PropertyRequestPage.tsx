@@ -303,8 +303,17 @@ const PropertyRequestPage = () => {
               <SelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
               <SelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
 
-              <AmenityGrid label="Interior Amenities" field="interiorAmenities" options={filterOpts['interior_amenities'] || []} />
-              <AmenityGrid label="Exterior Amenities" field="exteriorAmenities" options={filterOpts['exterior_amenities'] || []} />
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-foreground mb-1.5">Amenities</label>
+                <AmenitiesPickerDialog
+                  interiorOptions={filterOpts['interior_amenities'] || []}
+                  exteriorOptions={filterOpts['exterior_amenities'] || []}
+                  selectedInterior={formData.interiorAmenities}
+                  selectedExterior={formData.exteriorAmenities}
+                  onToggleInterior={(v) => toggleAmenity('interiorAmenities', v)}
+                  onToggleExterior={(v) => toggleAmenity('exteriorAmenities', v)}
+                />
+              </div>
             </div>
           )}
 
