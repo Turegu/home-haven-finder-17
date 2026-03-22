@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import UpgradeListingDialog from "@/components/company/UpgradeListingDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
+import { useAnalyticsPhase } from "@/hooks/useAnalyticsPhase";
 
 interface AgentProperty {
   id: string;
@@ -39,6 +40,7 @@ const ITEMS_PER_PAGE = 10;
 
 const AgentPropertiesPage = () => {
   const navigate = useNavigate();
+  const { data: analyticsPhase } = useAnalyticsPhase();
   const [properties, setProperties] = useState<AgentProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -209,8 +211,12 @@ const AgentPropertiesPage = () => {
                       <DropdownMenuItem onClick={() => handleDeactivate(p)}><Ban className="h-4 w-4 mr-2" /> {p.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: p })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: p })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
+                      {analyticsPhase !== 'off' && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: p })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

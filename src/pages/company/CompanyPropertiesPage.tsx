@@ -26,6 +26,7 @@ import AssignAgentDialog from "@/components/company/AssignAgentDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
+import { useAnalyticsPhase } from "@/hooks/useAnalyticsPhase";
 
 interface Property {
   id: string;
@@ -52,6 +53,7 @@ const ITEMS_PER_PAGE = 10;
 
 const CompanyPropertiesPage = () => {
   const navigate = useNavigate();
+  const { data: analyticsPhase } = useAnalyticsPhase();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -447,8 +449,12 @@ const CompanyPropertiesPage = () => {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => setAssignDialog({ open: true, property: prop })}><UserPlus className="h-4 w-4 mr-2" /> Assign To Agent</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: prop })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: prop })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
+                          {analyticsPhase !== 'off' && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: prop })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
