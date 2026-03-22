@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { format, differenceInDays, startOfMonth, startOfYear } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import { useSalesContact } from "@/hooks/useSalesContact";
 
 const membershipIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
@@ -66,6 +67,7 @@ const CompanyDashboardPage = () => {
   const [recentTransactions, setRecentTransactions] = useState<CreditTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const { usage, limits } = useMembershipLimits(company?.id || null);
+  const { openSalesWhatsApp } = useSalesContact();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -177,7 +179,7 @@ const CompanyDashboardPage = () => {
                 ? "Your listings have been deactivated. All listings will be permanently deleted 3 months after expiry. Please renew your package to restore access."
                 : `Your package expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid listing deactivation. Listings are permanently deleted 3 months after expiry.`}
             </p>
-            <Button variant="default" size="sm" className="mt-2">
+            <Button variant="default" size="sm" className="mt-2" onClick={() => openSalesWhatsApp("Hi, I'd like to renew my membership package.")}>
               <Phone className="h-3 w-3 mr-1" /> Contact Sales to Renew
             </Button>
           </div>
@@ -237,7 +239,7 @@ const CompanyDashboardPage = () => {
               <Progress value={creditBarPercent} className="h-1.5" />
             </div>
           )}
-          <Button variant="link" size="sm" className="mt-1 p-0 h-auto text-xs text-primary">
+          <Button variant="link" size="sm" className="mt-1 p-0 h-auto text-xs text-primary" onClick={() => openSalesWhatsApp("Hi, I'd like to top up my credits.")}>
             <Phone className="h-3 w-3 mr-1" /> Contact Sales
           </Button>
         </div>
