@@ -439,27 +439,44 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   );
 };
 
+const getPaymentStepIcon = (title: string, index: number) => {
+  const t = title.toLowerCase();
+  if (t.includes('down') || t.includes('booking') || t.includes('deposit')) return Wallet;
+  if (t.includes('construct') || t.includes('during') || t.includes('progress')) return HardHat;
+  if (t.includes('handover') || t.includes('delivery') || t.includes('key')) return KeyRound;
+  if (t.includes('completion') || t.includes('complete') || t.includes('finish')) return CalendarCheck;
+  if (t.includes('post') || t.includes('installment') || t.includes('monthly')) return Banknote;
+  const fallbacks = [Wallet, HardHat, CalendarCheck, KeyRound, Banknote];
+  return fallbacks[index % fallbacks.length];
+};
+
 const PaymentPlanDisplay = ({ plan }: { plan: PaymentPlan }) => {
   if (plan.steps.length === 0) return null;
 
   return (
     <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
-      {plan.steps.map((step, idx) => (
-        <div key={step.id} className="flex items-stretch flex-shrink-0">
-          <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center">
-            <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
-            <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
-            {step.subtitle && (
-              <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>
+      {plan.steps.map((step, idx) => {
+        const StepIcon = getPaymentStepIcon(step.title, idx);
+        return (
+          <div key={step.id} className="flex items-stretch flex-shrink-0">
+            <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center flex flex-col items-center">
+              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <StepIcon className="h-4.5 w-4.5 text-primary" />
+              </div>
+              <p className="text-xl font-bold text-foreground">{step.percentage}%</p>
+              <p className="text-sm font-medium text-foreground mt-1">{step.title}</p>
+              {step.subtitle && (
+                <p className="text-xs text-muted-foreground mt-0.5">{step.subtitle}</p>
+              )}
+            </div>
+            {idx < plan.steps.length - 1 && (
+              <div className="flex items-center px-1.5">
+                <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
+              </div>
             )}
           </div>
-          {idx < plan.steps.length - 1 && (
-            <div className="flex items-center px-1.5">
-              <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
-            </div>
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
