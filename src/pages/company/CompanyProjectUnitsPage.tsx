@@ -339,6 +339,21 @@ const CompanyProjectUnitsPage = () => {
               </div>
             </div>
 
+            {/* Advertising Tags */}
+            <div className="space-y-2">
+              <Label className="font-medium flex items-center gap-1.5">
+                <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
+              </Label>
+              <div className="flex flex-wrap gap-1.5">
+                {advertisingTagOptions.map((tag) => (
+                  <button key={tag} type="button" onClick={() => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter(t => t !== tag) : [...form.advertising_tags, tag])}
+                    className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${form.advertising_tags.includes(tag) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Payment Plan — only after unit is saved */}
             {editingUnitId && (
               <div className="border-t border-border pt-4">
