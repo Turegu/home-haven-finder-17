@@ -76,7 +76,7 @@ const CompanyDashboardPage = () => {
         supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
         supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
         supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
-        supabase.from("credit_transactions").select("id, amount, transaction_type, description, listing_type, created_at").eq("company_id", companyData.id).order("created_at", { ascending: false }).limit(200),
+        supabase.from("credit_transactions").select("amount").eq("company_id", companyData.id).gt("amount", 0),
       ]);
 
       setCounts({
@@ -91,26 +91,8 @@ const CompanyDashboardPage = () => {
         featured_projects: featProjRes.count || 0,
       });
 
-      const transactions = (txRes.data || []) as CreditTransaction[];
-      setRecentTransactions(transactions.slice(0, 10));
-
-      let totalTopups = 0;
-      let totalSpent = 0;
-      let thisMonthSpent = 0;
-      let thisYearSpent = 0;
-
-      for (const tx of transactions) {
-        if (tx.amount > 0) {
-          totalTopups += tx.amount;
-        } else {
-          const spent = Math.abs(tx.amount);
-          totalSpent += spent;
-          if (tx.created_at >= monthStart) thisMonthSpent += spent;
-          if (tx.created_at >= yearStart) thisYearSpent += spent;
-        }
-      }
-
-      setCreditSummary({ totalTopups, totalSpent, thisMonthSpent, thisYearSpent });
+      const topups = (txRes.data || []).reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+      setCreditTopups(topups);
       setLoading(false);
     };
     fetchData();
