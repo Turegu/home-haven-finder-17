@@ -146,7 +146,32 @@ const AdminSettingsPage = () => {
           </Button>
         </div>
 
-        {/* Map Provider */}
+        {/* AI Search */}
+        <div className="bg-card rounded-lg border border-border p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Bot className="h-5 w-5" /> AI Property Search
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Enable or disable the AI Property Agent button across all pages.
+          </p>
+          <div className="space-y-2">
+            <Label>AI Search Status</Label>
+            <Select value={aiSearchEnabled ? 'true' : 'false'} onValueChange={(v) => setAiSearchEnabled(v === 'true')}>
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>When disabled, the floating AI agent button will be hidden on the homepage, Buy, Rent, and Projects pages.</span>
+          </div>
+        </div>
+
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Globe className="h-5 w-5" /> Map Provider
