@@ -23,7 +23,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
       className="group relative flex flex-col rounded-2xl overflow-hidden bg-card"
     >
       {/* Full image background */}
-      <div className="relative aspect-[2/3] overflow-hidden">
+      <div className="relative aspect-[3/4] overflow-hidden">
         <img
           src={project.image}
           alt={project.title}
