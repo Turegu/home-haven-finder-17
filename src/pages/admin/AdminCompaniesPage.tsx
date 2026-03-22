@@ -57,8 +57,8 @@ const AdminCompaniesPage = () => {
   useEffect(() => { fetchCompanies(); }, [sortOrder]);
 
   const filteredCompanies = companies.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.email.toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(c.name, search) ||
+    turkishIncludes(c.email, search)
   );
 
   const toggleSelect = (id: string) => {

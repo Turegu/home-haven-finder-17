@@ -163,7 +163,7 @@ const AdminBanksPage = () => {
   };
 
   const filtered = banks.filter(
-    (b) => b.name.toLowerCase().includes(search.toLowerCase())
+    (b) => turkishIncludes(b.name, search)
   );
 
   return (

@@ -82,7 +82,7 @@ const AdminFaqsPage = () => {
   };
 
   const filtered = faqs.filter(f =>
-    (f.question || "").toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(f.question || "", search)
   );
 
   return (

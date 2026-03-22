@@ -81,8 +81,8 @@ const AdminBlogsPage = () => {
   };
 
   const filtered = blogs.filter(b =>
-    (b.title || "").toLowerCase().includes(search.toLowerCase()) ||
-    b.slug.toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(b.title || "", search) ||
+    turkishIncludes(b.slug, search)
   );
 
   return (

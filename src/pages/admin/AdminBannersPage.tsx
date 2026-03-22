@@ -176,7 +176,7 @@ const AdminBannersPage = () => {
   };
 
   const filtered = banners.filter(
-    (b) => b.name.toLowerCase().includes(search.toLowerCase())
+    (b) => turkishIncludes(b.name, search)
   );
 
   return (

@@ -52,7 +52,7 @@ const MortgageBanksPage = () => {
   }, []);
 
   const filtered = banks.filter((b) =>
-    b.name.toLowerCase().includes(search.toLowerCase())
+    turkishIncludes(b.name, search)
   );
 
   const selectedBank = banks.find((b) => b.id === selectedBankId) || null;
