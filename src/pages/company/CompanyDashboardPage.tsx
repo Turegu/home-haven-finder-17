@@ -192,11 +192,11 @@ const CompanyDashboardPage = () => {
             <CreditCard className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{company?.credit_balance || 0}</p>
-          {creditSummary.totalTopups > 0 && (
+          {creditTopups > 0 && (
             <div className="mt-2">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
                 <span>Remaining</span>
-                <span>{company?.credit_balance || 0} / {creditSummary.totalTopups} total</span>
+                <span>{company?.credit_balance || 0} / {creditTopups} total</span>
               </div>
               <Progress value={creditBarPercent} className="h-1.5" />
             </div>
