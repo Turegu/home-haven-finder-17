@@ -566,8 +566,11 @@ const ProjectsPage = () => {
                     subtitle: p.developer ?? '',
                     meta: `${p.max_units ?? 0} Units`,
                     units: p.max_units ?? 0,
+                    pinLocation: p.pin_location,
                   }))}
                   focusListingId={focusListingId}
+                  selectedProvince={location.province}
+                  selectedDistrict={location.district}
                 />
               )}
             </div>
