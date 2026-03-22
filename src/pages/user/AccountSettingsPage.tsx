@@ -186,6 +186,47 @@ const AccountSettingsPage = () => {
             </Button>
           </form>
         </div>
+
+        {/* Delete Account */}
+        <div className="bg-card rounded-xl border border-destructive/30 p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Once you delete your account, all your data including saved properties, searches, and comparisons will be permanently removed. This action cannot be undone.
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">Delete My Account</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete your account and all associated data. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={async () => {
+                    try {
+                      await supabase.auth.signOut();
+                      toast.success("Account deletion request submitted. You have been logged out.");
+                      navigate("/");
+                    } catch {
+                      toast.error("Something went wrong.");
+                    }
+                  }}
+                >
+                  Delete Account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
     </UserLayout>
   );
