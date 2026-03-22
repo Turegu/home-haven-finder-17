@@ -3,13 +3,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAreaUnit } from "@/hooks/useAreaUnit";
 import {
   ChevronLeft, ChevronRight, Building, Maximize,
-  BedDouble, Bath, Car, Eye, DollarSign, CheckCircle
+  BedDouble, Bath, Car, Eye, DollarSign, CheckCircle, X, Layers
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Dialog, DialogContent,
+} from "@/components/ui/dialog";
 
 interface ProjectUnit {
   id: string;
@@ -23,6 +26,7 @@ interface ProjectUnit {
   bathrooms: number | null;
   car_parking: number | null;
   images: string[] | null;
+  floor_plans: string[] | null;
   status: string;
   advertising_tags?: string[] | null;
 }
@@ -46,37 +50,48 @@ const GENERIC_IMAGES = [
   "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
 ];
 
+const GENERIC_FLOOR_PLANS = [
+  "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=800&h=600&fit=crop",
+];
+
 const MOCK_UNITS: ProjectUnit[] = [
   {
     id: "mock-1", unit_name: "Villa 1", unit_type: "Villa", price: 285000, currency: "$",
     area: 180, area_unit: "m²", rooms: "3+1", bathrooms: 2, car_parking: 1,
     images: [GENERIC_IMAGES[0], GENERIC_IMAGES[1], GENERIC_IMAGES[5]],
+    floor_plans: GENERIC_FLOOR_PLANS,
     status: "available", advertising_tags: ["Hot Deal", "Sea View"],
   },
   {
     id: "mock-2", unit_name: "Apartment A2", unit_type: "Apartment", price: 145000, currency: "$",
     area: 95, area_unit: "m²", rooms: "2+1", bathrooms: 1, car_parking: 1,
     images: [GENERIC_IMAGES[2], GENERIC_IMAGES[3], GENERIC_IMAGES[0]],
+    floor_plans: GENERIC_FLOOR_PLANS,
     status: "available", advertising_tags: ["New Launch"],
   },
   {
     id: "mock-3", unit_name: "Penthouse B1", unit_type: "Penthouse", price: 520000, currency: "$",
     area: 310, area_unit: "m²", rooms: "4+1", bathrooms: 3, car_parking: 2,
     images: [GENERIC_IMAGES[4], GENERIC_IMAGES[1], GENERIC_IMAGES[3]],
+    floor_plans: GENERIC_FLOOR_PLANS,
     status: "reserved", advertising_tags: ["Exclusive", "Premium Location"],
   },
   {
     id: "mock-4", unit_name: "Studio C3", unit_type: "Studio", price: 78000, currency: "$",
     area: 45, area_unit: "m²", rooms: "Studio", bathrooms: 1, car_parking: 0,
     images: [GENERIC_IMAGES[5], GENERIC_IMAGES[2], GENERIC_IMAGES[4]],
+    floor_plans: GENERIC_FLOOR_PLANS,
     status: "available", advertising_tags: ["Best Seller"],
   },
 ];
+
 const statusColors: Record<string, string> = {
   available: "bg-emerald-100 text-emerald-800 border-emerald-200",
   reserved: "bg-amber-100 text-amber-800 border-amber-200",
   sold: "bg-red-100 text-red-800 border-red-200",
 };
+
+type GalleryMode = "images" | "floor_plans";
 
 const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [units, setUnits] = useState<ProjectUnit[]>([]);
@@ -84,6 +99,9 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [paymentPlans, setPaymentPlans] = useState<Record<string, PaymentPlan[]>>({});
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [galleryMode, setGalleryMode] = useState<GalleryMode>("images");
   const { formatArea } = useAreaUnit();
 
   useEffect(() => {
@@ -149,16 +167,10 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
     setSelectedUnit(units[next].id);
   };
 
-  const nextImage = () => {
-    if (!currentUnit?.images?.length) return;
-    setCurrentImageIndex((prev) => (prev + 1) % currentUnit.images!.length);
-  };
-  const prevImage = () => {
-    if (!currentUnit?.images?.length) return;
-    setCurrentImageIndex((prev) => (prev - 1 + currentUnit.images!.length) % currentUnit.images!.length);
-  };
-
-  useEffect(() => { setCurrentImageIndex(0); }, [selectedUnit]);
+  useEffect(() => {
+    setCurrentImageIndex(0);
+    setGalleryMode("images");
+  }, [selectedUnit]);
 
   if (loading) {
     return (
@@ -172,7 +184,17 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   if (units.length === 0) return null;
 
   const currentPlans = currentUnit ? (paymentPlans[currentUnit.id] || []) : [];
-  const images = currentUnit?.images?.length ? currentUnit.images : GENERIC_IMAGES.slice(0, 3);
+  const unitImages = currentUnit?.images?.length ? currentUnit.images : GENERIC_IMAGES.slice(0, 4);
+  const unitFloorPlans = currentUnit?.floor_plans?.length ? currentUnit.floor_plans : GENERIC_FLOOR_PLANS;
+  const activeGallery = galleryMode === "floor_plans" ? unitFloorPlans : unitImages;
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const lightboxPrev = () => setLightboxIndex((prev) => (prev - 1 + activeGallery.length) % activeGallery.length);
+  const lightboxNext = () => setLightboxIndex((prev) => (prev + 1) % activeGallery.length);
 
   return (
     <div className="bg-card rounded-xl border border-border p-6">
@@ -213,59 +235,76 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
 
       {currentUnit && (
         <>
-          {/* 2. Full-width image gallery — main + 2 thumbnails */}
+          {/* Gallery mode toggle */}
+          <div className="flex gap-2 mb-3">
+            <button
+              onClick={() => { setGalleryMode("images"); setCurrentImageIndex(0); }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-colors ${galleryMode === "images" ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"}`}
+            >
+              <Eye className="h-3.5 w-3.5" /> Images
+            </button>
+            <button
+              onClick={() => { setGalleryMode("floor_plans"); setCurrentImageIndex(0); }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 border transition-colors ${galleryMode === "floor_plans" ? "bg-primary text-primary-foreground border-primary" : "bg-muted/50 text-muted-foreground border-border hover:bg-muted"}`}
+            >
+              <Layers className="h-3.5 w-3.5" /> Floor Plans
+            </button>
+          </div>
+
+          {/* 2. Full-width image gallery — main + 3 thumbnails */}
           <div className="mb-6">
-            {images.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 rounded-xl overflow-hidden">
-                {/* Main image */}
-                <div className="md:col-span-2 relative aspect-[16/10] bg-muted group">
+            {activeGallery.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-xl overflow-hidden" style={{ maxHeight: '420px' }}>
+                {/* Main image — spans 3 cols */}
+                <div className="md:col-span-3 relative bg-muted group cursor-pointer" style={{ height: '420px' }} onClick={() => openLightbox(currentImageIndex)}>
                   <img
-                    src={images[currentImageIndex]}
+                    src={activeGallery[currentImageIndex]}
                     alt={currentUnit.unit_name}
                     className="w-full h-full object-cover"
                   />
-                  {images.length > 1 && (
+                  {activeGallery.length > 1 && (
                     <>
-                      <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors opacity-0 group-hover:opacity-100">
+                      <button onClick={(e) => { e.stopPropagation(); setCurrentImageIndex((prev) => (prev - 1 + activeGallery.length) % activeGallery.length); }} className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors opacity-0 group-hover:opacity-100">
                         <ChevronLeft className="h-4 w-4" />
                       </button>
-                      <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors opacity-0 group-hover:opacity-100">
+                      <button onClick={(e) => { e.stopPropagation(); setCurrentImageIndex((prev) => (prev + 1) % activeGallery.length); }} className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/80 hover:bg-background flex items-center justify-center shadow-md transition-colors opacity-0 group-hover:opacity-100">
                         <ChevronRight className="h-4 w-4" />
                       </button>
                     </>
                   )}
-                  {/* Advertising tag top-left */}
-                  {currentUnit.advertising_tags && currentUnit.advertising_tags.length > 0 && (
-                    <div className="absolute top-3 left-3">
+                  {/* Advertising tag — below title area */}
+                  {galleryMode === "images" && currentUnit.advertising_tags && currentUnit.advertising_tags.length > 0 && (
+                    <div className="absolute top-3 right-3">
                       <Badge className="bg-primary text-primary-foreground text-xs font-semibold shadow-md">
                         {currentUnit.advertising_tags[0]}
                       </Badge>
                     </div>
                   )}
-                  {/* Status badge top-right */}
-                  <div className="absolute top-3 right-3">
+                  {/* Status badge */}
+                  <div className="absolute bottom-3 right-3">
                     <Badge variant="outline" className={`${statusColors[currentUnit.status] || ''} text-xs`}>
                       {currentUnit.status.charAt(0).toUpperCase() + currentUnit.status.slice(1)}
                     </Badge>
                   </div>
-                  {/* Unit title + image counter bottom-left */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                  {/* Unit title + image counter — TOP LEFT with gradient */}
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/50 via-black/20 to-transparent p-4">
                     <h3 className="text-white font-bold text-lg drop-shadow-lg">{currentUnit.unit_name}</h3>
-                    <span className="text-white/80 text-xs">{currentImageIndex + 1} / {images.length}</span>
+                    <span className="text-white/80 text-xs">{currentImageIndex + 1} / {activeGallery.length} {galleryMode === "floor_plans" ? "plans" : "photos"}</span>
                   </div>
                 </div>
-                {/* Thumbnails column */}
-                <div className="hidden md:flex flex-col gap-2">
-                  {images.slice(0, 2).map((img, i) => {
-                    const thumbIdx = i === 0 ? (currentImageIndex + 1) % images.length : (currentImageIndex + 2) % images.length;
+                {/* Thumbnails column — 3 thumbnails stacked */}
+                <div className="hidden md:flex flex-col gap-2" style={{ height: '420px' }}>
+                  {[0, 1, 2].map((offset) => {
+                    const thumbIdx = (currentImageIndex + 1 + offset) % activeGallery.length;
+                    if (activeGallery.length <= offset) return <div key={offset} className="flex-1 rounded-lg bg-muted border border-border" />;
                     return (
                       <button
-                        key={i}
+                        key={offset}
                         onClick={() => setCurrentImageIndex(thumbIdx)}
                         className={`flex-1 rounded-lg overflow-hidden border-2 transition-all ${thumbIdx === currentImageIndex ? 'border-primary' : 'border-transparent hover:border-primary/40'}`}
                       >
                         <img
-                          src={images[thumbIdx]}
+                          src={activeGallery[thumbIdx]}
                           alt={`${currentUnit.unit_name} ${thumbIdx + 1}`}
                           className="w-full h-full object-cover"
                         />
@@ -327,7 +366,6 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
                     onClick={() => setSelectedUnit(unit.id)}
                     className="flex-shrink-0 w-[200px] text-left p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-muted/50 transition-all group"
                   >
-                    {/* Thumbnail */}
                     <div className="w-full aspect-[16/10] rounded-lg overflow-hidden bg-muted mb-2">
                       {unit.images && unit.images.length > 0 ? (
                         <img src={unit.images[0]} alt={unit.unit_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
@@ -358,6 +396,44 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
           )}
         </>
       )}
+
+      {/* Fullscreen Lightbox */}
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+          <div className="relative flex items-center justify-center w-full h-[90vh]">
+            <img
+              src={activeGallery[lightboxIndex]}
+              alt={`${currentUnit?.unit_name} ${lightboxIndex + 1}`}
+              className="max-w-full max-h-full object-contain"
+            />
+            {activeGallery.length > 1 && (
+              <>
+                <button onClick={lightboxPrev} className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                  <ChevronLeft className="h-6 w-6 text-white" />
+                </button>
+                <button onClick={lightboxNext} className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                  <ChevronRight className="h-6 w-6 text-white" />
+                </button>
+              </>
+            )}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+              {lightboxIndex + 1} / {activeGallery.length}
+            </div>
+            {/* Thumbnail strip */}
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
+              {activeGallery.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setLightboxIndex(i)}
+                  className={`w-14 h-10 rounded overflow-hidden border-2 transition-all ${i === lightboxIndex ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'}`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -9,14 +9,11 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from "@/components/ui/table";
-import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, Upload, X, ArrowLeft, Tag } from "lucide-react";
+import { Plus, Trash2, Pencil, Upload, X, ArrowLeft, Tag, Layers } from "lucide-react";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
@@ -36,6 +33,7 @@ interface UnitForm {
   exterior_amenities: string[];
   advertising_tags: string[];
   images: string[];
+  floor_plans: string[];
 }
 
 const advertisingTagOptions = [
@@ -49,7 +47,7 @@ const advertisingTagOptions = [
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
-  interior_amenities: [], exterior_amenities: [], advertising_tags: [], images: [],
+  interior_amenities: [], exterior_amenities: [], advertising_tags: [], images: [], floor_plans: [],
 };
 
 const CompanyProjectUnitsPage = () => {
@@ -67,7 +65,7 @@ const CompanyProjectUnitsPage = () => {
   const [form, setForm] = useState<UnitForm>({ ...emptyUnit });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  
+  const [uploadingFloorPlan, setUploadingFloorPlan] = useState(false);
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -113,6 +111,23 @@ const CompanyProjectUnitsPage = () => {
     setUploading(false);
   };
 
+  const handleFloorPlanUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    setUploadingFloorPlan(true);
+    const urls: string[] = [];
+    for (const file of Array.from(e.target.files)) {
+      const ext = file.name.split(".").pop();
+      const path = `units/${projectId}/plans/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("project-images").upload(path, file);
+      if (!error) {
+        const { data } = supabase.storage.from("project-images").getPublicUrl(path);
+        urls.push(data.publicUrl);
+      }
+    }
+    setForm((prev) => ({ ...prev, floor_plans: [...prev.floor_plans, ...urls] }));
+    setUploadingFloorPlan(false);
+  };
+
   const openEdit = (unit: any) => {
     setEditingUnitId(unit.id);
     setForm({
@@ -125,6 +140,7 @@ const CompanyProjectUnitsPage = () => {
       exterior_amenities: unit.exterior_amenities || [],
       advertising_tags: (unit as any).advertising_tags || [],
       images: unit.images || [],
+      floor_plans: unit.floor_plans || [],
     });
     setDialogOpen(true);
   };
@@ -149,7 +165,9 @@ const CompanyProjectUnitsPage = () => {
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
       advertising_tags: form.advertising_tags,
-      images: form.images, project_id: projectId,
+      images: form.images,
+      floor_plans: form.floor_plans,
+      project_id: projectId,
     };
 
     try {
@@ -202,7 +220,6 @@ const CompanyProjectUnitsPage = () => {
         ) : (
           units.map((unit) => (
             <div key={unit.id} className="bg-card rounded-xl border border-border overflow-hidden">
-              {/* Unit row */}
               <div className="flex items-center gap-3 px-4 py-3">
                 <div className="flex-1 grid grid-cols-8 gap-2 items-center text-sm">
                   <span className="font-medium text-foreground col-span-2">{unit.unit_name}</span>
@@ -294,9 +311,9 @@ const CompanyProjectUnitsPage = () => {
               </div>
             </div>
 
-            {/* Unit Images */}
+            {/* Unit Images — separate section */}
             <div className="space-y-2">
-              <Label className="font-medium">Unit Images & Plans</Label>
+              <Label className="font-medium">Unit Images</Label>
               <div className="flex flex-wrap gap-3">
                 {form.images.map((url, i) => (
                   <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
@@ -311,6 +328,29 @@ const CompanyProjectUnitsPage = () => {
                   <Upload className="h-4 w-4 text-muted-foreground" />
                   <span className="text-[10px] text-muted-foreground">{uploading ? "..." : "Browse"}</span>
                   <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploading} />
+                </label>
+              </div>
+            </div>
+
+            {/* Floor Plans — separate section */}
+            <div className="space-y-2">
+              <Label className="font-medium flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> Floor Plans / Layouts
+              </Label>
+              <div className="flex flex-wrap gap-3">
+                {form.floor_plans.map((url, i) => (
+                  <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setForm((p) => ({ ...p, floor_plans: p.floor_plans.filter((u) => u !== url) }))}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                  <Layers className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-[10px] text-muted-foreground">{uploadingFloorPlan ? "..." : "Browse"}</span>
+                  <input type="file" accept="image/*" multiple onChange={handleFloorPlanUpload} className="hidden" disabled={uploadingFloorPlan} />
                 </label>
               </div>
             </div>
