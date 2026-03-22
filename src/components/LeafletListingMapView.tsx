@@ -20,12 +20,27 @@ const cityCoords: Record<string, [number, number]> = {
   'gaziantep': [37.0662, 37.3833],
 };
 
+function parsePinLocation(pin?: string | null): [number, number] | null {
+  if (!pin) return null;
+  const parts = pin.split(',').map(s => parseFloat(s.trim()));
+  if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && Math.abs(parts[0]) <= 90 && Math.abs(parts[1]) <= 180) {
+    return [parts[0], parts[1]];
+  }
+  return null;
+}
+
 function getCityFromLocation(location: string): [number, number] {
   const lower = location.toLowerCase();
   for (const [city, coords] of Object.entries(cityCoords)) {
     if (lower.includes(city)) return coords;
   }
   return [39.0 + Math.random() * 2, 32.0 + Math.random() * 4];
+}
+
+function getListingCoords(listing: MapListing): [number, number] {
+  const pin = parsePinLocation(listing.pinLocation);
+  if (pin) return pin;
+  return getCityFromLocation(listing.location);
 }
 
 export interface MapListing {
