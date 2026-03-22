@@ -90,12 +90,12 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
 
   // Update message when unit selection changes
   useEffect(() => {
-    if (listingType === 'project' && selectedUnitId && projectUnits) {
+    if (listingType === 'project' && selectedUnitId && selectedUnitId !== 'none' && projectUnits) {
       const unit = projectUnits.find(u => u.id === selectedUnitId);
       if (unit) {
         setMessage(`Hi!, I am interested in unit "${unit.unit_name}" (${unit.unit_type}${unit.price ? `, ${unit.currency || '$'}${unit.price.toLocaleString()}` : ''}) in your project, please contact me.`);
       }
-    } else if (listingType === 'project' && !selectedUnitId) {
+    } else if (listingType === 'project' && (!selectedUnitId || selectedUnitId === 'none')) {
       setMessage(defaultMessages['project']);
     }
   }, [selectedUnitId, projectUnits, listingType]);
