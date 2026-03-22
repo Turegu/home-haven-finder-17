@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import {
   Save, Upload, X, ImageIcon, FileText, Building2, Compass, DollarSign,
-  Ruler, TreePine, Lamp, Layers, Search, ChevronDown,
+  Ruler, TreePine, Layers, Search, ChevronDown,
   Bold, Italic, Underline, List, Heading, Activity, Video,
   Plus, Trash2, Pencil, Package, Tag
 } from "lucide-react";
@@ -27,7 +27,7 @@ import LocationFormFields from "@/components/LocationFormFields";
 import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
-import SearchablePillSelect from "@/components/ui/searchable-pill-select";
+import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */

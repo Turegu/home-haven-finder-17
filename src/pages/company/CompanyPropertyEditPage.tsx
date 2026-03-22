@@ -16,13 +16,13 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   Save, Upload, X, ImageIcon, FileText, Building2, Home, Car, Sofa,
-  Calendar, Compass, ScrollText, Activity, Tag, TreePine, Lamp,
+  Calendar, Compass, ScrollText, Activity, Tag, TreePine,
   DollarSign, Ruler, BedDouble, Bath, Layers, Clock, Search,
   ChevronDown, Bold, Italic, Underline, List, Heading
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
-import AmenitiesViewAllDialog from "@/components/AmenitiesViewAllDialog";
+import AmenitiesPickerDialog from "@/components/company/AmenitiesPickerDialog";
 import PrePublishUpgradeDialog from "@/components/company/PrePublishUpgradeDialog";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 
