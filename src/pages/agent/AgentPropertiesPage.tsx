@@ -45,6 +45,7 @@ const AgentPropertiesPage = () => {
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [upgradeDialog, setUpgradeDialog] = useState<{ open: boolean; property: AgentProperty | null }>({ open: false, property: null });
+  const [insightsDialog, setInsightsDialog] = useState<{ open: boolean; property: AgentProperty | null }>({ open: false, property: null });
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState("all");
 
