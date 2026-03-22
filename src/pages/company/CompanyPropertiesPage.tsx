@@ -447,6 +447,8 @@ const CompanyPropertiesPage = () => {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => setAssignDialog({ open: true, property: prop })}><UserPlus className="h-4 w-4 mr-2" /> Assign To Agent</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: prop })}><ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade To Premium/Featured</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: prop })}><BarChart3 className="h-4 w-4 mr-2" /> Performance Insights</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
