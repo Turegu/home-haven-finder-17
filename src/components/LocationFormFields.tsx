@@ -456,22 +456,29 @@ const LocationFormFields = ({
             <Label className="text-foreground font-medium">Pin Coordinates</Label>
             <Input
               value={pinLocation}
-              onChange={(e) => onPinLocationChange?.(e.target.value)}
+              readOnly
               className="bg-secondary/50"
-              placeholder="Click on map or enter lat,lng"
+              placeholder={!province || !town ? "Select province & city first" : "Click on map to set pin"}
             />
           </div>
         )}
       </div>
 
-      {/* Interactive Map */}
-      {showMap && showPinLocation && onPinLocationChange && (
+      {/* Interactive Map — only shown when province + town are selected */}
+      {showMap && showPinLocation && onPinLocationChange && province && town && (
         <InteractiveMapPicker
           pinLocation={pinLocation}
           onPinLocationChange={onPinLocationChange}
           province={province}
           town={town}
         />
+      )}
+      {showMap && showPinLocation && onPinLocationChange && (!province || !town) && (
+        <div className="h-[280px] rounded-lg border border-dashed border-border flex items-center justify-center bg-muted/30">
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <MapPin className="h-4 w-4" /> Select province and city/town to enable map pin placement
+          </p>
+        </div>
       )}
     </div>
   );
