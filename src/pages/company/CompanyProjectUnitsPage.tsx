@@ -328,10 +328,17 @@ const CompanyProjectUnitsPage = () => {
               </div>
             </div>
 
+            {/* Payment Plan — only after unit is saved */}
+            {editingUnitId && (
+              <div className="border-t border-border pt-4">
+                <UnitPaymentPlanManager unitId={editingUnitId} unitName={form.unit_name} />
+              </div>
+            )}
+
             <div className="flex justify-end gap-3 pt-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
               <Button onClick={handleSubmitUnit} disabled={saving}>
-                {saving ? "Saving..." : "Submit"}
+                {saving ? (editingUnitId ? "Saving..." : "Save & Continue") : (editingUnitId ? "Update Unit" : "Save & Add Payment Plan")}
               </Button>
             </div>
           </div>
