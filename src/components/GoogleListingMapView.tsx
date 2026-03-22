@@ -234,6 +234,34 @@ const GoogleListingMapView = ({ listings, className = '', focusListingId = null,
     map.fitBounds(bounds, 50);
   }, [listingsWithCoords, countryConfig]);
 
+  // Draw district boundary on Google Maps
+  useEffect(() => {
+    // Clear old boundaries
+    boundaryRef.current.forEach(p => p.setMap(null));
+    boundaryRef.current = [];
+
+    if (!selectedProvince || !selectedDistrict || !mapRef.current || !isLoaded) return;
+
+    fetchGoogleBoundary(selectedProvince, selectedDistrict).then(rings => {
+      if (!rings || !mapRef.current) return;
+
+      const bounds = new google.maps.LatLngBounds();
+      rings.forEach(ring => {
+        const poly = new google.maps.Polygon({
+          paths: ring,
+          strokeColor: '#2563eb',
+          strokeWeight: 2,
+          fillColor: '#3b82f6',
+          fillOpacity: 0.08,
+        });
+        poly.setMap(mapRef.current);
+        boundaryRef.current.push(poly);
+        ring.forEach(pt => bounds.extend(pt));
+      });
+      mapRef.current.fitBounds(bounds, 30);
+    });
+  }, [selectedProvince, selectedDistrict, isLoaded]);
+
   // Focus on a specific listing
   useEffect(() => {
     if (!focusListingId || !mapRef.current) return;
