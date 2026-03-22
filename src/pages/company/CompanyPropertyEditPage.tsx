@@ -63,6 +63,7 @@ const CompanyPropertyEditPage = () => {
   const [uploadingPlans, setUploadingPlans] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const { validate, clearError, errorClass } = useFieldValidation();
+  const [paymentPlans, setPaymentPlans] = useState<LocalPaymentPlan[]>([]);
 
   const [form, setForm] = useState({
     title: "",
