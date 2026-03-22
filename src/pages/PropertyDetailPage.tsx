@@ -332,13 +332,13 @@ const PropertyDetailPage = () => {
       </div>
 
       {/* Media Gallery — swaps between photos, map, etc. */}
-      <div className="relative w-full h-[300px] md:h-[450px] bg-muted overflow-hidden">
+      <div className="relative w-full h-[250px] sm:h-[300px] md:h-[450px] bg-muted overflow-hidden">
         {/* Photos — default view */}
         <div className={activeTab === 'photos' ? 'h-full' : 'hidden'}>
           <div className="flex h-full">
-            {property.images.slice(currentImage, currentImage + 3).concat(
-              currentImage + 3 > property.images.length
-                ? property.images.slice(0, (currentImage + 3) - property.images.length)
+            {property.images.slice(currentImage, currentImage + (window.innerWidth < 640 ? 1 : 3)).concat(
+              currentImage + (window.innerWidth < 640 ? 1 : 3) > property.images.length
+                ? property.images.slice(0, (currentImage + (window.innerWidth < 640 ? 1 : 3)) - property.images.length)
                 : []
             ).map((img, i) => (
               <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
