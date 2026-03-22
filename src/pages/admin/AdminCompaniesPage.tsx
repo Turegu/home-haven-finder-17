@@ -217,7 +217,7 @@ const AdminCompaniesPage = () => {
                             <Pencil className="h-4 w-4 mr-2" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setUpgradeCompany(company)}>
-                            <ArrowUpCircle className="h-4 w-4 mr-2" /> Upgrade Membership
+                            <ArrowUpCircle className="h-4 w-4 mr-2" /> Change Membership
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
                             <Coins className="h-4 w-4 mr-2" /> Add Points
