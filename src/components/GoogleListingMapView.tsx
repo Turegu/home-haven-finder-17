@@ -17,15 +17,13 @@ function getRentSuffix(rentDuration?: string | null): string {
 }
 
 function formatPrice(price: number | null, currency: string) {
-  if (!price) return `${currency === 'USD' ? '$' : currency + ' '}0`;
   const sym = currency === 'USD' ? '$' : currency + ' ';
-  return `${sym}${price.toLocaleString()}`;
+  return `${sym}${(price ?? 0).toLocaleString()}`;
 }
 
 function formatPriceShort(price: number | null, currency: string, rentDuration?: string | null, isRentListing = false) {
-  if (!price) return `${currency === 'USD' ? '$' : currency + ' '}0`;
   const sym = currency === 'USD' ? '$' : currency + ' ';
-  let base = `${sym}${price.toLocaleString()}`;
+  let base = `${sym}${(price ?? 0).toLocaleString()}`;
   if (isRentListing) base += getRentSuffix(rentDuration);
   return base;
 }

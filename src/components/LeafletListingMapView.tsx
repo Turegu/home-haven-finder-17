@@ -79,7 +79,7 @@ function getRentSuffix(rentDuration?: string | null): string {
 // Create price badge marker
 function createPriceIcon(price: number | null, currency: string, rentDuration?: string | null, isRentListing = false) {
   const sym = currency === 'USD' ? '$' : `${currency} `;
-  let label = price ? `${sym}${price.toLocaleString()}` : `${sym}0`;
+  let label = `${sym}${(price ?? 0).toLocaleString()}`;
   if (price && isRentListing) label += getRentSuffix(rentDuration);
   return L.divIcon({
     className: 'custom-map-marker',
@@ -120,9 +120,8 @@ const ListingPopupCard = ({ listing, onClose }: { listing: MapListing; onClose: 
   };
 
   const formatPrice = (price: number | null, currency: string) => {
-    if (!price) return `${currency === 'USD' ? '$' : currency + ' '}0`;
     const sym = currency === 'USD' ? '$' : currency + ' ';
-    return `${sym}${price.toLocaleString()}`;
+    return `${sym}${(price ?? 0).toLocaleString()}`;
   };
 
   return (
