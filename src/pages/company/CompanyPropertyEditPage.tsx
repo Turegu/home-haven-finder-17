@@ -460,36 +460,44 @@ const CompanyPropertyEditPage = () => {
               options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
             <FormSelect
-              label="No. Of Rooms"
+              label="No. Of Rooms *"
               icon={<BedDouble className="h-4 w-4 text-muted-foreground" />}
               value={form.rooms}
               onChange={(v) => updateField("rooms", v)}
               options={(filterOpts["rooms"] || []).map(r => ({ value: r, label: r }))}
               placeholder="Select rooms"
+              fieldName="rooms"
+              error={errorClass("rooms") !== ""}
             />
             <FormSelect
-              label="No. Of Bathrooms"
+              label="No. Of Bathrooms *"
               icon={<Bath className="h-4 w-4 text-muted-foreground" />}
               value={form.bathrooms}
               onChange={(v) => updateField("bathrooms", v)}
               options={(filterOpts["bathrooms"] || []).map(b => ({ value: b, label: b }))}
               placeholder="Select bathrooms"
+              fieldName="bathrooms"
+              error={errorClass("bathrooms") !== ""}
             />
             <FormSelect
-              label="Floor Level"
+              label="Floor Level *"
               icon={<Layers className="h-4 w-4 text-muted-foreground" />}
               value={form.floor_level}
               onChange={(v) => updateField("floor_level", v)}
               options={(filterOpts["floor_level"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select floor"
+              fieldName="floor_level"
+              error={errorClass("floor_level") !== ""}
             />
             <FormSelect
-              label="Furniture"
+              label="Furniture *"
               icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
               value={form.furniture}
               onChange={(v) => updateField("furniture", v)}
               options={(filterOpts["furniture"] || []).map(f => ({ value: f, label: f }))}
               placeholder="Select"
+              fieldName="furniture"
+              error={errorClass("furniture") !== ""}
             />
             <FormSelect
               label="Parking Spaces"
@@ -499,28 +507,34 @@ const CompanyPropertyEditPage = () => {
               options={(filterOpts["parking"] || []).map(p => ({ value: p, label: p }))}
             />
             <FormSelect
-              label="Property Age"
+              label="Property Age *"
               icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
               value={form.property_age}
               onChange={(v) => updateField("property_age", v)}
               options={(filterOpts["property_age"] || []).map(a => ({ value: a, label: a }))}
               placeholder="Select"
+              fieldName="property_age"
+              error={errorClass("property_age") !== ""}
             />
             <FormSelect
-              label="Orientation"
+              label="Orientation *"
               icon={<Compass className="h-4 w-4 text-muted-foreground" />}
               value={form.property_orientation}
               onChange={(v) => updateField("property_orientation", v)}
               options={(filterOpts["orientation"] || []).map(o => ({ value: o, label: o }))}
               placeholder="Select"
+              fieldName="property_orientation"
+              error={errorClass("property_orientation") !== ""}
             />
             <FormSelect
-              label="Title Deed"
+              label="Title Deed *"
               icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
               value={form.title_deed}
               onChange={(v) => updateField("title_deed", v)}
               options={(filterOpts["title_deed"] || []).map(t => ({ value: t, label: t }))}
               placeholder="Select"
+              fieldName="title_deed"
+              error={errorClass("title_deed") !== ""}
             />
           </div>
         </section>
