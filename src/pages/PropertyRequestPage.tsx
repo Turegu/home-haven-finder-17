@@ -340,23 +340,23 @@ const PropertyRequestPage = () => {
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" /></div>
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
               <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
-              <SelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
-              <SelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
-              <SelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
-              <SelectField label="Floor Level" field="floorLevel" options={filterOpts['floor_level'] || []} />
-              <SelectField label="Property Status" field="propertyStatus" options={filterOpts['property_status'] || []} />
-              <SelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
-              <SelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
+              <MultiSelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
+              <MultiSelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
+              <MultiSelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
+              <MultiSelectField label="Floor Level" field="floorLevel" options={filterOpts['floor_level'] || []} />
+              <MultiSelectField label="Property Status" field="propertyStatus" options={filterOpts['property_status'] || []} />
+              <MultiSelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
+              <MultiSelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
 
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">Amenities</label>
                 <AmenitiesPickerDialog
                   interiorOptions={filterOpts['interior_amenities'] || []}
                   exteriorOptions={filterOpts['exterior_amenities'] || []}
                   selectedInterior={formData.interiorAmenities}
                   selectedExterior={formData.exteriorAmenities}
-                  onToggleInterior={(v) => toggleAmenity('interiorAmenities', v)}
-                  onToggleExterior={(v) => toggleAmenity('exteriorAmenities', v)}
+                  onToggleInterior={(v) => toggleMulti('interiorAmenities', v)}
+                  onToggleExterior={(v) => toggleMulti('exteriorAmenities', v)}
                 />
               </div>
             </div>
