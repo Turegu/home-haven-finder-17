@@ -829,18 +829,20 @@ const CompanyProjectEditPage = () => {
         </section>
 
 
-        <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location" />
+        <section className="bg-card rounded-xl border border-border p-6" data-field="province">
+          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location *" />
+          <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
             province={form.province}
             town={form.town}
             neighbourhood={form.neighbourhood}
             pinLocation={form.pin_location}
-            onProvinceChange={(v) => updateField("province", v)}
+            onProvinceChange={(v) => { updateField("province", v); clearError("town"); clearError("neighbourhood"); }}
             onTownChange={(v) => updateField("town", v)}
             onNeighbourhoodChange={(v) => updateField("neighbourhood", v)}
             onPinLocationChange={(v) => updateField("pin_location", v)}
           />
+          </div>
         </section>
 
         {/* ─── Media ─── */}
