@@ -40,6 +40,7 @@ const AdminSettingsPage = () => {
         setSalesEmail(map.sales_email || "");
         setSalesAddress(map.sales_address || "");
         setMapProvider(map.map_provider || "google");
+        setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setCurrentPattern(map.admin_pattern_code || "");
       }
 
