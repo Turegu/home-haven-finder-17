@@ -198,14 +198,27 @@ const CompanyEventEditPage = () => {
     if (urls[0]) setPdfUrl(urls[0]);
   };
 
-  const handleSave = async (publishStatus: "draft" | "active") => {
-    if (!companyId) { toast.error("Company not found"); return; }
+  const validateEventForm = (): boolean => {
+    if (!companyId) { toast.error("Company not found"); return false; }
     if (!isEdit && !membershipLimits.canCreate("events")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more events. Please upgrade.`);
-      return;
+      return false;
     }
-    if (!form.title.trim()) { toast.error("Event name is required"); return; }
-    if (!form.title.trim()) { toast.error("Event name is required"); return; }
+    if (!form.title.trim()) { toast.error("Event name is required"); return false; }
+    return true;
+  };
+
+  const handlePublishClick = () => {
+    if (!validateEventForm()) return;
+    setShowUpgradeDialog(true);
+  };
+
+  const handleSave = async (publishStatus: "draft" | "active") => {
+    if (publishStatus === "active" && !validateEventForm()) return;
+    if (publishStatus === "draft") {
+      if (!companyId) { toast.error("Company not found"); return; }
+      if (!form.title.trim()) { toast.error("Event name is required"); return; }
+    }
     setLoading(true);
 
     const locationStr = [form.province, form.town, form.neighbourhood].filter(Boolean).join(", ");
