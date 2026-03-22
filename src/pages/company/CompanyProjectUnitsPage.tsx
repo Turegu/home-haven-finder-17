@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Trash2, Pencil, Upload, X, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, Pencil, Upload, X, ArrowLeft, Tag } from "lucide-react";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
 
