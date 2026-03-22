@@ -292,52 +292,42 @@ const LocationFormFields = ({
         {/* Province */}
         <div className="space-y-2">
           <Label className="text-foreground font-medium">Province</Label>
-          <Select value={province} onValueChange={handleProvinceChange}>
-            <SelectTrigger className="bg-secondary/50">
-              <SelectValue placeholder={loadingProvinces ? "Loading..." : "Select Province"} />
-            </SelectTrigger>
-            <SelectContent>
-              {provinces.map((p) => (
-                <SelectItem key={p.name} value={p.name}>{p.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={province}
+            onValueChange={handleProvinceChange}
+            options={provinces.map((p) => ({ value: p.name, label: p.name }))}
+            placeholder={loadingProvinces ? "Loading..." : "Select Province"}
+          />
         </div>
 
         {/* City/Town */}
         <div className="space-y-2">
           <Label className="text-foreground font-medium">City/Town</Label>
-          <Select value={town} onValueChange={handleTownChange} disabled={!province}>
-            <SelectTrigger className="bg-secondary/50">
-              <SelectValue placeholder={
-                !province ? "Select province first" :
-                loadingDistricts ? "Loading..." : "Select City/Town"
-              } />
-            </SelectTrigger>
-            <SelectContent>
-              {districts.map((d) => (
-                <SelectItem key={d.name} value={d.name}>{d.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={town}
+            onValueChange={handleTownChange}
+            options={districts.map((d) => ({ value: d.name, label: d.name }))}
+            placeholder={
+              !province ? "Select province first" :
+              loadingDistricts ? "Loading..." : "Select City/Town"
+            }
+            disabled={!province}
+          />
         </div>
 
         {/* Neighbourhood */}
         <div className="space-y-2">
           <Label className="text-foreground font-medium">Neighbourhood</Label>
-          <Select value={neighbourhood} onValueChange={handleNeighbourhoodChange} disabled={!town}>
-            <SelectTrigger className="bg-secondary/50">
-              <SelectValue placeholder={
-                !town ? "Select city/town first" :
-                loadingNeighborhoods ? "Loading..." : "Select Neighbourhood"
-              } />
-            </SelectTrigger>
-            <SelectContent>
-              {neighborhoods.map((n) => (
-                <SelectItem key={n.name} value={n.name}>{n.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={neighbourhood}
+            onValueChange={handleNeighbourhoodChange}
+            options={neighborhoods.map((n) => ({ value: n.name, label: n.name }))}
+            placeholder={
+              !town ? "Select city/town first" :
+              loadingNeighborhoods ? "Loading..." : "Select Neighbourhood"
+            }
+            disabled={!town}
+          />
         </div>
 
         {/* Pin Location coordinate display */}
