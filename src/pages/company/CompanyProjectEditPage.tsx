@@ -27,6 +27,7 @@ import defaultProjectLogo from "@/assets/default-project-logo.png";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import SearchablePillSelect from "@/components/ui/searchable-pill-select";
+import UnitPaymentPlanManager from "@/components/company/UnitPaymentPlanManager";
 
 /* ─── Hardcoded arrays removed — now fetched dynamically via useFilterOptions ─── */
 
