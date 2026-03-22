@@ -347,15 +347,58 @@ const CompanyPropertyEditPage = () => {
     };
 
     try {
+      let propertyId = id;
       if (isEdit) {
         const { error } = await supabase.from("properties").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       } else {
-        const { error } = await supabase.from("properties").insert(payload);
+        const { data: inserted, error } = await supabase.from("properties").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
+        propertyId = inserted.id;
       }
+
+      // Save payment plans
+      if (propertyId && paymentPlans.length > 0) {
+        for (let pi = 0; pi < paymentPlans.length; pi++) {
+          const plan = paymentPlans[pi];
+          const isExisting = !plan.id.startsWith("local-");
+          let planId = plan.id;
+
+          if (isExisting) {
+            await supabase.from("property_payment_plans").update({
+              plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).eq("id", planId);
+            await supabase.from("property_payment_plan_steps").delete().eq("plan_id", planId);
+          } else {
+            const { data: newPlan, error: planErr } = await supabase.from("property_payment_plans").insert({
+              property_id: propertyId, plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).select("id").single();
+            if (planErr) throw planErr;
+            planId = newPlan.id;
+          }
+
+          if ((plan.steps ?? []).length > 0) {
+            const stepsPayload = (plan.steps ?? []).map((s, si) => ({
+              plan_id: planId, percentage: s.percentage, title: s.title,
+              subtitle: s.subtitle || null, sort_order: si,
+            }));
+            await supabase.from("property_payment_plan_steps").insert(stepsPayload);
+          }
+        }
+      }
+
+      // Delete removed plans (for editing)
+      if (isEdit && propertyId) {
+        const { data: dbPlans } = await supabase.from("property_payment_plans").select("id").eq("property_id", propertyId);
+        const keptIds = paymentPlans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
+        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        for (const d of toDelete) {
+          await supabase.from("property_payment_plan_steps").delete().eq("plan_id", d.id);
+          await supabase.from("property_payment_plans").delete().eq("id", d.id);
+        }
+      }
+
+      toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       navigate("/company/properties");
     } catch (err: any) {
       toast.error(err.message || "Save failed");
