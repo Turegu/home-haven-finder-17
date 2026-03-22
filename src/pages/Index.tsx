@@ -328,7 +328,7 @@ const Index = () => {
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   return (
-    <div className={`relative w-full ${isMain ? "aspect-[21/9] md:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}>
+    <div className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}>
       <img
         src={hero?.image_url || defaultBg}
         alt={hero?.title || "Banner"}

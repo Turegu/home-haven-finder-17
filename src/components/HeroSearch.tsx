@@ -101,7 +101,7 @@ const HeroSearch = () => {
           </div>
 
           {/* Filter Row */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
             <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
             <AreaDropdown minArea={minArea} maxArea={maxArea} onChange={(min, max) => { setMinArea(min); setMaxArea(max); }} />
