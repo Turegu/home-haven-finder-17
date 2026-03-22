@@ -258,6 +258,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Spotlight: Top Companies & Agents */}
+      <HomepageSpotlight />
+
       {/* Partners */}
       {partners.length > 0 && (
         <section className="bg-background py-12 overflow-hidden">

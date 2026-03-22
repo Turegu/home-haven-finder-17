@@ -275,6 +275,20 @@ const AdminCompaniesPage = () => {
           onUpdated={fetchCompanies}
         />
       )}
+
+      {/* Boost Profile Dialog */}
+      {boostCompany && (
+        <UpgradeProfileDialog
+          open={!!boostCompany}
+          onOpenChange={(open) => !open && setBoostCompany(null)}
+          profileId={boostCompany.id}
+          profileName={boostCompany.name}
+          profileType="company"
+          companyId={boostCompany.id}
+          currentClassification={(boostCompany as any).profile_classification || "standard"}
+          onUpgraded={fetchCompanies}
+        />
+      )}
     </AdminLayout>
   );
 };
