@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { AlertTriangle, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SearchableSelect from "@/components/ui/searchable-select";
+import "leaflet/dist/leaflet.css";
 
 interface NamePair { name: string; ar: string }
 
@@ -84,10 +85,18 @@ function InteractiveMapPicker({
     return null;
   }, [pinLocation]);
 
-  // Load Leaflet dynamically
+  // Load Leaflet dynamically and fix default icon
   useEffect(() => {
     import("leaflet").then((mod) => {
-      setL(mod.default);
+      const leaflet = mod.default;
+      // Fix default marker icon paths broken by bundlers
+      delete (leaflet.Icon.Default.prototype as any)._getIconUrl;
+      leaflet.Icon.Default.mergeOptions({
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      });
+      setL(leaflet);
     });
   }, []);
 
