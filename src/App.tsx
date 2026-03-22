@@ -36,6 +36,7 @@ const ForgotPasswordPage = lazy(() => import("./pages/user/ForgotPasswordPage.ts
 const ResetPasswordPage = lazy(() => import("./pages/user/ResetPasswordPage.tsx"));
 
 // User dashboard pages
+const UserDashboardPage = lazy(() => import("./pages/user/UserDashboardPage.tsx"));
 const AccountSettingsPage = lazy(() => import("./pages/user/AccountSettingsPage.tsx"));
 const FollowedAgentsPage = lazy(() => import("./pages/user/FollowedAgentsPage.tsx"));
 const SavedPropertiesPage = lazy(() => import("./pages/user/SavedPropertiesPage.tsx"));
