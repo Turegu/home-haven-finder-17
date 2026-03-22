@@ -171,6 +171,20 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
 
 // Unit types and amenities now fetched dynamically via filterOpts
 
+interface LocalPaymentStep {
+  id: string;
+  percentage: number;
+  title: string;
+  subtitle: string;
+}
+
+interface LocalPaymentPlan {
+  id: string;
+  plan_name: string;
+  is_active: boolean;
+  steps: LocalPaymentStep[];
+}
+
 interface UnitForm {
   unit_name: string;
   unit_type: string;
@@ -186,6 +200,7 @@ interface UnitForm {
   advertising_tags: string[];
   images: string[];
   status: string;
+  payment_plans: LocalPaymentPlan[];
 }
 
 const unitStatuses = [
@@ -198,6 +213,7 @@ const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
   price: "", currency: "USD", area: "", area_unit: "m²",
   interior_amenities: [], exterior_amenities: [], advertising_tags: [], images: [], status: "available",
+  payment_plans: [],
 };
 
 const CompanyProjectEditPage = () => {
@@ -385,8 +401,31 @@ const CompanyProjectEditPage = () => {
     setUnitDialogOpen(true);
   };
 
-  const openEditUnit = (unit: any) => {
+  const openEditUnit = async (unit: any) => {
     setEditingUnitId(unit.id);
+    // Fetch existing payment plans for this unit
+    let existingPlans: LocalPaymentPlan[] = [];
+    const { data: plansData } = await supabase
+      .from("unit_payment_plans")
+      .select("*")
+      .eq("unit_id", unit.id)
+      .order("sort_order");
+    if (plansData && plansData.length > 0) {
+      const planIds = plansData.map((p: any) => p.id);
+      const { data: stepsData } = await supabase
+        .from("unit_payment_plan_steps")
+        .select("*")
+        .in("plan_id", planIds)
+        .order("sort_order");
+      existingPlans = plansData.map((p: any) => ({
+        id: p.id,
+        plan_name: p.plan_name,
+        is_active: p.is_active,
+        steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+          id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
+        })),
+      }));
+    }
     setUnitForm({
       unit_name: unit.unit_name || "", unit_type: unit.unit_type || "apartment",
       rooms: unit.rooms || "", bathrooms: unit.bathrooms?.toString() || "",
@@ -398,6 +437,7 @@ const CompanyProjectEditPage = () => {
       advertising_tags: (unit as any).advertising_tags || [],
       images: unit.images || [],
       status: unit.status || "available",
+      payment_plans: existingPlans,
     });
     setUnitDialogOpen(true);
   };
@@ -421,15 +461,59 @@ const CompanyProjectEditPage = () => {
       images: unitForm.images, project_id: projId, status: unitForm.status,
     };
     try {
+      let unitId = editingUnitId;
       if (editingUnitId) {
         const { error } = await supabase.from("project_units").update(payload).eq("id", editingUnitId);
         if (error) throw error;
-        toast.success("Unit updated!");
       } else {
-        const { error } = await supabase.from("project_units").insert(payload);
+        const { data, error } = await supabase.from("project_units").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success("Unit added!");
+        unitId = data.id;
       }
+
+      // Save payment plans
+      if (unitId && unitForm.payment_plans.length > 0) {
+        for (let pi = 0; pi < unitForm.payment_plans.length; pi++) {
+          const plan = unitForm.payment_plans[pi];
+          const isExisting = !plan.id.startsWith("local-");
+          let planId = plan.id;
+
+          if (isExisting) {
+            await supabase.from("unit_payment_plans").update({
+              plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).eq("id", planId);
+            // Delete old steps and re-insert
+            await supabase.from("unit_payment_plan_steps").delete().eq("plan_id", planId);
+          } else {
+            const { data: newPlan, error: planErr } = await supabase.from("unit_payment_plans").insert({
+              unit_id: unitId, plan_name: plan.plan_name, is_active: plan.is_active, sort_order: pi,
+            }).select("id").single();
+            if (planErr) throw planErr;
+            planId = newPlan.id;
+          }
+
+          if (plan.steps.length > 0) {
+            const stepsPayload = plan.steps.map((s, si) => ({
+              plan_id: planId, percentage: s.percentage, title: s.title,
+              subtitle: s.subtitle || null, sort_order: si,
+            }));
+            await supabase.from("unit_payment_plan_steps").insert(stepsPayload);
+          }
+        }
+      }
+
+      // Delete plans that were removed (for editing)
+      if (editingUnitId) {
+        const { data: dbPlans } = await supabase.from("unit_payment_plans").select("id").eq("unit_id", editingUnitId);
+        const keptIds = unitForm.payment_plans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
+        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        for (const d of toDelete) {
+          await supabase.from("unit_payment_plan_steps").delete().eq("plan_id", d.id);
+          await supabase.from("unit_payment_plans").delete().eq("id", d.id);
+        }
+      }
+
+      toast.success(editingUnitId ? "Unit updated!" : "Unit added!");
       setUnitDialogOpen(false);
       fetchUnits(projId);
     } catch (err: any) {
@@ -1052,12 +1136,132 @@ const CompanyProjectEditPage = () => {
                 />
               </div>
 
-              {/* Payment Plans - only for existing units */}
-              {editingUnitId && (
-                <div className="border-t border-border pt-4">
-                  <UnitPaymentPlanManager unitId={editingUnitId} unitName={unitForm.unit_name} />
+              {/* Inline Payment Plans */}
+              <div className="border-t border-border pt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-foreground font-medium flex items-center gap-1.5">
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Payment Plans
+                  </Label>
+                  <Button
+                    type="button" variant="outline" size="sm" className="h-7 text-xs"
+                    onClick={() => {
+                      setUnitForm(prev => ({
+                        ...prev,
+                        payment_plans: [...prev.payment_plans, {
+                          id: `local-${Date.now()}`,
+                          plan_name: `Option ${prev.payment_plans.length + 1}`,
+                          is_active: true,
+                          steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                        }],
+                      }));
+                    }}
+                  >
+                    <Plus className="h-3 w-3 mr-1" /> Add Plan
+                  </Button>
                 </div>
-              )}
+
+                {unitForm.payment_plans.length === 0 && (
+                  <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options.</p>
+                )}
+
+                {unitForm.payment_plans.map((plan, planIdx) => (
+                  <div key={plan.id} className="border border-border rounded-lg bg-muted/20 p-3 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={plan.plan_name}
+                        onChange={(e) => {
+                          const updated = [...unitForm.payment_plans];
+                          updated[planIdx] = { ...updated[planIdx], plan_name: e.target.value };
+                          setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                        }}
+                        className="h-7 text-sm font-medium max-w-[180px] bg-secondary/50"
+                      />
+                      <label className="flex items-center gap-1.5 ml-auto text-xs text-muted-foreground cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={plan.is_active}
+                          onChange={() => {
+                            const updated = [...unitForm.payment_plans];
+                            updated[planIdx] = { ...updated[planIdx], is_active: !plan.is_active };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="rounded"
+                        />
+                        Active
+                      </label>
+                      <Button
+                        type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
+                        onClick={() => setUnitForm(prev => ({ ...prev, payment_plans: prev.payment_plans.filter((_, i) => i !== planIdx) }))}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                    {plan.steps.map((step, stepIdx) => (
+                      <div key={step.id} className="flex items-center gap-1.5">
+                        <Input
+                          type="number" placeholder="%" value={step.percentage || ""}
+                          onChange={(e) => {
+                            const updated = [...unitForm.payment_plans];
+                            const steps = [...updated[planIdx].steps];
+                            steps[stepIdx] = { ...steps[stepIdx], percentage: parseFloat(e.target.value) || 0 };
+                            updated[planIdx] = { ...updated[planIdx], steps };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="h-7 text-xs w-16 bg-secondary/50 text-center"
+                        />
+                        <Input
+                          placeholder="e.g. Down payment" value={step.title}
+                          onChange={(e) => {
+                            const updated = [...unitForm.payment_plans];
+                            const steps = [...updated[planIdx].steps];
+                            steps[stepIdx] = { ...steps[stepIdx], title: e.target.value };
+                            updated[planIdx] = { ...updated[planIdx], steps };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="h-7 text-xs bg-secondary/50 flex-1"
+                        />
+                        <Input
+                          placeholder="e.g. At signing" value={step.subtitle}
+                          onChange={(e) => {
+                            const updated = [...unitForm.payment_plans];
+                            const steps = [...updated[planIdx].steps];
+                            steps[stepIdx] = { ...steps[stepIdx], subtitle: e.target.value };
+                            updated[planIdx] = { ...updated[planIdx], steps };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                          className="h-7 text-xs bg-secondary/50 flex-1"
+                        />
+                        <Button
+                          type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive shrink-0"
+                          onClick={() => {
+                            const updated = [...unitForm.payment_plans];
+                            updated[planIdx] = { ...updated[planIdx], steps: updated[planIdx].steps.filter((_, i) => i !== stepIdx) };
+                            setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button" variant="ghost" size="sm" className="h-6 text-xs"
+                      onClick={() => {
+                        const updated = [...unitForm.payment_plans];
+                        updated[planIdx] = {
+                          ...updated[planIdx],
+                          steps: [...updated[planIdx].steps, { id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
+                        };
+                        setUnitForm(prev => ({ ...prev, payment_plans: updated }));
+                      }}
+                    >
+                      <Plus className="h-3 w-3 mr-1" /> Add Step
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
 
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setUnitDialogOpen(false)}>Cancel</Button>
