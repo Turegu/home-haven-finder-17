@@ -630,7 +630,7 @@ const PropertyDetailPage = () => {
                     )}
                     <div className="flex items-stretch gap-0 overflow-x-auto pb-1">
                       {plan.steps.map((step, idx) => {
-                        const StepIcon = getPaymentStepIcon(step.title, idx);
+                        const StepIcon = getPaymentStepIcon(step.title);
                         return (
                           <div key={step.id} className="flex items-stretch flex-shrink-0">
                             <div className="min-w-[130px] rounded-xl bg-muted/50 border border-border p-4 text-center flex flex-col items-center">
