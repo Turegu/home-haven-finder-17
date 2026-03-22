@@ -722,7 +722,7 @@ const CompanyPropertyEditPage = () => {
 
 /* ─── Reusable Form Select with Icon ─── */
 function FormSelect({
-  label, icon, value, onChange, options, placeholder,
+  label, icon, value, onChange, options, placeholder, fieldName, error,
 }: {
   label: string;
   icon: React.ReactNode;
@@ -730,14 +730,16 @@ function FormSelect({
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
+  fieldName?: string;
+  error?: boolean;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-field={fieldName}>
       <Label className="text-foreground font-medium flex items-center gap-1.5">
         {icon} {label}
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
+        <SelectTrigger className={`bg-secondary/50 ${error ? "ring-2 ring-destructive/70" : ""}`}><SelectValue placeholder={placeholder || "Select"} /></SelectTrigger>
         <SelectContent>
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
