@@ -29,6 +29,7 @@ type MembershipPackage = {
   has_company_agent_search: boolean;
   has_home_logo: boolean;
   has_company_profile: boolean;
+  has_ai_search: boolean;
   sort_order: number;
 };
 
