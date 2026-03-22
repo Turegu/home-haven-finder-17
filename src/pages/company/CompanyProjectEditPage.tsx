@@ -1035,6 +1035,21 @@ const CompanyProjectEditPage = () => {
                 </div>
               </div>
 
+              {/* Advertising Tags */}
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium flex items-center gap-1.5">
+                  <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {advertisingTagOptions.map((tag) => (
+                    <button key={tag} type="button" onClick={() => updateUnitField("advertising_tags", unitForm.advertising_tags.includes(tag) ? unitForm.advertising_tags.filter(t => t !== tag) : [...unitForm.advertising_tags, tag])}
+                      className={`px-2 py-1 rounded-full text-[11px] font-medium border transition-colors ${unitForm.advertising_tags.includes(tag) ? "bg-primary text-primary-foreground border-primary" : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"}`}>
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setUnitDialogOpen(false)}>Cancel</Button>
                 <Button type="button" onClick={handleSubmitUnit} disabled={savingUnit}>
