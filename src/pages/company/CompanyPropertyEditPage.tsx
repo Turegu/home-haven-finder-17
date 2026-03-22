@@ -781,7 +781,8 @@ const CompanyPropertyEditPage = () => {
           </div>
         </section>
 
-        {/* ─── Payment Plans ─── */}
+        {/* ─── Payment Plans (Sale only) ─── */}
+        {!isRent && (
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
@@ -900,6 +901,7 @@ const CompanyPropertyEditPage = () => {
             </div>
           ))}
         </section>
+        )}
 
         {/* Submit */}
         <div className="flex justify-end gap-3">
