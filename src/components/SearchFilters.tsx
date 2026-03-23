@@ -78,10 +78,10 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
           <DialogContent className="sm:max-w-[540px] max-h-[85vh] flex flex-col p-0">
             <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
               <DialogTitle className="flex items-center justify-between">
-                More Filters
+                {t('searchFilters.moreFilters')}
                 {activeCount > 0 && (
                   <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-destructive">
-                    Clear All
+                    {t('searchFilters.clearAll')}
                   </Button>
                 )}
               </DialogTitle>
