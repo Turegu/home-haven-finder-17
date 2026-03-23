@@ -115,7 +115,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
           {!isSignedIn && (
             <>
               <div className="space-y-1.5">
-                <Label>Email <span className="text-destructive">*</span></Label>
+                <Label>{t('report.emailRequired')} <span className="text-destructive">*</span></Label>
                 <Input
                   type="email"
                   value={email}
