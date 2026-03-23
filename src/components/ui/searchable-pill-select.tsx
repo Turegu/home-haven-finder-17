@@ -8,6 +8,8 @@ interface SearchablePillSelectProps {
   selected: string[];
   onToggle: (value: string) => void;
   placeholder?: string;
+  /** Optional map from option value → display label (for i18n) */
+  labelMap?: Record<string, string>;
 }
 
 const SearchablePillSelect = ({
