@@ -67,12 +67,12 @@ const BlogsPage = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
+          <Link to="/" className="hover:text-primary">{t('common.home')}</Link>
           <span>/</span>
-          <span className="text-foreground">Blogs</span>
+          <span className="text-foreground">{t('pages.blog.blogs')}</span>
         </div>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">Blogs</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">{t('pages.blog.blogs')}</h1>
 
         {loading ? (
           <div className="text-center py-16 text-muted-foreground">Loading...</div>
