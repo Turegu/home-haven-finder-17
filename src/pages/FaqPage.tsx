@@ -16,6 +16,7 @@ interface FaqItem {
 }
 
 const FaqPage = () => {
+  const { t, i18n } = useTranslation();
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [loading, setLoading] = useState(true);
 
