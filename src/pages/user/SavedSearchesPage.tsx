@@ -83,8 +83,8 @@ const SavedSearchesPage = () => {
     if (params.propertyTypes) parts.push(`Type: ${params.propertyTypes}`);
     if (params.minPrice || params.maxPrice) parts.push(`Price: ${params.minPrice || "—"}–${params.maxPrice || "—"}`);
     if (params.rooms) parts.push(`Rooms: ${params.rooms}`);
-    if (params.q) parts.push(`Keyword: ${params.q}`);
-    return parts.length > 0 ? parts.join(" • ") : "No filters";
+    if (params.q) parts.push(`${t('saveSearch.keyword')}: ${params.q}`);
+    return parts.length > 0 ? parts.join(" • ") : t('userPages.noFilters');
   };
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
