@@ -87,8 +87,8 @@ const SavedPropertiesPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Heart className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No saved properties yet.</p>
-            <Link to="/buy"><Button variant="outline" className="mt-4">Browse Properties</Button></Link>
+            <p className="text-muted-foreground">{t('userPages.noSavedProperties')}</p>
+            <Link to="/buy"><Button variant="outline" className="mt-4">{t('userPages.browseProperties')}</Button></Link>
           </div>
         ) : (
           <>
