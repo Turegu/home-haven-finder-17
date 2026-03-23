@@ -53,6 +53,7 @@ const CompanyDashboardPage = () => {
   const [creditTopups, setCreditTopups] = useState(0);
   const [loading, setLoading] = useState(true);
   const [boostOpen, setBoostOpen] = useState(false);
+  const { t } = useTranslation();
   const { usage, limits } = useMembershipLimits(company?.id || null);
   const { openSalesWhatsApp } = useSalesContact();
 
