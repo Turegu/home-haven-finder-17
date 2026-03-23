@@ -19,7 +19,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle } from "lucide-react";
+import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle, Rocket } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
