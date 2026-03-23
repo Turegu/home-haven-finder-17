@@ -61,7 +61,7 @@ const PropertyRequestsPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Property Requests</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.propertyRequests')}</h1>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
