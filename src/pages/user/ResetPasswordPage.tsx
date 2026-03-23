@@ -66,17 +66,17 @@ const ResetPasswordPage = () => {
         </div>
         <form onSubmit={handleReset} className="space-y-4">
           <div className="space-y-2">
-            <Label>New Password</Label>
-            <div className="relative">
-              <Input type={show ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter new password" required />
-              <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShow(!show)}>
-                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>Confirm Password</Label>
-            <Input type={show ? "text" : "password"} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Confirm new password" required />
+             <Label>{t('auth.newPassword')}</Label>
+             <div className="relative">
+               <Input type={show ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder={t('auth.enterNewPassword')} required />
+               <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShow(!show)}>
+                 {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+               </button>
+             </div>
+           </div>
+           <div className="space-y-2">
+             <Label>{t('auth.confirmPassword')}</Label>
+             <Input type={show ? "text" : "password"} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder={t('auth.confirmNewPassword')} required />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Updating..." : "Update Password"}
