@@ -268,7 +268,7 @@ const ProjectDetailPage = () => {
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-6 flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
-          <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+          <Link to="/projects" className="hover:text-foreground transition-colors">{t('project.projects')}</Link>
           {project.province && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
