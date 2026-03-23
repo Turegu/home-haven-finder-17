@@ -75,7 +75,7 @@ const AgentDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Loading...</div>
+        <div className="text-center py-20 text-muted-foreground">{t('common.loading')}</div>
         <Footer />
       </div>
     );
