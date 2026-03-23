@@ -174,19 +174,19 @@ const AccountSettingsPage = () => {
 
         {/* Change Password */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Change Password</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('accountSettings.changePassword')}</h2>
           <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
             <div className="space-y-2">
-              <Label>New Password</Label>
+              <Label>{t('accountSettings.newPassword')}</Label>
               <div className="relative">
-                <Input type={showPw ? "text" : "password"} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Enter new password" required />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPw(!showPw)}>
+                <Input type={showPw ? "text" : "password"} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder={t('accountSettings.enterNewPassword')} required />
+                <button type="button" className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPw(!showPw)}>
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <Button type="submit" variant="outline" disabled={pwLoading}>
-              {pwLoading ? "Changing..." : "Change Password"}
+              {pwLoading ? t('accountSettings.changingPassword') : t('accountSettings.changePassword')}
             </Button>
           </form>
         </div>
@@ -195,37 +195,37 @@ const AccountSettingsPage = () => {
         <div className="bg-card rounded-xl border border-destructive/30 p-6 space-y-4">
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+            <h2 className="text-lg font-semibold text-destructive">{t('accountSettings.dangerZone')}</h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Once you delete your account, all your data including saved properties, searches, and comparisons will be permanently removed. This action cannot be undone.
+            {t('accountSettings.deleteWarning')}
           </p>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">Delete My Account</Button>
+              <Button variant="destructive" size="sm">{t('accountSettings.deleteAccount')}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>{t('accountSettings.areYouSure')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete your account and all associated data. This action cannot be undone.
+                  {t('accountSettings.deleteConfirm')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={async () => {
                     try {
                       await supabase.auth.signOut();
-                      toast.success("Account deletion request submitted. You have been logged out.");
+                      toast.success(t('accountSettings.deletionRequested'));
                       navigate("/");
                     } catch {
-                      toast.error("Something went wrong.");
+                      toast.error(t('common.error'));
                     }
                   }}
                 >
-                  Delete Account
+                  {t('accountSettings.deleteAccount')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
