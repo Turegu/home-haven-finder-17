@@ -36,6 +36,7 @@ interface CompanyData {
 }
 
 const AgentDashboardPage = () => {
+  const { t } = useTranslation();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [counts, setCounts] = useState({ properties: 0, projects: 0, events: 0, followers: 0 });
