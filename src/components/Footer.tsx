@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#1a1a1a] text-white">
       {/* App Download Section */}
-      <div className="border-b border-background/10">
+      <div className="border-b border-white/10">
         <div className="container mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="text-center md:text-left">
