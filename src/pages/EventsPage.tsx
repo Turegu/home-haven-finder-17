@@ -19,6 +19,7 @@ import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
 
 const EventsPage = () => {
+  const { t } = useTranslation();
   const { options: fo } = useFilterOptions('search');
   const eventTypes = fo['event_types'] || [];
   const routeLocation = useLocation();
