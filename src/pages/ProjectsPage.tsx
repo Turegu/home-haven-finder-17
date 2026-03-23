@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
+import { Link, useSearchParams } from 'react-router-dom';
 import { turkishIncludes } from '@/lib/utils';
 import {
   Search, LayoutGrid, List, Map,
