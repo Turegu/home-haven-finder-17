@@ -387,6 +387,26 @@ const AgentProfilePage = () => {
           </div>
         </section>
 
+        {/* ─── Boost Profile ─── */}
+        <section className="bg-card rounded-xl border border-border p-6">
+          <SectionHeader icon={<Rocket className="h-4 w-4" />} title="Boost My Profile" />
+          <p className="text-sm text-muted-foreground mb-4">
+            Boost your profile to appear at the top of agent search results and on the homepage spotlight.
+          </p>
+          {agent && agent.profile_classification === "boosted" && agent.boost_end_date && new Date(agent.boost_end_date) > new Date() ? (
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-primary font-medium flex items-center gap-1.5">
+                <Rocket className="h-4 w-4" /> Boosted until {new Date(agent.boost_end_date).toLocaleDateString()}
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setBoostDialogOpen(true)}>Extend Boost</Button>
+            </div>
+          ) : (
+            <Button onClick={() => setBoostDialogOpen(true)}>
+              <Rocket className="h-4 w-4 mr-2" /> Boost Profile
+            </Button>
+          )}
+        </section>
+
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving} size="lg">
             <Save className="h-4 w-4 mr-2" /> {saving ? "Saving..." : "Save Changes"}
