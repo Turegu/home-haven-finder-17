@@ -76,7 +76,7 @@ const NotificationsPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Bell className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No notifications found.</p>
+            <p className="text-muted-foreground">{t('userPages.noNotifications')}</p>
           </div>
         ) : (
           <>
