@@ -55,7 +55,7 @@ const ContactedPropertiesPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Contacted Properties</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.contactedProperties')}</h1>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
