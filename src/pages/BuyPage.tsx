@@ -395,7 +395,7 @@ const BuyPage = () => {
           {location.neighborhood && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
-              <span className="text-foreground font-medium">{location.neighborhood} {isRent ? 'For Rent' : 'For Sale'}</span>
+              <span className="text-foreground font-medium">{location.neighborhood} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
             </>
           )}
         </div>
