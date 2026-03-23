@@ -312,6 +312,32 @@
     "of": "من",
     "home": "الرئيسية"
   },
+  "detail": {
+    "about": "حول",
+    "iSpeak": "أتحدث",
+    "languagesWeSpeak": "اللغات التي نتحدثها",
+    "serviceAreas": "مناطق الخدمة",
+    "officeLocation": "موقع المكتب",
+    "openInMaps": "فتح في الخرائط",
+    "openInGoogleMaps": "فتح في خرائط جوجل",
+    "company": "الشركة",
+    "ourTeam": "فريقنا",
+    "properties": "العقارات",
+    "projects": "المشاريع",
+    "events": "الفعاليات",
+    "sale": "بيع",
+    "rent": "إيجار",
+    "team": "الفريق",
+    "noAgentsFound": "لم يتم العثور على وكلاء.",
+    "noPropertiesMatch": "لا توجد عقارات تطابق الفلاتر المحددة.",
+    "noEventsForAgent": "لم يتم العثور على فعاليات لهذا الوكيل.",
+    "noEventsForCompany": "لم يتم العثور على فعاليات لهذه الشركة.",
+    "agentNotFound": "لم يتم العثور على الوكيل.",
+    "companyNotFound": "لم يتم العثور على الشركة.",
+    "blogNotFound": "لم يتم العثور على المدونة.",
+    "loadingProperties": "جاري تحميل العقارات...",
+    "loadingProjects": "جاري تحميل المشاريع..."
+  },
   "pages": {
     "buy": {
       "title": "عقارات للبيع",
