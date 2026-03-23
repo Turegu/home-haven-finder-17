@@ -204,7 +204,7 @@ const AgentsPage = () => {
               onChange={(e) => setSelectedTown(e.target.value)}
               disabled={!selectedProvince}
             >
-              <option value="">City / Town</option>
+              <option value="">{t('filters.cityTown')}</option>
               {towns.map((t) => (
                 <option key={t.name} value={t.name}>{t.name}</option>
               ))}
