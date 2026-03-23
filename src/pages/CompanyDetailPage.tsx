@@ -191,11 +191,11 @@ const CompanyDetailPage = () => {
                   {/* Stats */}
                   <div className="flex items-center gap-4 mt-3 flex-wrap">
                     {[
-                      { icon: Users, label: 'Team', value: counts.agents },
-                      { icon: Home, label: 'Sale', value: counts.buy },
-                      { icon: Home, label: 'Rent', value: counts.rent },
-                      { icon: Building2, label: 'Projects', value: counts.projects },
-                      { icon: Calendar, label: 'Events', value: counts.events },
+                      { icon: Users, label: t('companyDetail.team'), value: counts.agents },
+                      { icon: Home, label: t('companyDetail.sale'), value: counts.buy },
+                      { icon: Home, label: t('companyDetail.rent'), value: counts.rent },
+                      { icon: Building2, label: t('companyDetail.projects'), value: counts.projects },
+                      { icon: Calendar, label: t('companyDetail.events'), value: counts.events },
                     ].map((s) => (
                       <div key={s.label} className="flex items-center gap-1.5 text-sm">
                         <s.icon className="h-3.5 w-3.5 text-primary" />
