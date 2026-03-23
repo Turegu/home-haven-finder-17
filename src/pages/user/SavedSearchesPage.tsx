@@ -124,8 +124,8 @@ const SavedSearchesPage = () => {
                     <p className="text-xs text-muted-foreground truncate">{getParamsSummary(item.search_params)}</p>
                      <p className="text-xs text-muted-foreground">{t('userPages.saved')}: {format(new Date(item.created_at), "MMM dd, yyyy")}</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => handleRunSearch(item)} className="gap-1 shrink-0">
-                    <Play className="h-3 w-3" /> Run
+                   <Button variant="outline" size="sm" onClick={() => handleRunSearch(item)} className="gap-1 shrink-0">
+                     <Play className="h-3 w-3" /> {t('userPages.run')}
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
