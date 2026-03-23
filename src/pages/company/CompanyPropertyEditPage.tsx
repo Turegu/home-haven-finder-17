@@ -898,7 +898,7 @@ const CompanyPropertyEditPage = () => {
                   setPaymentPlans(updated);
                 }}
               >
-                <Plus className="h-3 w-3 mr-1" /> Add Step
+                <Plus className="h-3 w-3 mr-1" /> {t("companyDashboard.addStep")}
               </Button>
             </div>
           ))}
