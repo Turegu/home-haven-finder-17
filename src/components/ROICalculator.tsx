@@ -22,6 +22,7 @@ const ROICalculator = ({
   currency = "USD",
   areaUnit = "m²",
 }: ROICalculatorProps) => {
+  const { t } = useTranslation();
   const { data: stats } = useMarketStats(neighbourhood, town, province);
 
   // Estimate monthly rent: use neighbourhood avg rent/m² * area, fallback to 5% of property value / 12
