@@ -107,7 +107,7 @@ const SavedPropertiesPage = () => {
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="ghost" size="sm" className="text-destructive">
-                            <Trash2 className="h-4 w-4 mr-1" /> Remove
+                            <Trash2 className="h-4 w-4 mr-1" /> {t('common.remove')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
