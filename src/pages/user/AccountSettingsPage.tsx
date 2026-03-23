@@ -91,7 +91,7 @@ const AccountSettingsPage = () => {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPw.length < 6) { toast.error("Password must be at least 6 characters"); return; }
+    if (newPw.length < 6) { toast.error(t('auth.passwordMinLength')); return; }
     setPwLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPw });
