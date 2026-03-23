@@ -206,7 +206,22 @@
     "projectType": "Project Type",
     "paymentPlan": "Payment Plan",
     "downloadBrochure": "Download Brochure",
-    "registerInterest": "Register Interest"
+    "registerInterest": "Register Interest",
+    "overview": "Overview",
+    "description": "Description",
+    "amenities": "Amenities",
+    "interiorAmenities": "Interior Amenities",
+    "exteriorAmenities": "Exterior Amenities",
+    "listingId": "Listing ID",
+    "type": "Type",
+    "startingPrice": "Starting Price",
+    "areaRange": "Area Range",
+    "noOfUnits": "No of Units",
+    "status": "Status",
+    "completion": "Completion",
+    "projects": "Projects",
+    "adId": "Ad ID",
+    "added": "Added"
   },
   "event": {
     "date": "Date",
