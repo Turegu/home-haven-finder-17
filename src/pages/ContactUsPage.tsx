@@ -401,7 +401,7 @@ const ContactUsPage = () => {
             </div>
             <Button type="submit" size="lg" disabled={sending} className="w-full md:w-auto gap-2">
               <Send className="h-4 w-4" />
-              {sending ? "Sending..." : "Send Message"}
+              {sending ? t('auth.sending') : t('pages.contact.send')}
             </Button>
           </form>
         </div>
