@@ -100,9 +100,9 @@ const AgentDetailPage = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors">{t('common.home')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to="/agents" className="hover:text-primary transition-colors">Agents</Link>
+          <Link to="/agents" className="hover:text-primary transition-colors">{t('nav.agents')}</Link>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground font-medium">{agent.name}</span>
         </div>
