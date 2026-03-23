@@ -853,7 +853,7 @@ const CompanyPropertyEditPage = () => {
                     className="h-7 text-xs w-16 bg-secondary/50 text-center"
                   />
                   <Input
-                    placeholder="e.g. Down payment" value={step.title}
+                    placeholder={t("companyDashboard.downPayment")} value={step.title}
                     onChange={(e) => {
                       const updated = [...paymentPlans];
                       const steps = [...(updated[planIdx].steps ?? [])];
