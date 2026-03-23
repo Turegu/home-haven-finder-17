@@ -75,9 +75,9 @@ const BlogsPage = () => {
         <h1 className="text-3xl font-bold text-foreground mb-8">{t('pages.blog.blogs')}</h1>
 
         {loading ? (
-          <div className="text-center py-16 text-muted-foreground">Loading...</div>
+          <div className="text-center py-16 text-muted-foreground">{t('common.loading')}</div>
         ) : blogs.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">No blogs published yet.</div>
+          <div className="text-center py-16 text-muted-foreground">{t('pages.blog.noBlogsYet')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.map(blog => (
