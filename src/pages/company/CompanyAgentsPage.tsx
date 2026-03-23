@@ -72,7 +72,7 @@ const CompanyAgentsPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("agents")
-      .select("id, name, email, phone, status, credit_balance, created_at")
+      .select("id, name, email, phone, status, credit_balance, created_at, profile_classification, boost_end_date")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
     if (error) toast.error("Failed to fetch agents");
