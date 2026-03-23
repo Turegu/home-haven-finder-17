@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LocationPicker from '@/components/LocationPicker';
@@ -12,6 +13,7 @@ import RentDurationDropdown from '@/components/RentDurationDropdown';
 import PropertyFiltersModal, { type PropertyMoreFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
 
 const HeroSearch = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'buy' | 'rent'>('buy');
   const [location, setLocation] = useState<{ province?: string; district?: string; neighborhood?: string }>({});
   const [keyword, setKeyword] = useState("");
@@ -62,7 +64,7 @@ const HeroSearch = () => {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Buy
+              {t('hero.buy')}
             </button>
             <button
               onClick={() => handleTabChange('rent')}
@@ -72,7 +74,7 @@ const HeroSearch = () => {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Rent
+              {t('hero.rent')}
             </button>
           </div>
 
@@ -85,20 +87,20 @@ const HeroSearch = () => {
                   type="text"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="Search Area, City, Address"
-                  className="w-full h-10 px-4 pr-8 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                  placeholder={t('hero.searchPlaceholder')}
+                  className="w-full h-10 px-4 pe-8 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 {keyword && (
-                  <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                  <button onClick={() => setKeyword('')} className="absolute end-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                     <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
             </div>
             <Button className="h-10 px-6 font-semibold shrink-0" onClick={handleSearch}>
-              <Search className="h-4 w-4 mr-1.5" />
-              Search
+              <Search className="h-4 w-4 me-1.5" />
+              {t('hero.search')}
             </Button>
           </div>
 
