@@ -85,7 +85,7 @@ const AgentDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Agent not found.</div>
+        <div className="text-center py-20 text-muted-foreground">{t('detail.agentNotFound')}</div>
         <Footer />
       </div>
     );
