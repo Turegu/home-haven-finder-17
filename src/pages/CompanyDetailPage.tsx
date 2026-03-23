@@ -243,9 +243,9 @@ const CompanyDetailPage = () => {
       {/* ── About Us — full-width prominent section ── */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-bold text-foreground mb-2">About {company.name}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-2">{t('companyDetail.about', { name: company.name })}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-            {company.about || `${company.name} is a trusted real estate company dedicated to helping clients find their ideal properties. With a team of experienced professionals and deep market knowledge, we provide personalized guidance for buying, selling, and renting properties across our service areas.`}
+            {company.about || t('companyDetail.defaultAbout', { name: company.name })}
           </p>
         </div>
       </div>
