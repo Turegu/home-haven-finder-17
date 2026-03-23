@@ -28,6 +28,7 @@ interface ReportPropertyDialogProps {
 }
 
 const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }: ReportPropertyDialogProps) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [email, setEmail] = useState("");
