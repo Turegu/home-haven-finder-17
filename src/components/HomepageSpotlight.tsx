@@ -112,8 +112,8 @@ export const TopAgentsSpotlight = () => {
 
                 {/* Company logo - bottom right */}
                 {a.companies?.logo_url && (
-                  <div className="absolute bottom-10 right-2.5 h-7 w-7 rounded-full overflow-hidden shadow-lg ring-1 ring-white/20">
-                    <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-full w-full object-cover" />
+                  <div className="absolute bottom-10 right-2.5 h-7 w-7 rounded-md overflow-hidden shadow-lg ring-1 ring-white/20">
+                    <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-full w-full object-contain" />
                   </div>
                 )}
 
@@ -179,7 +179,7 @@ export const TopCompaniesSpotlight = () => {
           >
             <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Logo area */}
-              <div className="relative aspect-square bg-secondary/50 flex items-center justify-center p-5 overflow-hidden">
+              <div className="relative aspect-[4/3] bg-secondary/50 flex items-center justify-center p-4 overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                   backgroundImage: "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
                   backgroundSize: "20px 20px"
