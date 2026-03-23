@@ -18,6 +18,7 @@ interface SearchFiltersProps {
 }
 
 export default function SearchFilters({ context, selectedFilters, onFiltersChange, quickFilterKeys, inline = false }: SearchFiltersProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useFilterCategories(context);
   const categories = data?.categories ?? [];
   const optionsByCategory = data?.optionsByCategory ?? {};
