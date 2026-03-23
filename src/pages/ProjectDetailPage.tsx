@@ -398,7 +398,7 @@ const ProjectDetailPage = () => {
 
                   {realAgentId && (
                     <div className="flex justify-center mb-3">
-                      <FollowButton type="agent" targetId={realAgentId} />
+                      <FollowButton type="agent" targetId={realAgentId} size="md" />
                     </div>
                   )}
 
@@ -434,7 +434,7 @@ const ProjectDetailPage = () => {
 
                   {realCompanyId && (
                     <div className="flex justify-center mb-3">
-                      <FollowButton type="company" targetId={realCompanyId} />
+                      <FollowButton type="company" targetId={realCompanyId} size="md" />
                     </div>
                   )}
                 </>

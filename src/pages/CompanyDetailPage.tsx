@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
+import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -260,13 +261,7 @@ const CompanyDetailPage = () => {
                   <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
                   Languages We Speak
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {allLanguages.map((lang) => (
-                    <span key={lang} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
-                      {lang}
-                    </span>
-                  ))}
-                </div>
+                <ExpandablePillList items={allLanguages} maxVisible={6} />
               </div>
             )}
 
@@ -277,12 +272,28 @@ const CompanyDetailPage = () => {
                   <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
                   Service Areas
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {company.service_areas.map((area) => (
-                    <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
-                      {area}
+                <ExpandablePillList items={company.service_areas} maxVisible={6} />
+              </div>
+            )}
+
+            {/* Office Location Map */}
+            {company.pin_location && (
+              <div className="bg-card rounded-xl border border-border overflow-hidden">
+                <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground px-5 pt-5 pb-3">
+                  <Building2 className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
+                  Office Location
+                </h3>
+                <div
+                  className="h-[200px] cursor-pointer relative group"
+                  onClick={handleMapClick}
+                  title="Click to open in Google Maps"
+                >
+                  <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-3">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
+                      <MapPin className="h-3 w-3 text-primary" /> Open in Google Maps
                     </span>
-                  ))}
+                  </div>
                 </div>
               </div>
             )}

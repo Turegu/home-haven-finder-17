@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
+import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -237,13 +238,7 @@ const AgentDetailPage = () => {
                   <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
                   I Speak
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {agent.languages.map((lang) => (
-                    <span key={lang} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
-                      {lang}
-                    </span>
-                  ))}
-                </div>
+                <ExpandablePillList items={agent.languages} maxVisible={6} />
               </div>
             )}
 
@@ -254,13 +249,7 @@ const AgentDetailPage = () => {
                   <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
                   Service Areas
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {agent.service_areas.map((area) => (
-                    <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
-                      {area}
-                    </span>
-                  ))}
-                </div>
+                <ExpandablePillList items={agent.service_areas} maxVisible={6} />
               </div>
             )}
           </aside>
