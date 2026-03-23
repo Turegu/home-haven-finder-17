@@ -409,7 +409,7 @@ const PropertyDetailPage = () => {
             <iframe src={property.view360Link} className="w-full h-full border-0" allow="fullscreen; vr" allowFullScreen title="360° Virtual Tour" />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Globe className="h-10 w-10 mx-auto mb-2 opacity-40" />No 360° tour available for this listing.</div>
+              <div className="text-center"><Globe className="h-10 w-10 mx-auto mb-2 opacity-40" />{t('property.no360Tour')}</div>
             </div>
           )}
         </div>
