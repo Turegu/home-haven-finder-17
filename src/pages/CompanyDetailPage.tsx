@@ -110,7 +110,7 @@ const CompanyDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Loading...</div>
+        <div className="text-center py-20 text-muted-foreground">{t('companyDetail.loading')}</div>
         <Footer />
       </div>
     );
