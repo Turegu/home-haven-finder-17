@@ -19,6 +19,7 @@ interface Notification {
 }
 
 const CompanyNotificationsPage = () => {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
