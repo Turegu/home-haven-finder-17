@@ -19,6 +19,7 @@ interface UserNotification {
 const PAGE_SIZE = 15;
 
 const NotificationsPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<UserNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
