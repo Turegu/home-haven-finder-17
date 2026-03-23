@@ -374,11 +374,11 @@ const ProjectsPage = () => {
 
                 <div className="flex items-center justify-between pt-3 border-t border-border mt-3">
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-primary">{moreFilterCount}</span> of {extAmenityOptions.length + intAmenityOptions.length} selected
+                    <span className="font-medium text-primary">{moreFilterCount}</span> {t('projectsPage.of')} {extAmenityOptions.length + intAmenityOptions.length} {t('projectsPage.selected')}
                   </p>
                   <Button onClick={() => { setFilterOpen(false); setAmenitySearch(''); }}>
-                    <Check className="h-4 w-4 mr-1.5" />
-                    Done
+                    <Check className="h-4 w-4 me-1.5" />
+                    {t('projectsPage.done')}
                   </Button>
                 </div>
               </DialogContent>
