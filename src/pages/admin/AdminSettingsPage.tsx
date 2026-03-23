@@ -24,13 +24,6 @@ const AdminSettingsPage = () => {
   const [aiSearchEnabled, setAiSearchEnabled] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
 
-  // Boost cost settings
-  const [boostCompany3, setBoostCompany3] = useState("20");
-  const [boostCompany6, setBoostCompany6] = useState("35");
-  const [boostCompany12, setBoostCompany12] = useState("60");
-  const [boostAgent3, setBoostAgent3] = useState("15");
-  const [boostAgent6, setBoostAgent6] = useState("25");
-  const [boostAgent12, setBoostAgent12] = useState("45");
 
   // Pattern
   const [currentPattern, setCurrentPattern] = useState("");
