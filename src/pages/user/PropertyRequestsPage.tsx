@@ -84,13 +84,13 @@ const PropertyRequestsPage = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">SNo</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Enquiry Type</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Property Type</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Province</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Budget</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Status</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Date</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.sno')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.enquiryType')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('filters.propertyType')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('filters.province')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.budget')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('property.status')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
