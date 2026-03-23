@@ -542,11 +542,11 @@ const PropertyDetailPage = () => {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <BedDouble className="h-4 w-4" />
-                    {property.bedrooms} Bedrooms
+                    {property.bedrooms} {t('property.bedrooms')}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Bath className="h-4 w-4" />
-                    {property.bathrooms} Bathrooms
+                    {property.bathrooms} {t('property.bathrooms')}
                   </span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
