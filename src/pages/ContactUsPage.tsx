@@ -336,7 +336,7 @@ const ContactUsPage = () => {
                 </Label>
                 <Input
                   id="name"
-                  placeholder="Your full name"
+                  placeholder={t('pages.contact.yourFullName')}
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   required
