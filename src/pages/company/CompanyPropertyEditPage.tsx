@@ -788,7 +788,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Payment Plans</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.paymentPlans")}</h2>
             <Button
               type="button" variant="outline" size="sm" className="h-7 text-xs ml-auto"
               onClick={() => setPaymentPlans(prev => [...prev, {
