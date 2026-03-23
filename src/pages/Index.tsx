@@ -2,6 +2,7 @@ import { ArrowRight, MapPin, ExternalLink } from 'lucide-react';
 import FeaturedProjectCard from '@/components/FeaturedProjectCard';
 import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
 import { TopAgentsSpotlight, TopCompaniesSpotlight } from '@/components/HomepageSpotlight';
@@ -25,6 +26,7 @@ interface CmsContent {
 
 // Homepage component
 const Index = () => {
+  const { t } = useTranslation();
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
   const { data: locations = [] } = useFeaturedLocations();
   const { data: savedIds } = useSavedPropertyIds();
@@ -170,11 +172,11 @@ const Index = () => {
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{fpr.title || "Featured Projects"}</h2>
-              <p className="text-sm text-muted-foreground mt-1">{fpr.tagline || "New developments & off-plan projects"}</p>
+              <h2 className="text-2xl font-bold text-foreground">{fpr.title || t('home.featuredProjects')}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{fpr.tagline || t('home.featuredProjectsTagline')}</p>
             </div>
             <Link to="/projects" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              View All <ArrowRight className="h-4 w-4" />
+              {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -189,11 +191,11 @@ const Index = () => {
       <section className="container mx-auto px-4 py-14">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">{fp.title || "Featured Properties"}</h2>
-            <p className="text-sm text-muted-foreground mt-1">{fp.tagline || "Handpicked properties for you"}</p>
+            <h2 className="text-2xl font-bold text-foreground">{fp.title || t('home.featuredProperties')}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{fp.tagline || t('home.featuredPropertiesTagline')}</p>
           </div>
           <Link to="/buy" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-            View All <ArrowRight className="h-4 w-4" />
+            {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
           </Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -213,8 +215,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{fl.title || "Featured Locations"}</h2>
-              <p className="text-sm text-muted-foreground mt-1">{fl.tagline || "Find Your Neighborhood"}</p>
+              <h2 className="text-2xl font-bold text-foreground">{fl.title || t('home.featuredLocations')}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{fl.tagline || t('home.featuredLocationsTagline')}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -267,6 +269,7 @@ const Index = () => {
 
 // Hero banner slideshow component
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
+  const { t } = useTranslation();
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   const images = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -293,10 +296,10 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="relative z-10 text-center px-4 pb-14 pt-16">
         <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
-          {hero?.title || "Your Property, Our Priority"}
+          {hero?.title || t('hero.defaultTitle')}
         </h1>
         <p className="text-white/80 text-sm md:text-base mb-4 font-light">
-          {hero?.subtitle || "Find your dream property across the Middle East & Turkey"}
+          {hero?.subtitle || t('hero.defaultSubtitle')}
         </p>
         {hero?.enable_link && hero?.link_text && (
           <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors cursor-pointer">

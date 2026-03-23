@@ -1,0 +1,303 @@
+{
+  "nav": {
+    "buy": "شراء",
+    "rent": "إيجار",
+    "projects": "مشاريع",
+    "events": "فعاليات",
+    "propertyRequest": "طلب عقار",
+    "agents": "وكلاء",
+    "contactUs": "اتصل بنا",
+    "blogs": "المدونة",
+    "advertiseWithUs": "أعلن معنا",
+    "loginRegister": "تسجيل الدخول / التسجيل",
+    "logout": "تسجيل الخروج",
+    "myAccount": "حسابي"
+  },
+  "userMenu": {
+    "dashboard": "لوحة التحكم",
+    "accountSettings": "إعدادات الحساب",
+    "followedAgents": "الوكلاء المتابَعون",
+    "savedProperties": "العقارات المحفوظة",
+    "savedSearches": "عمليات البحث المحفوظة",
+    "compareList": "قائمة المقارنة",
+    "notifications": "الإشعارات",
+    "contactedProperties": "العقارات المُتواصَل معها",
+    "propertyRequests": "طلبات العقارات"
+  },
+  "header": {
+    "notifications": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "noNewNotifications": "لا توجد إشعارات جديدة",
+    "viewAllNotifications": "عرض جميع الإشعارات",
+    "savedProperties": "العقارات المحفوظة",
+    "saved": "محفوظ",
+    "noSavedProperties": "لا توجد عقارات محفوظة",
+    "viewAllSavedProperties": "عرض جميع العقارات المحفوظة",
+    "compareList": "قائمة المقارنة",
+    "noPropertiesToCompare": "لا توجد عقارات للمقارنة",
+    "compareAndAnalyse": "مقارنة وتحليل",
+    "remove": "إزالة"
+  },
+  "hero": {
+    "defaultTitle": "عقارك، أولويتنا",
+    "defaultSubtitle": "ابحث عن عقار أحلامك في الشرق الأوسط وتركيا",
+    "buy": "شراء",
+    "rent": "إيجار",
+    "searchPlaceholder": "ابحث عن منطقة، مدينة، عنوان",
+    "search": "بحث"
+  },
+  "filters": {
+    "propertyType": "نوع العقار",
+    "price": "السعر",
+    "area": "المساحة",
+    "rooms": "الغرف",
+    "bathrooms": "الحمامات",
+    "rentDuration": "مدة الإيجار",
+    "moreFilters": "مزيد من الفلاتر",
+    "minPrice": "أقل سعر",
+    "maxPrice": "أعلى سعر",
+    "minArea": "أقل مساحة",
+    "maxArea": "أعلى مساحة",
+    "apply": "تطبيق",
+    "reset": "إعادة تعيين",
+    "clearAll": "مسح الكل",
+    "noResults": "لا توجد نتائج",
+    "results": "نتائج",
+    "sortBy": "ترتيب حسب",
+    "newest": "الأحدث",
+    "priceAsc": "السعر: من الأقل للأعلى",
+    "priceDesc": "السعر: من الأعلى للأقل",
+    "furniture": "الأثاث",
+    "propertyAge": "عمر العقار",
+    "parking": "مواقف السيارات",
+    "floorLevel": "الطابق",
+    "interiorAmenities": "المرافق الداخلية",
+    "exteriorAmenities": "المرافق الخارجية",
+    "keyword": "كلمة مفتاحية",
+    "location": "الموقع",
+    "province": "المحافظة",
+    "district": "المنطقة",
+    "neighborhood": "الحي",
+    "selectProvince": "اختر المحافظة",
+    "selectDistrict": "اختر المنطقة",
+    "selectNeighborhood": "اختر الحي",
+    "allTypes": "جميع الأنواع",
+    "searchFilters": "فلاتر البحث",
+    "gridView": "عرض شبكي",
+    "listView": "عرض قائمة",
+    "mapView": "عرض خريطة"
+  },
+  "home": {
+    "featuredProjects": "مشاريع مميزة",
+    "featuredProjectsTagline": "مشاريع جديدة وعقارات على الخارطة",
+    "featuredProperties": "عقارات مميزة",
+    "featuredPropertiesTagline": "عقارات مختارة لك",
+    "featuredLocations": "مواقع مميزة",
+    "featuredLocationsTagline": "اعثر على حيّك المفضل",
+    "viewAll": "عرض الكل",
+    "topAgents": "أفضل الوكلاء",
+    "topCompanies": "أفضل الشركات"
+  },
+  "property": {
+    "description": "الوصف",
+    "details": "التفاصيل",
+    "amenities": "المرافق",
+    "location": "الموقع",
+    "nearbyPlaces": "الأماكن القريبة",
+    "contactAgent": "تواصل مع الوكيل",
+    "requestInfo": "طلب معلومات",
+    "share": "مشاركة",
+    "save": "حفظ",
+    "compare": "مقارنة",
+    "report": "إبلاغ",
+    "bedrooms": "غرف النوم",
+    "bathrooms": "الحمامات",
+    "area": "المساحة",
+    "propertyType": "نوع العقار",
+    "purpose": "الغرض",
+    "forSale": "للبيع",
+    "forRent": "للإيجار",
+    "furniture": "الأثاث",
+    "parking": "مواقف السيارات",
+    "floorLevel": "الطابق",
+    "titleDeed": "سند الملكية",
+    "propertyAge": "عمر العقار",
+    "orientation": "الاتجاه",
+    "virtualTour": "جولة افتراضية",
+    "videoTour": "جولة فيديو",
+    "floorPlans": "مخططات الطوابق",
+    "similarProperties": "عقارات مشابهة",
+    "viewAllPhotos": "عرض جميع الصور",
+    "premium": "مميز",
+    "featured": "بارز",
+    "new": "جديد",
+    "listedBy": "مُدرج بواسطة",
+    "openHouse": "بيت مفتوح",
+    "monthlyRent": "إيجار شهري",
+    "yearlyRent": "إيجار سنوي"
+  },
+  "project": {
+    "developer": "المطور",
+    "completionDate": "تاريخ الإنجاز",
+    "units": "الوحدات",
+    "startingFrom": "يبدأ من",
+    "projectStatus": "حالة المشروع",
+    "projectType": "نوع المشروع",
+    "paymentPlan": "خطة الدفع",
+    "downloadBrochure": "تحميل الكتيب",
+    "registerInterest": "تسجيل الاهتمام"
+  },
+  "event": {
+    "date": "التاريخ",
+    "time": "الوقت",
+    "eventType": "نوع الفعالية",
+    "entryType": "نوع الدخول",
+    "free": "مجاني",
+    "paid": "مدفوع",
+    "organizer": "المنظم",
+    "registerNow": "سجل الآن",
+    "viewDetails": "عرض التفاصيل"
+  },
+  "footer": {
+    "getApp": "حمّل تطبيق Turegu",
+    "getAppDescription": "ابحث عن العقارات، احفظ المفضلة، واحصل على إشعارات بالعقارات الجديدة — كل ذلك من هاتفك.",
+    "downloadAppStore": "تحميل من",
+    "appStore": "App Store",
+    "getItOn": "احصل عليه من",
+    "googlePlay": "Google Play",
+    "company": "الشركة",
+    "aboutUs": "من نحن",
+    "contact": "اتصل بنا",
+    "explore": "استكشف",
+    "resources": "الموارد",
+    "blog": "المدونة",
+    "faq": "الأسئلة الشائعة",
+    "mortgageBanks": "بنوك التمويل العقاري",
+    "legal": "القانونية",
+    "termsOfService": "شروط الخدمة",
+    "privacyPolicy": "سياسة الخصوصية",
+    "adminPanel": "لوحة الإدارة",
+    "companyDashboard": "لوحة تحكم الشركة",
+    "agentPortal": "بوابة الوكيل",
+    "allRightsReserved": "جميع الحقوق محفوظة"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "submit": "إرسال",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "yes": "نعم",
+    "no": "لا",
+    "or": "أو",
+    "and": "و",
+    "all": "الكل",
+    "none": "لا شيء",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "draft": "مسودة",
+    "pending": "قيد الانتظار",
+    "noData": "لا توجد بيانات",
+    "searchPlaceholder": "بحث...",
+    "viewMore": "عرض المزيد",
+    "viewLess": "عرض أقل",
+    "showAll": "عرض الكل",
+    "seeAll": "مشاهدة الكل",
+    "readMore": "اقرأ المزيد",
+    "viewAll": "عرض الكل"
+  },
+  "pages": {
+    "buy": {
+      "title": "عقارات للبيع",
+      "subtitle": "ابحث عن عقار أحلامك"
+    },
+    "rent": {
+      "title": "عقارات للإيجار",
+      "subtitle": "ابحث عن إيجارك المثالي"
+    },
+    "projects": {
+      "title": "المشاريع",
+      "subtitle": "اكتشف مشاريع التطوير الجديدة"
+    },
+    "events": {
+      "title": "الفعاليات",
+      "subtitle": "فعاليات عقارية بالقرب منك"
+    },
+    "agents": {
+      "title": "الوكلاء",
+      "subtitle": "ابحث عن متخصصي العقارات"
+    },
+    "blog": {
+      "title": "المدونة",
+      "subtitle": "أخبار ورؤى عقارية"
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "subtitle": "اعثر على إجابات للأسئلة الشائعة"
+    },
+    "contact": {
+      "title": "اتصل بنا",
+      "subtitle": "تواصل مع فريقنا",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "message": "الرسالة",
+      "send": "إرسال الرسالة",
+      "companyName": "اسم الشركة"
+    },
+    "advertise": {
+      "title": "أعلن معنا",
+      "subtitle": "الوصول إلى ملايين الباحثين عن العقارات"
+    },
+    "terms": {
+      "title": "شروط الخدمة"
+    },
+    "privacy": {
+      "title": "سياسة الخصوصية"
+    },
+    "mortgageBanks": {
+      "title": "بنوك التمويل العقاري",
+      "subtitle": "قارن خيارات التمويل العقاري"
+    },
+    "propertyRequest": {
+      "title": "طلب عقار",
+      "subtitle": "أخبرنا عما تبحث عنه"
+    },
+    "notFound": {
+      "title": "الصفحة غير موجودة",
+      "subtitle": "الصفحة التي تبحث عنها غير موجودة",
+      "goHome": "العودة للصفحة الرئيسية"
+    }
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "register": "التسجيل",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "createAccount": "إنشاء حساب"
+  },
+  "areaUnit": {
+    "meterSq": "متر مربع (م²)",
+    "feetSq": "قدم مربع (قدم²)"
+  }
+}

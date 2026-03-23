@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 const UserRegisterPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -56,35 +58,35 @@ const UserRegisterPage = () => {
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
             <Link to="/" className="text-3xl font-bold text-primary">turegu</Link>
-            <h1 className="text-2xl font-bold text-foreground mt-4">Sign Up</h1>
+            <h1 className="text-2xl font-bold text-foreground mt-4">{t('auth.signUp')}</h1>
           </div>
 
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>First Name</Label>
-                <Input value={form.firstName} onChange={e => update("firstName", e.target.value)} placeholder="Enter your first name" required />
+                <Label>{t('auth.firstName')}</Label>
+                <Input value={form.firstName} onChange={e => update("firstName", e.target.value)} placeholder={t('auth.firstName')} required />
               </div>
               <div className="space-y-2">
-                <Label>Last Name</Label>
-                <Input value={form.lastName} onChange={e => update("lastName", e.target.value)} placeholder="Enter your last name" required />
+                <Label>{t('auth.lastName')}</Label>
+                <Input value={form.lastName} onChange={e => update("lastName", e.target.value)} placeholder={t('auth.lastName')} required />
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
-              <Input type="email" value={form.email} onChange={e => update("email", e.target.value)} placeholder="Enter your email" required />
+              <Label>{t('auth.email')}</Label>
+              <Input type="email" value={form.email} onChange={e => update("email", e.target.value)} placeholder={t('auth.email')} required />
             </div>
             <div className="space-y-2">
-              <Label>Password</Label>
+              <Label>{t('auth.password')}</Label>
               <div className="relative">
-                <Input type={showPassword ? "text" : "password"} value={form.password} onChange={e => update("password", e.target.value)} placeholder="Create your password" required />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPassword(!showPassword)}>
+                <Input type={showPassword ? "text" : "password"} value={form.password} onChange={e => update("password", e.target.value)} placeholder={t('auth.password')} required />
+                <button type="button" className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating Account..." : "Create Account"}
+              {loading ? `${t('common.loading')}` : t('auth.createAccount')}
             </Button>
           </form>
 
@@ -94,7 +96,7 @@ const UserRegisterPage = () => {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            Already registered? <Link to="/login" className="text-primary hover:underline font-medium">Login here</Link>
+            {t('auth.alreadyHaveAccount')} <Link to="/login" className="text-primary hover:underline font-medium">{t('auth.signIn')}</Link>
           </p>
         </div>
       </div>

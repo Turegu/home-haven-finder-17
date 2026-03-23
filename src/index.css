@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -156,4 +156,18 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+}
+
+[dir="rtl"] .font-display {
+  font-family: 'Noto Sans Arabic', 'Playfair Display', serif;
+}
+
+/* RTL arrow flip */
+[dir="rtl"] .rtl\:rotate-180 {
+  transform: rotate(180deg);
 }

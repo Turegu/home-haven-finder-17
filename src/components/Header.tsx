@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Globe, ChevronDown, Ruler, Bell, Heart, Layers,
   Menu, X, User, LogOut, Settings, Users2, Search,
@@ -21,11 +22,12 @@ import {
 } from '@/hooks/useHeaderData';
 
 const AREA_UNITS = [
-  { label: 'Meter Sq. (m²)', value: 'm²' },
-  { label: 'Feet Sq. (ft²)', value: 'ft²' },
+  { labelKey: 'areaUnit.meterSq', value: 'm²' },
+  { labelKey: 'areaUnit.feetSq', value: 'ft²' },
 ];
 
 const Header = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -108,6 +110,7 @@ const Header = () => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [openDropdown]);
+
   const markNotificationRead = async (notifId: string) => {
     await supabase.from("user_notifications").update({ is_read: true }).eq("id", notifId);
     queryClient.invalidateQueries({ queryKey: ['header-notifications'] });
@@ -151,7 +154,15 @@ const Header = () => {
     return <Bell className="h-4 w-4 text-primary" />;
   };
 
-  const selectLang = (lang: typeof languages[0]) => { setSelectedLang(lang); localStorage.setItem('selectedLangCode', lang.code); setOpenDropdown(null); };
+  const selectLang = (lang: typeof languages[0]) => {
+    setSelectedLang(lang);
+    localStorage.setItem('selectedLangCode', lang.code);
+    // Sync i18n language
+    if (lang.code === 'ar' || lang.code === 'en') {
+      i18n.changeLanguage(lang.code);
+    }
+    setOpenDropdown(null);
+  };
   const selectCurrency = (currency: typeof currencies[0]) => { setSelectedCurrency(currency); localStorage.setItem('selectedCurrencyCode', currency.code); setOpenDropdown(null); };
   const selectArea = (unit: typeof AREA_UNITS[0]) => { setSelectedArea(unit); localStorage.setItem('selectedAreaUnit', unit.value); window.dispatchEvent(new Event('area-unit-changed')); setOpenDropdown(null); };
 
@@ -162,12 +173,12 @@ const Header = () => {
   };
 
   const navLinks = [
-    { label: 'Buy', to: '/buy' },
-    { label: 'Rent', to: '/rent' },
-    { label: 'Projects', to: '/projects' },
-    { label: 'Events', to: '/events' },
-    { label: 'Property Request', to: '/property-request' },
-    { label: 'Agents', to: '/agents' },
+    { label: t('nav.buy'), to: '/buy' },
+    { label: t('nav.rent'), to: '/rent' },
+    { label: t('nav.projects'), to: '/projects' },
+    { label: t('nav.events'), to: '/events' },
+    { label: t('nav.propertyRequest'), to: '/property-request' },
+    { label: t('nav.agents'), to: '/agents' },
   ];
 
   const countMap: Record<string, number> = {
@@ -178,15 +189,15 @@ const Header = () => {
   };
 
   const userMenuLinks = [
-    { label: 'Dashboard', to: '/account', icon: LayoutDashboard },
-    { label: 'Account Settings', to: '/account/settings', icon: Settings },
-    { label: 'Followed Agents', to: '/account/followed-agents', icon: Users2 },
-    { label: 'Saved Properties', to: '/account/saved-properties', icon: Heart },
-    { label: 'Saved Searches', to: '/account/saved-searches', icon: Search },
-    { label: 'Compare List', to: '/account/compare', icon: Layers },
-    { label: 'Notifications', to: '/account/notifications', icon: Bell },
-    { label: 'Contacted Properties', to: '/account/contacted', icon: MessageSquare },
-    { label: 'Property Requests', to: '/account/requests', icon: FileText },
+    { label: t('userMenu.dashboard'), to: '/account', icon: LayoutDashboard },
+    { label: t('userMenu.accountSettings'), to: '/account/settings', icon: Settings },
+    { label: t('userMenu.followedAgents'), to: '/account/followed-agents', icon: Users2 },
+    { label: t('userMenu.savedProperties'), to: '/account/saved-properties', icon: Heart },
+    { label: t('userMenu.savedSearches'), to: '/account/saved-searches', icon: Search },
+    { label: t('userMenu.compareList'), to: '/account/compare', icon: Layers },
+    { label: t('userMenu.notifications'), to: '/account/notifications', icon: Bell },
+    { label: t('userMenu.contactedProperties'), to: '/account/contacted', icon: MessageSquare },
+    { label: t('userMenu.propertyRequests'), to: '/account/requests', icon: FileText },
   ];
 
   return (
@@ -203,9 +214,9 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {openDropdown === 'lang' && languages.length > 0 && (
-                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[180px] py-1 z-[60]">
+                <div className="absolute top-full start-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[180px] py-1 z-[60]">
                   {languages.map(lang => (
-                    <button key={lang.id} onClick={() => selectLang(lang)} className={cn("w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2", selectedLang?.id === lang.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
+                    <button key={lang.id} onClick={() => selectLang(lang)} className={cn("w-full text-start px-4 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2", selectedLang?.id === lang.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
                       {lang.name}
                     </button>
                   ))}
@@ -221,9 +232,9 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {openDropdown === 'currency' && currencies.length > 0 && (
-                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[260px] py-1 z-[60]">
+                <div className="absolute top-full start-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[260px] py-1 z-[60]">
                   {currencies.map(curr => (
-                    <button key={curr.id} onClick={() => selectCurrency(curr)} className={cn("w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors", selectedCurrency?.id === curr.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
+                    <button key={curr.id} onClick={() => selectCurrency(curr)} className={cn("w-full text-start px-4 py-2 text-sm hover:bg-accent transition-colors", selectedCurrency?.id === curr.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
                       {curr.name} ({curr.symbol})
                     </button>
                   ))}
@@ -239,10 +250,10 @@ const Header = () => {
                 <ChevronDown className="h-3 w-3" />
               </button>
               {openDropdown === 'area' && (
-                <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[170px] py-1 z-[60]">
+                <div className="absolute top-full start-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[170px] py-1 z-[60]">
                   {AREA_UNITS.map(unit => (
-                    <button key={unit.value} onClick={() => selectArea(unit)} className={cn("w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors", selectedArea.value === unit.value ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
-                      {unit.label}
+                    <button key={unit.value} onClick={() => selectArea(unit)} className={cn("w-full text-start px-4 py-2 text-sm hover:bg-accent transition-colors", selectedArea.value === unit.value ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
+                      {t(unit.labelKey)}
                     </button>
                   ))}
                 </div>
@@ -252,11 +263,11 @@ const Header = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link to="/contact-us" className="hover:opacity-80 transition-opacity">Contact Us</Link>
+            <Link to="/contact-us" className="hover:opacity-80 transition-opacity">{t('nav.contactUs')}</Link>
             <span className="opacity-50">|</span>
-            <Link to="/blog" className="hover:opacity-80 transition-opacity">Blogs</Link>
+            <Link to="/blog" className="hover:opacity-80 transition-opacity">{t('nav.blogs')}</Link>
             <span className="opacity-50">|</span>
-            <Link to="/advertise" className="hover:opacity-80 transition-opacity">Advertise With Us</Link>
+            <Link to="/advertise" className="hover:opacity-80 transition-opacity">{t('nav.advertiseWithUs')}</Link>
           </div>
         </div>
       </div>
@@ -270,7 +281,7 @@ const Header = () => {
 
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link key={link.label} to={link.to} className={cn("px-3 py-2 text-sm font-medium rounded-md transition-colors", location.pathname === link.to ? "text-primary bg-primary/10 font-semibold" : "text-foreground/80 hover:text-primary hover:bg-secondary")}>
+              <Link key={link.to} to={link.to} className={cn("px-3 py-2 text-sm font-medium rounded-md transition-colors", location.pathname === link.to ? "text-primary bg-primary/10 font-semibold" : "text-foreground/80 hover:text-primary hover:bg-secondary")}>
                 {link.label}
               </Link>
             ))}
@@ -285,7 +296,7 @@ const Header = () => {
                   setOpenDropdown(openDropdown === 'notifications' ? null : 'notifications');
                 }}
                 className="relative p-2 rounded-full hover:bg-secondary transition-colors"
-                aria-label="Notifications"
+                aria-label={t('header.notifications')}
               >
                 <Bell className="h-5 w-5 text-foreground/70" />
                 {unreadCount > 0 && (
@@ -295,12 +306,12 @@ const Header = () => {
                 )}
               </button>
               {openDropdown === 'notifications' && (
-                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
+                <div className="absolute top-full end-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
+                    <h3 className="text-sm font-semibold text-foreground">{t('header.notifications')}</h3>
                     {unreadCount > 0 && (
                       <button onClick={markAllRead} className="text-xs text-primary hover:underline">
-                        Mark all read
+                        {t('header.markAllRead')}
                       </button>
                     )}
                   </div>
@@ -308,7 +319,7 @@ const Header = () => {
                     {notifications.length === 0 ? (
                       <div className="px-4 py-8 text-center">
                         <Bell className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">No new notifications</p>
+                        <p className="text-sm text-muted-foreground">{t('header.noNewNotifications')}</p>
                       </div>
                     ) : (
                       notifications.map(n => (
@@ -344,7 +355,7 @@ const Header = () => {
                       onClick={() => setOpenDropdown(null)}
                       className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
                     >
-                      View All Notifications
+                      {t('header.viewAllNotifications')}
                     </Link>
                   </div>
                 </div>
@@ -358,7 +369,7 @@ const Header = () => {
                   setOpenDropdown(openDropdown === 'saved' ? null : 'saved');
                 }}
                 className="relative p-2 rounded-full hover:bg-secondary transition-colors"
-                aria-label="Saved Properties"
+                aria-label={t('header.savedProperties')}
               >
                 <Heart className="h-5 w-5 text-foreground/70" />
                 {counts.savedProperties > 0 && (
@@ -368,16 +379,16 @@ const Header = () => {
                 )}
               </button>
               {openDropdown === 'saved' && (
-                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
+                <div className="absolute top-full end-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">Saved Properties</h3>
-                    <span className="text-xs text-muted-foreground">{counts.savedProperties} saved</span>
+                    <h3 className="text-sm font-semibold text-foreground">{t('header.savedProperties')}</h3>
+                    <span className="text-xs text-muted-foreground">{counts.savedProperties} {t('header.saved')}</span>
                   </div>
                   <div className="max-h-[360px] overflow-y-auto">
                     {savedItems.length === 0 ? (
                       <div className="px-4 py-8 text-center">
                         <Heart className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">No saved properties</p>
+                        <p className="text-sm text-muted-foreground">{t('header.noSavedProperties')}</p>
                       </div>
                     ) : (
                       savedItems.map(item => (
@@ -407,7 +418,7 @@ const Header = () => {
                             <button
                               onClick={(e) => { e.stopPropagation(); removeSavedProperty(item.id); }}
                               className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded shrink-0 self-center"
-                              title="Remove"
+                              title={t('header.remove')}
                             >
                               <X className="h-3.5 w-3.5 text-destructive" />
                             </button>
@@ -422,7 +433,7 @@ const Header = () => {
                       onClick={() => setOpenDropdown(null)}
                       className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
                     >
-                      View All Saved Properties
+                      {t('header.viewAllSavedProperties')}
                     </Link>
                   </div>
                 </div>
@@ -437,7 +448,7 @@ const Header = () => {
                   setOpenDropdown(openDropdown === 'compare' ? null : 'compare');
                 }}
                 className="relative p-2 rounded-full hover:bg-secondary transition-colors"
-                aria-label="Compare"
+                aria-label={t('header.compareList')}
               >
                 <Layers className="h-5 w-5 text-foreground/70" />
                 {counts.compare > 0 && (
@@ -447,16 +458,16 @@ const Header = () => {
                 )}
               </button>
               {openDropdown === 'compare' && (
-                <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
+                <div className="absolute top-full end-0 mt-1 bg-background border border-border rounded-lg shadow-xl w-[min(340px,calc(100vw-2rem))] z-[60] animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">Compare List</h3>
+                    <h3 className="text-sm font-semibold text-foreground">{t('header.compareList')}</h3>
                     <span className="text-xs text-muted-foreground">{counts.compare}/3</span>
                   </div>
                   <div className="max-h-[360px] overflow-y-auto">
                     {compareItems.length === 0 ? (
                       <div className="px-4 py-8 text-center">
                         <Layers className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">No properties to compare</p>
+                        <p className="text-sm text-muted-foreground">{t('header.noPropertiesToCompare')}</p>
                       </div>
                     ) : (
                       compareItems.map(item => (
@@ -486,7 +497,7 @@ const Header = () => {
                             <button
                               onClick={(e) => { e.stopPropagation(); removeCompareItem(item.id); }}
                               className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-destructive/10 rounded shrink-0 self-center"
-                              title="Remove"
+                              title={t('header.remove')}
                             >
                               <X className="h-3.5 w-3.5 text-destructive" />
                             </button>
@@ -501,7 +512,7 @@ const Header = () => {
                       onClick={() => setOpenDropdown(null)}
                       className="block text-center text-xs text-primary font-medium py-2.5 hover:bg-muted/50 transition-colors"
                     >
-                      Compare & Analyse
+                      {t('header.compareAndAnalyse')}
                     </Link>
                   </div>
                 </div>
@@ -512,7 +523,7 @@ const Header = () => {
             {currentUser ? (
               <div className="relative" ref={userRef}>
                 <button
-                  className="hidden md:flex items-center gap-1.5 ml-2 px-3 py-1.5 rounded-md border border-border hover:bg-secondary transition-colors"
+                  className="hidden md:flex items-center gap-1.5 ms-2 px-3 py-1.5 rounded-md border border-border hover:bg-secondary transition-colors"
                   onClick={() => setOpenDropdown(openDropdown === 'user' ? null : 'user')}
                 >
                   <User className="h-4 w-4 text-primary" />
@@ -520,7 +531,7 @@ const Header = () => {
                   <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
                 {openDropdown === 'user' && (
-                  <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[220px] py-1 z-[60]">
+                  <div className="absolute top-full end-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[220px] py-1 z-[60]">
                     <div className="px-4 py-2 border-b border-border">
                       <p className="text-sm font-medium text-foreground truncate">{currentUser.displayName}</p>
                       <p className="text-xs text-muted-foreground truncate">{currentUser.email}</p>
@@ -550,7 +561,7 @@ const Header = () => {
                         className="flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 w-full transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
-                        Logout
+                        {t('nav.logout')}
                       </button>
                     </div>
                   </div>
@@ -558,9 +569,9 @@ const Header = () => {
               </div>
             ) : (
               <Link to="/login">
-                <Button variant="outline" size="sm" className="hidden md:flex items-center gap-1.5 ml-2">
+                <Button variant="outline" size="sm" className="hidden md:flex items-center gap-1.5 ms-2">
                   <User className="h-4 w-4" />
-                  Login / Register
+                  {t('nav.loginRegister')}
                 </Button>
               </Link>
             )}
@@ -581,7 +592,7 @@ const Header = () => {
         <div className="lg:hidden bg-background border-t border-border">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
-              <Link key={link.label} to={link.to} className="px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-primary hover:bg-secondary rounded-md transition-colors" onClick={() => setMobileMenuOpen(false)}>
+              <Link key={link.to} to={link.to} className="px-3 py-2.5 text-sm font-medium text-foreground/80 hover:text-primary hover:bg-secondary rounded-md transition-colors" onClick={() => setMobileMenuOpen(false)}>
                 {link.label}
               </Link>
             ))}
@@ -589,17 +600,17 @@ const Header = () => {
               <>
                 <div className="border-t border-border my-2" />
                 <Link to="/account" className="px-3 py-2.5 text-sm font-medium text-primary" onClick={() => setMobileMenuOpen(false)}>
-                  My Account
+                  {t('nav.myAccount')}
                 </Link>
-                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="px-3 py-2.5 text-sm font-medium text-destructive text-left">
-                  Logout
+                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="px-3 py-2.5 text-sm font-medium text-destructive text-start">
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (
               <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" size="sm" className="mt-2 w-full justify-center gap-1.5">
                   <User className="h-4 w-4" />
-                  Login / Register
+                  {t('nav.loginRegister')}
                 </Button>
               </Link>
             )}

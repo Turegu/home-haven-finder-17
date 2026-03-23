@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { useDirection } from "@/hooks/useDirection";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -127,7 +128,9 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
+const App = () => {
+  useDirection();
+  return (
   <QueryClientProvider client={queryClient}>
     <AreaUnitProvider>
     <TooltipProvider>
@@ -245,6 +248,7 @@ const App = () => (
     </TooltipProvider>
     </AreaUnitProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
@@ -34,6 +35,7 @@ import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placehol
 const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
 
 const BuyPage = () => {
+  const { t } = useTranslation();
   const routerLocation = useLocation();
   const [searchParams] = useSearchParams();
 
@@ -135,7 +137,7 @@ const BuyPage = () => {
   }, [routerLocation.pathname, searchParams.toString()]);
 
 
-  const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
+  const title = isRent ? t('pages.rent.title') : t('pages.buy.title');
 
   // Query
   const { data, isLoading, isFetching } = usePropertySearch(committedParams);
@@ -288,8 +290,8 @@ const BuyPage = () => {
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Enter Search Area, City, Address"
-                className="w-full h-10 pl-3 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                placeholder={t('hero.searchPlaceholder')}
+                className="w-full h-10 ps-3 pe-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
               />
               {keyword && (
                 <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -327,8 +329,8 @@ const BuyPage = () => {
               isRent={isRent}
             />
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
-              {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
-              Search
+              {isFetching ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Search className="h-4 w-4 me-1" />}
+              {t('hero.search')}
             </Button>
           </div>
 
@@ -409,11 +411,11 @@ const BuyPage = () => {
               onChange={(e) => setSortBy(e.target.value)}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="newest">Newest First</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="area_desc">Area: Largest First</option>
-              <option value="area_asc">Area: Smallest First</option>
+              <option value="newest">{t('filters.newest')}</option>
+              <option value="price_asc">{t('filters.priceAsc')}</option>
+              <option value="price_desc">{t('filters.priceDesc')}</option>
+              <option value="area_desc">{t('filters.area')}: ↓</option>
+              <option value="area_asc">{t('filters.area')}: ↑</option>
             </select>
             <button
               onClick={() => {
