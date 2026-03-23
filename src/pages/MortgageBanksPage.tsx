@@ -294,7 +294,7 @@ const MortgageBanksPage = () => {
             {!selectedBankId && (
               <div className="text-center py-6 text-muted-foreground text-sm">
                 <Calculator className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                Select a bank above to see your mortgage breakdown
+                {t('mortgage.selectBankAbove')}
               </div>
             )}
           </div>
