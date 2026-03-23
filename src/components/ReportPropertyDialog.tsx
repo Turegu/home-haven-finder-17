@@ -124,7 +124,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Mobile number <span className="text-destructive">*</span></Label>
+                <Label>{t('report.phoneRequired')} <span className="text-destructive">*</span></Label>
                 <Input
                   type="tel"
                   value={phone}
