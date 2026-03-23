@@ -866,17 +866,17 @@ const PropertyDetailPage = () => {
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
                 <button onClick={() => { trackInquiryClick(id!, 'property', 'call'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Phone className="h-4 w-4" />
-                  Call
+                  {t('property.call')}
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button onClick={() => { trackInquiryClick(id!, 'property', 'email'); setEmailDialogOpen(true); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Mail className="h-4 w-4" />
-                  Email
+                  {t('property.email')}
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button onClick={() => { trackInquiryClick(id!, 'property', 'whatsapp'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
-                  WhatsApp
+                  {t('property.whatsApp')}
                 </button>
               </div>
             </div>
