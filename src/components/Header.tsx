@@ -5,6 +5,7 @@ import {
   Menu, X, User, LogOut, Settings, Users2, Search,
   MessageSquare, FileText, MapPin
 } from 'lucide-react';
+import DarkModeToggle from '@/components/DarkModeToggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguages, useCurrencies } from '@/hooks/useAppData';
