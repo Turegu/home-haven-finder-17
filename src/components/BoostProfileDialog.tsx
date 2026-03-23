@@ -63,8 +63,10 @@ const BoostProfileDialog = ({
       ];
       setOptions(opts);
 
-      // Fetch balance
-      if (balanceSource === "company") {
+      // Fetch balance (skip for admin boost)
+      if (isAdminBoost) {
+        setBalance(Infinity);
+      } else if (balanceSource === "company") {
         const { data } = await supabase.from("companies").select("credit_balance").eq("id", balanceSourceId).maybeSingle();
         setBalance(data?.credit_balance || 0);
       } else {
