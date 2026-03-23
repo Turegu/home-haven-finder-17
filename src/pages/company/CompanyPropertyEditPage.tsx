@@ -579,12 +579,12 @@ const CompanyPropertyEditPage = () => {
               options={(filterOpts["parking"] || []).map(p => ({ value: p, label: p }))}
             />
             <FormSelect
-              label="Property Age *"
+              label={t("companyDashboard.propertyAge") + " *"}
               icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
               value={form.property_age}
               onChange={(v) => updateField("property_age", v)}
               options={(filterOpts["property_age"] || []).map(a => ({ value: a, label: a }))}
-              placeholder="Select"
+              placeholder={t("companyDashboard.select")}
               fieldName="property_age"
               error={errorClass("property_age") !== ""}
             />
