@@ -285,7 +285,7 @@ const AdvertisePage = () => {
               >
                 {pkg.package_type === "pro" && (
                   <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
-                    POPULAR
+                    {t('pages.advertise.popular')}
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
