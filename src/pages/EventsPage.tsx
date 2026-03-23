@@ -119,11 +119,11 @@ const EventsPage = () => {
             {/* Event Type Dropdown */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[120px] sm:min-w-[180px] text-sm hover:border-primary/50 transition-colors bg-background">
+                <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
                   <span className={!selectedEventType ? 'text-muted-foreground' : 'text-foreground'}>
                     {selectedEventType || 'Event Type'}
                   </span>
-                  <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
+                  <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-56 p-2" align="start">
