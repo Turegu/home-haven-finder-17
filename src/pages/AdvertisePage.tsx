@@ -126,7 +126,7 @@ const AdvertisePage = () => {
             {/* Right - Form */}
             <Card ref={formRef} className={`shadow-2xl border-0 transition-all duration-700 ${highlightForm ? "ring-4 ring-accent ring-offset-2" : ""}`}>
               <CardHeader className="pb-4">
-                <CardTitle className="text-2xl text-center">Let's Register</CardTitle>
+                <CardTitle className="text-2xl text-center">{t('pages.advertise.letsRegister')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
