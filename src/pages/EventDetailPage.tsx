@@ -122,10 +122,10 @@ const EventDetailPage = () => {
   };
 
   const mediaTabs = [
-    { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'street', label: 'Street View', icon: PersonStanding },
-    { id: 'video', label: 'Video', icon: Video },
+    { id: 'photos', label: t('property.photos'), icon: Camera },
+    { id: 'location', label: t('property.location'), icon: MapPin },
+    { id: 'street', label: t('property.streetView'), icon: PersonStanding },
+    { id: 'video', label: t('property.video'), icon: Video },
   ];
 
   return (
