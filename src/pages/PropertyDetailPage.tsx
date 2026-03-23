@@ -398,7 +398,7 @@ const PropertyDetailPage = () => {
             </div>
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Images className="h-10 w-10 mx-auto mb-2 opacity-40" />No floor plans available for this listing.</div>
+              <div className="text-center"><Images className="h-10 w-10 mx-auto mb-2 opacity-40" />{t('property.noFloorPlans')}</div>
             </div>
           )}
         </div>
