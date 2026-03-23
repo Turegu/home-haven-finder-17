@@ -818,8 +818,8 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
             {/* Price bar */}
             <div className="bg-primary px-4 py-2 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-primary-foreground/70 uppercase tracking-wider">Starting from</span>
-                <span className="text-lg font-bold text-primary-foreground ml-2">
+                <span className="text-[10px] text-primary-foreground/70 uppercase tracking-wider">{t('projectsPage.startingFrom')}</span>
+                <span className="text-lg font-bold text-primary-foreground ms-2">
                   {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
                 </span>
               </div>
