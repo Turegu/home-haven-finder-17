@@ -274,7 +274,8 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <DarkModeToggle />
             {/* Notifications Dropdown */}
             <div className="relative" ref={notifRef}>
               <button
