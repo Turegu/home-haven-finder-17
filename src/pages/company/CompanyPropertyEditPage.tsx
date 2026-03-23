@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
