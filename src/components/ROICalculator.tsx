@@ -156,10 +156,10 @@ const ROICalculator = ({
                     .map((p) => (
                       <tr key={p.year} className="border-b border-border/50">
                         <td className="py-2 pe-4 font-medium text-foreground">{t('roi.year')} {p.year}</td>
-                        <td className="text-right py-2 pr-4 text-foreground">
+                        <td className="text-end py-2 pe-4 text-foreground">
                           {currency} {p.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </td>
-                        <td className="text-right py-2 pr-4 text-foreground">
+                        <td className="text-end py-2 pe-4 text-foreground">
                           {currency} {p.cumIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </td>
                         <td className="text-right py-2 font-semibold text-primary">
