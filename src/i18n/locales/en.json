@@ -237,7 +237,18 @@
     "noEventsFound": "No events found",
     "tryAdjusting": "Try adjusting your filters or search criteria.",
     "loadingEvents": "Loading events...",
-    "searchEvents": "Search events by name, venue..."
+    "searchEvents": "Search events by name, venue...",
+    "overview": "Overview",
+    "description": "Description",
+    "locationOnMap": "Location on Map",
+    "ticketPrice": "Ticket Price",
+    "admission": "Admission",
+    "openInvitation": "Open Invitation",
+    "freeToAttend": "This event is free to attend",
+    "eventOrganizer": "Event Organizer",
+    "events": "Events",
+    "adId": "Ad ID",
+    "added": "Added"
   },
   "footer": {
     "getApp": "Get the Turegu App",
