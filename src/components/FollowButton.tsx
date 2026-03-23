@@ -14,7 +14,7 @@ interface FollowButtonProps {
   size?: 'sm' | 'md';
 }
 
-const FollowButton = ({ type, targetId }: FollowButtonProps) => {
+const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
   const navigate = useNavigate();
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
