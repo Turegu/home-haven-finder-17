@@ -484,7 +484,7 @@ const ProjectsPage = () => {
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
-              Save Search
+              {t('projectsPage.saveSearch')}
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
               <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
