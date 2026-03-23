@@ -427,7 +427,7 @@ const CompanyPropertyEditPage = () => {
             <div className="space-y-2" data-field="title">
               <Label className="text-foreground font-medium">{ t("companyDashboard.propertyTitle") + " *" }</Label>
               <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
-              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
+              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 {t("companyDashboard.characters")}</p>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">{ t("companyDashboard.propertyDescription") }</Label>
