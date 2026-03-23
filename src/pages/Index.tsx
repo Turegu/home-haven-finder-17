@@ -269,6 +269,7 @@ const Index = () => {
 
 // Hero banner slideshow component
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
+  const { t } = useTranslation();
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   const images = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
   const [currentIndex, setCurrentIndex] = useState(0);
