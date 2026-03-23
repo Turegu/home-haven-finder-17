@@ -72,12 +72,6 @@ const AdminSettingsPage = () => {
       saveSetting("map_provider", mapProvider),
       saveSetting("analytics_display_phase", analyticsPhase),
       saveSetting("ai_search_enabled", aiSearchEnabled ? 'true' : 'false'),
-      saveSetting("boost_company_3_months_credits", boostCompany3),
-      saveSetting("boost_company_6_months_credits", boostCompany6),
-      saveSetting("boost_company_12_months_credits", boostCompany12),
-      saveSetting("boost_agent_3_months_credits", boostAgent3),
-      saveSetting("boost_agent_6_months_credits", boostAgent6),
-      saveSetting("boost_agent_12_months_credits", boostAgent12),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
