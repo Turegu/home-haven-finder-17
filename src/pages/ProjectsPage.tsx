@@ -734,8 +734,8 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
           {/* Image mosaic area */}
           <div className="relative w-full lg:w-[520px] xl:w-[580px] shrink-0">
             {/* Top overlay: photo count + status + tier icons */}
-            <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-3 py-2 bg-gradient-to-b from-foreground/60 to-transparent">
-              <div className="flex items-center gap-1.5 bg-foreground/70 text-white text-xs px-2 py-1 rounded">
+            <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-3 py-2 bg-gradient-to-b from-black/60 to-transparent">
+              <div className="flex items-center gap-1.5 bg-black/70 text-white text-xs px-2 py-1 rounded">
                 <Camera className="h-3 w-3" />
                 <span>{currentImage + 1}/{images.length}</span>
               </div>

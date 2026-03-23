@@ -102,7 +102,7 @@ export const TopAgentsSpotlight = () => {
                   </div>
                 )}
                 {/* Gradient scrim */}
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
                 {/* Boosted badge */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
