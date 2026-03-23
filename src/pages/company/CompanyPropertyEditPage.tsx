@@ -736,7 +736,7 @@ const CompanyPropertyEditPage = () => {
             </div>
           </div>
           <div className="space-y-3 mb-6">
-            <Label className="text-foreground font-medium">Plans</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.plansLabel")}</Label>
             <div className="flex flex-wrap gap-3">
               {planFiles.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
