@@ -204,7 +204,7 @@ const ContactUsPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
-      toast({ title: "Please fill in all required fields", variant: "destructive" });
+      toast({ title: t('pages.contact.fillRequired'), variant: "destructive" });
       return;
     }
     setSending(true);
