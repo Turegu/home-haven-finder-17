@@ -178,7 +178,7 @@ const AdvertisePage = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">{t('pages.advertise.phone')}</Label>
                     <Input
                       id="phone"
                       type="tel"
