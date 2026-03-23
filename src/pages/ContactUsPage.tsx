@@ -386,9 +386,9 @@ const ContactUsPage = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message" className="flex items-center gap-1.5 text-sm font-medium">
-                <MessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                Message <span className="text-destructive">*</span>
+                <Label htmlFor="message" className="flex items-center gap-1.5 text-sm font-medium">
+                  <MessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                  {t('pages.contact.message')} <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="message"
