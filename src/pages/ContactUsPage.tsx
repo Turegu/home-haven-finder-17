@@ -332,7 +332,7 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-1.5 text-sm font-medium">
                   <User className="h-3.5 w-3.5 text-muted-foreground" />
-                  Full Name <span className="text-destructive">*</span>
+                  {t('pages.contact.fullName')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
