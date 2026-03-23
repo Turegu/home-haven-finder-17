@@ -608,10 +608,10 @@ const PropertyDetailPage = () => {
 
             {/* Amenities */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Amenities</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('property.amenities')}</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
+                  <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.interiorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {property.interiorAmenities.map((a) => {
                       const Icon = getIcon(a, 'interior');
