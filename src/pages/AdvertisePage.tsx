@@ -60,7 +60,7 @@ const AdvertisePage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      toast.error("Please accept the Terms & Conditions");
+      toast.error(t('pages.advertise.acceptTermsError'));
       return;
     }
     setSubmitting(true);
