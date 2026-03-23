@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
   ChevronDown, CalendarDays, Loader2, X, Home,
@@ -18,6 +19,7 @@ import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
 
 const EventsPage = () => {
+  const { t } = useTranslation();
   const { options: fo } = useFilterOptions('search');
   const eventTypes = fo['event_types'] || [];
   const routeLocation = useLocation();
@@ -106,7 +108,7 @@ const EventsPage = () => {
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search events by name, venue..."
+                placeholder={t('event.searchEvents')}
                 className="w-full h-10 pl-3 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
               />
               {keyword && (
@@ -121,7 +123,7 @@ const EventsPage = () => {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
                   <span className={!selectedEventType ? 'text-muted-foreground' : 'text-foreground'}>
-                    {selectedEventType || 'Event Type'}
+                    {selectedEventType || t('filters.eventType')}
                   </span>
                   <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
@@ -150,12 +152,12 @@ const EventsPage = () => {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
                   <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className={dateRange.from ? 'text-foreground' : 'text-muted-foreground'}>
+                   <span className={dateRange.from ? 'text-foreground' : 'text-muted-foreground'}>
                     {dateRange.from
                       ? `${dateRange.from.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}${dateRange.to ? ` - ${dateRange.to.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
-                      : 'Date Range'}
+                      : t('filters.dateRange')}
                   </span>
-                  <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
+                  <ChevronDown className="h-3.5 w-3.5 ms-auto text-amber-500" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -166,14 +168,14 @@ const EventsPage = () => {
                   numberOfMonths={1}
                 />
                 <div className="p-3 border-t border-border flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => setDateRange({})}>Clear</Button>
+                  <Button variant="ghost" size="sm" onClick={() => setDateRange({})}>{t('filters.clear')}</Button>
                 </div>
               </PopoverContent>
             </Popover>
 
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
-              {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
-              Search
+              {isFetching ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Search className="h-4 w-4 me-1" />}
+              {t('hero.search')}
             </Button>
           </div>
         </div>
@@ -224,7 +226,7 @@ const EventsPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            Public Gatherings & Events <span className="text-primary">({totalCount})</span>
+            {t('event.publicGatherings')} <span className="text-primary">({totalCount})</span>
           </h1>
           <div className="flex items-center gap-3">
             <select
@@ -232,9 +234,9 @@ const EventsPage = () => {
               onChange={(e) => setSortBy(e.target.value)}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="newest">Newest First</option>
-              <option value="date_asc">Date: Earliest</option>
-              <option value="date_desc">Date: Latest</option>
+              <option value="newest">{t('filters.newestFirst')}</option>
+              <option value="date_asc">{t('filters.dateEarliest')}</option>
+              <option value="date_desc">{t('filters.dateLatest')}</option>
             </select>
             <div className="flex border border-border rounded-md overflow-hidden">
               {[
@@ -258,12 +260,12 @@ const EventsPage = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading events...</span>
+            <span className="ms-3 text-muted-foreground">{t('event.loadingEvents')}</span>
           </div>
         ) : allEvents.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">No events found</p>
-            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            <p className="text-lg font-medium text-foreground mb-2">{t('event.noEventsFound')}</p>
+            <p className="text-muted-foreground">{t('event.tryAdjusting')}</p>
           </div>
         ) : (
           <div className="flex gap-6">

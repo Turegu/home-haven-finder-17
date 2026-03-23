@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BannerDisplay from "@/components/BannerDisplay";
@@ -16,11 +17,13 @@ interface BlogItem {
 }
 
 const BlogsPage = () => {
+  const { t, i18n } = useTranslation();
   const [blogs, setBlogs] = useState<BlogItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBlogs = async () => {
+      const langCode = i18n.language === 'ar' ? 'ar' : 'en';
       const { data } = await supabase
         .from("blogs")
         .select("id, slug, image_url, author, created_at")
@@ -28,15 +31,19 @@ const BlogsPage = () => {
         .order("created_at", { ascending: false });
 
       if (data && data.length > 0) {
-        // Get English translations (fallback)
         const { data: trans } = await supabase
           .from("blog_translations")
-          .select("blog_id, title, description")
-          .eq("language_code", "en")
+          .select("blog_id, title, description, language_code")
+          .in("language_code", [langCode, "en"])
           .in("blog_id", data.map(b => b.id));
 
         const transMap: Record<string, { title: string; description: string }> = {};
-        if (trans) (trans as any[]).forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+        if (trans) {
+          (trans as any[]).filter((t: any) => t.language_code === 'en').forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+          if (langCode !== 'en') {
+            (trans as any[]).filter((t: any) => t.language_code === langCode).forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+          }
+        }
 
         setBlogs(data.map(b => ({
           ...b,
@@ -47,7 +54,7 @@ const BlogsPage = () => {
       setLoading(false);
     };
     fetchBlogs();
-  }, []);
+  }, [i18n.language]);
 
   const stripHtml = (html: string) => {
     const tmp = document.createElement("div");
@@ -60,17 +67,17 @@ const BlogsPage = () => {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
+          <Link to="/" className="hover:text-primary">{t('common.home')}</Link>
           <span>/</span>
-          <span className="text-foreground">Blogs</span>
+          <span className="text-foreground">{t('pages.blog.blogs')}</span>
         </div>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">Blogs</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">{t('pages.blog.blogs')}</h1>
 
         {loading ? (
-          <div className="text-center py-16 text-muted-foreground">Loading...</div>
+          <div className="text-center py-16 text-muted-foreground">{t('common.loading')}</div>
         ) : blogs.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">No blogs published yet.</div>
+          <div className="text-center py-16 text-muted-foreground">{t('pages.blog.noBlogsYet')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.map(blog => (
@@ -83,7 +90,7 @@ const BlogsPage = () => {
                   {blog.image_url ? (
                     <img src={blog.image_url} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">No image</div>
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">{t('pages.blog.noImage')}</div>
                   )}
                 </div>
                 <div className="p-4 space-y-2">

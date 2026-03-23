@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -24,6 +25,7 @@ const packageIcons: Record<string, React.ElementType> = {
 };
 
 const AdvertisePage = () => {
+  const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement>(null);
   const [highlightForm, setHighlightForm] = useState(false);
 
@@ -58,7 +60,7 @@ const AdvertisePage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreed) {
-      toast.error("Please accept the Terms & Conditions");
+      toast.error(t('pages.advertise.acceptTermsError'));
       return;
     }
     setSubmitting(true);
@@ -72,23 +74,23 @@ const AdvertisePage = () => {
     });
     setSubmitting(false);
     if (error) {
-      toast.error("Failed to submit request. Please try again.");
+      toast.error(t('pages.advertise.failedToSubmit'));
     } else {
-      toast.success("Request submitted! Our sales team will contact you shortly.");
+      toast.success(t('pages.advertise.requestSubmitted'));
       setForm({ company_name: "", first_name: "", last_name: "", email: "", phone: "", message: "" });
       setAgreed(false);
     }
   };
 
   const features = [
-    { icon: Home, label: "Photos", desc: "Showcase your listings with professional photos" },
-    { icon: FolderKanban, label: "Floor Plans", desc: "Detailed floor plans for every listing" },
-    { icon: CalendarDays, label: "Videos", desc: "Virtual tours and video walkthroughs" },
-    { icon: Image, label: "Panoramic Views", desc: "360° panoramic view experiences" },
-    { icon: Search, label: "Maps & Nearbys", desc: "Interactive maps with nearby amenities" },
-    { icon: Users, label: "Agent Network", desc: "Build your professional agent network" },
-    { icon: MessageSquare, label: "Inquiries", desc: "Receive inquiries & property requests" },
-    { icon: Building2, label: "Company Profile", desc: "Professional company profile & mini website" },
+    { icon: Home, label: t('pages.advertise.photos'), desc: "Showcase your listings with professional photos" },
+    { icon: FolderKanban, label: t('pages.advertise.floorPlansLabel'), desc: "Detailed floor plans for every listing" },
+    { icon: CalendarDays, label: t('pages.advertise.videos'), desc: "Virtual tours and video walkthroughs" },
+    { icon: Image, label: t('pages.advertise.panoramicViews'), desc: "360° panoramic view experiences" },
+    { icon: Search, label: t('pages.advertise.mapsNearbys'), desc: "Interactive maps with nearby amenities" },
+    { icon: Users, label: t('pages.advertise.agentNetwork'), desc: "Build your professional agent network" },
+    { icon: MessageSquare, label: t('pages.advertise.inquiries'), desc: "Receive inquiries & property requests" },
+    { icon: Building2, label: t('pages.advertise.companyProfile'), desc: "Professional company profile & mini website" },
   ];
 
   return (
@@ -103,20 +105,20 @@ const AdvertisePage = () => {
             {/* Left - Value Props */}
             <div className="text-primary-foreground">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Easily register & enjoy
+                {t('pages.advertise.easilyRegister')}
               </h1>
               <ul className="space-y-4 text-lg">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 mt-0.5 shrink-0" />
-                  <span>Create a company profile & your network of professional agents</span>
+                  <span>{t('pages.advertise.createCompanyProfile')}</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 mt-0.5 shrink-0" />
-                  <span>Choose your suitable membership package</span>
+                  <span>{t('pages.advertise.chooseMembership')}</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 mt-0.5 shrink-0" />
-                  <span>Control your marketing strategy with listings & advertising banner management</span>
+                  <span>{t('pages.advertise.controlMarketing')}</span>
                 </li>
               </ul>
             </div>
@@ -124,12 +126,12 @@ const AdvertisePage = () => {
             {/* Right - Form */}
             <Card ref={formRef} className={`shadow-2xl border-0 transition-all duration-700 ${highlightForm ? "ring-4 ring-accent ring-offset-2" : ""}`}>
               <CardHeader className="pb-4">
-                <CardTitle className="text-2xl text-center">Let's Register</CardTitle>
+                <CardTitle className="text-2xl text-center">{t('pages.advertise.letsRegister')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <Label htmlFor="company_name">Company Name</Label>
+                    <Label htmlFor="company_name">{t('pages.advertise.companyName')}</Label>
                     <Input
                       id="company_name"
                       placeholder="Enter Your Company Name"
@@ -141,7 +143,7 @@ const AdvertisePage = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="first_name">First Name</Label>
+                      <Label htmlFor="first_name">{t('pages.advertise.firstName')}</Label>
                       <Input
                         id="first_name"
                         placeholder="Enter Your First Name"
@@ -152,7 +154,7 @@ const AdvertisePage = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="last_name">Last Name</Label>
+                      <Label htmlFor="last_name">{t('pages.advertise.lastName')}</Label>
                       <Input
                         id="last_name"
                         placeholder="Enter Your Last Name"
@@ -164,7 +166,7 @@ const AdvertisePage = () => {
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('pages.advertise.email')}</Label>
                     <Input
                       id="email"
                       type="email"
@@ -176,7 +178,7 @@ const AdvertisePage = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone</Label>
+                    <Label htmlFor="phone">{t('pages.advertise.phone')}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -188,7 +190,7 @@ const AdvertisePage = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="message">Message (Optional)</Label>
+                    <Label htmlFor="message">{t('pages.advertise.messageOptional')}</Label>
                     <Textarea
                       id="message"
                       placeholder="Tell us about your advertising needs..."
@@ -205,11 +207,11 @@ const AdvertisePage = () => {
                       onCheckedChange={(v) => setAgreed(v === true)}
                     />
                     <Label htmlFor="terms" className="text-sm cursor-pointer">
-                      I accept the Terms & Conditions
+                      {t('pages.advertise.acceptTerms')}
                     </Label>
                   </div>
                   <Button type="submit" className="w-full" size="lg" disabled={submitting}>
-                    {submitting ? "Submitting..." : "Submit"}
+                    {submitting ? t('pages.advertise.submitting') : t('common.submit')}
                   </Button>
                 </form>
               </CardContent>
@@ -221,9 +223,9 @@ const AdvertisePage = () => {
       {/* Powerful Tools Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Powerful Set of Tools</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">{t('pages.advertise.powerfulTools')}</h2>
           <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
-            Showcase your listings with our comprehensive set of marketing tools
+            {t('pages.advertise.showcaseListings')}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {features.map((f) => (
@@ -245,12 +247,12 @@ const AdvertisePage = () => {
       {/* Keep In Touch Section */}
       <section className="py-20 bg-muted/50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Keep In Touch</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t('pages.advertise.keepInTouch')}</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { icon: Users, title: "Build Your Network", desc: "Create your own network of clients & followers and let them be notified with your updates" },
-              { icon: MessageSquare, title: "Receive Inquiries", desc: "Get inquiries & property requests directly from interested buyers and tenants" },
-              { icon: Search, title: "Claim Your Spot", desc: "Appear in agent search results and let people discover your company" },
+              { icon: Users, title: t('pages.advertise.buildNetwork'), desc: "Create your own network of clients & followers and let them be notified with your updates" },
+              { icon: MessageSquare, title: t('pages.advertise.receiveInquiries'), desc: "Get inquiries & property requests directly from interested buyers and tenants" },
+              { icon: Search, title: t('pages.advertise.claimSpot'), desc: "Appear in agent search results and let people discover your company" },
             ].map((item) => (
               <div key={item.title} className="flex flex-col items-center text-center p-6">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -267,9 +269,9 @@ const AdvertisePage = () => {
       {/* Packages Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Our Packages</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">{t('pages.advertise.ourPackages')}</h2>
           <p className="text-muted-foreground text-center mb-12">
-            Flexible Packages to suit your business goals
+            {t('pages.advertise.flexiblePackages')}
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {packages?.map((pkg) => (
@@ -283,7 +285,7 @@ const AdvertisePage = () => {
               >
                 {pkg.package_type === "pro" && (
                   <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
-                    POPULAR
+                    {t('pages.advertise.popular')}
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
@@ -299,28 +301,28 @@ const AdvertisePage = () => {
                   <p className="text-xs text-muted-foreground">{pkg.tagline}</p>
                   <div className="mt-4">
                     <span className="text-4xl font-bold text-foreground">${pkg.monthly_price}</span>
-                    <span className="text-muted-foreground text-sm">/month</span>
+                    <span className="text-muted-foreground text-sm">/{t('pages.advertise.month')}</span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
-                  <FeatureLine value={`${pkg.max_agents}`} label="Agents Allowed" />
-                  <FeatureLine value={`${pkg.max_events}`} label="Events Allowed" />
-                  <FeatureLine value={`${pkg.max_projects}`} label="Projects Allowed" />
-                  <FeatureLine value={`${pkg.max_properties}`} label="Properties Allowed" />
+                  <FeatureLine value={`${pkg.max_agents}`} label={t('pages.advertise.agentsAllowed')} />
+                  <FeatureLine value={`${pkg.max_events}`} label={t('pages.advertise.eventsAllowed')} />
+                  <FeatureLine value={`${pkg.max_projects}`} label={t('pages.advertise.projectsAllowed')} />
+                  <FeatureLine value={`${pkg.max_properties}`} label={t('pages.advertise.propertiesAllowed')} />
                   <FeatureLine
-                    value={pkg.has_property_requests ? "Yes" : "No"}
-                    label="Property Requests"
+                    value={pkg.has_property_requests ? t('common.yes') : t('common.no')}
+                    label={t('pages.advertise.propertyRequests')}
                     positive={pkg.has_property_requests}
                   />
 
                   <div className="border-t border-border pt-3 mt-4 space-y-2 text-xs text-muted-foreground">
-                    <p>$ {pkg.semiannual_price?.toLocaleString()} for 6 Months</p>
-                    <p>$ {pkg.quarterly_price?.toLocaleString()} for 3 Months</p>
-                    <p>$ {pkg.annual_price?.toLocaleString()} for 1 Year</p>
+                    <p>$ {pkg.semiannual_price?.toLocaleString()} {t('pages.advertise.for6Months')}</p>
+                    <p>$ {pkg.quarterly_price?.toLocaleString()} {t('pages.advertise.for3Months')}</p>
+                    <p>$ {pkg.annual_price?.toLocaleString()} {t('pages.advertise.for1Year')}</p>
                   </div>
 
                   <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
-                    Get Your {pkg.name}
+                    {t('pages.advertise.getYour')} {pkg.name}
                   </Button>
                 </CardContent>
               </Card>

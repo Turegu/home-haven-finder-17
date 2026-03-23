@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import { MapPin, Search, Home, Globe, Rocket, Building2 } from 'lucide-react';
 import Header from '@/components/Header';
@@ -45,6 +46,7 @@ const boostOrder = (cls?: string, endDate?: string | null) =>
   isBoosted(cls, endDate) ? 0 : 1;
 
 const AgentsPage = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -166,7 +168,7 @@ const AgentsPage = () => {
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            Companies
+            {t('filters.companies')}
           </button>
           <button
             onClick={() => setActiveTab('agents')}
@@ -176,7 +178,7 @@ const AgentsPage = () => {
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            Agents
+            {t('nav.agents')}
           </button>
         </div>
 
@@ -188,7 +190,7 @@ const AgentsPage = () => {
               value={selectedProvince}
               onChange={(e) => setSelectedProvince(e.target.value)}
             >
-              <option value="">Province</option>
+              <option value="">{t('filters.province')}</option>
               {provinces.map((p) => (
                 <option key={p.name} value={p.name}>{p.name}</option>
               ))}
@@ -202,14 +204,14 @@ const AgentsPage = () => {
               onChange={(e) => setSelectedTown(e.target.value)}
               disabled={!selectedProvince}
             >
-              <option value="">City / Town</option>
+              <option value="">{t('filters.cityTown')}</option>
               {towns.map((t) => (
                 <option key={t.name} value={t.name}>{t.name}</option>
               ))}
             </select>
           </div>
           <div className="flex-1 w-full">
-            <Input placeholder="Enter Search Area, City, Address" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border-border" />
+            <Input placeholder={t('filters.searchArea')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border-border" />
           </div>
           <LanguageSearchDropdown
             selected={selectedLanguages}
@@ -217,7 +219,7 @@ const AgentsPage = () => {
             className="w-full md:w-48"
           />
           <Button className="w-full md:w-auto">
-            <Search className="h-4 w-4 mr-1" /> Search
+            <Search className="h-4 w-4 me-1" /> {t('hero.search')}
           </Button>
         </div>
       </div>
@@ -226,14 +228,14 @@ const AgentsPage = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-foreground">
-            {activeTab === 'companies' ? 'Companies' : 'Agents'}
+            {activeTab === 'companies' ? t('filters.companies') : t('nav.agents')}
           </h2>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Sort By:</span>
+            <span className="text-muted-foreground">{t('filters.sortBy')}:</span>
             <select className="border border-border rounded-lg px-3 py-1.5 bg-background text-foreground text-sm">
-              <option>Please Select</option>
-              <option>Name A-Z</option>
-              <option>Name Z-A</option>
+              <option>{t('filters.pleaseSelect')}</option>
+              <option>{t('filters.nameAZ')}</option>
+              <option>{t('filters.nameZA')}</option>
             </select>
           </div>
         </div>
@@ -286,18 +288,18 @@ const AgentsPage = () => {
                     <div className="flex items-center gap-4 mt-3 text-sm">
                       <span>
                         <span className="font-semibold text-primary">{counts.rent}</span>
-                        <span className="text-muted-foreground ml-1">For Rent</span>
+                        <span className="text-muted-foreground ms-1">{t('filters.forRent')}</span>
                       </span>
                       <span className="text-border">·</span>
                       <span>
                         <span className="font-semibold text-primary">{counts.buy}</span>
-                        <span className="text-muted-foreground ml-1">For Sale</span>
+                        <span className="text-muted-foreground ms-1">{t('filters.forSale')}</span>
                       </span>
                     </div>
 
                     <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
                       <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                      <span className="text-muted-foreground">Speaks:</span>
+                      <span className="text-muted-foreground">{t('filters.speaks')}:</span>
                       <span className="text-foreground font-medium truncate">{speaksLangs || '—'}</span>
                     </div>
                   </div>
@@ -305,7 +307,7 @@ const AgentsPage = () => {
               );
             })}
             {filteredCompanies.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No companies found.</div>
+              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noCompaniesFound')}</div>
             )}
           </div>
         ) : (
@@ -356,16 +358,16 @@ const AgentsPage = () => {
                     </div>
 
                     <p className="text-xs text-muted-foreground mt-2">
-                      <span>Languages: </span>
+                      <span>{t('filters.languages')}: </span>
                       <span className="text-foreground font-medium">{agent.languages?.join(', ') || '—'}</span>
                     </p>
 
                     <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 text-sm">
                       <span>
-                        <span className="text-primary font-semibold">For Sale: {ac.buy}</span>
+                        <span className="text-primary font-semibold">{t('filters.forSale')}: {ac.buy}</span>
                       </span>
                       <span>
-                        <span className="text-primary font-semibold">For Rent: {ac.rent}</span>
+                        <span className="text-primary font-semibold">{t('filters.forRent')}: {ac.rent}</span>
                       </span>
                     </div>
                   </div>
@@ -373,7 +375,7 @@ const AgentsPage = () => {
               );
             })}
             {filteredAgents.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No agents found.</div>
+              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noAgentsFound')}</div>
             )}
           </div>
         )}

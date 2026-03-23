@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -169,6 +170,7 @@ const HeroIllustration = () => (
 );
 
 const ContactUsPage = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -202,7 +204,7 @@ const ContactUsPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
-      toast({ title: "Please fill in all required fields", variant: "destructive" });
+      toast({ title: t('pages.contact.fillRequired'), variant: "destructive" });
       return;
     }
     setSending(true);
@@ -216,29 +218,29 @@ const ContactUsPage = () => {
     });
     setSending(false);
     if (error) {
-      toast({ title: "Failed to send message", description: error.message, variant: "destructive" });
+      toast({ title: t('pages.contact.failedToSend'), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Message sent!", description: "We'll get back to you soon." });
-      setForm({ name: "", email: "", phone: "", subject: "General Inquiries", message: "" });
+      toast({ title: t('pages.contact.messageSent'), description: t('pages.contact.wellGetBack') });
+      setForm({ name: "", email: "", phone: "", subject: t('pages.contact.generalInquiries'), message: "" });
     }
   };
 
   const infoCards = [
     {
       icon: Phone,
-      title: "Phone Number",
+      title: t('pages.contact.phoneNumber'),
       value: settings.sales_phone,
       link: settings.sales_phone ? `tel:${settings.sales_phone}` : undefined,
     },
     {
       icon: Mail,
-      title: "Email",
+      title: t('pages.contact.email'),
       value: settings.sales_email,
       link: settings.sales_email ? `mailto:${settings.sales_email}` : undefined,
     },
     {
       icon: MessageCircle,
-      title: "WhatsApp",
+      title: t('pages.contact.whatsapp'),
       value: settings.sales_whatsapp,
       link: settings.sales_whatsapp
         ? `https://wa.me/${settings.sales_whatsapp.replace(/[^0-9+]/g, "")}`
@@ -247,12 +249,12 @@ const ContactUsPage = () => {
   ].filter((card) => card.value && card.value.trim() !== "");
 
   const subjectOptions = [
-    "General Inquiries",
-    "Property Inquiry",
-    "Partnership",
-    "Advertising",
-    "Technical Support",
-    "Other",
+    { key: "generalInquiries", label: t('pages.contact.generalInquiries') },
+    { key: "propertyInquiry", label: t('pages.contact.propertyInquiry') },
+    { key: "partnership", label: t('pages.contact.partnership') },
+    { key: "advertising", label: t('pages.contact.advertising') },
+    { key: "technicalSupport", label: t('pages.contact.technicalSupport') },
+    { key: "other", label: t('pages.contact.other') },
   ];
 
   return (
@@ -265,15 +267,15 @@ const ContactUsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center py-12 lg:py-16">
             <div className="space-y-5 text-center lg:text-left">
               <span className="inline-block text-sm font-semibold tracking-widest uppercase text-primary">
-                Get in Touch
+                {t('pages.contact.getInTouch')}
               </span>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
-                Let's Build Something
+                {t('pages.contact.letsBuild')}
                 <br />
-                <span className="text-primary">Great Together</span>
+                <span className="text-primary">{t('pages.contact.greatTogether')}</span>
               </h1>
               <p className="text-muted-foreground text-lg max-w-md mx-auto lg:mx-0">
-                Have a question or want to work with us? We'd love to hear from you.
+                {t('pages.contact.haveQuestion')}
               </p>
             </div>
             <div className="relative">
@@ -316,9 +318,9 @@ const ContactUsPage = () => {
       <section className="container mx-auto px-4 pb-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Contact Us</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('pages.contact.title')}</h2>
             <p className="text-muted-foreground mt-2">
-              If you have any questions or comments, we'd love to hear from you
+              {t('pages.contact.questionsOrComments')}
             </p>
           </div>
 
@@ -330,11 +332,11 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-1.5 text-sm font-medium">
                   <User className="h-3.5 w-3.5 text-muted-foreground" />
-                  Full Name <span className="text-destructive">*</span>
+                  {t('pages.contact.fullName')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
-                  placeholder="Your full name"
+                  placeholder={t('pages.contact.yourFullName')}
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                   required
@@ -343,12 +345,12 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-1.5 text-sm font-medium">
                   <AtSign className="h-3.5 w-3.5 text-muted-foreground" />
-                  Email <span className="text-destructive">*</span>
+                  {t('pages.contact.email')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t('pages.contact.yourEmail')}
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   required
@@ -357,7 +359,7 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5 text-sm font-medium">
                   <PhoneCall className="h-3.5 w-3.5 text-muted-foreground" />
-                  Phone
+                  {t('pages.contact.phone')}
                 </Label>
                 <Input
                   id="phone"
@@ -369,7 +371,7 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="subject" className="flex items-center gap-1.5 text-sm font-medium">
                   <MessageSquareText className="h-3.5 w-3.5 text-muted-foreground" />
-                  Subject
+                  {t('pages.contact.subject')}
                 </Label>
                 <select
                   id="subject"
@@ -378,19 +380,19 @@ const ContactUsPage = () => {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {subjectOptions.map((opt) => (
-                    <option key={opt} value={opt}>{opt}</option>
+                    <option key={opt.key} value={opt.key}>{opt.label}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message" className="flex items-center gap-1.5 text-sm font-medium">
-                <MessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                Message <span className="text-destructive">*</span>
+                <Label htmlFor="message" className="flex items-center gap-1.5 text-sm font-medium">
+                  <MessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                  {t('pages.contact.message')} <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="message"
-                placeholder="Tell us how we can help..."
+                placeholder={t('pages.contact.tellUs')}
                 rows={5}
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
@@ -399,7 +401,7 @@ const ContactUsPage = () => {
             </div>
             <Button type="submit" size="lg" disabled={sending} className="w-full md:w-auto gap-2">
               <Send className="h-4 w-4" />
-              {sending ? "Sending..." : "Send Message"}
+              {sending ? t('auth.sending') : t('pages.contact.send')}
             </Button>
           </form>
         </div>
