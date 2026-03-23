@@ -428,10 +428,10 @@ const ProjectsPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               {!location.district ? (
-                <span className="text-foreground font-medium">{location.province} Projects</span>
+                <span className="text-foreground font-medium">{location.province} {t('projectsPage.projects')}</span>
               ) : (
                 <button onClick={() => { setLocation({ province: location.province }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
-                  {location.province} Projects
+                  {location.province} {t('projectsPage.projects')}
                 </button>
               )}
             </>
