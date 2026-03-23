@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
-  Globe, Video, Phone, Mail, MessageCircle, UserPlus, Share2, Heart,
+  Globe, Video, Phone, Mail, MessageCircle, Share2, Heart,
   PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity, Home
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
@@ -19,6 +19,7 @@ import defaultProjectLogo from '@/assets/default-project-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
+import FollowButton from '@/components/FollowButton';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
@@ -395,7 +396,11 @@ const ProjectDetailPage = () => {
                     {project.agentDesignation && <p className="text-sm text-muted-foreground">{project.agentDesignation}</p>}
                   </Link>
 
-                  <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
+                  {realAgentId && (
+                    <div className="flex justify-center mb-3">
+                      <FollowButton type="agent" targetId={realAgentId} />
+                    </div>
+                  )}
 
                   {project.agentLanguages && project.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
@@ -427,7 +432,11 @@ const ProjectDetailPage = () => {
                     <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
                   </Link>
 
-                  <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
+                  {realCompanyId && (
+                    <div className="flex justify-center mb-3">
+                      <FollowButton type="company" targetId={realCompanyId} />
+                    </div>
+                  )}
                 </>
               )}
 

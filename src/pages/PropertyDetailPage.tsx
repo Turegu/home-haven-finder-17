@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
-  Video, Phone, Mail, MessageCircle, UserPlus,
+  Video, Phone, Mail, MessageCircle,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   Wallet, HardHat, KeyRound, Banknote, CalendarCheck,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
@@ -24,6 +24,7 @@ import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import ReportPropertyDialog from '@/components/ReportPropertyDialog';
+import FollowButton from '@/components/FollowButton';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // Lazy-load heavy below-the-fold components
@@ -799,10 +800,11 @@ const PropertyDetailPage = () => {
                     )}
                   </Link>
 
-                  <Button variant="outline" className="w-full mb-3 gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Follow
-                  </Button>
+                  {realAgentId && (
+                    <div className="flex justify-center mb-3">
+                      <FollowButton type="agent" targetId={realAgentId} />
+                    </div>
+                  )}
 
                   {property.agentLanguages && property.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
@@ -845,10 +847,11 @@ const PropertyDetailPage = () => {
                     <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
                   </Link>
 
-                  <Button variant="outline" className="w-full mb-3 gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Follow
-                  </Button>
+                  {realCompanyId && (
+                    <div className="flex justify-center mb-3">
+                      <FollowButton type="company" targetId={realCompanyId} />
+                    </div>
+                  )}
                 </>
               )}
 
