@@ -23,6 +23,7 @@ import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle, Rocke
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 
 interface Agent {
   id: string;
