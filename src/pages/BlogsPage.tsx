@@ -23,6 +23,7 @@ const BlogsPage = () => {
 
   useEffect(() => {
     const fetchBlogs = async () => {
+      const langCode = i18n.language === 'ar' ? 'ar' : 'en';
       const { data } = await supabase
         .from("blogs")
         .select("id, slug, image_url, author, created_at")
@@ -30,15 +31,19 @@ const BlogsPage = () => {
         .order("created_at", { ascending: false });
 
       if (data && data.length > 0) {
-        // Get English translations (fallback)
         const { data: trans } = await supabase
           .from("blog_translations")
-          .select("blog_id, title, description")
-          .eq("language_code", "en")
+          .select("blog_id, title, description, language_code")
+          .in("language_code", [langCode, "en"])
           .in("blog_id", data.map(b => b.id));
 
         const transMap: Record<string, { title: string; description: string }> = {};
-        if (trans) (trans as any[]).forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+        if (trans) {
+          (trans as any[]).filter((t: any) => t.language_code === 'en').forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+          if (langCode !== 'en') {
+            (trans as any[]).filter((t: any) => t.language_code === langCode).forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+          }
+        }
 
         setBlogs(data.map(b => ({
           ...b,
@@ -49,7 +54,7 @@ const BlogsPage = () => {
       setLoading(false);
     };
     fetchBlogs();
-  }, []);
+  }, [i18n.language]);
 
   const stripHtml = (html: string) => {
     const tmp = document.createElement("div");
