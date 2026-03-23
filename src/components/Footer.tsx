@@ -25,7 +25,7 @@ const Footer = () => {
               <div className="flex items-center gap-3 bg-white/10 hover:bg-white/20 rounded-lg px-5 py-3 cursor-pointer transition-colors">
                 <Smartphone className="h-6 w-6" />
                 <div>
-                  <p className="text-[10px] text-background/60 leading-none">Get it on</p>
+                  <p className="text-[10px] text-white/60 leading-none">Get it on</p>
                   <p className="text-sm font-semibold">Google Play</p>
                 </div>
               </div>
