@@ -139,7 +139,7 @@ const BoostProfileDialog = ({
           </p>
 
           {isBoosted && (
-            <div className="text-xs text-amber-600 bg-amber-50 rounded px-3 py-2 border border-amber-200">
+            <div className="text-xs text-amber-700 bg-accent rounded px-3 py-2 border border-border">
               Currently boosted until {new Date(boostEndDate!).toLocaleDateString()}. Boosting again will extend from today.
             </div>
           )}
