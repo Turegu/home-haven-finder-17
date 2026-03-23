@@ -40,6 +40,7 @@ interface Agent {
 
 const CompanyAgentsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
