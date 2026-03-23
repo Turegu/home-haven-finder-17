@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Users2,
-  Star, ArrowRight, Briefcase, Zap, Crown
+  Star, ArrowRight, Briefcase, Zap, Crown, Rocket
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 
 const membershipIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
@@ -23,6 +23,8 @@ interface AgentData {
   avatar_url: string | null;
   company_id: string;
   credit_balance: number;
+  profile_classification: string;
+  boost_end_date: string | null;
 }
 
 interface CompanyData {
@@ -37,46 +39,46 @@ const AgentDashboardPage = () => {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [counts, setCounts] = useState({ properties: 0, projects: 0, events: 0, followers: 0 });
   const [loading, setLoading] = useState(true);
+  const [boostOpen, setBoostOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const fetchData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-      const { data: agentData } = await supabase
-        .from("agents")
-        .select("id, name, avatar_url, company_id, credit_balance")
-        .eq("user_id", user.id)
-        .limit(1)
-        .maybeSingle();
+    const { data: agentData } = await supabase
+      .from("agents")
+      .select("id, name, avatar_url, company_id, credit_balance, profile_classification, boost_end_date")
+      .eq("user_id", user.id)
+      .limit(1)
+      .maybeSingle();
 
-      if (!agentData) return;
-      setAgent(agentData);
+    if (!agentData) return;
+    setAgent(agentData as AgentData);
 
-      const { data: companyData } = await supabase
-        .from("companies")
-        .select("name, logo_url, membership, package_end_date")
-        .eq("id", agentData.company_id)
-        .single();
-      if (companyData) setCompany(companyData);
+    const { data: companyData } = await supabase
+      .from("companies")
+      .select("name, logo_url, membership, package_end_date")
+      .eq("id", agentData.company_id)
+      .single();
+    if (companyData) setCompany(companyData);
 
-      const [propRes, projRes, eventRes, followerRes] = await Promise.all([
-        supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id),
-        supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id),
-        supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id),
-        supabase.from("company_followers").select("id", { count: "exact", head: true }).eq("company_id", agentData.company_id),
-      ]);
+    const [propRes, projRes, eventRes, followerRes] = await Promise.all([
+      supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id),
+      supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id),
+      supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id),
+      supabase.from("company_followers").select("id", { count: "exact", head: true }).eq("company_id", agentData.company_id),
+    ]);
 
-      setCounts({
-        properties: propRes.count || 0,
-        projects: projRes.count || 0,
-        events: eventRes.count || 0,
-        followers: followerRes.count || 0,
-      });
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+    setCounts({
+      properties: propRes.count || 0,
+      projects: projRes.count || 0,
+      events: eventRes.count || 0,
+      followers: followerRes.count || 0,
+    });
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchData(); }, []);
 
   const membershipConfig: Record<string, { color: string; bg: string }> = {
     pro: { color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
@@ -94,6 +96,8 @@ const AgentDashboardPage = () => {
   }
 
   const mem = membershipConfig[company?.membership || "basic"] || membershipConfig.basic;
+  const isBoosted = agent?.profile_classification === "boosted" && agent?.boost_end_date && new Date(agent.boost_end_date) > new Date();
+  const boostDaysLeft = agent?.boost_end_date ? differenceInDays(new Date(agent.boost_end_date), new Date()) : null;
 
   return (
     <AgentLayout>
@@ -119,6 +123,28 @@ const AgentDashboardPage = () => {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Boost Profile Card */}
+      <div className={`mb-8 rounded-xl border p-5 flex items-center justify-between ${isBoosted ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'}`}>
+        <div className="flex items-center gap-4">
+          <div className={`h-11 w-11 rounded-lg flex items-center justify-center ${isBoosted ? 'bg-primary/10' : 'bg-muted'}`}>
+            <Rocket className={`h-5 w-5 ${isBoosted ? 'text-primary' : 'text-muted-foreground'}`} />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">
+              {isBoosted ? "Profile Boosted" : "Profile Not Boosted"}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {isBoosted
+                ? `Boosted until ${format(new Date(agent!.boost_end_date!), "do MMM yyyy")} (${boostDaysLeft} days left)`
+                : "Boost your profile to appear at the top of search results"}
+            </p>
+          </div>
+        </div>
+        <Button size="sm" variant={isBoosted ? "outline" : "default"} onClick={() => setBoostOpen(true)}>
+          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? "Extend Boost" : "Boost Profile"}
+        </Button>
       </div>
 
       {/* Stats Row */}
@@ -197,6 +223,22 @@ const AgentDashboardPage = () => {
           </Link>
         ))}
       </div>
+
+      {/* Boost Dialog */}
+      {agent && (
+        <BoostProfileDialog
+          open={boostOpen}
+          onOpenChange={setBoostOpen}
+          profileId={agent.id}
+          profileName={agent.name}
+          profileType="agent"
+          balanceSource="agent"
+          balanceSourceId={agent.id}
+          currentClassification={agent.profile_classification}
+          boostEndDate={agent.boost_end_date}
+          onBoosted={() => { setBoostOpen(false); fetchData(); }}
+        />
+      )}
     </AgentLayout>
   );
 };
