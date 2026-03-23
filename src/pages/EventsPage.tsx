@@ -264,8 +264,8 @@ const EventsPage = () => {
           </div>
         ) : allEvents.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">No events found</p>
-            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            <p className="text-lg font-medium text-foreground mb-2">{t('event.noEventsFound')}</p>
+            <p className="text-muted-foreground">{t('event.tryAdjusting')}</p>
           </div>
         ) : (
           <div className="flex gap-6">
