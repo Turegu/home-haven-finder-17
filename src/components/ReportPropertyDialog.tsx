@@ -80,7 +80,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-lg">Report this property</DialogTitle>
+          <DialogTitle className="text-center text-lg">{t('report.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
