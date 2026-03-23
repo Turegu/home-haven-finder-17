@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-  MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
+  MapPin, Clock, CalendarDays, Phone, Mail, Heart,
   ChevronLeft, ChevronRight, Camera, Video, Home,
   MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, FileDown, Timer
 } from 'lucide-react';
@@ -14,6 +14,9 @@ import StreetView from '@/components/StreetView';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
+import ShareDropdown from '@/components/ShareDropdown';
+import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+import SEOHead from '@/components/SEOHead';
 
 const EventDetailPage = () => {
   const { id } = useParams();
