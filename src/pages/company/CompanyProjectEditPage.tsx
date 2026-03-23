@@ -218,6 +218,7 @@ const emptyUnit: UnitForm = {
 };
 
 const CompanyProjectEditPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
