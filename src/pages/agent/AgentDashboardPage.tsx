@@ -185,21 +185,21 @@ const AgentDashboardPage = () => {
         {/* Followers */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Company Followers</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.companyFollowers")}</h3>
             <Users2 className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{counts.followers}</p>
-          <p className="text-xs text-muted-foreground mt-2">Total followers</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("agentDashboard.totalFollowers")}</p>
         </div>
 
         {/* Assigned Total */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Assigned to You</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.assignedToYou")}</h3>
             <Building2 className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{counts.properties + counts.projects + counts.events}</p>
-          <p className="text-xs text-muted-foreground mt-2">Total listings</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("agentDashboard.totalListings")}</p>
         </div>
       </div>
 
