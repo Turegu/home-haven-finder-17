@@ -718,7 +718,7 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.media") }</h2>
           </div>
           <div className="space-y-3 mb-6">
-            <Label className="text-foreground font-medium">Images</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.images")}</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
