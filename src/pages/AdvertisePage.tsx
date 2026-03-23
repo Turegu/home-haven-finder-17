@@ -207,7 +207,7 @@ const AdvertisePage = () => {
                       onCheckedChange={(v) => setAgreed(v === true)}
                     />
                     <Label htmlFor="terms" className="text-sm cursor-pointer">
-                      I accept the Terms & Conditions
+                      {t('pages.advertise.acceptTerms')}
                     </Label>
                   </div>
                   <Button type="submit" className="w-full" size="lg" disabled={submitting}>
