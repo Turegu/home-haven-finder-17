@@ -25,6 +25,7 @@ const packageIcons: Record<string, React.ElementType> = {
 };
 
 const AdvertisePage = () => {
+  const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement>(null);
   const [highlightForm, setHighlightForm] = useState(false);
 
