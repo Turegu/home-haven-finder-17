@@ -345,7 +345,7 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-1.5 text-sm font-medium">
                   <AtSign className="h-3.5 w-3.5 text-muted-foreground" />
-                  Email <span className="text-destructive">*</span>
+                  {t('pages.contact.email')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="email"
