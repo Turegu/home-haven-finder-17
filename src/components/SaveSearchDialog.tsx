@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,18 +29,19 @@ const SaveSearchDialog = ({
   location,
   keyword,
 }: SaveSearchDialogProps) => {
+  const { t } = useTranslation();
   const [searchName, setSearchName] = useState('');
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     if (!searchName.trim()) {
-      toast.error('Please enter a name for this search.');
+      toast.error(t('saveSearch.enterName'));
       return;
     }
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error('Please sign in to save searches.');
+      toast.error(t('saveSearch.signInRequired'));
       return;
     }
 
@@ -52,13 +54,13 @@ const SaveSearchDialog = ({
       .eq('user_id', user.id);
 
     if (countErr) {
-      toast.error('Failed to check saved searches.');
+      toast.error(t('saveSearch.failed'));
       setSaving(false);
       return;
     }
 
     if ((count ?? 0) >= MAX_SAVED_SEARCHES) {
-      toast.error(`You can save a maximum of ${MAX_SAVED_SEARCHES} searches. Please delete one first.`);
+      toast.error(t('saveSearch.maxReached', { max: MAX_SAVED_SEARCHES }));
       setSaving(false);
       return;
     }
@@ -72,11 +74,11 @@ const SaveSearchDialog = ({
     setSaving(false);
 
     if (error) {
-      toast.error('Failed to save search. Please try again.');
+      toast.error(t('saveSearch.failed'));
       return;
     }
 
-    toast.success('Search saved!', { description: 'Visit Saved Searches in your dashboard to manage your alerts.' });
+    toast.success(t('saveSearch.success'), { description: t('saveSearch.successDesc') });
     setSearchName('');
     onOpenChange(false);
   };
@@ -90,15 +92,15 @@ const SaveSearchDialog = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bookmark className="h-5 w-5 text-primary" />
-            Save Search
+            {t('saveSearch.title')}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Search Name</label>
+            <label className="text-sm font-medium text-foreground">{t('saveSearch.searchName')}</label>
             <Input
-              placeholder="e.g. 3-bed apartments in Istanbul"
+              placeholder={t('saveSearch.placeholder')}
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSave()}
@@ -109,28 +111,28 @@ const SaveSearchDialog = ({
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" />
-              Search Criteria Summary
+              {t('saveSearch.criteria')}
             </label>
 
             {!hasAnyFilter ? (
-              <p className="text-sm text-muted-foreground italic">No filters selected.</p>
+              <p className="text-sm text-muted-foreground italic">{t('saveSearch.noFilters')}</p>
             ) : (
               <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2 max-h-[200px] overflow-y-auto">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Type:</span>
+                  <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{t('saveSearch.type')}:</span>
                   <Badge variant="secondary" className="text-xs capitalize">{searchType}</Badge>
                 </div>
 
                 {locationParts.length > 0 && (
                   <div className="flex items-start gap-2">
-                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Location:</span>
+                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{t('saveSearch.location')}:</span>
                     <span className="text-xs text-foreground">{locationParts.join(' > ')}</span>
                   </div>
                 )}
 
                 {keyword && (
                   <div className="flex items-start gap-2">
-                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Keyword:</span>
+                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{t('saveSearch.keyword')}:</span>
                     <span className="text-xs text-foreground">"{keyword}"</span>
                   </div>
                 )}
@@ -148,15 +150,15 @@ const SaveSearchDialog = ({
               </div>
             )}
 
-            <p className="text-xs text-muted-foreground">Maximum {MAX_SAVED_SEARCHES} saved searches allowed.</p>
+            <p className="text-xs text-muted-foreground">{t('saveSearch.maxSearches', { max: MAX_SAVED_SEARCHES })}</p>
           </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t('common.cancel')}</Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Bookmark className="h-4 w-4 mr-1.5" />}
-            Save
+            {saving ? <Loader2 className="h-4 w-4 me-1.5 animate-spin" /> : <Bookmark className="h-4 w-4 me-1.5" />}
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

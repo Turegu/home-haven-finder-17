@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,7 @@ interface ReportPropertyDialogProps {
 }
 
 const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }: ReportPropertyDialogProps) => {
+  const { t } = useTranslation();
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [email, setEmail] = useState("");
@@ -44,10 +46,10 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
   }, [open]);
 
   const handleSubmit = async () => {
-    if (!reason) { toast.error("Please select a reason."); return; }
+    if (!reason) { toast.error(t('report.selectReasonError')); return; }
     if (!isSignedIn) {
-      if (!email.trim()) { toast.error("Email is required."); return; }
-      if (!phone.trim()) { toast.error("Phone number is required."); return; }
+      if (!email.trim()) { toast.error(t('report.emailError')); return; }
+      if (!phone.trim()) { toast.error(t('report.phoneError')); return; }
     }
 
     setSubmitting(true);
@@ -63,11 +65,11 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
     setSubmitting(false);
 
     if (error) {
-      toast.error("Failed to submit report. Please try again.");
+      toast.error(t('report.failedToSubmit'));
       return;
     }
 
-    toast.success("Thank you for your report. We will review this listing.");
+    toast.success(t('report.success'));
     setReason("");
     setDetails("");
     if (!isSignedIn) { setEmail(""); setPhone(""); }
@@ -78,16 +80,16 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-lg">Report this property</DialogTitle>
+          <DialogTitle className="text-center text-lg">{t('report.title')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
           {/* Reason */}
           <div className="space-y-1.5">
-            <Label>Select a problem</Label>
+            <Label>{t('report.selectProblem')}</Label>
             <Select value={reason} onValueChange={setReason}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a problem" />
+                <SelectValue placeholder={t('report.selectProblem')} />
               </SelectTrigger>
               <SelectContent>
                 {REPORT_REASONS.map((r) => (
@@ -99,11 +101,11 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
 
           {/* Details */}
           <div className="space-y-1.5">
-            <Label>Additional details <span className="text-muted-foreground text-xs">(optional)</span></Label>
+            <Label>{t('report.details')} <span className="text-muted-foreground text-xs">({t('report.detailsOptional')})</span></Label>
             <Textarea
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              placeholder="Provide more details about the issue..."
+              placeholder={t('report.detailsPlaceholder')}
               rows={3}
               maxLength={1000}
             />
@@ -113,7 +115,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
           {!isSignedIn && (
             <>
               <div className="space-y-1.5">
-                <Label>Email <span className="text-destructive">*</span></Label>
+                <Label>{t('report.emailRequired')} <span className="text-destructive">*</span></Label>
                 <Input
                   type="email"
                   value={email}
@@ -122,7 +124,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Mobile number <span className="text-destructive">*</span></Label>
+                <Label>{t('report.phoneRequired')} <span className="text-destructive">*</span></Label>
                 <Input
                   type="tel"
                   value={phone}
@@ -134,8 +136,8 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
           )}
 
           <Button onClick={handleSubmit} disabled={submitting} className="w-full">
-            {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            SEND REPORT
+            {submitting && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+            {t('report.send')}
           </Button>
         </div>
       </DialogContent>

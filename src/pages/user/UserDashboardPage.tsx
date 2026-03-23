@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
@@ -9,16 +10,17 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
-const statCards = [
-  { label: "Saved Properties", icon: Heart, countKey: "saved", path: "/account/saved-properties", color: "text-rose-500", bg: "bg-rose-500/10" },
-  { label: "Followed Agents", icon: Users2, countKey: "followed", path: "/account/followed-agents", color: "text-blue-500", bg: "bg-blue-500/10" },
-  { label: "Compare List", icon: Layers, countKey: "compare", path: "/account/compare", color: "text-amber-500", bg: "bg-amber-500/10" },
-  { label: "Saved Searches", icon: Search, countKey: "searches", path: "/account/saved-searches", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-  { label: "Notifications", icon: Bell, countKey: "notifications", path: "/account/notifications", color: "text-purple-500", bg: "bg-purple-500/10" },
-  { label: "Inquiries Sent", icon: MessageSquare, countKey: "contacted", path: "/account/contacted", color: "text-cyan-500", bg: "bg-cyan-500/10" },
-];
-
 const UserDashboardPage = () => {
+  const { t } = useTranslation();
+
+  const statCards = [
+    { label: t('dashboard.savedProperties'), icon: Heart, countKey: "saved", path: "/account/saved-properties", color: "text-rose-500", bg: "bg-rose-500/10" },
+    { label: t('dashboard.followedAgents'), icon: Users2, countKey: "followed", path: "/account/followed-agents", color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: t('dashboard.compareList'), icon: Layers, countKey: "compare", path: "/account/compare", color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: t('dashboard.savedSearches'), icon: Search, countKey: "searches", path: "/account/saved-searches", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { label: t('dashboard.notifications'), icon: Bell, countKey: "notifications", path: "/account/notifications", color: "text-purple-500", bg: "bg-purple-500/10" },
+    { label: t('dashboard.inquiriesSent'), icon: MessageSquare, countKey: "contacted", path: "/account/contacted", color: "text-cyan-500", bg: "bg-cyan-500/10" },
+  ];
   const { data: authUser } = useQuery({
     queryKey: ['user-dash-auth'],
     queryFn: async () => {
@@ -88,10 +90,10 @@ const UserDashboardPage = () => {
         {/* Welcome Header */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-2xl p-6 border border-primary/10">
           <h1 className="text-2xl font-bold text-foreground">
-            Welcome back, {displayName}! 👋
+            {t('dashboard.welcomeBack', { name: displayName })}
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Here's a quick overview of your activity.
+            {t('dashboard.quickOverview')}
           </p>
         </div>
 
@@ -122,33 +124,33 @@ const UserDashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Quick Actions */}
           <div className="bg-card rounded-xl border border-border p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.quickActions')}</h2>
             <div className="space-y-2">
               <Link to="/buy" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Browse Properties</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.browseProperties')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
               <Link to="/projects" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <Layers className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Explore Projects</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.exploreProjects')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
               <Link to="/property-request" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <FileText className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Submit Property Request</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.submitPropertyRequest')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
               <Link to="/agents" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <Users2 className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Find Agents</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.findAgents')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
@@ -158,8 +160,8 @@ const UserDashboardPage = () => {
           {/* Recent Notifications */}
           <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-foreground">Recent Notifications</h2>
-              <Link to="/account/notifications" className="text-xs text-primary hover:underline">View All</Link>
+              <h2 className="text-lg font-semibold text-foreground">{t('dashboard.recentNotifications')}</h2>
+              <Link to="/account/notifications" className="text-xs text-primary hover:underline">{t('dashboard.viewAll')}</Link>
             </div>
             {notifLoading ? (
               <div className="space-y-3">
@@ -176,7 +178,7 @@ const UserDashboardPage = () => {
             ) : recentNotifications.length === 0 ? (
               <div className="text-center py-8">
                 <Bell className="h-10 w-10 text-muted-foreground/20 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No notifications yet</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.noNotificationsYet')}</p>
               </div>
             ) : (
               <div className="space-y-2">

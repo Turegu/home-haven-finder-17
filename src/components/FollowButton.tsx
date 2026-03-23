@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { UserPlus, UserCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +16,7 @@ interface FollowButtonProps {
 }
 
 const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -56,7 +58,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
   const handleToggle = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error('Please sign in to follow');
+      toast.error(t('detail.followSignIn'));
       navigate('/user/login');
       return;
     }
@@ -81,7 +83,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
           if (error) throw error;
         }
         setIsFollowing(false);
-        toast.success('Unfollowed successfully');
+        toast.success(t('detail.unfollowed'));
       } else {
         if (type === 'company') {
           const { error } = await supabase
@@ -95,7 +97,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
           if (error) throw error;
         }
         setIsFollowing(true);
-        toast.success('Following! You\'ll receive updates and announcements.');
+        toast.success(t('detail.followingSuccess'));
       }
     } catch (err: any) {
       toast.error(err.message || 'Something went wrong');
@@ -135,7 +137,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
       ) : (
         <UserPlus className={iconSize} />
       )}
-      {isFollowing ? 'Following' : 'Follow'}
+      {isFollowing ? t('detail.following') : t('detail.follow')}
     </button>
   );
 };

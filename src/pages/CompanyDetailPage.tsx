@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
@@ -38,6 +39,7 @@ interface AgentData {
 
 const CompanyDetailPage = () => {
   const { id } = useParams();
+  const { t } = useTranslation();
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [companyAgents, setCompanyAgents] = useState<AgentData[]>([]);
   const [activeTab, setActiveTab] = useState('properties');
@@ -78,9 +80,9 @@ const CompanyDetailPage = () => {
     fetchCompany();
   }, [id]);
 
-  const typeLabel = (t: string | null) => {
-    if (!t) return 'Real Estate Company';
-    return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeLabel = (tp: string | null) => {
+    if (!tp) return t('detail.realEstateCompany');
+    return tp.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   };
 
   const handleMapClick = () => {
@@ -98,17 +100,17 @@ const CompanyDetailPage = () => {
   })();
 
   const tabs = [
-    { key: 'properties', label: 'Properties', icon: Home },
-    { key: 'projects', label: 'Projects', icon: Building2 },
-    { key: 'events', label: 'Events', icon: Calendar },
-    { key: 'agents', label: 'Our Team', icon: Users },
+    { key: 'properties', label: t('companyDetail.properties'), icon: Home },
+    { key: 'projects', label: t('companyDetail.projects'), icon: Building2 },
+    { key: 'events', label: t('companyDetail.events'), icon: Calendar },
+    { key: 'agents', label: t('companyDetail.ourTeam'), icon: Users },
   ];
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Loading...</div>
+        <div className="text-center py-20 text-muted-foreground">{t('companyDetail.loading')}</div>
         <Footer />
       </div>
     );
@@ -118,7 +120,7 @@ const CompanyDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Company not found.</div>
+        <div className="text-center py-20 text-muted-foreground">{t('companyDetail.notFound')}</div>
         <Footer />
       </div>
     );
@@ -131,9 +133,9 @@ const CompanyDetailPage = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors">{t('common.home')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to="/agents" className="hover:text-primary transition-colors">Companies</Link>
+          <Link to="/agents" className="hover:text-primary transition-colors">{t('companyDetail.companies')}</Link>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground font-medium">{company.name}</span>
         </div>
@@ -189,11 +191,11 @@ const CompanyDetailPage = () => {
                   {/* Stats */}
                   <div className="flex items-center gap-4 mt-3 flex-wrap">
                     {[
-                      { icon: Users, label: 'Team', value: counts.agents },
-                      { icon: Home, label: 'Sale', value: counts.buy },
-                      { icon: Home, label: 'Rent', value: counts.rent },
-                      { icon: Building2, label: 'Projects', value: counts.projects },
-                      { icon: Calendar, label: 'Events', value: counts.events },
+                      { icon: Users, label: t('companyDetail.team'), value: counts.agents },
+                      { icon: Home, label: t('companyDetail.sale'), value: counts.buy },
+                      { icon: Home, label: t('companyDetail.rent'), value: counts.rent },
+                      { icon: Building2, label: t('companyDetail.projects'), value: counts.projects },
+                      { icon: Calendar, label: t('companyDetail.events'), value: counts.events },
                     ].map((s) => (
                       <div key={s.label} className="flex items-center gap-1.5 text-sm">
                         <s.icon className="h-3.5 w-3.5 text-primary" />
@@ -207,14 +209,14 @@ const CompanyDetailPage = () => {
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {company.phone && (
                       <a href={`tel:${company.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                        <Phone className="h-3 w-3" /> Call
+                        <Phone className="h-3 w-3" /> {t('companyDetail.call')}
                       </a>
                     )}
                     <a href={`mailto:${company.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                      <Mail className="h-3 w-3" /> Email
+                      <Mail className="h-3 w-3" /> {t('companyDetail.email')}
                     </a>
                     <a href={`https://wa.me/${company.whatsapp || company.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
-                      <MessageCircle className="h-3 w-3" /> WhatsApp
+                      <MessageCircle className="h-3 w-3" /> {t('companyDetail.whatsApp')}
                     </a>
                   </div>
                 </div>
@@ -230,7 +232,7 @@ const CompanyDetailPage = () => {
               <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                 <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
-                  <MapPin className="h-3 w-3 text-primary" /> Open in Maps
+                  <MapPin className="h-3 w-3 text-primary" /> {t('companyDetail.openInMaps')}
                 </span>
               </div>
             </div>
@@ -241,9 +243,9 @@ const CompanyDetailPage = () => {
       {/* ── About Us — full-width prominent section ── */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-bold text-foreground mb-2">About {company.name}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-2">{t('companyDetail.about', { name: company.name })}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-            {company.about || `${company.name} is a trusted real estate company dedicated to helping clients find their ideal properties. With a team of experienced professionals and deep market knowledge, we provide personalized guidance for buying, selling, and renting properties across our service areas.`}
+            {company.about || t('companyDetail.defaultAbout', { name: company.name })}
           </p>
         </div>
       </div>
@@ -258,8 +260,8 @@ const CompanyDetailPage = () => {
             {allLanguages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  Languages We Speak
+                  <Globe className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
+                  {t('companyDetail.languagesWeSpeak')}
                 </h3>
                 <ExpandablePillList items={allLanguages} maxVisible={6} />
               </div>
@@ -269,8 +271,8 @@ const CompanyDetailPage = () => {
             {company.service_areas && company.service_areas.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  Service Areas
+                  <MapPin className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
+                  {t('companyDetail.serviceAreas')}
                 </h3>
                 <ExpandablePillList items={company.service_areas} maxVisible={6} />
               </div>
@@ -280,8 +282,8 @@ const CompanyDetailPage = () => {
             {company.pin_location && (
               <div className="bg-card rounded-xl border border-border overflow-hidden">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground px-5 pt-5 pb-3">
-                  <Building2 className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  Office Location
+                  <Building2 className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
+                  {t('companyDetail.officeLocation')}
                 </h3>
                 <div
                   className="h-[200px] cursor-pointer relative group"
@@ -291,7 +293,7 @@ const CompanyDetailPage = () => {
                   <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-3">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
-                      <MapPin className="h-3 w-3 text-primary" /> Open in Google Maps
+                      <MapPin className="h-3 w-3 text-primary" /> {t('companyDetail.openInGoogleMaps')}
                     </span>
                   </div>
                 </div>
@@ -341,12 +343,12 @@ const CompanyDetailPage = () => {
                     </div>
                   </Link>
                 ))}
-                {companyAgents.length === 0 && <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No agents found.</div>}
+                {companyAgents.length === 0 && <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('companyDetail.noAgentsFound')}</div>}
               </div>
             )}
             {activeTab === 'properties' && <CompanyPropertiesTab companyId={company.id} />}
             {activeTab === 'projects' && <CompanyProjectsTab companyId={company.id} />}
-            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this company.</div>}
+            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">{t('companyDetail.noEventsFound')}</div>}
           </div>
         </div>
       </div>

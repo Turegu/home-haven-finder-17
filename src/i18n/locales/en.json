@@ -336,7 +336,13 @@
     "companyNotFound": "Company not found.",
     "blogNotFound": "Blog not found.",
     "loadingProperties": "Loading properties...",
-    "loadingProjects": "Loading projects..."
+    "loadingProjects": "Loading projects...",
+    "following": "Following",
+    "follow": "Follow",
+    "followSignIn": "Please sign in to follow",
+    "unfollowed": "Unfollowed successfully",
+    "followingSuccess": "Following! You'll receive updates and announcements.",
+    "realEstateCompany": "Real Estate Company"
   },
   "pages": {
     "buy": {

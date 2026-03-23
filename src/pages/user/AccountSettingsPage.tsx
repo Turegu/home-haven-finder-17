@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguages, useCurrencies } from "@/hooks/useAppData";
 import UserLayout from "@/components/user/UserLayout";
@@ -20,6 +21,7 @@ const AREA_UNITS = [
 ];
 
 const AccountSettingsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: languages = [] } = useLanguages();
   const { data: currencies = [] } = useCurrencies();
@@ -79,7 +81,7 @@ const AccountSettingsPage = () => {
         preferred_area_unit: profile.preferred_area_unit,
       } as any).eq("user_id", user.id);
       if (error) throw error;
-      toast.success("Profile updated!");
+      toast.success(t('accountSettings.profileUpdated'));
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -89,12 +91,12 @@ const AccountSettingsPage = () => {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPw.length < 6) { toast.error("Password must be at least 6 characters"); return; }
+    if (newPw.length < 6) { toast.error(t('auth.passwordMinLength')); return; }
     setPwLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPw });
       if (error) throw error;
-      toast.success("Password changed!");
+      toast.success(t('accountSettings.passwordChanged'));
       setOldPw(""); setNewPw("");
     } catch (err: any) {
       toast.error(err.message);
@@ -108,57 +110,57 @@ const AccountSettingsPage = () => {
   return (
     <UserLayout>
       <div className="max-w-3xl space-y-8">
-        <h1 className="text-2xl font-bold text-foreground">Account Settings</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('accountSettings.title')}</h1>
 
         {/* Personal Information */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('accountSettings.personalInfo')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>First Name *</Label>
+              <Label>{t('accountSettings.firstName')} *</Label>
               <Input value={profile.first_name} onChange={e => upd("first_name", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Last Name *</Label>
+              <Label>{t('accountSettings.lastName')} *</Label>
               <Input value={profile.last_name} onChange={e => upd("last_name", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Display Name *</Label>
+              <Label>{t('accountSettings.displayName')} *</Label>
               <Input value={profile.display_name} onChange={e => upd("display_name", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label>{t('accountSettings.email')}</Label>
               <Input value={email} disabled className="bg-muted" />
             </div>
             <div className="space-y-2">
-              <Label>Phone Number (optional)</Label>
+              <Label>{t('accountSettings.phone')}</Label>
               <Input value={profile.phone} onChange={e => upd("phone", e.target.value)} placeholder="e.g. +90 555 123 4567" />
             </div>
             <div className="flex items-center gap-3 pt-6">
               <Switch checked={profile.show_phone} onCheckedChange={v => upd("show_phone", v)} />
-              <Label className="text-sm">Show phone to companies & agents</Label>
+              <Label className="text-sm">{t('accountSettings.showPhone')}</Label>
             </div>
           </div>
         </div>
 
         {/* Preferences */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Preferences</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('accountSettings.preferences')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label>{t('accountSettings.language')}</Label>
               <select value={profile.preferred_language} onChange={e => upd("preferred_language", e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {languages.map(l => <option key={l.id} value={l.code}>{l.name}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <Label>Currency</Label>
+              <Label>{t('accountSettings.currency')}</Label>
               <select value={profile.preferred_currency} onChange={e => upd("preferred_currency", e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {currencies.map(c => <option key={c.id} value={c.code}>{c.name} ({c.symbol})</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <Label>Area Unit</Label>
+              <Label>{t('accountSettings.areaUnit')}</Label>
               <select value={profile.preferred_area_unit} onChange={e => upd("preferred_area_unit", e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
               </select>
@@ -167,24 +169,24 @@ const AccountSettingsPage = () => {
         </div>
 
         <Button onClick={handleSave} disabled={loading} className="w-full md:w-auto">
-          {loading ? "Saving..." : "Update Profile"}
+          {loading ? t('accountSettings.saving') : t('accountSettings.updateProfile')}
         </Button>
 
         {/* Change Password */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Change Password</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('accountSettings.changePassword')}</h2>
           <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
             <div className="space-y-2">
-              <Label>New Password</Label>
+              <Label>{t('accountSettings.newPassword')}</Label>
               <div className="relative">
-                <Input type={showPw ? "text" : "password"} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Enter new password" required />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPw(!showPw)}>
+                <Input type={showPw ? "text" : "password"} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder={t('accountSettings.enterNewPassword')} required />
+                <button type="button" className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPw(!showPw)}>
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <Button type="submit" variant="outline" disabled={pwLoading}>
-              {pwLoading ? "Changing..." : "Change Password"}
+              {pwLoading ? t('accountSettings.changingPassword') : t('accountSettings.changePassword')}
             </Button>
           </form>
         </div>
@@ -193,37 +195,37 @@ const AccountSettingsPage = () => {
         <div className="bg-card rounded-xl border border-destructive/30 p-6 space-y-4">
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
+            <h2 className="text-lg font-semibold text-destructive">{t('accountSettings.dangerZone')}</h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Once you delete your account, all your data including saved properties, searches, and comparisons will be permanently removed. This action cannot be undone.
+            {t('accountSettings.deleteWarning')}
           </p>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">Delete My Account</Button>
+              <Button variant="destructive" size="sm">{t('accountSettings.deleteAccount')}</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogTitle>{t('accountSettings.areYouSure')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete your account and all associated data. This action cannot be undone.
+                  {t('accountSettings.deleteConfirm')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={async () => {
                     try {
                       await supabase.auth.signOut();
-                      toast.success("Account deletion request submitted. You have been logged out.");
+                      toast.success(t('accountSettings.deletionRequested'));
                       navigate("/");
                     } catch {
-                      toast.error("Something went wrong.");
+                      toast.error(t('common.error'));
                     }
                   }}
                 >
-                  Delete Account
+                  {t('accountSettings.deleteAccount')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

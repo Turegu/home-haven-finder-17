@@ -336,7 +336,13 @@
     "companyNotFound": "لم يتم العثور على الشركة.",
     "blogNotFound": "لم يتم العثور على المدونة.",
     "loadingProperties": "جاري تحميل العقارات...",
-    "loadingProjects": "جاري تحميل المشاريع..."
+    "loadingProjects": "جاري تحميل المشاريع...",
+    "following": "متابَع",
+    "follow": "متابعة",
+    "followSignIn": "يرجى تسجيل الدخول للمتابعة",
+    "unfollowed": "تم إلغاء المتابعة بنجاح",
+    "followingSuccess": "تتم متابعتك! ستتلقى التحديثات والإعلانات.",
+    "realEstateCompany": "شركة عقارية"
   },
   "pages": {
     "buy": {
