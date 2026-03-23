@@ -322,7 +322,7 @@ const AdvertisePage = () => {
                   </div>
 
                   <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
-                    Get Your {pkg.name}
+                    {t('pages.advertise.getYour')} {pkg.name}
                   </Button>
                 </CardContent>
               </Card>
