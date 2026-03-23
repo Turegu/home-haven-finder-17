@@ -648,6 +648,7 @@ const tagColorMap: Record<string, string> = {
 };
 
 function ProjectGridCard({ project }: { project: ProjectResult }) {
+  const { t } = useTranslation();
   const img = project.images?.[0] || '/placeholder.svg';
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
   const tier = project.property_classification;
