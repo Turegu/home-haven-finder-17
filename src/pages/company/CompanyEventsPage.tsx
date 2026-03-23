@@ -39,6 +39,7 @@ const ITEMS_PER_PAGE = 10;
 
 const CompanyEventsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
