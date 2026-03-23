@@ -119,7 +119,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
             </ScrollArea>
             <div className="px-6 py-4 border-t border-border">
               <Button className="w-full" size="lg">
-                Show Results
+                {t('searchFilters.showResults')}
               </Button>
             </div>
           </DialogContent>
