@@ -178,7 +178,7 @@ const UserDashboardPage = () => {
             ) : recentNotifications.length === 0 ? (
               <div className="text-center py-8">
                 <Bell className="h-10 w-10 text-muted-foreground/20 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No notifications yet</p>
+                <p className="text-sm text-muted-foreground">{t('dashboard.noNotificationsYet')}</p>
               </div>
             ) : (
               <div className="space-y-2">
