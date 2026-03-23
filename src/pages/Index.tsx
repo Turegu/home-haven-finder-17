@@ -13,7 +13,7 @@ import { useCmsPage, useFeaturedLocations } from '@/hooks/useAppData';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 interface CmsContent {
   hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
