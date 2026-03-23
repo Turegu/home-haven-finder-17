@@ -22,6 +22,7 @@ interface PropertyListCardProps {
 }
 
 const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, onLocationClick }: PropertyListCardProps) => {
+  const { t } = useTranslation();
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(isSaved);
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
