@@ -122,7 +122,7 @@ const SavedSearchesPage = () => {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-foreground text-sm">{item.title}</p>
                     <p className="text-xs text-muted-foreground truncate">{getParamsSummary(item.search_params)}</p>
-                    <p className="text-xs text-muted-foreground">Saved: {format(new Date(item.created_at), "MMM dd, yyyy")}</p>
+                     <p className="text-xs text-muted-foreground">{t('userPages.saved')}: {format(new Date(item.created_at), "MMM dd, yyyy")}</p>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => handleRunSearch(item)} className="gap-1 shrink-0">
                     <Play className="h-3 w-3" /> Run
