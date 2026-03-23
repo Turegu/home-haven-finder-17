@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
+import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
+import FeaturedProjectCard from '@/components/FeaturedProjectCard';
 
 interface CompanyData {
   id: string;
@@ -334,7 +336,7 @@ const CompanyDetailPage = () => {
               </div>
             )}
             {activeTab === 'properties' && <CompanyPropertiesTab companyId={company.id} />}
-            {activeTab === 'projects' && <div className="text-center py-12 text-muted-foreground text-sm">No projects found for this company.</div>}
+            {activeTab === 'projects' && <CompanyProjectsTab companyId={company.id} />}
             {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this company.</div>}
           </div>
         </div>
@@ -408,6 +410,55 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
                 }}
               />
             </Link>
+          ))}
+        </div>
+      )}
+    </>
+  );
+};
+
+const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
+  const [filters, setFilters] = useState<ProjectFilters>({ status: 'all', minPrice: '', maxPrice: '' });
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProjects = useCallback(async () => {
+    setLoading(true);
+    let query = supabase
+      .from('projects')
+      .select('id, title, location, min_price, currency, images, developer, min_units, completion_date, project_status, companies(logo_url)')
+      .eq('company_id', companyId)
+      .eq('status', 'active')
+      .limit(50);
+
+    if (filters.status !== 'all') query = query.eq('project_status', filters.status);
+    if (filters.minPrice) query = query.gte('min_price', Number(filters.minPrice));
+    if (filters.maxPrice) query = query.lte('min_price', Number(filters.maxPrice));
+
+    const { data } = await query.order('created_at', { ascending: false });
+    setProjects((data || []).map((p: any) => ({
+      id: p.id, title: p.title, location: p.location || 'N/A',
+      priceFrom: p.min_price ?? 0, currency: p.currency ?? 'USD',
+      image: p.images?.[0] || '/placeholder.svg', developer: p.developer || '',
+      developerLogo: p.companies?.logo_url || '', units: p.min_units ?? 0,
+      completionDate: p.completion_date || 'TBA',
+    })));
+    setLoading(false);
+  }, [companyId, filters]);
+
+  useEffect(() => { fetchProjects(); }, [fetchProjects]);
+
+  return (
+    <>
+      <ProfileProjectFilters onFiltersChange={setFilters} />
+      {loading ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">Loading projects...</div>
+      ) : projects.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">No projects match the selected filters.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {projects.map((project) => (
+            <FeaturedProjectCard key={project.id} project={project} />
           ))}
         </div>
       )}
