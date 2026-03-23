@@ -449,8 +449,8 @@ const ProjectDetailPage = () => {
                         <Building className="h-10 w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentCompany || 'Company'}</h3>
-                    <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
+                     <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentCompany || t('detail.company')}</h3>
+                     <p className="text-sm text-muted-foreground">{t('property.realEstateBrokers')}</p>
                   </Link>
 
                   {realCompanyId && (
