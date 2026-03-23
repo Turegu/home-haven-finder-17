@@ -52,6 +52,12 @@ const AdminSettingsPage = () => {
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setAiSearchEnabled(map.ai_search_enabled !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
+        setBoostCompany3(map.boost_company_3_months_credits || "20");
+        setBoostCompany6(map.boost_company_6_months_credits || "35");
+        setBoostCompany12(map.boost_company_12_months_credits || "60");
+        setBoostAgent3(map.boost_agent_3_months_credits || "15");
+        setBoostAgent6(map.boost_agent_6_months_credits || "25");
+        setBoostAgent12(map.boost_agent_12_months_credits || "45");
       }
 
       const { data: { user } } = await supabase.auth.getUser();
