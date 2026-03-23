@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AreaUnitProvider } from "@/hooks/useAreaUnit";
+import BackToTop from "@/components/BackToTop";
 
 // Eager-load the homepage for instant first paint
 import Index from "./pages/Index.tsx";
