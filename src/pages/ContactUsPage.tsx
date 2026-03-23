@@ -170,6 +170,7 @@ const HeroIllustration = () => (
 );
 
 const ContactUsPage = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
