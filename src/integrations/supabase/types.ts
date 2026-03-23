@@ -109,6 +109,7 @@ export type Database = {
       agents: {
         Row: {
           avatar_url: string | null
+          boost_end_date: string | null
           company_id: string
           created_at: string
           credit_balance: number
@@ -129,6 +130,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          boost_end_date?: string | null
           company_id: string
           created_at?: string
           credit_balance?: number
@@ -149,6 +151,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          boost_end_date?: string | null
           company_id?: string
           created_at?: string
           credit_balance?: number
@@ -374,6 +377,7 @@ export type Database = {
       companies: {
         Row: {
           about: string | null
+          boost_end_date: string | null
           company_type: Database["public"]["Enums"]["company_type"] | null
           cover_url: string | null
           created_at: string
@@ -402,6 +406,7 @@ export type Database = {
         }
         Insert: {
           about?: string | null
+          boost_end_date?: string | null
           company_type?: Database["public"]["Enums"]["company_type"] | null
           cover_url?: string | null
           created_at?: string
@@ -430,6 +435,7 @@ export type Database = {
         }
         Update: {
           about?: string | null
+          boost_end_date?: string | null
           company_type?: Database["public"]["Enums"]["company_type"] | null
           cover_url?: string | null
           created_at?: string
