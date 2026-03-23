@@ -331,8 +331,8 @@ const ProjectDetailPage = () => {
                   <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" />{project.units} {t('project.units')}</span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span>Ad ID: <span className="font-medium text-foreground">{project.listingId}</span></span>
-                  <span>Added: <span className="font-medium text-foreground">{formatDate(project.listingDate)}</span></span>
+                  <span>{t('project.adId')}: <span className="font-medium text-foreground">{project.listingId}</span></span>
+                  <span>{t('project.added')}: <span className="font-medium text-foreground">{formatDate(project.listingDate)}</span></span>
                 </div>
               </div>
             </div>
