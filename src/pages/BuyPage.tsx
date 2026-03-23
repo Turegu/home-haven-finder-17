@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { toast } from 'sonner';
 import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMoreFilters } from '@/components/PropertyFiltersModal';
