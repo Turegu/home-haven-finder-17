@@ -67,7 +67,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
           <DialogTrigger asChild>
             <button className="flex items-center gap-1.5 px-3 py-2 text-sm text-primary font-medium hover:bg-secondary rounded-md transition-colors">
               <SlidersHorizontal className="h-4 w-4" />
-              Filters
+              {t('searchFilters.filters')}
               {activeCount > 0 && (
                 <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
                   {activeCount}
