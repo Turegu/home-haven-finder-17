@@ -777,7 +777,7 @@ const CompanyPropertyEditPage = () => {
               <Input type="datetime-local" value={form.open_house_start} onChange={(e) => updateField("open_house_start", e.target.value)} className="bg-secondary/50" />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Ending Date And Time</Label>
+              <Label className="text-foreground font-medium">{t("companyDashboard.endingDateTime")}</Label>
               <Input type="datetime-local" value={form.open_house_end} onChange={(e) => updateField("open_house_end", e.target.value)} className="bg-secondary/50" />
             </div>
           </div>
