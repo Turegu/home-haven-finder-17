@@ -33,6 +33,7 @@ interface Follower {
 }
 
 const CompanyFollowersPage = () => {
+  const { t } = useTranslation();
   const [followers, setFollowers] = useState<Follower[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
