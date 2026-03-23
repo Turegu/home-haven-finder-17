@@ -25,6 +25,8 @@ import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 import FollowButton from '@/components/FollowButton';
+import ShareDropdown from '@/components/ShareDropdown';
+import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // Lazy-load heavy below-the-fold components
