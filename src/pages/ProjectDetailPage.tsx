@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
@@ -27,6 +28,7 @@ import SEOHead from '@/components/SEOHead';
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   useTrackPageView(id, 'project');
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -130,12 +132,12 @@ const ProjectDetailPage = () => {
   const projectLogo = project.logoUrl || defaultProjectLogo;
 
   const mediaTabs = [
-    { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'plans', label: 'Plans', icon: Images },
-    { id: '360', label: '360 View', icon: Globe },
-    { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'street', label: 'Street View', icon: PersonStanding },
-    { id: 'video', label: 'Video', icon: Video },
+    { id: 'photos', label: t('property.photos'), icon: Camera },
+    { id: 'plans', label: t('property.plans'), icon: Images },
+    { id: '360', label: t('property.view360'), icon: Globe },
+    { id: 'location', label: t('property.location'), icon: MapPin },
+    { id: 'street', label: t('property.streetView'), icon: PersonStanding },
+    { id: 'video', label: t('property.video'), icon: Video },
   ];
 
   const formatDate = (dateStr: string) => {
@@ -266,12 +268,12 @@ const ProjectDetailPage = () => {
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-6 flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
-          <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
+          <Link to="/projects" className="hover:text-foreground transition-colors">{t('project.projects')}</Link>
           {project.province && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/projects?province=${encodeURIComponent(project.province)}`} className="hover:text-foreground transition-colors">
-                {project.province} Projects
+                {project.province} {t('project.projects')}
               </Link>
             </>
           )}
@@ -279,7 +281,7 @@ const ProjectDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/projects?province=${encodeURIComponent(project.province)}&town=${encodeURIComponent(project.town)}`} className="hover:text-foreground transition-colors">
-                {project.town} Projects
+                {project.town} {t('project.projects')}
               </Link>
             </>
           )}
@@ -287,7 +289,7 @@ const ProjectDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/projects?province=${encodeURIComponent(project.province)}&town=${encodeURIComponent(project.town)}&neighbourhood=${encodeURIComponent(project.neighbourhood)}`} className="hover:text-foreground transition-colors">
-                {project.neighbourhood} Projects
+                {project.neighbourhood} {t('project.projects')}
               </Link>
             </>
           )}
@@ -317,7 +319,7 @@ const ProjectDetailPage = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-primary mb-1">From $ {project.priceFrom.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-primary mb-1">{t('project.startingFrom')} $ {project.priceFrom.toLocaleString()}</p>
                   <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="h-4 w-4 text-primary" /><span>{project.location}</span>
                   </div>
@@ -326,44 +328,44 @@ const ProjectDetailPage = () => {
               <div className="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
                 <div className="flex flex-wrap items-center gap-6">
                   <span className="flex items-center gap-1.5"><Building className="h-4 w-4" />{project.projectType}</span>
-                  <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" />{project.units} Units</span>
+                  <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" />{project.units} {t('project.units')}</span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span>Ad ID: <span className="font-medium text-foreground">{project.listingId}</span></span>
-                  <span>Added: <span className="font-medium text-foreground">{formatDate(project.listingDate)}</span></span>
+                  <span>{t('project.adId')}: <span className="font-medium text-foreground">{project.listingId}</span></span>
+                  <span>{t('project.added')}: <span className="font-medium text-foreground">{formatDate(project.listingDate)}</span></span>
                 </div>
               </div>
             </div>
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('project.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <OverviewItem icon={Hash} label="Listing ID" value={project.listingId} />
-                <OverviewItem icon={Building} label="Type" value={project.projectType} />
-                <OverviewItem icon={DollarSign} label="Starting Price" value={`$ ${project.priceFrom.toLocaleString()}`} />
-                <OverviewItem icon={HardHat} label="Developer" value={project.developer} />
-                <OverviewItem icon={Ruler} label="Area Range" value={project.areaRange} />
-                <OverviewItem icon={Layers} label="No of Units" value={String(project.units)} />
-                <OverviewItem icon={Activity} label="Status" value={project.status} />
-                <OverviewItem icon={CalendarCheck} label="Completion" value={project.completionDate} />
+                <OverviewItem icon={Hash} label={t('project.listingId')} value={project.listingId} />
+                <OverviewItem icon={Building} label={t('project.type')} value={project.projectType} />
+                <OverviewItem icon={DollarSign} label={t('project.startingPrice')} value={`$ ${project.priceFrom.toLocaleString()}`} />
+                <OverviewItem icon={HardHat} label={t('project.developer')} value={project.developer} />
+                <OverviewItem icon={Ruler} label={t('project.areaRange')} value={project.areaRange} />
+                <OverviewItem icon={Layers} label={t('project.noOfUnits')} value={String(project.units)} />
+                <OverviewItem icon={Activity} label={t('project.status')} value={project.status} />
+                <OverviewItem icon={CalendarCheck} label={t('project.completion')} value={project.completionDate} />
               </div>
             </div>
 
             {/* Description */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Description</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('project.description')}</h2>
               <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{project.description}</div>
             </div>
 
             {/* Amenities */}
             {(project.interiorAmenities.length > 0 || project.exteriorAmenities.length > 0) && (
               <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">Amenities</h2>
+                <h2 className="text-lg font-bold text-foreground mb-4">{t('project.amenities')}</h2>
                 <div className="space-y-4">
                   {project.interiorAmenities.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
+                      <h3 className="font-semibold text-foreground text-sm mb-2">{t('project.interiorAmenities')}</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {project.interiorAmenities.map((a: string) => {
                           const Icon = getIcon(a, 'interior');
@@ -376,7 +378,7 @@ const ProjectDetailPage = () => {
                   )}
                   {project.exteriorAmenities.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-foreground text-sm mb-2">Exterior Amenities</h3>
+                      <h3 className="font-semibold text-foreground text-sm mb-2">{t('project.exteriorAmenities')}</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {project.exteriorAmenities.map((a: string) => {
                           const Icon = getIcon(a, 'exterior');
@@ -423,7 +425,7 @@ const ProjectDetailPage = () => {
 
                   {project.agentLanguages && project.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
-                      <span className="font-medium text-foreground">Speaks:</span> {project.agentLanguages.join(', ')}
+                      <span className="font-medium text-foreground">{t('property.speaks')}:</span> {project.agentLanguages.join(', ')}
                     </p>
                   )}
 
@@ -432,7 +434,7 @@ const ProjectDetailPage = () => {
                       <img src={project.companyLogo} alt={project.agentCompany} className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity" />
                       <div className="text-center">
                         <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{project.agentCompany}</h4>
-                        <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                        <p className="text-xs text-muted-foreground">{t('property.realEstateBrokers')}</p>
                       </div>
                     </Link>
                   )}
@@ -447,8 +449,8 @@ const ProjectDetailPage = () => {
                         <Building className="h-10 w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentCompany || 'Company'}</h3>
-                    <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
+                     <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{project.agentCompany || t('detail.company')}</h3>
+                     <p className="text-sm text-muted-foreground">{t('property.realEstateBrokers')}</p>
                   </Link>
 
                   {realCompanyId && (
@@ -460,11 +462,11 @@ const ProjectDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />Call</button>
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />{t('property.call')}</button>
                 <div className="w-px h-6 bg-border" />
-                <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Mail className="h-4 w-4" />Email</button>
+                <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Mail className="h-4 w-4" />{t('property.email')}</button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />WhatsApp</button>
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />{t('property.whatsApp')}</button>
               </div>
             </div>
 

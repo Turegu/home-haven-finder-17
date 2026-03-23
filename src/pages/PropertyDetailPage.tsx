@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
@@ -96,6 +97,7 @@ const parsePinLocation = (value: unknown): { lat: number; lng: number } | null =
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { formatArea } = useAreaUnit();
   const isMobile = useIsMobile();
   useTrackPageView(id, 'property');
@@ -264,12 +266,12 @@ const PropertyDetailPage = () => {
   const totalInterest = totalPayment - principal;
 
   const mediaTabs = [
-    { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'plans', label: 'Plans', icon: Images },
-    { id: '360', label: '360 View', icon: Globe },
-    { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'street', label: 'Street View', icon: PersonStanding },
-    { id: 'video', label: 'Video', icon: Video },
+    { id: 'photos', label: t('property.photos'), icon: Camera },
+    { id: 'plans', label: t('property.plans'), icon: Images },
+    { id: '360', label: t('property.view360'), icon: Globe },
+    { id: 'location', label: t('property.location'), icon: MapPin },
+    { id: 'street', label: t('property.streetView'), icon: PersonStanding },
+    { id: 'video', label: t('property.video'), icon: Video },
   ];
 
   const handleMediaTabClick = (tabId: string) => {
@@ -314,13 +316,13 @@ const PropertyDetailPage = () => {
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
           <Link to={`/${property.propertyPurpose === 'rent' ? 'rent' : 'buy'}`} className="hover:text-foreground transition-colors">
-            {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+            {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')}
           </Link>
           {property.province && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}`} className="hover:text-foreground transition-colors">
-                {property.province} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+                {property.province} {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')}
               </Link>
             </>
           )}
@@ -328,7 +330,7 @@ const PropertyDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&type=${encodeURIComponent(property.type)}`} className="hover:text-foreground transition-colors">
-                {property.province} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'} {property.type}
+                {property.province} {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')} {property.type}
               </Link>
             </>
           )}
@@ -336,7 +338,7 @@ const PropertyDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&town=${encodeURIComponent(property.town)}`} className="hover:text-foreground transition-colors">
-                {property.town} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+                {property.town} {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')}
               </Link>
             </>
           )}
@@ -344,7 +346,7 @@ const PropertyDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&town=${encodeURIComponent(property.town)}&neighbourhood=${encodeURIComponent(property.neighbourhood)}`} className="hover:text-foreground transition-colors">
-                {property.neighbourhood} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+                {property.neighbourhood} {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')}
               </Link>
             </>
           )}
@@ -396,7 +398,7 @@ const PropertyDetailPage = () => {
             </div>
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Images className="h-10 w-10 mx-auto mb-2 opacity-40" />No floor plans available for this listing.</div>
+              <div className="text-center"><Images className="h-10 w-10 mx-auto mb-2 opacity-40" />{t('property.noFloorPlans')}</div>
             </div>
           )}
         </div>
@@ -407,7 +409,7 @@ const PropertyDetailPage = () => {
             <iframe src={property.view360Link} className="w-full h-full border-0" allow="fullscreen; vr" allowFullScreen title="360° Virtual Tour" />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Globe className="h-10 w-10 mx-auto mb-2 opacity-40" />No 360° tour available for this listing.</div>
+              <div className="text-center"><Globe className="h-10 w-10 mx-auto mb-2 opacity-40" />{t('property.no360Tour')}</div>
             </div>
           )}
         </div>
@@ -420,7 +422,7 @@ const PropertyDetailPage = () => {
         )}
         {!pinLocation && activeTab === 'location' && (
           <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-            Location coordinates are unavailable for this listing.
+            {t('property.locationUnavailable')}
           </div>
         )}
 
@@ -432,7 +434,7 @@ const PropertyDetailPage = () => {
         )}
         {!pinLocation && activeTab === 'street' && (
           <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-            Location coordinates are unavailable for this listing.
+            {t('property.locationUnavailable')}
           </div>
         )}
 
@@ -448,7 +450,7 @@ const PropertyDetailPage = () => {
             />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />No video available for this listing.</div>
+              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />{t('property.noVideo')}</div>
             </div>
           )}
         </div>
@@ -540,16 +542,16 @@ const PropertyDetailPage = () => {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <BedDouble className="h-4 w-4" />
-                    {property.bedrooms} Bedrooms
+                    {property.bedrooms} {t('property.bedrooms')}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Bath className="h-4 w-4" />
-                    {property.bathrooms} Bathrooms
+                    {property.bathrooms} {t('property.bathrooms')}
                   </span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span>Ad ID: <span className="font-medium text-foreground">{property.listingId}</span></span>
-                  <span>Added: <span className="font-medium text-foreground">01/01/2025</span></span>
+                  <span>{t('property.adId')}: <span className="font-medium text-foreground">{property.listingId}</span></span>
+                  <span>{t('property.added')}: <span className="font-medium text-foreground">01/01/2025</span></span>
                 </div>
               </div>
             </div>
@@ -560,8 +562,8 @@ const PropertyDetailPage = () => {
                 {property.openHouseStart && (
                   <span className="flex items-center gap-1.5 text-foreground">
                     <CalendarDays className="h-4 w-4 text-warm" />
-                    <span className="font-medium">Open House:</span> {property.openHouseStart}
-                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— Ends: {property.openHouseEnd}</span>}
+                    <span className="font-medium">{t('property.openHouse')}:</span> {property.openHouseStart}
+                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— {t('common.end')}: {property.openHouseEnd}</span>}
                   </span>
                 )}
                 {property.viewingHours && (
@@ -575,27 +577,27 @@ const PropertyDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('property.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 
-                <OverviewItem icon={Building} label="Type" value={property.type} />
-                <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
-                <OverviewItem icon={Ruler} label="Area" value={formatArea(property.area, property.areaUnit)} />
-                <OverviewItem icon={Home} label="Rooms" value={String(property.bedrooms)} />
-                <OverviewItem icon={Bath} label="Bathrooms" value={String(property.bathrooms)} />
-                <OverviewItem icon={FileText} label="Title Deed" value={property.titleDeed || '—'} />
-                <OverviewItem icon={Car} label="Parking" value={String(property.parkingSpaces)} />
-                <OverviewItem icon={Armchair} label="Furniture" value={property.furniture} />
-                <OverviewItem icon={Layers} label="Floor Level" value={property.floorLevel} />
-                <OverviewItem icon={Hourglass} label="Property Age" value={property.propertyAge} />
-                <OverviewItem icon={Activity} label="Status" value={property.propertyStatus} />
-                <OverviewItem icon={Compass} label="Orientation" value={property.orientation.join(', ')} />
+                <OverviewItem icon={Building} label={t('property.type')} value={property.type} />
+                <OverviewItem icon={DollarSign} label={t('property.price')} value={`$ ${property.price.toLocaleString()}`} />
+                <OverviewItem icon={Ruler} label={t('property.area')} value={formatArea(property.area, property.areaUnit)} />
+                <OverviewItem icon={Home} label={t('property.rooms')} value={String(property.bedrooms)} />
+                <OverviewItem icon={Bath} label={t('property.bathrooms')} value={String(property.bathrooms)} />
+                <OverviewItem icon={FileText} label={t('property.titleDeed')} value={property.titleDeed || '—'} />
+                <OverviewItem icon={Car} label={t('property.parking')} value={String(property.parkingSpaces)} />
+                <OverviewItem icon={Armchair} label={t('property.furniture')} value={property.furniture} />
+                <OverviewItem icon={Layers} label={t('property.floorLevel')} value={property.floorLevel} />
+                <OverviewItem icon={Hourglass} label={t('property.propertyAge')} value={property.propertyAge} />
+                <OverviewItem icon={Activity} label={t('property.status')} value={property.propertyStatus} />
+                <OverviewItem icon={Compass} label={t('property.orientation')} value={property.orientation.join(', ')} />
               </div>
             </div>
 
             {/* Description */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Description</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('property.description')}</h2>
               <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">
                 {property.description}
               </div>
@@ -606,10 +608,10 @@ const PropertyDetailPage = () => {
 
             {/* Amenities */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Amenities</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('property.amenities')}</h2>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
+                  <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.interiorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {property.interiorAmenities.map((a) => {
                       const Icon = getIcon(a, 'interior');
@@ -623,7 +625,7 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground text-sm mb-2">Exterior Amenities</h3>
+                  <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.exteriorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {property.exteriorAmenities.map((a) => {
                       const Icon = getIcon(a, 'exterior');
@@ -642,7 +644,7 @@ const PropertyDetailPage = () => {
             {/* Payment Plans */}
             {propertyPaymentPlans.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">Payment Plan</h2>
+                <h2 className="text-lg font-bold text-foreground mb-4">{t('property.paymentPlan')}</h2>
                 {propertyPaymentPlans.map((plan) => (
                   <div key={plan.id} className="mb-4 last:mb-0">
                     {propertyPaymentPlans.length > 1 && (
@@ -709,10 +711,10 @@ const PropertyDetailPage = () => {
 
             {/* Loan Calculator */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Loan Calculator</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('property.loanCalculator')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Property Value</label>
+                  <label className="text-xs text-muted-foreground block mb-1">{t('property.propertyValue')}</label>
                   <div className="flex items-center border border-border rounded-md overflow-hidden">
                     <span className="px-2 text-xs text-muted-foreground bg-muted">$</span>
                     <input
@@ -724,7 +726,7 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Loan Period</label>
+                  <label className="text-xs text-muted-foreground block mb-1">{t('property.loanPeriod')}</label>
                   <div className="flex items-center border border-border rounded-md overflow-hidden">
                     <span className="px-2 text-xs text-muted-foreground bg-muted">Years</span>
                     <input
@@ -736,7 +738,7 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Interest Rate</label>
+                  <label className="text-xs text-muted-foreground block mb-1">{t('property.interestRate')}</label>
                   <div className="flex items-center border border-border rounded-md overflow-hidden">
                     <span className="px-2 text-xs text-muted-foreground bg-muted">%</span>
                     <input
@@ -749,7 +751,7 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Down Payment</label>
+                  <label className="text-xs text-muted-foreground block mb-1">{t('property.downPayment')}</label>
                   <div className="flex items-center border border-border rounded-md overflow-hidden">
                     <span className="px-2 text-xs text-muted-foreground bg-muted">%</span>
                     <input
@@ -764,15 +766,15 @@ const PropertyDetailPage = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Total Cost</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('property.totalCost')}</p>
                   <p className="text-lg font-bold text-foreground">${totalPayment.toFixed(2)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Monthly Payment</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('property.monthlyPayment')}</p>
                   <p className="text-lg font-bold text-primary">${monthlyPayment.toFixed(2)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Total Interest</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('property.totalInterest')}</p>
                   <p className="text-lg font-bold text-foreground">${totalInterest.toFixed(2)}</p>
                 </div>
               </div>
@@ -814,7 +816,7 @@ const PropertyDetailPage = () => {
 
                   {property.agentLanguages && property.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
-                      <span className="font-medium text-foreground">Speaks:</span>{' '}
+                      <span className="font-medium text-foreground">{t('property.speaks')}:</span>{' '}
                       {property.agentLanguages.join(', ')}
                     </p>
                   )}
@@ -829,7 +831,7 @@ const PropertyDetailPage = () => {
                       />
                       <div className="text-center">
                         <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
-                        <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                        <p className="text-xs text-muted-foreground">{t('property.realEstateBrokers')}</p>
                       </div>
                     </Link>
                   )}
@@ -850,7 +852,7 @@ const PropertyDetailPage = () => {
                       </div>
                     )}
                     <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentCompany || 'Company'}</h3>
-                    <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
+                    <p className="text-sm text-muted-foreground">{t('property.realEstateBrokers')}</p>
                   </Link>
 
                   {realCompanyId && (
@@ -864,17 +866,17 @@ const PropertyDetailPage = () => {
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
                 <button onClick={() => { trackInquiryClick(id!, 'property', 'call'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Phone className="h-4 w-4" />
-                  Call
+                  {t('property.call')}
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button onClick={() => { trackInquiryClick(id!, 'property', 'email'); setEmailDialogOpen(true); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Mail className="h-4 w-4" />
-                  Email
+                  {t('property.email')}
                 </button>
                 <div className="w-px h-6 bg-border" />
                 <button onClick={() => { trackInquiryClick(id!, 'property', 'whatsapp'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
-                  WhatsApp
+                  {t('property.whatsApp')}
                 </button>
               </div>
             </div>
@@ -889,7 +891,7 @@ const PropertyDetailPage = () => {
 
         {/* Similar Properties */}
         <section className="mt-12">
-          <h2 className="text-xl font-bold text-foreground mb-6">Similar Properties</h2>
+          <h2 className="text-xl font-bold text-foreground mb-6">{t('property.similarProperties')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {similarProperties.map((p) => (
               <Link key={p.id} to={`/property/${p.id}`}>

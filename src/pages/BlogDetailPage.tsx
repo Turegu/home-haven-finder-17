@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import DOMPurify from "dompurify";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
+  const { t, i18n } = useTranslation();
   const [blog, setBlog] = useState<any>(null);
   const [translation, setTranslation] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -23,19 +25,20 @@ const BlogDetailPage = () => {
 
       if (data) {
         setBlog(data);
-        // Get English translation
-        const { data: trans } = await supabase
+        const langCode = i18n.language === 'ar' ? 'ar' : 'en';
+        const { data: allTrans } = await supabase
           .from("blog_translations")
-          .select("title, description")
+          .select("title, description, language_code")
           .eq("blog_id", data.id)
-          .eq("language_code", "en")
-          .single();
-        setTranslation(trans);
+          .in("language_code", [langCode, "en"]);
+        const preferred = allTrans?.find(t => t.language_code === langCode);
+        const fallback = allTrans?.find(t => t.language_code === 'en');
+        setTranslation(preferred || fallback || null);
       }
       setLoading(false);
     };
     fetchBlog();
-  }, [slug]);
+  }, [slug, i18n.language]);
 
   if (loading) return (
     <div className="min-h-screen bg-background">
@@ -48,7 +51,7 @@ const BlogDetailPage = () => {
   if (!blog) return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">Blog not found.</div>
+      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">{t('detail.blogNotFound')}</div>
       <Footer />
     </div>
   );
@@ -58,11 +61,11 @@ const BlogDetailPage = () => {
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
+          <Link to="/" className="hover:text-primary">{t('common.home')}</Link>
           <span>/</span>
-          <Link to="/blog" className="hover:text-primary">Blogs</Link>
+          <Link to="/blog" className="hover:text-primary">{t('pages.blog.blogs')}</Link>
           <span>/</span>
-          <span className="text-foreground line-clamp-1">{translation?.title || "Blog"}</span>
+          <span className="text-foreground line-clamp-1">{translation?.title || t('pages.blog.title')}</span>
         </div>
 
         <h1 className="text-3xl font-bold text-foreground mb-4">{translation?.title}</h1>

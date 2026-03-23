@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CalendarDays, Phone, Mail, Heart,
@@ -21,6 +22,7 @@ import SEOHead from '@/components/SEOHead';
 const EventDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
@@ -120,10 +122,10 @@ const EventDetailPage = () => {
   };
 
   const mediaTabs = [
-    { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'street', label: 'Street View', icon: PersonStanding },
-    { id: 'video', label: 'Video', icon: Video },
+    { id: 'photos', label: t('property.photos'), icon: Camera },
+    { id: 'location', label: t('property.location'), icon: MapPin },
+    { id: 'street', label: t('property.streetView'), icon: PersonStanding },
+    { id: 'video', label: t('property.video'), icon: Video },
   ];
 
   return (
@@ -222,12 +224,12 @@ const EventDetailPage = () => {
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-6 flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
-          <Link to="/events" className="hover:text-foreground transition-colors">Events</Link>
+          <Link to="/events" className="hover:text-foreground transition-colors">{t('event.events')}</Link>
           {event.province && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/events?province=${encodeURIComponent(event.province)}`} className="hover:text-foreground transition-colors">
-                {event.province} Events
+                {event.province} {t('event.events')}
               </Link>
             </>
           )}
@@ -235,7 +237,7 @@ const EventDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/events?province=${encodeURIComponent(event.province)}&town=${encodeURIComponent(event.town)}`} className="hover:text-foreground transition-colors">
-                {event.town} Events
+                {event.town} {t('event.events')}
               </Link>
             </>
           )}
@@ -243,7 +245,7 @@ const EventDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/events?province=${encodeURIComponent(event.province)}&town=${encodeURIComponent(event.town)}&neighbourhood=${encodeURIComponent(event.neighbourhood)}`} className="hover:text-foreground transition-colors">
-                {event.neighbourhood} Events
+                {event.neighbourhood} {t('event.events')}
               </Link>
             </>
           )}
@@ -269,7 +271,7 @@ const EventDetailPage = () => {
                 </div>
               </div>
               <p className="text-2xl font-bold text-primary mb-2">
-                {event.price ? `$ ${event.price.toLocaleString()}` : 'Open Invitation'}
+                {event.price ? `$ ${event.price.toLocaleString()}` : t('event.openInvitation')}
               </p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
                 <MapPin className="h-4 w-4 text-primary" /><span>{event.location}</span>
@@ -280,22 +282,22 @@ const EventDetailPage = () => {
                   <span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4 text-warm" />{formatDate(event.date)}</span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span>Ad ID: <span className="font-medium text-foreground">{event.listingId}</span></span>
-                  <span>Added: <span className="font-medium text-foreground">{event.listingDate}</span></span>
+                  <span>{t('event.adId')}: <span className="font-medium text-foreground">{event.listingId}</span></span>
+                  <span>{t('event.added')}: <span className="font-medium text-foreground">{event.listingDate}</span></span>
                 </div>
               </div>
             </div>
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('event.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
-                <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
-                <OverviewItem icon={Timer} label="Time" value={`From ${formatTime(event.date)}${event.endDate ? ` To ${formatTime(event.endDate)}` : ''}`} />
-                <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
-                <OverviewItem icon={Ticket} label="Admission" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
-                <OverviewItem icon={DollarSign} label="Ticket Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
+                <OverviewItem icon={Clock} label={t('event.eventType')} value={event.eventType} />
+                <OverviewItem icon={CalendarDays} label={t('event.date')} value={formatDate(event.date)} />
+                <OverviewItem icon={Timer} label={t('event.time')} value={`From ${formatTime(event.date)}${event.endDate ? ` To ${formatTime(event.endDate)}` : ''}`} />
+                <OverviewItem icon={Users} label={t('event.organizer')} value={event.organizer} />
+                <OverviewItem icon={Ticket} label={t('event.admission')} value={event.entryType === 'open_invitation' ? t('event.openInvitation') : event.entryType} />
+                <OverviewItem icon={DollarSign} label={t('event.ticketPrice')} value={event.price ? `$ ${event.price.toLocaleString()}` : t('event.free')} />
               </div>
               {event.pdfCatalogueUrl && (
                 <a
@@ -304,22 +306,21 @@ const EventDetailPage = () => {
                   rel="noopener noreferrer"
                   className="mt-5 inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
                 >
-                  <FileDown className="h-4 w-4" />
-                  Download Brochure
+                  <FileDown className="h-4 w-4" />{t('project.downloadBrochure')}
                 </a>
               )}
             </div>
 
             {/* Description */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Description</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('event.description')}</h2>
               <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{event.description}</div>
             </div>
 
             {/* Map placeholder */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="px-6 py-4 border-b border-border">
-                <h2 className="text-lg font-bold text-foreground">Location on Map</h2>
+                <h2 className="text-lg font-bold text-foreground">{t('event.locationOnMap')}</h2>
               </div>
               <div className="h-[300px] bg-muted flex items-center justify-center text-muted-foreground">Map View — {event.location}</div>
             </div>
@@ -377,16 +378,16 @@ const EventDetailPage = () => {
 
               {!event.price && (
                 <div className="bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-center mb-4">
-                  <p className="text-sm font-medium text-primary">This event is free to attend</p>
+                  <p className="text-sm font-medium text-primary">{t('event.freeToAttend')}</p>
                 </div>
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />Call</button>
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />{t('property.call')}</button>
                 <div className="w-px h-6 bg-border" />
-                <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Mail className="h-4 w-4" />Email</button>
+                <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Mail className="h-4 w-4" />{t('property.email')}</button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />WhatsApp</button>
+                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />{t('property.whatsApp')}</button>
               </div>
             </div>
 

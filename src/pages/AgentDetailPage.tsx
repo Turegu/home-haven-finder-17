@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
@@ -35,6 +36,7 @@ interface AgentData {
 
 const AgentDetailPage = () => {
   const { id } = useParams();
+  const { t } = useTranslation();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
@@ -64,16 +66,16 @@ const AgentDetailPage = () => {
   }, [id]);
 
   const tabs = [
-    { key: 'properties', label: 'Properties', icon: Home },
-    { key: 'projects', label: 'Projects', icon: Building2 },
-    { key: 'events', label: 'Events', icon: Calendar },
+    { key: 'properties', label: t('detail.properties'), icon: Home },
+    { key: 'projects', label: t('detail.projects'), icon: Building2 },
+    { key: 'events', label: t('detail.events'), icon: Calendar },
   ];
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Loading...</div>
+        <div className="text-center py-20 text-muted-foreground">{t('common.loading')}</div>
         <Footer />
       </div>
     );
@@ -83,7 +85,7 @@ const AgentDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">Agent not found.</div>
+        <div className="text-center py-20 text-muted-foreground">{t('detail.agentNotFound')}</div>
         <Footer />
       </div>
     );
@@ -98,9 +100,9 @@ const AgentDetailPage = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors">{t('common.home')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to="/agents" className="hover:text-primary transition-colors">Agents</Link>
+          <Link to="/agents" className="hover:text-primary transition-colors">{t('nav.agents')}</Link>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground font-medium">{agent.name}</span>
         </div>
@@ -155,11 +157,11 @@ const AgentDetailPage = () => {
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 mt-3 flex-wrap">
-                    {[
-                      { icon: Home, label: 'Sale', value: counts.buy },
-                      { icon: Home, label: 'Rent', value: counts.rent },
-                      { icon: Building2, label: 'Projects', value: counts.projects },
-                      { icon: Calendar, label: 'Events', value: counts.events },
+                     {[
+                      { icon: Home, label: t('detail.sale'), value: counts.buy },
+                      { icon: Home, label: t('detail.rent'), value: counts.rent },
+                      { icon: Building2, label: t('detail.projects'), value: counts.projects },
+                      { icon: Calendar, label: t('detail.events'), value: counts.events },
                     ].map((s) => (
                       <div key={s.label} className="flex items-center gap-1.5 text-sm">
                         <s.icon className="h-3.5 w-3.5 text-primary" />
@@ -173,14 +175,14 @@ const AgentDetailPage = () => {
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {agent.phone && (
                       <a href={`tel:${agent.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                        <Phone className="h-3 w-3" /> Call
+                        <Phone className="h-3 w-3" /> {t('property.call')}
                       </a>
                     )}
                     <a href={`mailto:${agent.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                      <Mail className="h-3 w-3" /> Email
+                      <Mail className="h-3 w-3" /> {t('property.email')}
                     </a>
                     <a href={`https://wa.me/${agent.whatsapp || agent.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
-                      <MessageCircle className="h-3 w-3" /> WhatsApp
+                      <MessageCircle className="h-3 w-3" /> {t('property.whatsApp')}
                     </a>
                   </div>
                 </div>
@@ -203,8 +205,8 @@ const AgentDetailPage = () => {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Company</p>
-                  <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{agent.companies.name}</h3>
+                   <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{t('detail.company')}</p>
+                   <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{agent.companies.name}</h3>
                   <p className="text-xs text-muted-foreground">
                     {agent.companies.company_type?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Real Estate Company'}
                   </p>
@@ -218,7 +220,7 @@ const AgentDetailPage = () => {
       {/* ── About section — full-width prominent ── */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-bold text-foreground mb-2">About {agent.name}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-2">{t('detail.about')} {agent.name}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
             {agent.description || `${agent.name} is an experienced real estate professional dedicated to helping clients find their ideal properties. With deep market knowledge and a client-first approach, ${agent.name} provides personalized guidance for buying, selling, and renting across all service areas.`}
           </p>
@@ -235,8 +237,7 @@ const AgentDetailPage = () => {
             {agent.languages && agent.languages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  I Speak
+                   <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />{t('detail.iSpeak')}
                 </h3>
                 <ExpandablePillList items={agent.languages} maxVisible={6} />
               </div>
@@ -246,8 +247,7 @@ const AgentDetailPage = () => {
             {agent.service_areas && agent.service_areas.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  Service Areas
+                   <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />{t('detail.serviceAreas')}
                 </h3>
                 <ExpandablePillList items={agent.service_areas} maxVisible={6} />
               </div>
@@ -282,7 +282,7 @@ const AgentDetailPage = () => {
             {/* Tab content */}
             {activeTab === 'properties' && <AgentPropertiesTab agentId={agent.id} />}
             {activeTab === 'projects' && <AgentProjectsTab agentId={agent.id} />}
-            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this agent.</div>}
+            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">{t('detail.noEventsForAgent')}</div>}
           </div>
         </div>
       </div>
