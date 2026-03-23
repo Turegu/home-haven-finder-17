@@ -111,15 +111,15 @@ const SaveSearchDialog = ({
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
               <Tag className="h-3.5 w-3.5" />
-              Search Criteria Summary
+              {t('saveSearch.criteria')}
             </label>
 
             {!hasAnyFilter ? (
-              <p className="text-sm text-muted-foreground italic">No filters selected.</p>
+              <p className="text-sm text-muted-foreground italic">{t('saveSearch.noFilters')}</p>
             ) : (
               <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2 max-h-[200px] overflow-y-auto">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Type:</span>
+                  <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{t('saveSearch.type')}:</span>
                   <Badge variant="secondary" className="text-xs capitalize">{searchType}</Badge>
                 </div>
 
