@@ -658,14 +658,14 @@ const LocationFormFields = ({
 
         {/* Neighbourhood */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">Neighbourhood</Label>
+          <Label className="text-foreground font-medium">{t("locationForm.neighbourhood")}</Label>
           <SearchableSelect
             value={neighbourhood}
             onValueChange={handleNeighbourhoodChange}
             options={neighborhoods.map((n) => ({ value: n.name, label: n.name }))}
             placeholder={
-              !town ? "Select city/town first" :
-              loadingNeighborhoods ? "Loading..." : "Select Neighbourhood"
+              !town ? t("locationForm.selectCityTownFirst") :
+              loadingNeighborhoods ? t("locationForm.loading") : t("locationForm.selectNeighbourhood")
             }
             disabled={!town}
           />
