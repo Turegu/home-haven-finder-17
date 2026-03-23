@@ -228,7 +228,7 @@ const ContactUsPage = () => {
   const infoCards = [
     {
       icon: Phone,
-      title: "Phone Number",
+      title: t('pages.contact.phoneNumber'),
       value: settings.sales_phone,
       link: settings.sales_phone ? `tel:${settings.sales_phone}` : undefined,
     },
