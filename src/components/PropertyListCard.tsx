@@ -323,7 +323,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEmailDialogOpen(true); }}
               >
                 <Mail className="h-4 w-4" />
-                Email
+                {t('listCard.email')}
               </button>
               <div className="w-px h-5 bg-border" />
               <button
@@ -331,7 +331,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
                 <MessageCircle className="h-4 w-4" />
-                WhatsApp
+                {t('listCard.whatsApp')}
               </button>
             </div>
           </div>
