@@ -907,14 +907,14 @@ const CompanyPropertyEditPage = () => {
 
         {/* Submit */}
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => navigate("/company/properties")}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={() => navigate("/company/properties")}>{t("companyDashboard.cancel")}</Button>
           <Button type="button" variant="secondary" disabled={loading} onClick={() => handleSave("draft")}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Saving..." : "Save as Draft"}
+            {loading ? t("companyDashboard.savingText") : t("companyDashboard.saveAsDraft")}
           </Button>
           <Button type="button" disabled={loading} onClick={handlePublishClick}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
+            {loading ? t("companyDashboard.publishingText") : isEdit ? t("companyDashboard.updatePublish") : t("companyDashboard.publish")}
           </Button>
         </div>
 
