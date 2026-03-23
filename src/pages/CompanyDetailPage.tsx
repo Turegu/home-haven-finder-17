@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
+import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
+import FeaturedProjectCard from '@/components/FeaturedProjectCard';
 
 interface CompanyData {
   id: string;
