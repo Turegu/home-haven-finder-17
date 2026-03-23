@@ -183,7 +183,7 @@ const BoostProfileDialog = ({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleBoost} disabled={!selected || loading || (selectedOpt ? balance < selectedOpt.credits : true)}>
+          <Button onClick={handleBoost} disabled={!selected || loading || (!isAdminBoost && selectedOpt ? balance < selectedOpt.credits : false)}>
             <Rocket className="h-4 w-4 mr-1" />
             {loading ? "Boosting..." : "Confirm Boost"}
           </Button>
