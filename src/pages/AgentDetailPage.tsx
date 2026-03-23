@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
