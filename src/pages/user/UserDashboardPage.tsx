@@ -160,8 +160,8 @@ const UserDashboardPage = () => {
           {/* Recent Notifications */}
           <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-foreground">Recent Notifications</h2>
-              <Link to="/account/notifications" className="text-xs text-primary hover:underline">View All</Link>
+              <h2 className="text-lg font-semibold text-foreground">{t('dashboard.recentNotifications')}</h2>
+              <Link to="/account/notifications" className="text-xs text-primary hover:underline">{t('dashboard.viewAll')}</Link>
             </div>
             {notifLoading ? (
               <div className="space-y-3">
