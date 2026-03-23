@@ -759,8 +759,8 @@ const CompanyPropertyEditPage = () => {
               <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enterVideoLink")} />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">360 View Link</Label>
-              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" placeholder="Enter 360 View Link" />
+              <Label className="text-foreground font-medium">{t("companyDashboard.view360Link")}</Label>
+              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enter360ViewLink")} />
             </div>
           </div>
         </section>
