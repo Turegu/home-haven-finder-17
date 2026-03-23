@@ -336,7 +336,7 @@ const CompanyDetailPage = () => {
               </div>
             )}
             {activeTab === 'properties' && <CompanyPropertiesTab companyId={company.id} />}
-            {activeTab === 'projects' && <div className="text-center py-12 text-muted-foreground text-sm">No projects found for this company.</div>}
+            {activeTab === 'projects' && <CompanyProjectsTab companyId={company.id} />}
             {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this company.</div>}
           </div>
         </div>
