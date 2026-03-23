@@ -51,6 +51,7 @@ interface FilterOption {
   id: string;
   category_id: string;
   title: string;
+  translations: Record<string, string> | null;
 }
 
 export function useFilterCategories(context: string) {
@@ -74,7 +75,7 @@ export function useFilterCategories(context: string) {
       if (catIds.length > 0) {
         const { data: opts, error: optErr } = await supabase
           .from("filter_options")
-          .select("id, category_id, title")
+          .select("id, category_id, title, translations")
           .in("category_id", catIds)
           .eq("status", "active")
           .order("sort_order");
@@ -82,7 +83,10 @@ export function useFilterCategories(context: string) {
 
         for (const opt of opts ?? []) {
           if (!optionsByCategory[opt.category_id]) optionsByCategory[opt.category_id] = [];
-          optionsByCategory[opt.category_id].push(opt);
+          optionsByCategory[opt.category_id].push({
+            ...opt,
+            translations: (opt.translations as Record<string, string>) ?? null,
+          });
         }
       }
 
