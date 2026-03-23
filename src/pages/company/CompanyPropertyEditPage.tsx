@@ -525,7 +525,7 @@ const CompanyPropertyEditPage = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FormSelect
-              label="Property Status"
+              label={t("companyDashboard.propertyStatus")}
               icon={<Activity className="h-4 w-4 text-muted-foreground" />}
               value={form.property_status}
               onChange={(v) => updateField("property_status", v)}
