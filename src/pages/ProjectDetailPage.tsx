@@ -328,7 +328,7 @@ const ProjectDetailPage = () => {
               <div className="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-border text-sm text-muted-foreground">
                 <div className="flex flex-wrap items-center gap-6">
                   <span className="flex items-center gap-1.5"><Building className="h-4 w-4" />{project.projectType}</span>
-                  <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" />{project.units} Units</span>
+                  <span className="flex items-center gap-1.5"><Maximize className="h-4 w-4" />{project.units} {t('project.units')}</span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
                   <span>Ad ID: <span className="font-medium text-foreground">{project.listingId}</span></span>
