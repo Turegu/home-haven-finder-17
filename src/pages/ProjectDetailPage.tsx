@@ -147,6 +147,22 @@ const ProjectDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={project.title}
+        description={`${project.projectType} project in ${project.location}. Starting from $${project.priceFrom?.toLocaleString()}. ${project.developer ? `By ${project.developer}.` : ''}`}
+        image={project.images?.[0]}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="product"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateListing',
+          name: project.title,
+          description: project.description?.slice(0, 200),
+          image: project.images,
+          address: { '@type': 'PostalAddress', addressLocality: project.town, addressRegion: project.province },
+          offers: { '@type': 'Offer', priceCurrency: project.currency, price: project.priceFrom },
+        }}
+      />
       <Header />
 
       {/* Media Gallery */}
