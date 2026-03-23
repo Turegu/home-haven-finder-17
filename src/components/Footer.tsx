@@ -57,11 +57,11 @@ const Footer = () => {
           </div>
           <div>
             <h4 className="font-semibold text-sm mb-4">Resources</h4>
-            <ul className="space-y-2 text-sm text-background/60">
-              <li><Link to="/blog" className="hover:text-background transition-colors">Blog</Link></li>
-              <li><Link to="/faq" className="hover:text-background transition-colors">FAQ</Link></li>
-              <li><Link to="/mortgage-bank-loan" className="hover:text-background transition-colors">Mortgage Banks</Link></li>
-              <li><Link to="/property-request" className="hover:text-background transition-colors">Property Request</Link></li>
+            <ul className="space-y-2 text-sm text-white/60">
+              <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
+              <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link to="/mortgage-bank-loan" className="hover:text-white transition-colors">Mortgage Banks</Link></li>
+              <li><Link to="/property-request" className="hover:text-white transition-colors">Property Request</Link></li>
             </ul>
           </div>
           <div>
