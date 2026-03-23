@@ -175,7 +175,7 @@ const AgentDetailPage = () => {
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {agent.phone && (
                       <a href={`tel:${agent.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                        <Phone className="h-3 w-3" /> Call
+                        <Phone className="h-3 w-3" /> {t('property.call')}
                       </a>
                     )}
                     <a href={`mailto:${agent.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
