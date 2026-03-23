@@ -330,14 +330,14 @@ const MortgageBanksPage = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-primary/5 border-b border-border">
-                        <th className="text-left p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Bank</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Interest Rate</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Finance %</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Max Amount</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Max Duration</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Down Payment</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Final Payment</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Action</th>
+                        <th className="text-left p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.bank')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.interestRate')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.financePercent')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.maxAmount')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.maxDuration')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.downPayment')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.finalPayment')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.action')}</th>
                       </tr>
                     </thead>
                     <tbody>
