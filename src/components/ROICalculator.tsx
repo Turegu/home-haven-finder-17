@@ -70,7 +70,7 @@ const ROICalculator = ({
       {/* Inputs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Property Value</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t('roi.propertyValue')}</label>
           <div className="bg-muted rounded-md px-3 py-2 text-sm font-medium text-foreground">
             {currency} {propertyPrice.toLocaleString()}
           </div>
