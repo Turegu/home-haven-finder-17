@@ -10,16 +10,17 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
-const statCards = [
-  { label: "Saved Properties", icon: Heart, countKey: "saved", path: "/account/saved-properties", color: "text-rose-500", bg: "bg-rose-500/10" },
-  { label: "Followed Agents", icon: Users2, countKey: "followed", path: "/account/followed-agents", color: "text-blue-500", bg: "bg-blue-500/10" },
-  { label: "Compare List", icon: Layers, countKey: "compare", path: "/account/compare", color: "text-amber-500", bg: "bg-amber-500/10" },
-  { label: "Saved Searches", icon: Search, countKey: "searches", path: "/account/saved-searches", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-  { label: "Notifications", icon: Bell, countKey: "notifications", path: "/account/notifications", color: "text-purple-500", bg: "bg-purple-500/10" },
-  { label: "Inquiries Sent", icon: MessageSquare, countKey: "contacted", path: "/account/contacted", color: "text-cyan-500", bg: "bg-cyan-500/10" },
-];
-
 const UserDashboardPage = () => {
+  const { t } = useTranslation();
+
+  const statCards = [
+    { label: t('dashboard.savedProperties'), icon: Heart, countKey: "saved", path: "/account/saved-properties", color: "text-rose-500", bg: "bg-rose-500/10" },
+    { label: t('dashboard.followedAgents'), icon: Users2, countKey: "followed", path: "/account/followed-agents", color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: t('dashboard.compareList'), icon: Layers, countKey: "compare", path: "/account/compare", color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: t('dashboard.savedSearches'), icon: Search, countKey: "searches", path: "/account/saved-searches", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { label: t('dashboard.notifications'), icon: Bell, countKey: "notifications", path: "/account/notifications", color: "text-purple-500", bg: "bg-purple-500/10" },
+    { label: t('dashboard.inquiriesSent'), icon: MessageSquare, countKey: "contacted", path: "/account/contacted", color: "text-cyan-500", bg: "bg-cyan-500/10" },
+  ];
   const { data: authUser } = useQuery({
     queryKey: ['user-dash-auth'],
     queryFn: async () => {
