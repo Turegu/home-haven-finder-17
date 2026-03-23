@@ -33,6 +33,7 @@ interface InboxItem {
 }
 
 const CompanyInboxPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<InboxItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
