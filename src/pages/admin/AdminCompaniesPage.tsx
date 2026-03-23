@@ -22,7 +22,7 @@ import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import UpgradeMembershipDialog from "@/components/admin/UpgradeMembershipDialog";
 import AddCreditsDialog from "@/components/admin/AddCreditsDialog";
-import UpgradeProfileDialog from "@/components/admin/UpgradeProfileDialog";
+
 
 type Company = Tables<"companies">;
 
