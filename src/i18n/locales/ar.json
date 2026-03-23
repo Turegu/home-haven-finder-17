@@ -1243,5 +1243,21 @@
     "cumRentalIncome": "الدخل الإيجاري التراكمي",
     "totalReturn": "إجمالي العائد",
     "enterMonthlyRent": "أدخل الإيجار الشهري لحساب العائد على الاستثمار"
+  },
+  "locationForm": {
+    "province": "المحافظة",
+    "cityTown": "المدينة/البلدة",
+    "neighbourhood": "الحي",
+    "pinCoordinates": "إحداثيات التحديد",
+    "selectProvince": "اختر المحافظة",
+    "selectProvinceFirst": "اختر المحافظة أولاً",
+    "selectCityTown": "اختر المدينة/البلدة",
+    "selectCityTownFirst": "اختر المدينة/البلدة أولاً",
+    "selectNeighbourhood": "اختر الحي",
+    "selectProvinceAndCity": "اختر المحافظة والمدينة أولاً",
+    "clickMapToPin": "انقر على الخريطة لتحديد الموقع",
+    "enableMapMessage": "اختر المحافظة والمدينة/البلدة لتمكين تحديد الموقع على الخريطة",
+    "boundaryNotAvailable": "حدود المنطقة غير متاحة — تحديد الموقع غير مقيد.",
+    "loading": "جاري التحميل..."
   }
 }

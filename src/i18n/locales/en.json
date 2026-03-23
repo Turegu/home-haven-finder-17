@@ -1243,5 +1243,21 @@
     "cumRentalIncome": "Cum. Rental Income",
     "totalReturn": "Total Return",
     "enterMonthlyRent": "Enter monthly rent to calculate ROI"
+  },
+  "locationForm": {
+    "province": "Province",
+    "cityTown": "City/Town",
+    "neighbourhood": "Neighbourhood",
+    "pinCoordinates": "Pin Coordinates",
+    "selectProvince": "Select Province",
+    "selectProvinceFirst": "Select province first",
+    "selectCityTown": "Select City/Town",
+    "selectCityTownFirst": "Select city/town first",
+    "selectNeighbourhood": "Select Neighbourhood",
+    "selectProvinceAndCity": "Select province & city first",
+    "clickMapToPin": "Click on map to set pin",
+    "enableMapMessage": "Select province and city/town to enable map pin placement",
+    "boundaryNotAvailable": "District boundary not available — pin placement unrestricted.",
+    "loading": "Loading..."
   }
 }
