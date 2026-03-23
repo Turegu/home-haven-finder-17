@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -39,6 +40,7 @@ interface Agent {
 
 const CompanyAgentsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -140,8 +142,8 @@ const CompanyAgentsPage = () => {
     <CompanyLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Agents Management</h1>
-          <p className="text-sm text-muted-foreground mt-1">Company Credits: <span className="font-semibold text-primary">{companyCredits}</span></p>
+          <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.agentsManagement")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("companyDashboard.companyCredits")}: <span className="font-semibold text-primary">{companyCredits}</span></p>
         </div>
       </div>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
 
 const AgentNotificationsPage = () => {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -51,7 +53,7 @@ const AgentNotificationsPage = () => {
   return (
     <AgentLayout>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("agentDashboard.notifications")}</h1>
       </div>
 
       {notifications.length === 0 ? (

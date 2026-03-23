@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -38,6 +39,7 @@ const ITEMS_PER_PAGE = 10;
 
 const CompanyProjectsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -133,7 +135,7 @@ const CompanyProjectsPage = () => {
   return (
     <CompanyLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Projects Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.projectsManagement")}</h1>
       </div>
 
       {/* Membership Usage */}

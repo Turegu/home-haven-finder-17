@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ interface CompanyData {
 }
 
 const AgentDashboardPage = () => {
+  const { t } = useTranslation();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [counts, setCounts] = useState({ properties: 0, projects: 0, events: 0, followers: 0 });
@@ -112,7 +114,7 @@ const AgentDashboardPage = () => {
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Welcome back, {agent?.name}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("agentDashboard.welcomeBack", { name: agent?.name })}</h1>
             {company && (
               <div className="flex items-center gap-2 mt-0.5">
                 {company.logo_url && (
@@ -132,18 +134,18 @@ const AgentDashboardPage = () => {
             <Rocket className={`h-5 w-5 ${isBoosted ? 'text-primary' : 'text-muted-foreground'}`} />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">
-              {isBoosted ? "Profile Boosted" : "Profile Not Boosted"}
+             <h3 className="text-sm font-semibold text-foreground">
+              {isBoosted ? t("companyDashboard.profileBoosted") : t("companyDashboard.profileNotBoosted")}
             </h3>
             <p className="text-xs text-muted-foreground">
               {isBoosted
-                ? `Boosted until ${format(new Date(agent!.boost_end_date!), "do MMM yyyy")} (${boostDaysLeft} days left)`
-                : "Boost your profile to appear at the top of search results"}
+                ? t("companyDashboard.boostedUntil", { date: format(new Date(agent!.boost_end_date!), "do MMM yyyy"), days: boostDaysLeft })
+                : t("companyDashboard.boostDescription")}
             </p>
           </div>
         </div>
         <Button size="sm" variant={isBoosted ? "outline" : "default"} onClick={() => setBoostOpen(true)}>
-          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? "Extend Boost" : "Boost Profile"}
+          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? t("companyDashboard.extendBoost") : t("companyDashboard.boostProfile")}
         </Button>
       </div>
 
@@ -157,7 +159,7 @@ const AgentDashboardPage = () => {
           return (
             <div className={`rounded-xl border p-5 ${mem.bg}`}>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Company Plan</h3>
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.companyPlan")}</h3>
                 <MembershipIcon className="h-5 w-5 text-primary" />
               </div>
               <p className={`text-xl font-bold ${mem.color} capitalize`}>{company?.membership}</p>
@@ -173,43 +175,43 @@ const AgentDashboardPage = () => {
         {/* Credit Balance */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Your Credits</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.yourCredits")}</h3>
             <CreditCard className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{agent?.credit_balance || 0}</p>
-          <p className="text-xs text-muted-foreground mt-2">Available balance</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("agentDashboard.availableBalance")}</p>
         </div>
 
         {/* Followers */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Company Followers</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.companyFollowers")}</h3>
             <Users2 className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{counts.followers}</p>
-          <p className="text-xs text-muted-foreground mt-2">Total followers</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("agentDashboard.totalFollowers")}</p>
         </div>
 
         {/* Assigned Total */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Assigned to You</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.assignedToYou")}</h3>
             <Building2 className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{counts.properties + counts.projects + counts.events}</p>
-          <p className="text-xs text-muted-foreground mt-2">Total listings</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("agentDashboard.totalListings")}</p>
         </div>
       </div>
 
       {/* Listings Summary */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-foreground">Your Assigned Listings</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("agentDashboard.yourAssignedListings")}</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { to: "/agent/properties", icon: Building2, count: counts.properties, label: "Properties", color: "text-amber-500", bg: "bg-amber-500/10" },
-          { to: "/agent/projects", icon: FolderKanban, count: counts.projects, label: "Projects", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { to: "/agent/events", icon: Calendar, count: counts.events, label: "Events", color: "text-purple-500", bg: "bg-purple-500/10" },
+          { to: "/agent/properties", icon: Building2, count: counts.properties, label: t("agentDashboard.properties"), color: "text-amber-500", bg: "bg-amber-500/10" },
+          { to: "/agent/projects", icon: FolderKanban, count: counts.projects, label: t("agentDashboard.projects"), color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { to: "/agent/events", icon: Calendar, count: counts.events, label: t("agentDashboard.events"), color: "text-purple-500", bg: "bg-purple-500/10" },
         ].map((card) => (
           <Link key={card.to} to={card.to} className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
             <div className={`w-11 h-11 rounded-lg ${card.bg} flex items-center justify-center transition-colors`}>

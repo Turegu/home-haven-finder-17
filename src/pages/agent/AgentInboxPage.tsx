@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Search, Eye, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 const AgentInboxPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -48,13 +50,13 @@ const AgentInboxPage = () => {
 
   return (
     <AgentLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Inbox</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("agentDashboard.inbox")}</h1>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
-          <TabsTrigger value="property_request">Property Requests</TabsTrigger>
-          <TabsTrigger value="inquiry">Inquiries</TabsTrigger>
-          <TabsTrigger value="message">Messages</TabsTrigger>
+          <TabsTrigger value="property_request">{t("companyDashboard.propertyRequests")}</TabsTrigger>
+          <TabsTrigger value="inquiry">{t("companyDashboard.inquiry")}</TabsTrigger>
+          <TabsTrigger value="message">{t("companyDashboard.message")}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4 mb-4">

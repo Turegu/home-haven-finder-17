@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Progress } from "@/components/ui/progress";
@@ -32,6 +33,7 @@ const MONTHS = [
 ];
 
 const CompanyCreditHistoryPage = () => {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [balance, setBalance] = useState(0);
   const [totalTopups, setTotalTopups] = useState(0);
@@ -127,10 +129,10 @@ const CompanyCreditHistoryPage = () => {
     <CompanyLayout>
       <div className="mb-6">
         <Link to="/company" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
-          <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+          <ArrowLeft className="h-4 w-4" /> {t("companyDashboard.backToDashboard")}
         </Link>
-        <h1 className="text-2xl font-bold text-foreground">Credit History</h1>
-        <p className="text-sm text-muted-foreground mt-1">View your credit balance, top-ups, and spending details.</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.creditHistoryTitle")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("companyDashboard.creditHistoryDesc")}</p>
       </div>
 
       {/* Balance + Summary */}

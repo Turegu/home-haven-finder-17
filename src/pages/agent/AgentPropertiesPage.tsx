@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import AgentLayout from "@/components/agent/AgentLayout";
@@ -40,6 +41,7 @@ const ITEMS_PER_PAGE = 10;
 
 const AgentPropertiesPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: analyticsPhase } = useAnalyticsPhase();
   const [properties, setProperties] = useState<AgentProperty[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,7 +112,7 @@ const AgentPropertiesPage = () => {
 
   return (
     <AgentLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">My Properties</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("agentDashboard.myProperties")}</h1>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
