@@ -877,7 +877,7 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                 </button>
                 <div className="w-px h-5 bg-border" />
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                  <Mail className="h-4 w-4" /> Email
+                  <Mail className="h-4 w-4" /> {t('projectsPage.email')}
                 </button>
                 <div className="w-px h-5 bg-border" />
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
