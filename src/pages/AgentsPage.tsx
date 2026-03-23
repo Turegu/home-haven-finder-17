@@ -307,7 +307,7 @@ const AgentsPage = () => {
               );
             })}
             {filteredCompanies.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No companies found.</div>
+              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noCompaniesFound')}</div>
             )}
           </div>
         ) : (
