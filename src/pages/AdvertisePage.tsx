@@ -211,7 +211,7 @@ const AdvertisePage = () => {
                     </Label>
                   </div>
                   <Button type="submit" className="w-full" size="lg" disabled={submitting}>
-                    {submitting ? "Submitting..." : "Submit"}
+                    {submitting ? t('pages.advertise.submitting') : t('common.submit')}
                   </Button>
                 </form>
               </CardContent>
