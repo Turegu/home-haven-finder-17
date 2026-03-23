@@ -392,7 +392,7 @@ const ContactUsPage = () => {
               </Label>
               <Textarea
                 id="message"
-                placeholder="Tell us how we can help..."
+                placeholder={t('pages.contact.tellUs')}
                 rows={5}
                 value={form.message}
                 onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
