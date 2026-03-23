@@ -852,7 +852,7 @@ const PropertyDetailPage = () => {
                       </div>
                     )}
                     <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentCompany || 'Company'}</h3>
-                    <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
+                    <p className="text-sm text-muted-foreground">{t('property.realEstateBrokers')}</p>
                   </Link>
 
                   {realCompanyId && (
