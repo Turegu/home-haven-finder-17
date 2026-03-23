@@ -25,6 +25,7 @@ interface SavedSearch {
 const PAGE_SIZE = 10;
 
 const SavedSearchesPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [items, setItems] = useState<SavedSearch[]>([]);
