@@ -168,7 +168,7 @@ const AgentsPage = () => {
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            Companies
+            {t('filters.companies')}
           </button>
           <button
             onClick={() => setActiveTab('agents')}
