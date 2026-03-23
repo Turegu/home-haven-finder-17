@@ -97,7 +97,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
           if (error) throw error;
         }
         setIsFollowing(true);
-        toast.success('Following! You\'ll receive updates and announcements.');
+        toast.success(t('detail.followingSuccess'));
       }
     } catch (err: any) {
       toast.error(err.message || 'Something went wrong');
