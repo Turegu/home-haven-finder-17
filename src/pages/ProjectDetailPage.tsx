@@ -432,7 +432,11 @@ const ProjectDetailPage = () => {
                     <p className="text-sm text-muted-foreground">Real Estate Brokers</p>
                   </Link>
 
-                  <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
+                  {realCompanyId && (
+                    <div className="flex justify-center mb-3">
+                      <FollowButton type="company" targetId={realCompanyId} />
+                    </div>
+                  )}
                 </>
               )}
 
