@@ -34,11 +34,11 @@ interface LocalPaymentPlan { id: string; plan_name: string; is_active: boolean; 
 
 /* ─── Options aligned with front-end search filters ─── */
 
-const contractTypes = [
-  { value: "residential_sale", label: "Residential for Sale", purpose: "buy", classification: "residential" },
-  { value: "residential_rent", label: "Residential for Rent", purpose: "rent", classification: "residential" },
-  { value: "commercial_sale", label: "Commercial for Sale", purpose: "buy", classification: "commercial" },
-  { value: "commercial_rent", label: "Commercial for Rent", purpose: "rent", classification: "commercial" },
+const contractTypesData = [
+  { value: "residential_sale", labelKey: "companyDashboard.residentialForSale", purpose: "buy", classification: "residential" },
+  { value: "residential_rent", labelKey: "companyDashboard.residentialForRent", purpose: "rent", classification: "residential" },
+  { value: "commercial_sale", labelKey: "companyDashboard.commercialForSale", purpose: "buy", classification: "commercial" },
+  { value: "commercial_rent", labelKey: "companyDashboard.commercialForRent", purpose: "rent", classification: "commercial" },
 ];
 
 // Rent durations now fetched dynamically via filterOpts["rent_duration"]
