@@ -45,7 +45,7 @@ const FollowButton = ({ type, targetId }: FollowButtonProps) => {
         followData = data;
       }
 
-      setIsFollowing(!!data);
+      setIsFollowing(!!followData);
       setLoading(false);
     };
     checkFollowStatus();
