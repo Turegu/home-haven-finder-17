@@ -802,7 +802,7 @@ const PropertyDetailPage = () => {
 
                   {realAgentId && (
                     <div className="flex justify-center mb-3">
-                      <FollowButton type="agent" targetId={realAgentId} />
+                      <FollowButton type="agent" targetId={realAgentId} size="md" />
                     </div>
                   )}
 
