@@ -378,6 +378,7 @@ const AdminFeaturedManagementPage = () => {
           currentClassification={boostTarget.data.profile_classification || "standard"}
           boostEndDate={boostTarget.data.boost_end_date || null}
           onBoosted={fetchAll}
+          isAdminBoost
         />
       )}
     </AdminLayout>
