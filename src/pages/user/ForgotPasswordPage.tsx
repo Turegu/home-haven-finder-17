@@ -41,8 +41,8 @@ const ForgotPasswordPage = () => {
 
         {sent ? (
           <div className="text-center space-y-4">
-            <p className="text-sm text-muted-foreground">Check your email for a password reset link.</p>
-            <Link to="/login"><Button variant="outline" className="w-full">Back to Login</Button></Link>
+            <p className="text-sm text-muted-foreground">{t('auth.checkEmail')}</p>
+            <Link to="/login"><Button variant="outline" className="w-full">{t('auth.backToLogin')}</Button></Link>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
