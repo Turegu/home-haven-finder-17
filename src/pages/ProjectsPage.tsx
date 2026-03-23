@@ -687,7 +687,7 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
           </div>
           <div className="flex items-center justify-between pt-3 border-t border-border">
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Starting from</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('projectsPage.startingFrom')}</p>
               <p className="text-sm font-bold text-foreground">
                 {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
               </p>
