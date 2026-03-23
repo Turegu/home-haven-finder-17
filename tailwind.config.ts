@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Roboto', 'sans-serif'],
         display: ['Outfit', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
