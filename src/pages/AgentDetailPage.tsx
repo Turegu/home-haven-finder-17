@@ -144,12 +144,12 @@ const AgentDetailPage = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
+                  <div>
+                    <div className="flex items-center gap-3">
                       <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
-                      <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                      <FollowButton type="agent" targetId={agent.id} />
                     </div>
-                    <FollowButton type="agent" targetId={agent.id} />
+                    <p className="text-sm text-muted-foreground">{agent.designation}</p>
                   </div>
 
                   {/* Stats */}
