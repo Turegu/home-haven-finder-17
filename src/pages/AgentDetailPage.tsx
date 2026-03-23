@@ -237,8 +237,7 @@ const AgentDetailPage = () => {
             {agent.languages && agent.languages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  I Speak
+                   <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />{t('detail.iSpeak')}
                 </h3>
                 <ExpandablePillList items={agent.languages} maxVisible={6} />
               </div>
