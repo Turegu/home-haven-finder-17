@@ -714,7 +714,7 @@ const PropertyDetailPage = () => {
               <h2 className="text-lg font-bold text-foreground mb-4">{t('property.loanCalculator')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Property Value</label>
+                  <label className="text-xs text-muted-foreground block mb-1">{t('property.propertyValue')}</label>
                   <div className="flex items-center border border-border rounded-md overflow-hidden">
                     <span className="px-2 text-xs text-muted-foreground bg-muted">$</span>
                     <input
