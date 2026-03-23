@@ -304,8 +304,8 @@ const MortgageBanksPage = () => {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Compare Banks</h2>
-              <p className="text-sm text-muted-foreground mt-1">Side-by-side comparison of mortgage offerings</p>
+              <h2 className="text-2xl font-bold text-foreground">{t('mortgage.compareBanks')}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{t('mortgage.sideBySide')}</p>
             </div>
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
