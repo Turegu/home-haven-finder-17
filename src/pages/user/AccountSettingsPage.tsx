@@ -145,22 +145,22 @@ const AccountSettingsPage = () => {
 
         {/* Preferences */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Preferences</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('accountSettings.preferences')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label>{t('accountSettings.language')}</Label>
               <select value={profile.preferred_language} onChange={e => upd("preferred_language", e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {languages.map(l => <option key={l.id} value={l.code}>{l.name}</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <Label>Currency</Label>
+              <Label>{t('accountSettings.currency')}</Label>
               <select value={profile.preferred_currency} onChange={e => upd("preferred_currency", e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {currencies.map(c => <option key={c.id} value={c.code}>{c.name} ({c.symbol})</option>)}
               </select>
             </div>
             <div className="space-y-2">
-              <Label>Area Unit</Label>
+              <Label>{t('accountSettings.areaUnit')}</Label>
               <select value={profile.preferred_area_unit} onChange={e => upd("preferred_area_unit", e.target.value)} className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {AREA_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
               </select>
@@ -169,7 +169,7 @@ const AccountSettingsPage = () => {
         </div>
 
         <Button onClick={handleSave} disabled={loading} className="w-full md:w-auto">
-          {loading ? "Saving..." : "Update Profile"}
+          {loading ? t('accountSettings.saving') : t('accountSettings.updateProfile')}
         </Button>
 
         {/* Change Password */}
