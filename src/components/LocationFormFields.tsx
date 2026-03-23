@@ -674,12 +674,12 @@ const LocationFormFields = ({
         {/* Pin Location coordinate display */}
         {showPinLocation && (
           <div className="space-y-2">
-            <Label className="text-foreground font-medium">Pin Coordinates</Label>
+            <Label className="text-foreground font-medium">{t("locationForm.pinCoordinates")}</Label>
             <Input
               value={pinLocation}
               readOnly
               className="bg-secondary/50"
-              placeholder={!province || !town ? "Select province & city first" : "Click on map to set pin"}
+              placeholder={!province || !town ? t("locationForm.selectProvinceAndCity") : t("locationForm.clickMapToPin")}
             />
           </div>
         )}
