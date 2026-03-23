@@ -633,7 +633,7 @@ const CompanyPropertyEditPage = () => {
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Tag className="h-4 w-4" /></span>
             <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.advertisingTags")}</h2>
           </div>
-          <p className="text-xs text-muted-foreground mb-3">Select preset tags or create your own (max 15 characters each)</p>
+          <p className="text-xs text-muted-foreground mb-3">{t("companyDashboard.advertisingTagsDesc")}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {advertisingTagOptions.map((tag) => (
               <button
