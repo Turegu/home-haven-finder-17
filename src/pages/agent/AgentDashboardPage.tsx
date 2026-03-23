@@ -114,7 +114,7 @@ const AgentDashboardPage = () => {
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Welcome back, {agent?.name}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("agentDashboard.welcomeBack", { name: agent?.name })}</h1>
             {company && (
               <div className="flex items-center gap-2 mt-0.5">
                 {company.logo_url && (
