@@ -78,9 +78,9 @@ const ResetPasswordPage = () => {
              <Label>{t('auth.confirmPassword')}</Label>
              <Input type={show ? "text" : "password"} value={confirm} onChange={e => setConfirm(e.target.value)} placeholder={t('auth.confirmNewPassword')} required />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Updating..." : "Update Password"}
-          </Button>
+           <Button type="submit" className="w-full" disabled={loading}>
+             {loading ? t('auth.updating') : t('auth.updatePassword')}
+           </Button>
         </form>
       </div>
     </div>

@@ -47,13 +47,13 @@ const ForgotPasswordPage = () => {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Email Address</Label>
-              <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email" required />
+              <Label>{t('auth.emailAddress')}</Label>
+              <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={t('auth.enterEmail')} required />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Sending..." : "Send Reset Link"}
+              {loading ? t('auth.sending') : t('auth.sendResetLink')}
             </Button>
-            <Link to="/login" className="block text-center text-sm text-primary hover:underline">Back to Login</Link>
+            <Link to="/login" className="block text-center text-sm text-primary hover:underline">{t('auth.backToLogin')}</Link>
           </form>
         )}
       </div>
