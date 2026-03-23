@@ -69,7 +69,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
       return;
     }
 
-    toast.success("Thank you for your report. We will review this listing.");
+    toast.success(t('report.success'));
     setReason("");
     setDetails("");
     if (!isSignedIn) { setEmail(""); setPhone(""); }
