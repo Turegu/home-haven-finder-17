@@ -290,14 +290,14 @@ const EventDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('event.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <OverviewItem icon={Clock} label="Event Type" value={event.eventType} />
-                <OverviewItem icon={CalendarDays} label="Date" value={formatDate(event.date)} />
-                <OverviewItem icon={Timer} label="Time" value={`From ${formatTime(event.date)}${event.endDate ? ` To ${formatTime(event.endDate)}` : ''}`} />
-                <OverviewItem icon={Users} label="Organizer" value={event.organizer} />
-                <OverviewItem icon={Ticket} label="Admission" value={event.entryType === 'open_invitation' ? 'Open Invitation' : event.entryType} />
-                <OverviewItem icon={DollarSign} label="Ticket Price" value={event.price ? `$ ${event.price.toLocaleString()}` : 'Free'} />
+                <OverviewItem icon={Clock} label={t('event.eventType')} value={event.eventType} />
+                <OverviewItem icon={CalendarDays} label={t('event.date')} value={formatDate(event.date)} />
+                <OverviewItem icon={Timer} label={t('event.time')} value={`From ${formatTime(event.date)}${event.endDate ? ` To ${formatTime(event.endDate)}` : ''}`} />
+                <OverviewItem icon={Users} label={t('event.organizer')} value={event.organizer} />
+                <OverviewItem icon={Ticket} label={t('event.admission')} value={event.entryType === 'open_invitation' ? t('event.openInvitation') : event.entryType} />
+                <OverviewItem icon={DollarSign} label={t('event.ticketPrice')} value={event.price ? `$ ${event.price.toLocaleString()}` : t('event.free')} />
               </div>
               {event.pdfCatalogueUrl && (
                 <a
