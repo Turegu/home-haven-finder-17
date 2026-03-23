@@ -133,9 +133,9 @@ const CompanyDetailPage = () => {
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors">{t('common.home')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to="/agents" className="hover:text-primary transition-colors">Companies</Link>
+          <Link to="/agents" className="hover:text-primary transition-colors">{t('companyDetail.companies')}</Link>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground font-medium">{company.name}</span>
         </div>
