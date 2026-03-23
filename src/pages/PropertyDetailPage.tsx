@@ -288,6 +288,25 @@ const PropertyDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={property.title}
+        description={`${property.type} for ${property.propertyPurpose === 'rent' ? 'rent' : 'sale'} in ${property.location}. ${property.bedrooms} bed, ${property.bathrooms} bath, ${formatArea(property.area, property.areaUnit)}. Price: ${property.currency} ${property.price.toLocaleString()}.`}
+        image={property.images?.[0]}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="product"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateListing',
+          name: property.title,
+          description: property.description?.slice(0, 200),
+          image: property.images,
+          url: typeof window !== 'undefined' ? window.location.href : '',
+          address: { '@type': 'PostalAddress', addressLocality: property.town, addressRegion: property.province },
+          offers: { '@type': 'Offer', priceCurrency: property.currency, price: property.price, availability: 'https://schema.org/InStock' },
+          numberOfRooms: property.bedrooms,
+          floorSize: { '@type': 'QuantitativeValue', value: property.area, unitCode: property.areaUnit === 'ft²' ? 'FTK' : 'MTK' },
+        }}
+      />
       <Header />
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-2">
