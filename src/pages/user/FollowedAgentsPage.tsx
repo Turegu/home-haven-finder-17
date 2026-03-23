@@ -76,8 +76,8 @@ const FollowedAgentsPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Users2 className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">You are not following any agents yet.</p>
-            <Link to="/agents"><Button variant="outline" className="mt-4">Browse Agents</Button></Link>
+            <p className="text-muted-foreground">{t('userPages.noFollowedAgents')}</p>
+            <Link to="/agents"><Button variant="outline" className="mt-4">{t('userPages.browseAgents')}</Button></Link>
           </div>
         ) : (
           <>
