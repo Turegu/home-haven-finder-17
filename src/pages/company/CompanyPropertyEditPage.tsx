@@ -748,7 +748,7 @@ const CompanyPropertyEditPage = () => {
               ))}
               <label className="w-24 h-24 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
                 <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground mt-1">{uploadingPlans ? "Uploading..." : "Browse"}</span>
+                <span className="text-[10px] text-muted-foreground mt-1">{uploadingPlans ? t("companyDashboard.uploadingFiles") : t("companyDashboard.browseFiles")}</span>
                 <input type="file" accept="image/*" multiple onChange={handlePlanUpload} className="hidden" disabled={uploadingPlans} />
               </label>
             </div>
