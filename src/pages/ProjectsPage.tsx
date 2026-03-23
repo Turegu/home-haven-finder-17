@@ -267,7 +267,7 @@ const ProjectsPage = () => {
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <SlidersHorizontal className="h-5 w-5 text-primary" />
-                    Amenities
+                    {t('projectsPage.amenities')}
                     {moreFilterCount > 0 && (
                       <Badge variant="default" className="ml-2">{moreFilterCount} selected</Badge>
                     )}
