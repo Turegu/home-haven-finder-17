@@ -143,7 +143,7 @@ const AdvertisePage = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="first_name">First Name</Label>
+                      <Label htmlFor="first_name">{t('pages.advertise.firstName')}</Label>
                       <Input
                         id="first_name"
                         placeholder="Enter Your First Name"
