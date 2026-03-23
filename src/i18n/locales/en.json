@@ -312,6 +312,32 @@
     "of": "of",
     "home": "Home"
   },
+  "detail": {
+    "about": "About",
+    "iSpeak": "I Speak",
+    "languagesWeSpeak": "Languages We Speak",
+    "serviceAreas": "Service Areas",
+    "officeLocation": "Office Location",
+    "openInMaps": "Open in Maps",
+    "openInGoogleMaps": "Open in Google Maps",
+    "company": "Company",
+    "ourTeam": "Our Team",
+    "properties": "Properties",
+    "projects": "Projects",
+    "events": "Events",
+    "sale": "Sale",
+    "rent": "Rent",
+    "team": "Team",
+    "noAgentsFound": "No agents found.",
+    "noPropertiesMatch": "No properties match the selected filters.",
+    "noEventsForAgent": "No events found for this agent.",
+    "noEventsForCompany": "No events found for this company.",
+    "agentNotFound": "Agent not found.",
+    "companyNotFound": "Company not found.",
+    "blogNotFound": "Blog not found.",
+    "loadingProperties": "Loading properties...",
+    "loadingProjects": "Loading projects..."
+  },
   "pages": {
     "buy": {
       "title": "Properties for Sale",
