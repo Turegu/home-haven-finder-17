@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Search, SlidersHorizontal, Check, X,
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
@@ -66,7 +67,7 @@ export const emptyRangeFilters: RangeFilters = {
 
 interface FilterTab {
   key: string;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
   section: 'essential' | 'advanced';
   basicKey?: keyof BasicFilters;
@@ -79,19 +80,19 @@ interface FilterTab {
 
 const FILTER_TABS: FilterTab[] = [
   // Essential
-  { key: 'type', label: 'Property Type', icon: Home, section: 'essential', basicKey: 'propertyTypes', optionKey: '_property_types_combined', type: 'simple' },
-  { key: 'price', label: 'Price', icon: DollarSign, section: 'essential', optionKey: '', type: 'range', rangeKey: 'price' },
-  { key: 'area', label: 'Area', icon: Ruler, section: 'essential', optionKey: '', type: 'range', rangeKey: 'area' },
-  { key: 'rooms', label: 'Rooms', icon: BedDouble, section: 'essential', basicKey: 'rooms', optionKey: 'rooms', type: 'simple' },
-  { key: 'bathrooms', label: 'Bathrooms', icon: Bath, section: 'essential', basicKey: 'bathrooms', optionKey: 'bathrooms', type: 'simple' },
-  { key: 'rentDuration', label: 'Rent Duration', icon: Clock, section: 'essential', basicKey: 'rentDuration', optionKey: 'rent_duration', type: 'simple' },
+  { key: 'type', labelKey: 'searchFilters.propertyType', icon: Home, section: 'essential', basicKey: 'propertyTypes', optionKey: '_property_types_combined', type: 'simple' },
+  { key: 'price', labelKey: 'searchFilters.price', icon: DollarSign, section: 'essential', optionKey: '', type: 'range', rangeKey: 'price' },
+  { key: 'area', labelKey: 'searchFilters.area', icon: Ruler, section: 'essential', optionKey: '', type: 'range', rangeKey: 'area' },
+  { key: 'rooms', labelKey: 'searchFilters.rooms', icon: BedDouble, section: 'essential', basicKey: 'rooms', optionKey: 'rooms', type: 'simple' },
+  { key: 'bathrooms', labelKey: 'searchFilters.bathrooms', icon: Bath, section: 'essential', basicKey: 'bathrooms', optionKey: 'bathrooms', type: 'simple' },
+  { key: 'rentDuration', labelKey: 'searchFilters.rentDuration', icon: Clock, section: 'essential', basicKey: 'rentDuration', optionKey: 'rent_duration', type: 'simple' },
   // Advanced
-  { key: 'floor', label: 'Floor Level', icon: Building2, section: 'advanced', filterKey: 'floorLevels', optionKey: 'floor_level', type: 'simple' },
-  { key: 'parking', label: 'Parking', icon: Car, section: 'advanced', filterKey: 'parkingSpaces', optionKey: 'parking', type: 'simple' },
-  { key: 'furniture', label: 'Furniture', icon: Sofa, section: 'advanced', filterKey: 'furniture', optionKey: 'furniture', type: 'simple' },
-  { key: 'age', label: 'Property Age', icon: Calendar, section: 'advanced', filterKey: 'propertyAges', optionKey: 'property_age', type: 'simple' },
-  { key: 'interior', label: 'Interior Amenities', icon: Lamp, section: 'advanced', filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
-  { key: 'exterior', label: 'Exterior Amenities', icon: TreePine, section: 'advanced', filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
+  { key: 'floor', labelKey: 'searchFilters.floorLevel', icon: Building2, section: 'advanced', filterKey: 'floorLevels', optionKey: 'floor_level', type: 'simple' },
+  { key: 'parking', labelKey: 'searchFilters.parking', icon: Car, section: 'advanced', filterKey: 'parkingSpaces', optionKey: 'parking', type: 'simple' },
+  { key: 'furniture', labelKey: 'searchFilters.furniture', icon: Sofa, section: 'advanced', filterKey: 'furniture', optionKey: 'furniture', type: 'simple' },
+  { key: 'age', labelKey: 'searchFilters.propertyAge', icon: Calendar, section: 'advanced', filterKey: 'propertyAges', optionKey: 'property_age', type: 'simple' },
+  { key: 'interior', labelKey: 'searchFilters.interiorAmenities', icon: Lamp, section: 'advanced', filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
+  { key: 'exterior', labelKey: 'searchFilters.exteriorAmenities', icon: TreePine, section: 'advanced', filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
 ];
 
 /* ─── Props ─── */
@@ -113,6 +114,7 @@ export default function PropertyFiltersModal({
   rangeFilters, onRangeFiltersChange,
   onClearAll, isRent,
 }: PropertyFiltersModalProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('type');
   const [search, setSearch] = useState('');
@@ -140,13 +142,13 @@ export default function PropertyFiltersModal({
   }, [open, filters, basicFilters, rangeFilters]);
 
   // Visible tabs: hide rentDuration if not rent mode
-  const visibleTabs = FILTER_TABS.filter(t => {
-    if (t.key === 'rentDuration' && !isRent) return false;
+  const visibleTabs = FILTER_TABS.filter(tab => {
+    if (tab.key === 'rentDuration' && !isRent) return false;
     return true;
   });
 
-  const essentialTabs = visibleTabs.filter(t => t.section === 'essential');
-  const advancedTabs = visibleTabs.filter(t => t.section === 'advanced');
+  const essentialTabs = visibleTabs.filter(tab => tab.section === 'essential');
+  const advancedTabs = visibleTabs.filter(tab => tab.section === 'advanced');
 
   // Count helpers
   function getTabCount(tab: FilterTab): number {
@@ -157,7 +159,7 @@ export default function PropertyFiltersModal({
     return 0;
   }
 
-  const totalActiveCount = visibleTabs.reduce((s, t) => s + getTabCount(t), 0);
+  const totalActiveCount = visibleTabs.reduce((s, tab) => s + getTabCount(tab), 0);
   const committedCount = (() => {
     const b = basicFilters ?? emptyBasicFilters;
     const r = rangeFilters ?? emptyRangeFilters;
@@ -212,7 +214,7 @@ export default function PropertyFiltersModal({
   }
 
   // Get options for current tab
-  const currentTab = visibleTabs.find(t => t.key === activeTab) ?? visibleTabs[0];
+  const currentTab = visibleTabs.find(tab => tab.key === activeTab) ?? visibleTabs[0];
   const rawOptions = allOptions[currentTab.optionKey] || [];
   const filteredOptions = search
     ? rawOptions.filter(o => turkishIncludes(o, search))
@@ -227,7 +229,7 @@ export default function PropertyFiltersModal({
         key={tab.key}
         onClick={() => { setActiveTab(tab.key); setSearch(''); }}
         className={`
-          inline-flex items-center gap-2 pl-3 pr-3.5 py-2 text-[13px] font-medium rounded-lg
+          inline-flex items-center gap-2 ps-3 pe-3.5 py-2 text-[13px] font-medium rounded-lg
           transition-all duration-200 ease-out
           ${isActive
             ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-[1.02]'
@@ -238,7 +240,7 @@ export default function PropertyFiltersModal({
         `}
       >
         <Icon className={`h-4 w-4 ${isActive ? 'text-primary-foreground' : ''}`} />
-        {tab.label}
+        {t(tab.labelKey)}
         <span className={`
           text-[10px] font-bold h-[18px] min-w-[18px] px-1 rounded-md
           inline-flex items-center justify-center leading-none
@@ -260,7 +262,7 @@ export default function PropertyFiltersModal({
       <DialogTrigger asChild>
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-muted text-foreground/70 hover:text-foreground">
           <SlidersHorizontal className="h-4 w-4" />
-          Filters
+          {t('searchFilters.filters')}
           {committedCount > 0 && (
             <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
               {committedCount}
@@ -270,14 +272,14 @@ export default function PropertyFiltersModal({
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl shadow-2xl border-0">
         {/* Header */}
-        <div className="relative px-6 pr-14 pt-6 pb-5 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent">
+        <div className="relative px-6 pe-14 pt-6 pb-5 bg-gradient-to-br from-primary/8 via-primary/4 to-transparent">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
                   <SlidersHorizontal className="h-[18px] w-[18px] text-primary" />
                 </div>
-                <span className="text-lg font-semibold tracking-tight">All Filters</span>
+                <span className="text-lg font-semibold tracking-tight">{t('searchFilters.allFilters')}</span>
               </div>
               <Button
                 variant="outline"
@@ -286,20 +288,20 @@ export default function PropertyFiltersModal({
                 className={`text-xs rounded-lg gap-1.5 border-border hover:border-destructive/40 hover:bg-destructive/5 hover:text-destructive transition-all ${totalActiveCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
                 <X className="h-3 w-3" />
-                Clear All
+                {t('searchFilters.clearAll')}
               </Button>
             </DialogTitle>
           </DialogHeader>
 
           {/* Search */}
           <div className="relative mt-4">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute start-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search filters..."
-              className="w-full h-10 pl-10 pr-4 rounded-lg border border-border bg-background/80 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-muted-foreground transition-all"
+              placeholder={t('searchFilters.searchFiltersPlaceholder')}
+              className="w-full h-10 ps-10 pe-4 rounded-lg border border-border bg-background/80 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-muted-foreground transition-all"
             />
           </div>
         </div>
@@ -314,7 +316,7 @@ export default function PropertyFiltersModal({
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">Advanced</span>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">{t('searchFilters.advanced')}</span>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
           </div>
 
@@ -342,11 +344,11 @@ export default function PropertyFiltersModal({
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <DollarSign className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm font-semibold text-foreground">Price Range</p>
+                    <p className="text-sm font-semibold text-foreground">{t('searchFilters.priceRange')}</p>
                   </div>
                   <div className="flex items-end gap-3">
                     <div className="flex-1">
-                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Minimum</label>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">{t('searchFilters.minimum')}</label>
                       <input
                         type="number"
                         value={localRange.minPrice}
@@ -359,12 +361,12 @@ export default function PropertyFiltersModal({
                       <div className="w-6 h-px bg-border" />
                     </div>
                     <div className="flex-1">
-                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Maximum</label>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">{t('searchFilters.maximum')}</label>
                       <input
                         type="number"
                         value={localRange.maxPrice}
                         onChange={(e) => setLocalRange({ ...localRange, maxPrice: e.target.value })}
-                        placeholder="No limit"
+                        placeholder={t('searchFilters.noLimit')}
                         className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                       />
                     </div>
@@ -380,11 +382,11 @@ export default function PropertyFiltersModal({
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Ruler className="h-4 w-4 text-primary" />
                     </div>
-                    <p className="text-sm font-semibold text-foreground">Area Range <span className="text-muted-foreground font-normal">(m²)</span></p>
+                    <p className="text-sm font-semibold text-foreground">{t('searchFilters.areaRange')} <span className="text-muted-foreground font-normal">(m²)</span></p>
                   </div>
                   <div className="flex items-end gap-3">
                     <div className="flex-1">
-                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Minimum</label>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">{t('searchFilters.minimum')}</label>
                       <input
                         type="number"
                         value={localRange.minArea}
@@ -397,12 +399,12 @@ export default function PropertyFiltersModal({
                       <div className="w-6 h-px bg-border" />
                     </div>
                     <div className="flex-1">
-                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Maximum</label>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">{t('searchFilters.maximum')}</label>
                       <input
                         type="number"
                         value={localRange.maxArea}
                         onChange={(e) => setLocalRange({ ...localRange, maxArea: e.target.value })}
-                        placeholder="No limit"
+                        placeholder={t('searchFilters.noLimit')}
                         className="w-full h-11 px-3.5 rounded-xl border border-border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                       />
                     </div>
@@ -417,8 +419,8 @@ export default function PropertyFiltersModal({
                 {filteredOptions.length === 0 && (
                   <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground">
                     <Search className="h-8 w-8 mb-3 opacity-30" />
-                    <p className="text-sm font-medium">No options found</p>
-                    <p className="text-xs mt-1 opacity-70">Try a different search term</p>
+                    <p className="text-sm font-medium">{t('searchFilters.noOptionsFound')}</p>
+                    <p className="text-xs mt-1 opacity-70">{t('searchFilters.tryDifferentSearch')}</p>
                   </div>
                 )}
                 {filteredOptions.map((opt) => {
@@ -464,8 +466,8 @@ export default function PropertyFiltersModal({
             onClick={handleApply}
             className="px-8 h-10 rounded-lg font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 transition-all duration-200"
           >
-            <Check className="h-4 w-4 mr-2" />
-            Apply
+            <Check className="h-4 w-4 me-2" />
+            {t('searchFilters.apply')}
           </Button>
         </div>
       </DialogContent>
