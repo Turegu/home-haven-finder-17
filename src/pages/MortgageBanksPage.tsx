@@ -142,8 +142,8 @@ const MortgageBanksPage = () => {
                 <Calculator className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">Mortgage Calculator</h2>
-                <p className="text-sm text-muted-foreground">Enter your details and select a bank to calculate installments</p>
+                <h2 className="text-xl font-bold text-foreground">{t('mortgage.mortgageCalculator')}</h2>
+                <p className="text-sm text-muted-foreground">{t('mortgage.enterDetails')}</p>
               </div>
             </div>
           </div>
