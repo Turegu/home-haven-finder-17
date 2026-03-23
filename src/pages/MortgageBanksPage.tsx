@@ -432,11 +432,11 @@ const MortgageBanksPage = () => {
                     </div>
 
                     <div className="p-5 space-y-2.5">
-                      <InfoRow label="Finance Amount" value={`${bank.finance_amount_percentage ?? '—'}%`} />
-                      <InfoRow label="Maximum Amount" value={bank.maximum_amount ? `$${bank.maximum_amount.toLocaleString()}` : '—'} />
-                      <InfoRow label="Maximum Duration" value={bank.maximum_duration ? `${bank.maximum_duration} years` : '—'} />
-                      <InfoRow label="Down Payment" value={`${bank.down_payment ?? '—'}%`} />
-                      <InfoRow label="Final Payment" value={`${bank.final_payment ?? '—'}%`} />
+                       <InfoRow label={t('mortgage.financeAmount')} value={`${bank.finance_amount_percentage ?? '—'}%`} />
+                      <InfoRow label={t('mortgage.maximumAmount')} value={bank.maximum_amount ? `$${bank.maximum_amount.toLocaleString()}` : '—'} />
+                      <InfoRow label={t('mortgage.maximumDuration')} value={bank.maximum_duration ? `${bank.maximum_duration} ${t('mortgage.years')}` : '—'} />
+                      <InfoRow label={t('mortgage.downPayment')} value={`${bank.down_payment ?? '—'}%`} />
+                      <InfoRow label={t('mortgage.finalPayment')} value={`${bank.final_payment ?? '—'}%`} />
                     </div>
 
                     <div className="px-5 pb-5 flex gap-2">
