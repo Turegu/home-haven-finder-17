@@ -50,13 +50,13 @@ const AgentInboxPage = () => {
 
   return (
     <AgentLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Inbox</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("agentDashboard.inbox")}</h1>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
-          <TabsTrigger value="property_request">Property Requests</TabsTrigger>
-          <TabsTrigger value="inquiry">Inquiries</TabsTrigger>
-          <TabsTrigger value="message">Messages</TabsTrigger>
+          <TabsTrigger value="property_request">{t("companyDashboard.propertyRequests")}</TabsTrigger>
+          <TabsTrigger value="inquiry">{t("companyDashboard.inquiry")}</TabsTrigger>
+          <TabsTrigger value="message">{t("companyDashboard.message")}</TabsTrigger>
         </TabsList>
 
         <div className="mt-4 mb-4">

@@ -205,13 +205,13 @@ const AgentDashboardPage = () => {
 
       {/* Listings Summary */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-foreground">Your Assigned Listings</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("agentDashboard.yourAssignedListings")}</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { to: "/agent/properties", icon: Building2, count: counts.properties, label: "Properties", color: "text-amber-500", bg: "bg-amber-500/10" },
-          { to: "/agent/projects", icon: FolderKanban, count: counts.projects, label: "Projects", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { to: "/agent/events", icon: Calendar, count: counts.events, label: "Events", color: "text-purple-500", bg: "bg-purple-500/10" },
+          { to: "/agent/properties", icon: Building2, count: counts.properties, label: t("agentDashboard.properties"), color: "text-amber-500", bg: "bg-amber-500/10" },
+          { to: "/agent/projects", icon: FolderKanban, count: counts.projects, label: t("agentDashboard.projects"), color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { to: "/agent/events", icon: Calendar, count: counts.events, label: t("agentDashboard.events"), color: "text-purple-500", bg: "bg-purple-500/10" },
         ].map((card) => (
           <Link key={card.to} to={card.to} className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
             <div className={`w-11 h-11 rounded-lg ${card.bg} flex items-center justify-center transition-colors`}>

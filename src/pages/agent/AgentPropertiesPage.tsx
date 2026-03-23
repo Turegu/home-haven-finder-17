@@ -112,7 +112,7 @@ const AgentPropertiesPage = () => {
 
   return (
     <AgentLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">My Properties</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("agentDashboard.myProperties")}</h1>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">

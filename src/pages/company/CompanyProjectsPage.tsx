@@ -135,7 +135,7 @@ const CompanyProjectsPage = () => {
   return (
     <CompanyLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Projects Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.projectsManagement")}</h1>
       </div>
 
       {/* Membership Usage */}

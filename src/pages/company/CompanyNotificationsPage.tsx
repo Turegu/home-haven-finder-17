@@ -100,14 +100,14 @@ const CompanyNotificationsPage = () => {
     <CompanyLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.notifications")}</h1>
           {unreadCount > 0 && (
-            <p className="text-sm text-muted-foreground mt-1">{unreadCount} unread notification{unreadCount !== 1 ? "s" : ""}</p>
+            <p className="text-sm text-muted-foreground mt-1">{t("companyDashboard.unreadNotifications", { count: unreadCount })}</p>
           )}
         </div>
         {unreadCount > 0 && (
           <Button variant="outline" size="sm" onClick={markAllRead}>
-            <Check className="h-4 w-4 mr-2" /> Mark All Read
+            <Check className="h-4 w-4 mr-2" /> {t("companyDashboard.markAllRead")}
           </Button>
         )}
       </div>

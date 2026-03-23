@@ -191,14 +191,14 @@ const CompanyFollowersPage = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Followers</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.followers")}</h1>
             <p className="text-sm text-muted-foreground">
-              {followers.length} registered user{followers.length !== 1 ? "s" : ""} following your company
+              {t("companyDashboard.followersCount", { count: followers.length })}
             </p>
           </div>
           <Button onClick={() => setAnnouncementOpen(true)} disabled={followers.length === 0}>
             <Megaphone className="h-4 w-4 mr-2" />
-            Send Announcement
+            {t("companyDashboard.sendAnnouncement")}
           </Button>
         </div>
 

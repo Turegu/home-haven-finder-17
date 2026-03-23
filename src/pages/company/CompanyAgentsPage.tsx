@@ -142,8 +142,8 @@ const CompanyAgentsPage = () => {
     <CompanyLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Agents Management</h1>
-          <p className="text-sm text-muted-foreground mt-1">Company Credits: <span className="font-semibold text-primary">{companyCredits}</span></p>
+          <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.agentsManagement")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("companyDashboard.companyCredits")}: <span className="font-semibold text-primary">{companyCredits}</span></p>
         </div>
       </div>
 

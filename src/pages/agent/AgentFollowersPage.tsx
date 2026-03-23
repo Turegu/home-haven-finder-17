@@ -83,8 +83,8 @@ const AgentFollowersPage = () => {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Followers</h1>
-            <p className="text-sm text-muted-foreground">{followers.length} follower{followers.length !== 1 ? "s" : ""}</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("agentDashboard.followers")}</h1>
+            <p className="text-sm text-muted-foreground">{followers.length} {t("agentDashboard.totalFollowers")}</p>
           </div>
           <Button onClick={() => setAnnouncementOpen(true)} disabled={followers.length === 0}>
             <Megaphone className="h-4 w-4 mr-2" /> Send Announcement

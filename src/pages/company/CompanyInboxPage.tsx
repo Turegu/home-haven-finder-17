@@ -127,18 +127,18 @@ const CompanyInboxPage = () => {
 
   return (
     <CompanyLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Inbox</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("companyDashboard.inbox")}</h1>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)} className="space-y-6">
         <TabsList className="bg-secondary/50">
           <TabsTrigger value="property_request" className="gap-2">
-            <Home className="h-4 w-4" /> Property Requests
+            <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
           </TabsTrigger>
           <TabsTrigger value="inquiry" className="gap-2">
-            <MessageSquare className="h-4 w-4" /> Inquiry
+            <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
           </TabsTrigger>
           <TabsTrigger value="message" className="gap-2">
-            <Mail className="h-4 w-4" /> Message
+            <Mail className="h-4 w-4" /> {t("companyDashboard.message")}
           </TabsTrigger>
         </TabsList>
 
