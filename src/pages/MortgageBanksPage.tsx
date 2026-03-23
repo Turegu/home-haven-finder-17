@@ -212,10 +212,10 @@ const MortgageBanksPage = () => {
                   onChange={(e) => setSelectedBankId(e.target.value || null)}
                   className="w-full h-11 px-3 rounded-lg border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
                 >
-                  <option value="">Choose a bank...</option>
+                  <option value="">{t('mortgage.chooseBank')}</option>
                   {banks.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {b.name} — {b.interest_rate}% monthly
+                      {b.name} — {b.interest_rate}% {t('mortgage.monthly')}
                     </option>
                   ))}
                 </select>
