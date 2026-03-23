@@ -219,7 +219,7 @@ const AgentsPage = () => {
             className="w-full md:w-48"
           />
           <Button className="w-full md:w-auto">
-            <Search className="h-4 w-4 mr-1" /> Search
+            <Search className="h-4 w-4 me-1" /> {t('hero.search')}
           </Button>
         </div>
       </div>
