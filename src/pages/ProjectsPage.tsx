@@ -289,7 +289,7 @@ const ProjectsPage = () => {
                   <TabsList className="w-full grid grid-cols-2">
                     <TabsTrigger value="interior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                       <Lamp className="h-4 w-4" />
-                      Interior
+                      {t('projectsPage.interior')}
                       {interiorAmenities.length > 0 && (
                         <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{interiorAmenities.length}</Badge>
                       )}
