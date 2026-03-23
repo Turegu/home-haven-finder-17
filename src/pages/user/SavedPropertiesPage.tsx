@@ -70,7 +70,7 @@ const SavedPropertiesPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Saved Properties</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.savedProperties')}</h1>
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
