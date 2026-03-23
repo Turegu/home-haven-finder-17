@@ -137,7 +137,7 @@ const BuyPage = () => {
   }, [routerLocation.pathname, searchParams.toString()]);
 
 
-  const title = isRent ? 'Properties for Rent' : 'Properties for Sale';
+  const title = isRent ? t('pages.rent.title') : t('pages.buy.title');
 
   // Query
   const { data, isLoading, isFetching } = usePropertySearch(committedParams);
