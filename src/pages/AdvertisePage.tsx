@@ -305,13 +305,13 @@ const AdvertisePage = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
-                  <FeatureLine value={`${pkg.max_agents}`} label="Agents Allowed" />
-                  <FeatureLine value={`${pkg.max_events}`} label="Events Allowed" />
-                  <FeatureLine value={`${pkg.max_projects}`} label="Projects Allowed" />
-                  <FeatureLine value={`${pkg.max_properties}`} label="Properties Allowed" />
+                  <FeatureLine value={`${pkg.max_agents}`} label={t('pages.advertise.agentsAllowed')} />
+                  <FeatureLine value={`${pkg.max_events}`} label={t('pages.advertise.eventsAllowed')} />
+                  <FeatureLine value={`${pkg.max_projects}`} label={t('pages.advertise.projectsAllowed')} />
+                  <FeatureLine value={`${pkg.max_properties}`} label={t('pages.advertise.propertiesAllowed')} />
                   <FeatureLine
-                    value={pkg.has_property_requests ? "Yes" : "No"}
-                    label="Property Requests"
+                    value={pkg.has_property_requests ? t('common.yes') : t('common.no')}
+                    label={t('pages.advertise.propertyRequests')}
                     positive={pkg.has_property_requests}
                   />
 
