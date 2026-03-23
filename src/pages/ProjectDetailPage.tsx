@@ -396,7 +396,11 @@ const ProjectDetailPage = () => {
                     {project.agentDesignation && <p className="text-sm text-muted-foreground">{project.agentDesignation}</p>}
                   </Link>
 
-                  <Button variant="outline" className="w-full mb-3 gap-2"><UserPlus className="h-4 w-4" />Follow</Button>
+                  {realAgentId && (
+                    <div className="flex justify-center mb-3">
+                      <FollowButton type="agent" targetId={realAgentId} />
+                    </div>
+                  )}
 
                   {project.agentLanguages && project.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
