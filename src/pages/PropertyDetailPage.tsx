@@ -2,7 +2,7 @@ import { useState, useEffect, lazy } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-  MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
+  MapPin, BedDouble, Bath, Maximize, Building, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
