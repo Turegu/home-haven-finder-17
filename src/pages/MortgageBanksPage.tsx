@@ -200,7 +200,7 @@ const MortgageBanksPage = () => {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  = {loanDuration * 12} monthly installments
+                  = {loanDuration * 12} {t('mortgage.monthlyInstallments')}
                 </p>
               </div>
               <div>
