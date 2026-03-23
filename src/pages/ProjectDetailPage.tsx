@@ -132,12 +132,12 @@ const ProjectDetailPage = () => {
   const projectLogo = project.logoUrl || defaultProjectLogo;
 
   const mediaTabs = [
-    { id: 'photos', label: 'Photos', icon: Camera },
-    { id: 'plans', label: 'Plans', icon: Images },
-    { id: '360', label: '360 View', icon: Globe },
-    { id: 'location', label: 'Location', icon: MapPin },
-    { id: 'street', label: 'Street View', icon: PersonStanding },
-    { id: 'video', label: 'Video', icon: Video },
+    { id: 'photos', label: t('property.photos'), icon: Camera },
+    { id: 'plans', label: t('property.plans'), icon: Images },
+    { id: '360', label: t('property.view360'), icon: Globe },
+    { id: 'location', label: t('property.location'), icon: MapPin },
+    { id: 'street', label: t('property.streetView'), icon: PersonStanding },
+    { id: 'video', label: t('property.video'), icon: Video },
   ];
 
   const formatDate = (dateStr: string) => {
