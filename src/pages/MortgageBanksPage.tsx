@@ -319,9 +319,9 @@ const MortgageBanksPage = () => {
           </div>
 
           {loading ? (
-            <div className="text-center py-16 text-muted-foreground">Loading banks...</div>
+            <div className="text-center py-16 text-muted-foreground">{t('mortgage.loadingBanks')}</div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground">No banks found</div>
+            <div className="text-center py-16 text-muted-foreground">{t('mortgage.noBanksFound')}</div>
           ) : (
             <>
               {/* Comparison Table (Desktop) */}
