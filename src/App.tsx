@@ -241,6 +241,7 @@ const App = () => (
         </Suspense>
         
       </BrowserRouter>
+      <BackToTop />
     </TooltipProvider>
     </AreaUnitProvider>
   </QueryClientProvider>

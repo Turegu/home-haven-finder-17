@@ -435,20 +435,7 @@ const PropertyDetailPage = () => {
 
         {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({ title: property.title, url: window.location.href });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-                toast.success('Link copied to clipboard');
-              }
-            }}
-            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
-            title="Share"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
+          <ShareDropdown title={property.title} />
           <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save to favorites">
             <Heart className="h-4 w-4" />
           </button>
