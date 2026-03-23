@@ -75,7 +75,7 @@ export function useFilterCategories(context: string) {
       if (catIds.length > 0) {
         const { data: opts, error: optErr } = await supabase
           .from("filter_options")
-          .select("id, category_id, title")
+          .select("id, category_id, title, translations")
           .in("category_id", catIds)
           .eq("status", "active")
           .order("sort_order");
