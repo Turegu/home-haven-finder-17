@@ -31,16 +31,16 @@ const ResetPasswordPage = () => {
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirm) { toast.error("Passwords don't match"); return; }
-    if (password.length < 6) { toast.error("Password must be at least 6 characters"); return; }
+    if (password !== confirm) { toast.error(t('auth.passwordsDontMatch')); return; }
+    if (password.length < 6) { toast.error(t('auth.passwordMinLength')); return; }
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      toast.success("Password updated successfully!");
+      toast.success(t('auth.passwordUpdated'));
       navigate("/account");
     } catch (err: any) {
-      toast.error(err.message || "Failed to reset password");
+      toast.error(err.message || t('auth.failedToReset'));
     } finally {
       setLoading(false);
     }
