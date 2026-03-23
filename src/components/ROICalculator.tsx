@@ -122,14 +122,14 @@ const ROICalculator = ({
         <>
           {/* Key metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted rounded-lg mb-6">
-            <MetricBox label="Gross Yield" value={`${analysis.grossYield.toFixed(1)}%`} />
-            <MetricBox label="Net Yield" value={`${analysis.netYield.toFixed(1)}%`} highlight />
+            <MetricBox label={t('roi.grossYield')} value={`${analysis.grossYield.toFixed(1)}%`} />
+            <MetricBox label={t('roi.netYield')} value={`${analysis.netYield.toFixed(1)}%`} highlight />
             <MetricBox
-              label="Payback Period"
-              value={analysis.paybackYears ? `${analysis.paybackYears.toFixed(1)} yrs` : "N/A"}
+              label={t('roi.paybackPeriod')}
+              value={analysis.paybackYears ? `${analysis.paybackYears.toFixed(1)} ${t('roi.yrs')}` : "N/A"}
             />
             <MetricBox
-              label="Net Annual Income"
+              label={t('roi.netAnnualIncome')}
               value={`${currency} ${analysis.netAnnualIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
             />
           </div>
