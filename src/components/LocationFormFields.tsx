@@ -530,6 +530,7 @@ const LocationFormFields = ({
   showMap = true,
   className = "",
 }: LocationFormFieldsProps) => {
+  const { t } = useTranslation();
   const [provinces, setProvinces] = useState<NamePair[]>([]);
   const [districts, setDistricts] = useState<NamePair[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<NamePair[]>([]);
