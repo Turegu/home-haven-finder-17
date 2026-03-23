@@ -422,7 +422,7 @@ const MortgageBanksPage = () => {
                       <div className="min-w-0 flex-1">
                         <h3 className="font-bold text-foreground truncate">{bank.name}</h3>
                         {idx === 0 && (
-                          <Badge className="bg-green-600 hover:bg-green-600 text-white text-[10px] mt-0.5">Lowest Rate</Badge>
+                          <Badge className="bg-green-600 hover:bg-green-600 text-white text-[10px] mt-0.5">{t('mortgage.lowestRate')}</Badge>
                         )}
                       </div>
                       <div className="text-right shrink-0">
