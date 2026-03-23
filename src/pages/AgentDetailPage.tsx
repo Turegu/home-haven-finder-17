@@ -170,7 +170,7 @@ const AgentDetailPage = () => {
                     ))}
                   </div>
 
-                  {/* Contact pills + Follow */}
+                  {/* Contact pills */}
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {agent.phone && (
                       <a href={`tel:${agent.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
@@ -183,10 +183,6 @@ const AgentDetailPage = () => {
                     <a href={`https://wa.me/${agent.whatsapp || agent.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
                       <MessageCircle className="h-3 w-3" /> WhatsApp
                     </a>
-                    <Button size="sm" className="gap-1.5 h-8 text-xs px-4 rounded-full">
-                      <UserPlus className="h-3.5 w-3.5" />
-                      Follow
-                    </Button>
                   </div>
                 </div>
               </div>
