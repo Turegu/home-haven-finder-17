@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Building2, User, Crown, Star } from "lucide-react";
+import { ArrowRight, Building2, User, Rocket } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -9,6 +9,7 @@ interface SpotlightCompany {
   logo_url: string | null;
   company_type: string | null;
   profile_classification: string;
+  boost_end_date: string | null;
 }
 
 interface SpotlightAgent {
@@ -17,14 +18,9 @@ interface SpotlightAgent {
   avatar_url: string | null;
   designation: string | null;
   profile_classification: string;
+  boost_end_date: string | null;
   companies: { name: string; logo_url: string | null } | null;
 }
-
-const TierIcon = ({ tier }: { tier: string }) => {
-  if (tier === "premium") return <Crown className="h-3.5 w-3.5 text-amber-500" />;
-  if (tier === "featured") return <Star className="h-3.5 w-3.5 text-primary" />;
-  return null;
-};
 
 const HomepageSpotlight = () => {
   const { data: companies = [] } = useQuery({
@@ -32,12 +28,14 @@ const HomepageSpotlight = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, logo_url, company_type, profile_classification")
+        .select("id, name, logo_url, company_type, profile_classification, boost_end_date")
         .eq("is_verified", true)
-        .in("profile_classification", ["premium", "featured"])
-        .order("profile_classification", { ascending: true })
+        .eq("profile_classification", "boosted")
         .limit(6);
-      return (data || []) as SpotlightCompany[];
+      // Filter only non-expired boosts
+      return ((data || []) as SpotlightCompany[]).filter(
+        c => c.boost_end_date && new Date(c.boost_end_date) > new Date()
+      );
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -47,12 +45,13 @@ const HomepageSpotlight = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, avatar_url, designation, profile_classification, companies(name, logo_url)")
+        .select("id, name, avatar_url, designation, profile_classification, boost_end_date, companies(name, logo_url)")
         .eq("status", "active")
-        .in("profile_classification", ["premium", "featured"])
-        .order("profile_classification", { ascending: true })
+        .eq("profile_classification", "boosted")
         .limit(6);
-      return (data || []) as unknown as SpotlightAgent[];
+      return ((data || []) as unknown as SpotlightAgent[]).filter(
+        a => a.boost_end_date && new Date(a.boost_end_date) > new Date()
+      );
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -76,12 +75,12 @@ const HomepageSpotlight = () => {
           <Link
             key={`c-${c.id}`}
             to={`/company/${c.id}`}
-            className="group relative bg-card border border-border rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/40 hover:shadow-lg transition-all duration-300"
+            className="group relative bg-card border border-primary/30 ring-1 ring-primary/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300"
           >
             <div className="absolute top-2 right-2">
-              <TierIcon tier={c.profile_classification} />
+              <Rocket className="h-3.5 w-3.5 text-primary" />
             </div>
-            <div className="h-16 w-16 rounded-xl bg-muted border border-border flex items-center justify-center overflow-hidden mb-3">
+            <div className="h-16 w-16 rounded-xl bg-primary/5 border border-border flex items-center justify-center overflow-hidden mb-3">
               {c.logo_url ? (
                 <img src={c.logo_url} alt={c.name} className="h-full w-full object-contain p-1" />
               ) : (
@@ -99,10 +98,10 @@ const HomepageSpotlight = () => {
           <Link
             key={`a-${a.id}`}
             to={`/agent/${a.id}`}
-            className="group relative bg-card border border-border rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/40 hover:shadow-lg transition-all duration-300"
+            className="group relative bg-card border border-primary/30 ring-1 ring-primary/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300"
           >
             <div className="absolute top-2 right-2">
-              <TierIcon tier={a.profile_classification} />
+              <Rocket className="h-3.5 w-3.5 text-primary" />
             </div>
             <div className="h-16 w-16 rounded-xl bg-muted border border-border flex items-center justify-center overflow-hidden mb-3">
               {a.avatar_url ? (
