@@ -104,7 +104,7 @@ const ROICalculator = ({
           </div>
         </div>
         <div>
-          <label className="text-xs text-muted-foreground block mb-1">Annual Expenses</label>
+          <label className="text-xs text-muted-foreground block mb-1">{t('roi.annualExpenses')}</label>
           <div className="flex items-center border border-border rounded-md overflow-hidden">
             <span className="px-2 text-xs text-muted-foreground bg-muted">%</span>
             <input
