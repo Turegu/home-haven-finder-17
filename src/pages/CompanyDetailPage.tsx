@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
+import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import ProfileListingFilters, { type ProfileFilters } from '@/components/Profile
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
 import FeaturedProjectCard from '@/components/FeaturedProjectCard';
+import FollowButton from '@/components/FollowButton';
 
 interface CompanyData {
   id: string;
