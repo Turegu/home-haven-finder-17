@@ -260,8 +260,8 @@ const CompanyDetailPage = () => {
             {allLanguages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  Languages We Speak
+                  <Globe className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
+                  {t('companyDetail.languagesWeSpeak')}
                 </h3>
                 <ExpandablePillList items={allLanguages} maxVisible={6} />
               </div>
