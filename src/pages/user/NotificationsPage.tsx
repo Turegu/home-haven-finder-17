@@ -59,7 +59,7 @@ const NotificationsPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.notifications')}</h1>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3, 4, 5].map(i => (
