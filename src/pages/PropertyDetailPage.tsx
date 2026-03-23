@@ -563,7 +563,7 @@ const PropertyDetailPage = () => {
                   <span className="flex items-center gap-1.5 text-foreground">
                     <CalendarDays className="h-4 w-4 text-warm" />
                     <span className="font-medium">{t('property.openHouse')}:</span> {property.openHouseStart}
-                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— {t('common.end')}: {property.openHouseEnd}</span>}
+                    {property.openHouseEnd && <span className="text-muted-foreground ml-1">— {t('property.endDate')}: {property.openHouseEnd}</span>}
                   </span>
                 )}
                 {property.viewingHours && (

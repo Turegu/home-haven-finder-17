@@ -203,7 +203,7 @@ const CompanyAgentsPage = () => {
                 filtered.map((agent) => (
                   <TableRow key={agent.id} className="hover:bg-muted/30">
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {format(new Date(agent.created_at), "yyyy.dd.MM")}
+                      {format(new Date(agent.created_at), "dd/MM/yyyy")}
                     </TableCell>
                     <TableCell className="font-medium text-foreground">{agent.name}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{agent.email}</TableCell>

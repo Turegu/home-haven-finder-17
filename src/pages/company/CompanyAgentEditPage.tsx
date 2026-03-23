@@ -366,15 +366,17 @@ const CompanyAgentEditPage = () => {
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="phone">
                 <Label className="text-foreground font-medium">Phone *</Label>
-                <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
+                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+90 555 123 4567" />
+                {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="whatsapp">
                 <Label className="text-foreground font-medium">WhatsApp Number *</Label>
-                <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
+                <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+90 555 123 4567" />
+                {fieldErrors.whatsapp && <p className="text-xs text-destructive">{fieldErrors.whatsapp}</p>}
               </div>
             </div>
           </div>

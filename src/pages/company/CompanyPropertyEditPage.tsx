@@ -494,7 +494,7 @@ const CompanyPropertyEditPage = () => {
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
                 {isRent ? t("companyDashboard.rentPrice") : t("companyDashboard.price")} ({form.currency}) *
               </Label>
-              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? t("companyDashboard.enterRentPrice") : t("companyDashboard.enterPrice")} />
+              <Input type="number" min="1" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? t("companyDashboard.enterRentPrice") : t("companyDashboard.enterPrice")} />
             </div>
 
             {isRent && (

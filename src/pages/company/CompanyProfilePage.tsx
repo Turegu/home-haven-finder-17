@@ -228,10 +228,19 @@ const CompanyProfilePage = () => {
     }
   };
 
+  const [passwordError, setPasswordError] = useState("");
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) { toast.error("Passwords don't match"); return; }
-    if (newPassword.length < 6) { toast.error("Password must be at least 6 characters"); return; }
+    setPasswordError("");
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
     setChangingPw(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
@@ -239,6 +248,7 @@ const CompanyProfilePage = () => {
       toast.success("Password changed successfully!");
       setNewPassword("");
       setConfirmPassword("");
+      setPasswordError("");
     } catch (err: any) {
       toast.error(err.message || "Failed to change password");
     } finally {
