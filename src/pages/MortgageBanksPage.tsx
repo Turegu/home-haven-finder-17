@@ -28,6 +28,7 @@ interface Bank {
 }
 
 const MortgageBanksPage = () => {
+  const { t } = useTranslation();
   const [banks, setBanks] = useState<Bank[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
