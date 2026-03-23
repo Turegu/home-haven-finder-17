@@ -226,7 +226,7 @@ const EventsPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            Public Gatherings & Events <span className="text-primary">({totalCount})</span>
+            {t('event.publicGatherings')} <span className="text-primary">({totalCount})</span>
           </h1>
           <div className="flex items-center gap-3">
             <select
