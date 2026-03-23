@@ -17,6 +17,7 @@ interface BlogItem {
 }
 
 const BlogsPage = () => {
+  const { t, i18n } = useTranslation();
   const [blogs, setBlogs] = useState<BlogItem[]>([]);
   const [loading, setLoading] = useState(true);
 
