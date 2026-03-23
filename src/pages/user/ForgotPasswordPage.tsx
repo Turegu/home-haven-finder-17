@@ -22,9 +22,9 @@ const ForgotPasswordPage = () => {
       });
       if (error) throw error;
       setSent(true);
-      toast.success("Password reset email sent!");
+      toast.success(t('auth.resetEmailSent'));
     } catch (err: any) {
-      toast.error(err.message || "Failed to send reset email");
+      toast.error(err.message || t('auth.failedToSendReset'));
     } finally {
       setLoading(false);
     }
