@@ -218,10 +218,10 @@ const ContactUsPage = () => {
     });
     setSending(false);
     if (error) {
-      toast({ title: "Failed to send message", description: error.message, variant: "destructive" });
+      toast({ title: t('pages.contact.failedToSend'), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Message sent!", description: "We'll get back to you soon." });
-      setForm({ name: "", email: "", phone: "", subject: "General Inquiries", message: "" });
+      toast({ title: t('pages.contact.messageSent'), description: t('pages.contact.wellGetBack') });
+      setForm({ name: "", email: "", phone: "", subject: t('pages.contact.generalInquiries'), message: "" });
     }
   };
 
