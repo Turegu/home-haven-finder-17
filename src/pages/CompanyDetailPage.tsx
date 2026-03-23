@@ -261,13 +261,7 @@ const CompanyDetailPage = () => {
                   <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
                   Languages We Speak
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {allLanguages.map((lang) => (
-                    <span key={lang} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
-                      {lang}
-                    </span>
-                  ))}
-                </div>
+                <ExpandablePillList items={allLanguages} maxVisible={6} />
               </div>
             )}
 
