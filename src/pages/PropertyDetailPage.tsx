@@ -422,7 +422,7 @@ const PropertyDetailPage = () => {
         )}
         {!pinLocation && activeTab === 'location' && (
           <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-            Location coordinates are unavailable for this listing.
+            {t('property.locationUnavailable')}
           </div>
         )}
 
