@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
-const DarkModeToggle = () => {
+const DarkModeToggle = ({ compact = false }: { compact?: boolean }) => {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === 'undefined') return false;
     const stored = localStorage.getItem('theme');
@@ -23,15 +23,16 @@ const DarkModeToggle = () => {
   return (
     <button
       onClick={() => setIsDark(!isDark)}
-      className="p-2 rounded-full hover:bg-secondary transition-colors"
+      className={`flex items-center gap-1 hover:opacity-80 transition-opacity px-2 py-1 rounded ${compact ? '' : 'p-2 rounded-full hover:bg-secondary'}`}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Light mode' : 'Dark mode'}
     >
       {isDark ? (
-        <Sun className="h-5 w-5 text-foreground/70" />
+        <Sun className={compact ? "h-3.5 w-3.5" : "h-5 w-5 text-foreground/70"} />
       ) : (
-        <Moon className="h-5 w-5 text-foreground/70" />
+        <Moon className={compact ? "h-3.5 w-3.5" : "h-5 w-5 text-foreground/70"} />
       )}
+      {compact && <span className="text-xs">{isDark ? 'Light' : 'Dark'}</span>}
     </button>
   );
 };

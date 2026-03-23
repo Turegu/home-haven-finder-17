@@ -247,6 +247,7 @@ const Header = () => {
                 </div>
               )}
             </div>
+            <DarkModeToggle compact />
           </div>
 
           <div className="hidden md:flex items-center gap-4">
@@ -275,7 +276,6 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-1">
-            <DarkModeToggle />
             {/* Notifications Dropdown */}
             <div className="relative" ref={notifRef}>
               <button
