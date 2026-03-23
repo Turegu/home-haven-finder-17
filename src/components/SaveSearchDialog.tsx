@@ -125,7 +125,7 @@ const SaveSearchDialog = ({
 
                 {locationParts.length > 0 && (
                   <div className="flex items-start gap-2">
-                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Location:</span>
+                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{t('saveSearch.location')}:</span>
                     <span className="text-xs text-foreground">{locationParts.join(' > ')}</span>
                   </div>
                 )}
