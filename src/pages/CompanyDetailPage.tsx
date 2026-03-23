@@ -100,10 +100,10 @@ const CompanyDetailPage = () => {
   })();
 
   const tabs = [
-    { key: 'properties', label: 'Properties', icon: Home },
-    { key: 'projects', label: 'Projects', icon: Building2 },
-    { key: 'events', label: 'Events', icon: Calendar },
-    { key: 'agents', label: 'Our Team', icon: Users },
+    { key: 'properties', label: t('companyDetail.properties'), icon: Home },
+    { key: 'projects', label: t('companyDetail.projects'), icon: Building2 },
+    { key: 'events', label: t('companyDetail.events'), icon: Calendar },
+    { key: 'agents', label: t('companyDetail.ourTeam'), icon: Users },
   ];
 
   if (loading) {
