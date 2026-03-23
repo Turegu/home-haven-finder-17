@@ -64,7 +64,7 @@ const ROICalculator = ({
     <div className="bg-card rounded-xl border border-border p-6">
       <div className="flex items-center gap-2 mb-6">
         <Calculator className="h-5 w-5 text-primary" />
-        <h2 className="text-lg font-bold text-foreground">Return on Investment</h2>
+        <h2 className="text-lg font-bold text-foreground">{t('roi.title')}</h2>
       </div>
 
       {/* Inputs */}
