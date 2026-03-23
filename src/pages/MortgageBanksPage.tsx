@@ -80,10 +80,10 @@ const MortgageBanksPage = () => {
     const financeOk = !selectedBank.finance_amount_percentage || ((100 - downPaymentPct) <= selectedBank.finance_amount_percentage);
 
     const warnings: string[] = [];
-    if (!maxAmtOk) warnings.push(`Loan exceeds bank max (${selectedBank.maximum_amount?.toLocaleString()})`);
-    if (!maxDurOk) warnings.push(`Duration exceeds bank max (${selectedBank.maximum_duration} years)`);
-    if (!minDpOk) warnings.push(`Down payment below bank min (${selectedBank.down_payment}%)`);
-    if (!financeOk) warnings.push(`Finance % exceeds bank limit (${selectedBank.finance_amount_percentage}%)`);
+    if (!maxAmtOk) warnings.push(`${t('mortgage.loanExceedsMax')} (${selectedBank.maximum_amount?.toLocaleString()})`);
+    if (!maxDurOk) warnings.push(`${t('mortgage.durationExceedsMax')} (${selectedBank.maximum_duration} ${t('mortgage.years')})`);
+    if (!minDpOk) warnings.push(`${t('mortgage.downPaymentBelowMin')} (${selectedBank.down_payment}%)`);
+    if (!financeOk) warnings.push(`${t('mortgage.financeExceedsLimit')} (${selectedBank.finance_amount_percentage}%)`);
 
     // Final payment (balloon)
     const finalPaymentAmt = selectedBank.final_payment
