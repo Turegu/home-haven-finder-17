@@ -1,0 +1,1 @@
+UPDATE public.companies SET pin_location = '41.0082, 28.9784' WHERE id = '7fe3f004-0a4f-4564-be17-305a0d1148a4';
