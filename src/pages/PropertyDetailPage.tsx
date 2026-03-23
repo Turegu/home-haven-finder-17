@@ -4,7 +4,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
-  Video, Phone, Mail, MessageCircle, UserPlus,
+  Video, Phone, Mail, MessageCircle,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
   Wallet, HardHat, KeyRound, Banknote, CalendarCheck,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
