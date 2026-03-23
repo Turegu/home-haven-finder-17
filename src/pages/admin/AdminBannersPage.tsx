@@ -189,10 +189,15 @@ const AdminBannersPage = () => {
       </div>
 
       {/* Info box */}
-      <div className="bg-muted/50 border border-border rounded-lg p-4 mb-6 text-sm text-muted-foreground">
-        <p className="font-semibold text-foreground mb-1">Required Banner Dimensions:</p>
-        <p>Horizontal: <span className="font-medium text-foreground">1172px × 206px</span></p>
-        <p>Vertical: <span className="font-medium text-foreground">225px × 513px</span></p>
+      <div className="bg-muted/50 border border-border rounded-lg p-4 mb-6 text-sm text-muted-foreground space-y-1">
+        <p className="font-semibold text-foreground mb-2">Required Banner Dimensions:</p>
+        <p>Horizontal (listing pages): <span className="font-medium text-foreground">1172 × 206 px</span></p>
+        <p>Horizontal (detail pages): <span className="font-medium text-foreground">1172 × 206 px</span></p>
+        <p>Vertical (sidebar): <span className="font-medium text-foreground">225 × 513 px</span></p>
+        <p>Homepage Hero Banner: <span className="font-medium text-foreground">1920 × 800 px</span> (aspect 21:9)</p>
+        <p>Second Banner (below search): <span className="font-medium text-foreground">1172 × 180 px</span></p>
+        <p>Company Cover / Agent Banner: <span className="font-medium text-foreground">1200 × 180 px</span></p>
+        <p>Company / Agent Logo: <span className="font-medium text-foreground">200 × 200 px</span></p>
       </div>
 
       {/* Search */}
@@ -277,7 +282,7 @@ const AdminBannersPage = () => {
           <div className="space-y-4 mt-2">
             <div className="bg-muted/50 border border-border rounded-md p-3 text-xs text-muted-foreground">
               <p className="font-medium text-foreground mb-0.5">Required Dimensions:</p>
-              <p>Horizontal: 1172px × 206px &nbsp;|&nbsp; Vertical: 225px × 513px</p>
+              <p>Horizontal: 1172 × 206 px &nbsp;|&nbsp; Vertical: 225 × 513 px</p>
             </div>
 
             <div>
