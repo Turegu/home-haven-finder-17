@@ -111,13 +111,11 @@ const FollowButton = ({ type, targetId }: FollowButtonProps) => {
   }
 
   return (
-    <Button
-      size="sm"
-      variant="ghost"
-      className={`gap-1.5 h-8 text-xs px-4 rounded-full shrink-0 ${
+    <button
+      className={`inline-flex items-center gap-1.5 h-8 text-xs px-4 rounded-full shrink-0 font-medium transition-colors disabled:opacity-50 ${
         isFollowing
-          ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
-          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+          ? 'bg-primary text-primary-foreground hover:bg-primary/80'
+          : 'bg-muted text-muted-foreground hover:bg-muted-foreground/20'
       }`}
       onClick={handleToggle}
       disabled={toggling}
@@ -130,7 +128,7 @@ const FollowButton = ({ type, targetId }: FollowButtonProps) => {
         <UserPlus className="h-3.5 w-3.5" />
       )}
       {isFollowing ? 'Following' : 'Follow'}
-    </Button>
+    </button>
   );
 };
 
