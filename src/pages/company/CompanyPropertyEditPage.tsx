@@ -421,16 +421,16 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><FileText className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Description & Information</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.descriptionInfo") }</h2>
           </div>
           <div className="space-y-5">
             <div className="space-y-2" data-field="title">
-              <Label className="text-foreground font-medium">Property Title *</Label>
+              <Label className="text-foreground font-medium">{ t("companyDashboard.propertyTitle") + " *" }</Label>
               <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
               <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Property Description</Label>
+              <Label className="text-foreground font-medium">{ t("companyDashboard.propertyDescription") }</Label>
               <RichTextToolbar
                 onAction={(tag) => {
                   const el = document.getElementById("prop-desc") as HTMLTextAreaElement | null;
@@ -459,18 +459,18 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><ScrollText className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Contract & Property Type</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.contractPropertyType") }</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <FormSelect
-              label="Contract Type *"
+              label="{ t("companyDashboard.contractType") + " *" }"
               icon={<Home className="h-4 w-4 text-muted-foreground" />}
               value={form.contract_type}
               onChange={handleContractChange}
               options={contractTypesData.map(c => ({ value: c.value, label: t(c.labelKey) }))}
             />
             <FormSelect
-              label="Property Type *"
+              label="{ t("companyDashboard.propertyType") + " *" }"
               icon={<Building2 className="h-4 w-4 text-muted-foreground" />}
               value={form.property_type}
               onChange={(v) => updateField("property_type", v)}
@@ -483,7 +483,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Pricing & Size</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.price") + " >Pricing & Size< " + t("companyDashboard.netArea") }</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="space-y-2" data-field="area">
@@ -521,7 +521,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><BedDouble className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Rooms & Features</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.propertyDetails") }</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FormSelect
@@ -615,7 +615,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><TreePine className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Amenities</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.amenities") }</h2>
           </div>
           <AmenitiesPickerDialog
             interiorOptions={filterOpts["interior_amenities"] || []}
@@ -700,7 +700,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6" data-field="province">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Compass className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Location *</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.location") + " *" }</h2>
           </div>
           <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
@@ -715,7 +715,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><ImageIcon className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Media</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.media") }</h2>
           </div>
           <div className="space-y-3 mb-6">
             <Label className="text-foreground font-medium">Images</Label>
