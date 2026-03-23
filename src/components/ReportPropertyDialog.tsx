@@ -86,10 +86,10 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
         <div className="space-y-4 pt-2">
           {/* Reason */}
           <div className="space-y-1.5">
-            <Label>Select a problem</Label>
+            <Label>{t('report.selectProblem')}</Label>
             <Select value={reason} onValueChange={setReason}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a problem" />
+                <SelectValue placeholder={t('report.selectProblem')} />
               </SelectTrigger>
               <SelectContent>
                 {REPORT_REASONS.map((r) => (
