@@ -60,7 +60,7 @@ const SearchablePillSelect = ({
                 : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
             }`}
           >
-            {opt}
+            {getLabel(opt)}
           </button>
         ))}
         {filtered.length === 0 && (
