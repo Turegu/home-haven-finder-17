@@ -37,13 +37,8 @@ interface UnitForm {
   floor_plans: string[];
 }
 
-const advertisingTagOptions = [
-  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
-  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
-  "Lower Price", "Below Market", "Reduced", "Cash Only",
-  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
-  "Fully Renovated", "Motivated Seller", "Open House",
-];
+import { ADVERTISING_TAG_OPTIONS, ADVERTISING_TAG_VALUES } from "@/data/advertisingTags";
+
 
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
