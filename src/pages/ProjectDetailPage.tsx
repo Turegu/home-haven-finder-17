@@ -339,16 +339,16 @@ const ProjectDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('project.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <OverviewItem icon={Hash} label="Listing ID" value={project.listingId} />
-                <OverviewItem icon={Building} label="Type" value={project.projectType} />
-                <OverviewItem icon={DollarSign} label="Starting Price" value={`$ ${project.priceFrom.toLocaleString()}`} />
-                <OverviewItem icon={HardHat} label="Developer" value={project.developer} />
-                <OverviewItem icon={Ruler} label="Area Range" value={project.areaRange} />
-                <OverviewItem icon={Layers} label="No of Units" value={String(project.units)} />
-                <OverviewItem icon={Activity} label="Status" value={project.status} />
-                <OverviewItem icon={CalendarCheck} label="Completion" value={project.completionDate} />
+                <OverviewItem icon={Hash} label={t('project.listingId')} value={project.listingId} />
+                <OverviewItem icon={Building} label={t('project.type')} value={project.projectType} />
+                <OverviewItem icon={DollarSign} label={t('project.startingPrice')} value={`$ ${project.priceFrom.toLocaleString()}`} />
+                <OverviewItem icon={HardHat} label={t('project.developer')} value={project.developer} />
+                <OverviewItem icon={Ruler} label={t('project.areaRange')} value={project.areaRange} />
+                <OverviewItem icon={Layers} label={t('project.noOfUnits')} value={String(project.units)} />
+                <OverviewItem icon={Activity} label={t('project.status')} value={project.status} />
+                <OverviewItem icon={CalendarCheck} label={t('project.completion')} value={project.completionDate} />
               </div>
             </div>
 
