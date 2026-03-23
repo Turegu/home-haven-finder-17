@@ -134,18 +134,18 @@ const AgentDashboardPage = () => {
             <Rocket className={`h-5 w-5 ${isBoosted ? 'text-primary' : 'text-muted-foreground'}`} />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">
-              {isBoosted ? "Profile Boosted" : "Profile Not Boosted"}
+             <h3 className="text-sm font-semibold text-foreground">
+              {isBoosted ? t("companyDashboard.profileBoosted") : t("companyDashboard.profileNotBoosted")}
             </h3>
             <p className="text-xs text-muted-foreground">
               {isBoosted
-                ? `Boosted until ${format(new Date(agent!.boost_end_date!), "do MMM yyyy")} (${boostDaysLeft} days left)`
-                : "Boost your profile to appear at the top of search results"}
+                ? t("companyDashboard.boostedUntil", { date: format(new Date(agent!.boost_end_date!), "do MMM yyyy"), days: boostDaysLeft })
+                : t("companyDashboard.boostDescription")}
             </p>
           </div>
         </div>
         <Button size="sm" variant={isBoosted ? "outline" : "default"} onClick={() => setBoostOpen(true)}>
-          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? "Extend Boost" : "Boost Profile"}
+          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? t("companyDashboard.extendBoost") : t("companyDashboard.boostProfile")}
         </Button>
       </div>
 
