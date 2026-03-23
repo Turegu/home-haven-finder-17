@@ -65,7 +65,7 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
     setSubmitting(false);
 
     if (error) {
-      toast.error("Failed to submit report. Please try again.");
+      toast.error(t('report.failedToSubmit'));
       return;
     }
 
