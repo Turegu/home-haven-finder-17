@@ -112,8 +112,8 @@ const SavedPropertiesPage = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Remove saved property?</AlertDialogTitle>
-                            <AlertDialogDescription>This will remove the property from your saved list.</AlertDialogDescription>
+                             <AlertDialogTitle>{t('userPages.removeSavedProperty')}</AlertDialogTitle>
+                             <AlertDialogDescription>{t('userPages.removeFromSaved')}</AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
