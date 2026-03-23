@@ -449,7 +449,7 @@ const MortgageBanksPage = () => {
                         }}
                       >
                         <Calculator className="h-4 w-4" />
-                        {selectedBankId === bank.id ? 'Selected' : 'Calculate'}
+                        {selectedBankId === bank.id ? t('mortgage.selected') : t('mortgage.calculate')}
                       </Button>
                       {bank.bank_info_link && (
                         <a href={bank.bank_info_link} target="_blank" rel="noopener noreferrer">
