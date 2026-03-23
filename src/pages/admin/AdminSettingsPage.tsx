@@ -147,56 +147,6 @@ const AdminSettingsPage = () => {
           </Button>
         </div>
 
-        {/* Boost Cost Settings */}
-        <div className="bg-card rounded-lg border border-border p-6 space-y-5">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Rocket className="h-5 w-5" /> Profile Boost Pricing
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Set the credit cost for companies and agents to boost their profiles.
-          </p>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">Company Boost Cost (Credits)</h3>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">3 Months</Label>
-                <Input type="number" value={boostCompany3} onChange={e => setBoostCompany3(e.target.value)} min="0" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">6 Months</Label>
-                <Input type="number" value={boostCompany6} onChange={e => setBoostCompany6(e.target.value)} min="0" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">12 Months</Label>
-                <Input type="number" value={boostCompany12} onChange={e => setBoostCompany12(e.target.value)} min="0" />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground">Agent Boost Cost (Credits)</h3>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">3 Months</Label>
-                <Input type="number" value={boostAgent3} onChange={e => setBoostAgent3(e.target.value)} min="0" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">6 Months</Label>
-                <Input type="number" value={boostAgent6} onChange={e => setBoostAgent6(e.target.value)} min="0" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">12 Months</Label>
-                <Input type="number" value={boostAgent12} onChange={e => setBoostAgent12(e.target.value)} min="0" />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
-            <Info className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>These costs are deducted from the company's or agent's credit balance when they boost their profile. Changes take effect immediately for new boosts.</span>
-          </div>
-        </div>
 
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
