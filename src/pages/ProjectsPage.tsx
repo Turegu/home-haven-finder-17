@@ -451,7 +451,7 @@ const ProjectsPage = () => {
           {location.neighborhood && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
-              <span className="text-foreground font-medium">{location.neighborhood} Projects</span>
+              <span className="text-foreground font-medium">{location.neighborhood} {t('projectsPage.projects')}</span>
             </>
           )}
         </div>
