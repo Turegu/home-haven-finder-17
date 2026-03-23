@@ -10,6 +10,8 @@ interface FollowButtonProps {
   type: 'company' | 'agent';
   /** The company or agent ID to follow */
   targetId: string;
+  /** Size variant */
+  size?: 'sm' | 'md';
 }
 
 const FollowButton = ({ type, targetId }: FollowButtonProps) => {
