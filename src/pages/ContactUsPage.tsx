@@ -240,7 +240,7 @@ const ContactUsPage = () => {
     },
     {
       icon: MessageCircle,
-      title: "WhatsApp",
+      title: t('pages.contact.whatsapp'),
       value: settings.sales_whatsapp,
       link: settings.sales_whatsapp
         ? `https://wa.me/${settings.sales_whatsapp.replace(/[^0-9+]/g, "")}`
