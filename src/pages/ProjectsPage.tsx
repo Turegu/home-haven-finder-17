@@ -873,7 +873,7 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
               </div>
               <div className="flex items-center gap-1">
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                  <Phone className="h-4 w-4" /> Call
+                  <Phone className="h-4 w-4" /> {t('projectsPage.call')}
                 </button>
                 <div className="w-px h-5 bg-border" />
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
