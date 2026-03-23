@@ -41,14 +41,9 @@ const contractTypesData = [
   { value: "commercial_rent", labelKey: "companyDashboard.commercialForRent", purpose: "rent", classification: "commercial" },
 ];
 
-// Rent durations now fetched dynamically via filterOpts["rent_duration"]
-const advertisingTagOptions = [
-  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
-  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
-  "Lower Price", "Below Market", "Reduced", "Cash Only",
-  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
-  "Fully Renovated", "Motivated Seller", "Open House",
-];
+// Advertising tags now imported from shared data
+import { ADVERTISING_TAG_OPTIONS, ADVERTISING_TAG_VALUES } from "@/data/advertisingTags";
+
 
 const CompanyPropertyEditPage = () => {
   const { t } = useTranslation();
