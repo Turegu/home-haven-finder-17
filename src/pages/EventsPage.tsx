@@ -234,9 +234,9 @@ const EventsPage = () => {
               onChange={(e) => setSortBy(e.target.value)}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="newest">Newest First</option>
-              <option value="date_asc">Date: Earliest</option>
-              <option value="date_desc">Date: Latest</option>
+              <option value="newest">{t('filters.newestFirst')}</option>
+              <option value="date_asc">{t('filters.dateEarliest')}</option>
+              <option value="date_desc">{t('filters.dateLatest')}</option>
             </select>
             <div className="flex border border-border rounded-md overflow-hidden">
               {[
