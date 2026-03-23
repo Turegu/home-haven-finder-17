@@ -51,6 +51,7 @@ interface FilterOption {
   id: string;
   category_id: string;
   title: string;
+  translations: Record<string, string> | null;
 }
 
 export function useFilterCategories(context: string) {
