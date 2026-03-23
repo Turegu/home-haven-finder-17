@@ -1140,13 +1140,14 @@ const CompanyProjectEditPage = () => {
               {/* Advertising Tags */}
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
-                  <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
+                  <Tag className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.advertisingTags")}
                 </Label>
                 <SearchablePillSelect
-                  options={advertisingTagOptions}
+                  options={ADVERTISING_TAG_VALUES}
                   selected={unitForm.advertising_tags}
                   onToggle={(tag) => updateUnitField("advertising_tags", unitForm.advertising_tags.includes(tag) ? unitForm.advertising_tags.filter(t => t !== tag) : [...unitForm.advertising_tags, tag])}
-                  placeholder="Search tags..."
+                  placeholder={t("companyDashboard.typeCustomTag")}
+                  labelMap={Object.fromEntries(ADVERTISING_TAG_OPTIONS.map(o => [o.value, t(o.labelKey)]))}
                 />
               </div>
 

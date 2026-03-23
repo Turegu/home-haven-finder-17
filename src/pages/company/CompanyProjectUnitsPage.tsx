@@ -368,13 +368,14 @@ const CompanyProjectUnitsPage = () => {
             {/* Advertising Tags */}
             <div className="space-y-2">
               <Label className="font-medium flex items-center gap-1.5">
-                <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
+                <Tag className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.advertisingTags")}
               </Label>
               <SearchablePillSelect
-                options={advertisingTagOptions}
+                options={ADVERTISING_TAG_VALUES}
                 selected={form.advertising_tags}
                 onToggle={(tag) => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter(t => t !== tag) : [...form.advertising_tags, tag])}
-                placeholder="Search tags..."
+                placeholder={t("companyDashboard.typeCustomTag")}
+                labelMap={Object.fromEntries(ADVERTISING_TAG_OPTIONS.map(o => [o.value, t(o.labelKey)]))}
               />
             </div>
 
