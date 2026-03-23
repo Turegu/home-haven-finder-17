@@ -155,7 +155,7 @@ const ROICalculator = ({
                     .filter((p) => [1, 3, 5, 7, 10].includes(p.year))
                     .map((p) => (
                       <tr key={p.year} className="border-b border-border/50">
-                        <td className="py-2 pr-4 font-medium text-foreground">Year {p.year}</td>
+                        <td className="py-2 pe-4 font-medium text-foreground">{t('roi.year')} {p.year}</td>
                         <td className="text-right py-2 pr-4 text-foreground">
                           {currency} {p.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </td>
