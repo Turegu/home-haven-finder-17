@@ -25,19 +25,20 @@ const BlogDetailPage = () => {
 
       if (data) {
         setBlog(data);
-        // Get English translation
-        const { data: trans } = await supabase
+        const langCode = i18n.language === 'ar' ? 'ar' : 'en';
+        const { data: allTrans } = await supabase
           .from("blog_translations")
-          .select("title, description")
+          .select("title, description, language_code")
           .eq("blog_id", data.id)
-          .eq("language_code", "en")
-          .single();
-        setTranslation(trans);
+          .in("language_code", [langCode, "en"]);
+        const preferred = allTrans?.find(t => t.language_code === langCode);
+        const fallback = allTrans?.find(t => t.language_code === 'en');
+        setTranslation(preferred || fallback || null);
       }
       setLoading(false);
     };
     fetchBlog();
-  }, [slug]);
+  }, [slug, i18n.language]);
 
   if (loading) return (
     <div className="min-h-screen bg-background">
