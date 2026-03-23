@@ -138,7 +138,7 @@ const ROICalculator = ({
           <div>
             <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-1.5">
               <TrendingUp className="h-4 w-4 text-primary" />
-              10-Year Investment Projection
+              {t('roi.projectionTitle')}
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
