@@ -50,8 +50,8 @@ const ResetPasswordPage = () => {
     return (
       <div className="min-h-screen flex items-center justify-center p-8 bg-muted/30">
         <div className="text-center space-y-4">
-          <p className="text-muted-foreground">Invalid or expired reset link.</p>
-          <Link to="/forgot-password"><Button>Request New Link</Button></Link>
+          <p className="text-muted-foreground">{t('auth.invalidResetLink')}</p>
+          <Link to="/forgot-password"><Button>{t('auth.requestNewLink')}</Button></Link>
         </div>
       </div>
     );
