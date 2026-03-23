@@ -107,7 +107,7 @@ const CompanyDashboardPage = () => {
   if (loading) {
     return (
       <CompanyLayout>
-        <div className="flex items-center justify-center py-20 text-muted-foreground">Loading dashboard...</div>
+        <div className="flex items-center justify-center py-20 text-muted-foreground">{t("companyDashboard.loading")}</div>
       </CompanyLayout>
     );
   }
@@ -128,6 +128,13 @@ const CompanyDashboardPage = () => {
   const isBoosted = company?.profile_classification === "boosted" && company?.boost_end_date && new Date(company.boost_end_date) > new Date();
   const boostDaysLeft = company?.boost_end_date ? differenceInDays(new Date(company.boost_end_date), new Date()) : null;
 
+  const usageLabels: Record<string, string> = {
+    properties: t("companyDashboard.properties"),
+    projects: t("companyDashboard.projects"),
+    events: t("companyDashboard.events"),
+    agents: t("companyDashboard.agents"),
+  };
+
   return (
     <CompanyLayout>
       {/* Renewal Warning Banner */}
@@ -136,15 +143,15 @@ const CompanyDashboardPage = () => {
           <AlertTriangle className={`h-5 w-5 mt-0.5 shrink-0 ${isExpired ? "text-destructive" : "text-amber-600"}`} />
           <div>
             <p className={`font-semibold text-sm ${isExpired ? "text-destructive" : "text-amber-800"}`}>
-              {isExpired ? "Your package has expired!" : "Your package is expiring soon!"}
+              {isExpired ? t("companyDashboard.packageExpired") : t("companyDashboard.packageExpiringSoon")}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {isExpired
-                ? "Your listings have been deactivated. All listings will be permanently deleted 3 months after expiry. Please renew your package to restore access."
-                : `Your package expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}. Renew now to avoid listing deactivation. Listings are permanently deleted 3 months after expiry.`}
+                ? t("companyDashboard.expiredMessage")
+                : t("companyDashboard.expiringSoonMessage", { days: daysLeft })}
             </p>
             <Button variant="default" size="sm" className="mt-2" onClick={() => openSalesWhatsApp("Hi, I'd like to renew my membership package.")}>
-              <Phone className="h-3 w-3 mr-1" /> Contact Sales to Renew
+              <Phone className="h-3 w-3 me-1" /> {t("companyDashboard.contactSalesToRenew")}
             </Button>
           </div>
         </div>
@@ -161,8 +168,8 @@ const CompanyDashboardPage = () => {
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Welcome back, {company?.name}</h1>
-            <p className="text-sm text-muted-foreground">Here's an overview of your account</p>
+            <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.welcomeBack", { name: company?.name })}</h1>
+            <p className="text-sm text-muted-foreground">{t("companyDashboard.accountOverview")}</p>
           </div>
         </div>
       </div>
@@ -175,17 +182,17 @@ const CompanyDashboardPage = () => {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">
-              {isBoosted ? "Profile Boosted" : "Profile Not Boosted"}
+              {isBoosted ? t("companyDashboard.profileBoosted") : t("companyDashboard.profileNotBoosted")}
             </h3>
             <p className="text-xs text-muted-foreground">
               {isBoosted
-                ? `Boosted until ${format(new Date(company!.boost_end_date!), "do MMM yyyy")} (${boostDaysLeft} days left)`
-                : "Boost your profile to appear at the top of search results"}
+                ? t("companyDashboard.boostedUntil", { date: format(new Date(company!.boost_end_date!), "do MMM yyyy"), days: boostDaysLeft })
+                : t("companyDashboard.boostDescription")}
             </p>
           </div>
         </div>
         <Button size="sm" variant={isBoosted ? "outline" : "default"} onClick={() => setBoostOpen(true)}>
-          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? "Extend Boost" : "Boost Profile"}
+          <Rocket className="h-4 w-4 me-1" /> {isBoosted ? t("companyDashboard.extendBoost") : t("companyDashboard.boostProfile")}
         </Button>
       </div>
 
@@ -196,14 +203,14 @@ const CompanyDashboardPage = () => {
           return (
             <div className={`rounded-xl border p-5 ${mem.bg}`}>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Membership</h3>
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("companyDashboard.membership")}</h3>
                 <MembershipIcon className="h-5 w-5 text-primary" />
               </div>
               <p className={`text-xl font-bold ${mem.color} capitalize`}>{company?.membership}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 {company?.package_end_date
-                  ? `Expires ${format(new Date(company.package_end_date), "do MMM yyyy")}${daysLeft !== null && daysLeft >= 0 ? ` (${daysLeft} days left)` : daysLeft !== null ? " (Expired)" : ""}`
-                  : "No expiry set"}
+                  ? `${t("companyDashboard.expires", { date: format(new Date(company.package_end_date), "do MMM yyyy") })}${daysLeft !== null && daysLeft >= 0 ? ` ${t("companyDashboard.daysLeft", { days: daysLeft })}` : daysLeft !== null ? ` ${t("companyDashboard.expired")}` : ""}`
+                  : t("companyDashboard.noExpiry")}
               </p>
             </div>
           );
@@ -212,26 +219,26 @@ const CompanyDashboardPage = () => {
         {/* Credit Balance with bar */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Credit Balance</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("companyDashboard.creditBalance")}</h3>
             <CreditCard className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{company?.credit_balance || 0}</p>
           {creditTopups > 0 && (
             <div className="mt-2">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
-                <span>Remaining</span>
-                <span>{company?.credit_balance || 0} / {creditTopups} total</span>
+                <span>{t("companyDashboard.remaining")}</span>
+                <span>{company?.credit_balance || 0} / {creditTopups} {t("companyDashboard.total")}</span>
               </div>
               <Progress value={creditBarPercent} className="h-1.5" />
             </div>
           )}
           <div className="flex items-center gap-2 mt-1">
             <Button variant="link" size="sm" className="p-0 h-auto text-xs text-primary" onClick={() => openSalesWhatsApp("Hi, I'd like to top up my credits.")}>
-              <Phone className="h-3 w-3 mr-1" /> Contact Sales
+              <Phone className="h-3 w-3 me-1" /> {t("companyDashboard.contactSales")}
             </Button>
             <span className="text-muted-foreground/30">·</span>
             <Link to="/company/credits" className="text-xs text-primary hover:underline font-medium">
-              Details
+              {t("companyDashboard.details")}
             </Link>
           </div>
         </div>
@@ -239,28 +246,28 @@ const CompanyDashboardPage = () => {
         {/* Premium Listings */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Premium Listings</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("companyDashboard.premiumListings")}</h3>
             <TrendingUp className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground mb-1">{totalPremium} <span className="text-sm font-normal text-muted-foreground">({premiumPercent}%)</span></p>
           <Progress value={premiumPercent} className="h-1.5 mb-2" />
           <div className="flex gap-3 text-[11px] text-muted-foreground">
-            <span>{creditUsage.premium_properties} properties</span>
-            <span>{creditUsage.premium_projects} projects</span>
+            <span>{creditUsage.premium_properties} {t("companyDashboard.properties").toLowerCase()}</span>
+            <span>{creditUsage.premium_projects} {t("companyDashboard.projects").toLowerCase()}</span>
           </div>
         </div>
 
         {/* Featured Listings */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Featured Listings</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("companyDashboard.featuredListings")}</h3>
             <Star className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground mb-1">{totalFeatured} <span className="text-sm font-normal text-muted-foreground">({featuredPercent}%)</span></p>
           <Progress value={featuredPercent} className="h-1.5 mb-2" />
           <div className="flex gap-3 text-[11px] text-muted-foreground">
-            <span>{creditUsage.featured_properties} properties</span>
-            <span>{creditUsage.featured_projects} projects</span>
+            <span>{creditUsage.featured_properties} {t("companyDashboard.properties").toLowerCase()}</span>
+            <span>{creditUsage.featured_projects} {t("companyDashboard.projects").toLowerCase()}</span>
           </div>
         </div>
       </div>
@@ -268,7 +275,7 @@ const CompanyDashboardPage = () => {
       {/* Membership Usage Bars */}
       {limits && (
         <div className="bg-card rounded-xl border border-border p-5 mb-8">
-          <h2 className="text-sm font-semibold text-foreground mb-4">Membership Usage</h2>
+          <h2 className="text-sm font-semibold text-foreground mb-4">{t("companyDashboard.membershipUsage")}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {(["properties", "projects", "events", "agents"] as const).map((type) => {
               const maxKey = `max_${type}` as keyof typeof limits;
@@ -278,7 +285,7 @@ const CompanyDashboardPage = () => {
               return (
                 <div key={type}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-muted-foreground capitalize">{type}</span>
+                    <span className="text-xs font-medium text-muted-foreground">{usageLabels[type]}</span>
                     <span className="text-xs text-muted-foreground">{used} / {max}</span>
                   </div>
                   <Progress value={pct} className="h-2" />
@@ -291,13 +298,13 @@ const CompanyDashboardPage = () => {
 
       {/* Listings Summary */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-foreground">Your Listings</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t("companyDashboard.yourListings")}</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { to: "/company/properties", icon: Building2, count: counts.properties, label: "Properties", color: "text-amber-500", bg: "bg-amber-500/10" },
-          { to: "/company/projects", icon: FolderKanban, count: counts.projects, label: "Projects", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { to: "/company/events", icon: Calendar, count: counts.events, label: "Events", color: "text-purple-500", bg: "bg-purple-500/10" },
+          { to: "/company/properties", icon: Building2, count: counts.properties, label: t("companyDashboard.properties"), color: "text-amber-500", bg: "bg-amber-500/10" },
+          { to: "/company/projects", icon: FolderKanban, count: counts.projects, label: t("companyDashboard.projects"), color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { to: "/company/events", icon: Calendar, count: counts.events, label: t("companyDashboard.events"), color: "text-purple-500", bg: "bg-purple-500/10" },
         ].map((card) => (
           <Link key={card.to} to={card.to} className="group bg-card rounded-xl border border-border p-5 flex items-center gap-4 hover:border-primary/40 hover:shadow-sm transition-all">
             <div className={`w-11 h-11 rounded-lg ${card.bg} flex items-center justify-center transition-colors`}>
@@ -307,7 +314,7 @@ const CompanyDashboardPage = () => {
               <p className="text-2xl font-bold text-foreground">{card.count}</p>
               <p className="text-sm text-muted-foreground">{card.label}</p>
             </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
+            <ArrowRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors rtl:rotate-180" />
           </Link>
         ))}
       </div>
