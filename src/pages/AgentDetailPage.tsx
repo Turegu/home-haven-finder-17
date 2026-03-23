@@ -220,7 +220,7 @@ const AgentDetailPage = () => {
       {/* ── About section — full-width prominent ── */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-bold text-foreground mb-2">About {agent.name}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-2">{t('detail.about')} {agent.name}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
             {agent.description || `${agent.name} is an experienced real estate professional dedicated to helping clients find their ideal properties. With deep market knowledge and a client-first approach, ${agent.name} provides personalized guidance for buying, selling, and renting across all service areas.`}
           </p>
