@@ -46,6 +46,7 @@ const boostOrder = (cls?: string, endDate?: string | null) =>
   isBoosted(cls, endDate) ? 0 : 1;
 
 const AgentsPage = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
