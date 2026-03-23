@@ -132,7 +132,7 @@ const SaveSearchDialog = ({
 
                 {keyword && (
                   <div className="flex items-start gap-2">
-                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">Keyword:</span>
+                    <span className="text-xs font-medium text-muted-foreground w-20 shrink-0">{t('saveSearch.keyword')}:</span>
                     <span className="text-xs text-foreground">"{keyword}"</span>
                   </div>
                 )}
