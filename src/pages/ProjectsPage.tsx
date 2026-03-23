@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { Link, useSearchParams } from 'react-router-dom';
 import { turkishIncludes } from '@/lib/utils';
@@ -39,6 +40,7 @@ const GRID_ITEMS = 15;
 const LIST_ITEMS = 21;
 
 const ProjectsPage = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
@@ -177,8 +179,8 @@ const ProjectsPage = () => {
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search keyword..."
-                className="w-full h-10 pl-3 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                placeholder={t('projectsPage.searchKeyword')}
+                className="w-full h-10 ps-3 pe-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
               />
               {keyword && (
                 <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -192,7 +194,7 @@ const ProjectsPage = () => {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[110px]">
                   <span className={selectedUnitTypes.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
-                    {selectedUnitTypes.length > 0 ? `${selectedUnitTypes.length} selected` : 'Unit Type'}
+                    {selectedUnitTypes.length > 0 ? `${selectedUnitTypes.length} ${t('projectsPage.selected')}` : t('projectsPage.unitType')}
                   </span>
                   <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
@@ -223,7 +225,7 @@ const ProjectsPage = () => {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[100px]">
                   <span className={projectStatus ? 'text-foreground' : 'text-muted-foreground'}>
-                    {projectStatus || 'Status'}
+                    {projectStatus || t('projectsPage.status')}
                   </span>
                   <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
@@ -252,7 +254,7 @@ const ProjectsPage = () => {
               onClick={() => setFilterOpen(true)}
             >
               <SlidersHorizontal className="h-4 w-4" />
-              Filter
+              {t('projectsPage.filter')}
               {moreFilterCount > 0 && (
                 <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
                   {moreFilterCount}
@@ -266,9 +268,9 @@ const ProjectsPage = () => {
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <SlidersHorizontal className="h-5 w-5 text-primary" />
-                    Amenities
+                    {t('projectsPage.amenities')}
                     {moreFilterCount > 0 && (
-                      <Badge variant="default" className="ml-2">{moreFilterCount} selected</Badge>
+                      <Badge variant="default" className="ml-2">{moreFilterCount} {t('projectsPage.selected')}</Badge>
                     )}
                   </DialogTitle>
                 </DialogHeader>
@@ -279,8 +281,8 @@ const ProjectsPage = () => {
                     type="text"
                     value={amenitySearch}
                     onChange={(e) => setAmenitySearch(e.target.value)}
-                    placeholder="Search amenities..."
-                    className="w-full h-9 pl-9 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+                    placeholder={t('projectsPage.searchAmenities')}
+                    className="w-full h-9 ps-9 pe-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                   />
                 </div>
 
@@ -288,14 +290,14 @@ const ProjectsPage = () => {
                   <TabsList className="w-full grid grid-cols-2">
                     <TabsTrigger value="interior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                       <Lamp className="h-4 w-4" />
-                      Interior
+                      {t('projectsPage.interior')}
                       {interiorAmenities.length > 0 && (
                         <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{interiorAmenities.length}</Badge>
                       )}
                     </TabsTrigger>
                     <TabsTrigger value="exterior" className="gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                       <TreePine className="h-4 w-4" />
-                      Exterior
+                      {t('projectsPage.exterior')}
                       {exteriorAmenities.length > 0 && (
                         <Badge variant="secondary" className="h-5 min-w-[20px] px-1 text-[10px] rounded-full">{exteriorAmenities.length}</Badge>
                       )}
@@ -309,7 +311,7 @@ const ProjectsPage = () => {
                     >
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {intAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).length === 0 && (
-                          <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+                          <p className="col-span-full text-sm text-muted-foreground text-center py-8">{t('projectsPage.noAmenitiesFound')}</p>
                         )}
                         {intAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).map((opt) => {
                           const IconComp = getIcon(opt, 'interior');
@@ -343,7 +345,7 @@ const ProjectsPage = () => {
                     >
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {extAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).length === 0 && (
-                          <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+                          <p className="col-span-full text-sm text-muted-foreground text-center py-8">{t('projectsPage.noAmenitiesFound')}</p>
                         )}
                         {extAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).map((opt) => {
                           const IconComp = getIcon(opt, 'exterior');
@@ -373,19 +375,19 @@ const ProjectsPage = () => {
 
                 <div className="flex items-center justify-between pt-3 border-t border-border mt-3">
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-medium text-primary">{moreFilterCount}</span> of {extAmenityOptions.length + intAmenityOptions.length} selected
+                    <span className="font-medium text-primary">{moreFilterCount}</span> {t('projectsPage.of')} {extAmenityOptions.length + intAmenityOptions.length} {t('projectsPage.selected')}
                   </p>
                   <Button onClick={() => { setFilterOpen(false); setAmenitySearch(''); }}>
-                    <Check className="h-4 w-4 mr-1.5" />
-                    Done
+                    <Check className="h-4 w-4 me-1.5" />
+                    {t('projectsPage.done')}
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
 
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
-              {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
-              Search
+              {isFetching ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Search className="h-4 w-4 me-1" />}
+              {t('hero.search')}
             </Button>
           </div>
 
@@ -419,18 +421,18 @@ const ProjectsPage = () => {
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
           {!location.province ? (
-            <span className="text-foreground font-medium">Projects</span>
+            <span className="text-foreground font-medium">{t('projectsPage.projects')}</span>
           ) : (
-            <button onClick={() => { setLocation({}); setKeyword(''); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: undefined, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">Projects</button>
+            <button onClick={() => { setLocation({}); setKeyword(''); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: undefined, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">{t('projectsPage.projects')}</button>
           )}
           {location.province && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               {!location.district ? (
-                <span className="text-foreground font-medium">{location.province} Projects</span>
+                <span className="text-foreground font-medium">{location.province} {t('projectsPage.projects')}</span>
               ) : (
                 <button onClick={() => { setLocation({ province: location.province }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
-                  {location.province} Projects
+                  {location.province} {t('projectsPage.projects')}
                 </button>
               )}
             </>
@@ -439,10 +441,10 @@ const ProjectsPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               {!location.neighborhood ? (
-                <span className="text-foreground font-medium">{location.district} Projects</span>
+                <span className="text-foreground font-medium">{location.district} {t('projectsPage.projects')}</span>
               ) : (
                 <button onClick={() => { setLocation({ province: location.province, district: location.district }); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, province: location.province, district: location.district, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
-                  {location.district} Projects
+                  {location.district} {t('projectsPage.projects')}
                 </button>
               )}
             </>
@@ -450,7 +452,7 @@ const ProjectsPage = () => {
           {location.neighborhood && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
-              <span className="text-foreground font-medium">{location.neighborhood} Projects</span>
+              <span className="text-foreground font-medium">{location.neighborhood} {t('projectsPage.projects')}</span>
             </>
           )}
         </div>
@@ -458,7 +460,7 @@ const ProjectsPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            Projects in <span className="text-primary">{totalCount} Projects</span>
+            {t('projectsPage.projectsIn')} <span className="text-primary">{totalCount} {t('projectsPage.projects')}</span>
           </h1>
           <div className="flex items-center gap-3">
             <select
@@ -466,16 +468,16 @@ const ProjectsPage = () => {
               onChange={(e) => setSortBy(e.target.value)}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="newest">Newest First</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
+              <option value="newest">{t('projectsPage.newestFirst')}</option>
+              <option value="price_asc">{t('projectsPage.priceLowHigh')}</option>
+              <option value="price_desc">{t('projectsPage.priceHighLow')}</option>
             </select>
             <button
               onClick={() => {
                 const hasLocation = location.province || location.district || location.neighborhood;
                 const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
                 if (!hasFilters) {
-                  toast.error('Please select at least one filter before saving a search.');
+                  toast.error(t('projectsPage.selectFilterFirst'));
                   return;
                 }
                 setSaveSearchOpen(true);
@@ -483,7 +485,7 @@ const ProjectsPage = () => {
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
-              Save Search
+              {t('projectsPage.saveSearch')}
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
               <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
@@ -503,12 +505,12 @@ const ProjectsPage = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading projects...</span>
+            <span className="ms-3 text-muted-foreground">{t('projectsPage.loadingProjects')}</span>
           </div>
         ) : projects.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">No projects found</p>
-            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            <p className="text-lg font-medium text-foreground mb-2">{t('projectsPage.noProjectsFound')}</p>
+            <p className="text-muted-foreground">{t('projectsPage.tryAdjusting')}</p>
           </div>
         ) : (
           /* Layout with side banner */
@@ -646,6 +648,7 @@ const tagColorMap: Record<string, string> = {
 };
 
 function ProjectGridCard({ project }: { project: ProjectResult }) {
+  const { t } = useTranslation();
   const img = project.images?.[0] || '/placeholder.svg';
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
   const tier = project.property_classification;
@@ -686,7 +689,7 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
           </div>
           <div className="flex items-center justify-between pt-3 border-t border-border">
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Starting from</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t('projectsPage.startingFrom')}</p>
               <p className="text-sm font-bold text-foreground">
                 {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
               </p>
@@ -704,6 +707,7 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
   );
 }
 function ProjectListCard({ project }: { project: ProjectResult }) {
+  const { t } = useTranslation();
   const images = project.images && project.images.length > 0 ? project.images : ['/placeholder.svg'];
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
   const [currentImage, setCurrentImage] = useState(0);
@@ -817,8 +821,8 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
             {/* Price bar */}
             <div className="bg-primary px-4 py-2 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-primary-foreground/70 uppercase tracking-wider">Starting from</span>
-                <span className="text-lg font-bold text-primary-foreground ml-2">
+                <span className="text-[10px] text-primary-foreground/70 uppercase tracking-wider">{t('projectsPage.startingFrom')}</span>
+                <span className="text-lg font-bold text-primary-foreground ms-2">
                   {project.currency ?? 'TRY'} {(project.min_price ?? 0).toLocaleString()}
                 </span>
               </div>
@@ -845,7 +849,7 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Maximize className="h-4 w-4" />
-                  <span className="font-medium text-foreground">{project.max_units ?? 0} Units</span>
+                  <span className="font-medium text-foreground">{project.max_units ?? 0} {t('projectsPage.units')}</span>
                 </span>
               </div>
               {descriptionSnippet && (
@@ -872,15 +876,15 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
               </div>
               <div className="flex items-center gap-1">
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                  <Phone className="h-4 w-4" /> Call
+                  <Phone className="h-4 w-4" /> {t('projectsPage.call')}
                 </button>
                 <div className="w-px h-5 bg-border" />
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                  <Mail className="h-4 w-4" /> Email
+                  <Mail className="h-4 w-4" /> {t('projectsPage.email')}
                 </button>
                 <div className="w-px h-5 bg-border" />
                 <button className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
-                  <Heart className="h-4 w-4" /> Save
+                  <Heart className="h-4 w-4" /> {t('projectsPage.save')}
                 </button>
               </div>
             </div>

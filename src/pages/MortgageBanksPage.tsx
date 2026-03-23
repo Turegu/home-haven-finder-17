@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import Header from "@/components/Header";
@@ -27,6 +28,7 @@ interface Bank {
 }
 
 const MortgageBanksPage = () => {
+  const { t } = useTranslation();
   const [banks, setBanks] = useState<Bank[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -78,10 +80,10 @@ const MortgageBanksPage = () => {
     const financeOk = !selectedBank.finance_amount_percentage || ((100 - downPaymentPct) <= selectedBank.finance_amount_percentage);
 
     const warnings: string[] = [];
-    if (!maxAmtOk) warnings.push(`Loan exceeds bank max (${selectedBank.maximum_amount?.toLocaleString()})`);
-    if (!maxDurOk) warnings.push(`Duration exceeds bank max (${selectedBank.maximum_duration} years)`);
-    if (!minDpOk) warnings.push(`Down payment below bank min (${selectedBank.down_payment}%)`);
-    if (!financeOk) warnings.push(`Finance % exceeds bank limit (${selectedBank.finance_amount_percentage}%)`);
+    if (!maxAmtOk) warnings.push(`${t('mortgage.loanExceedsMax')} (${selectedBank.maximum_amount?.toLocaleString()})`);
+    if (!maxDurOk) warnings.push(`${t('mortgage.durationExceedsMax')} (${selectedBank.maximum_duration} ${t('mortgage.years')})`);
+    if (!minDpOk) warnings.push(`${t('mortgage.downPaymentBelowMin')} (${selectedBank.down_payment}%)`);
+    if (!financeOk) warnings.push(`${t('mortgage.financeExceedsLimit')} (${selectedBank.finance_amount_percentage}%)`);
 
     // Final payment (balloon)
     const finalPaymentAmt = selectedBank.final_payment
@@ -117,15 +119,15 @@ const MortgageBanksPage = () => {
             <Landmark className="h-8 w-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-3 font-playfair">
-            Mortgage & Bank Loans
+            {t('mortgage.heroTitle')}
           </h1>
           <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
-            Compare mortgage rates from leading banks and calculate your monthly installments
+            {t('mortgage.heroSubtitle')}
           </p>
           <div className="flex items-center justify-center gap-2 mt-4 text-sm text-primary-foreground/70">
-            <Link to="/" className="hover:text-primary-foreground transition-colors">Home</Link>
+            <Link to="/" className="hover:text-primary-foreground transition-colors">{t('mortgage.home')}</Link>
             <span>›</span>
-            <span className="text-primary-foreground font-medium">Mortgage & Bank Loans</span>
+            <span className="text-primary-foreground font-medium">{t('mortgage.heroTitle')}</span>
           </div>
         </div>
       </div>
@@ -140,8 +142,8 @@ const MortgageBanksPage = () => {
                 <Calculator className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">Mortgage Calculator</h2>
-                <p className="text-sm text-muted-foreground">Enter your details and select a bank to calculate installments</p>
+                <h2 className="text-xl font-bold text-foreground">{t('mortgage.mortgageCalculator')}</h2>
+                <p className="text-sm text-muted-foreground">{t('mortgage.enterDetails')}</p>
               </div>
             </div>
           </div>
@@ -151,7 +153,7 @@ const MortgageBanksPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Property Price (USD)
+                  {t('mortgage.propertyPrice')}
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -165,7 +167,7 @@ const MortgageBanksPage = () => {
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Down Payment (%)
+                  {t('mortgage.downPayment')}
                 </label>
                 <div className="relative">
                   <Percent className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -184,7 +186,7 @@ const MortgageBanksPage = () => {
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Loan Duration (Years)
+                  {t('mortgage.loanDuration')}
                 </label>
                 <div className="relative">
                   <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -198,22 +200,22 @@ const MortgageBanksPage = () => {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  = {loanDuration * 12} monthly installments
+                  = {loanDuration * 12} {t('mortgage.monthlyInstallments')}
                 </p>
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Select Bank
+                  {t('mortgage.selectBank')}
                 </label>
                 <select
                   value={selectedBankId || ""}
                   onChange={(e) => setSelectedBankId(e.target.value || null)}
                   className="w-full h-11 px-3 rounded-lg border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
                 >
-                  <option value="">Choose a bank...</option>
+                  <option value="">{t('mortgage.chooseBank')}</option>
                   {banks.map((b) => (
                     <option key={b.id} value={b.id}>
-                      {b.name} — {b.interest_rate}% monthly
+                      {b.name} — {b.interest_rate}% {t('mortgage.monthly')}
                     </option>
                   ))}
                 </select>
@@ -226,7 +228,7 @@ const MortgageBanksPage = () => {
                 {/* Warnings */}
                 {mortgageCalc.warnings.length > 0 && (
                   <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-5">
-                    <p className="text-sm font-semibold text-destructive mb-1">⚠️ Bank Criteria Warning</p>
+                    <p className="text-sm font-semibold text-destructive mb-1">⚠️ {t('mortgage.bankCriteriaWarning')}</p>
                     {mortgageCalc.warnings.map((w, i) => (
                       <p key={i} className="text-xs text-destructive/80">• {w}</p>
                     ))}
@@ -236,31 +238,31 @@ const MortgageBanksPage = () => {
                 {/* Result Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <ResultCard
-                    label="Loan Amount"
+                    label={t('mortgage.loanAmount')}
                     value={`$${fmt(mortgageCalc.loanAmount)}`}
-                    sub="After down payment"
+                    sub={t('mortgage.afterDownPayment')}
                   />
                   <ResultCard
-                    label="Monthly Installment"
+                    label={t('mortgage.monthlyInstallment')}
                     value={`$${fmt(mortgageCalc.monthlyPayment)}`}
-                    sub={`For ${loanDuration * 12} months`}
+                    sub={t('mortgage.forMonths', { months: loanDuration * 12 })}
                     highlight
                   />
                   <ResultCard
-                    label="Total Interest"
+                    label={t('mortgage.totalInterest')}
                     value={`$${fmt(mortgageCalc.totalInterest)}`}
-                    sub={`At ${selectedBank.interest_rate}%/mo`}
+                    sub={`${t('mortgage.at')} ${selectedBank.interest_rate}%/${t('mortgage.monthly')}`}
                   />
                   <ResultCard
-                    label="Total Payment"
+                    label={t('mortgage.totalPayment')}
                     value={`$${fmt(mortgageCalc.totalPayment)}`}
-                    sub="Principal + Interest"
+                    sub={t('mortgage.principalPlusInterest')}
                   />
                   {mortgageCalc.finalPaymentAmt > 0 && (
                     <ResultCard
-                      label="Final (Balloon) Payment"
+                      label={t('mortgage.finalBalloonPayment')}
                       value={`$${fmt(mortgageCalc.finalPaymentAmt)}`}
-                      sub={`${selectedBank.final_payment}% of loan`}
+                      sub={`${selectedBank.final_payment}% ${t('mortgage.ofLoan')}`}
                     />
                   )}
                 </div>
@@ -281,7 +283,7 @@ const MortgageBanksPage = () => {
                   {selectedBank.bank_info_link && (
                     <a href={selectedBank.bank_info_link} target="_blank" rel="noopener noreferrer">
                       <Button variant="outline" size="sm" className="gap-1.5 shrink-0">
-                        <ExternalLink className="h-3.5 w-3.5" /> Visit Bank
+                        <ExternalLink className="h-3.5 w-3.5" /> {t('mortgage.visitBank')}
                       </Button>
                     </a>
                   )}
@@ -292,7 +294,7 @@ const MortgageBanksPage = () => {
             {!selectedBankId && (
               <div className="text-center py-6 text-muted-foreground text-sm">
                 <Calculator className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                Select a bank above to see your mortgage breakdown
+                {t('mortgage.selectBankAbove')}
               </div>
             )}
           </div>
@@ -302,13 +304,13 @@ const MortgageBanksPage = () => {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Compare Banks</h2>
-              <p className="text-sm text-muted-foreground mt-1">Side-by-side comparison of mortgage offerings</p>
+              <h2 className="text-2xl font-bold text-foreground">{t('mortgage.compareBanks')}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{t('mortgage.sideBySide')}</p>
             </div>
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search banks..."
+                placeholder={t('mortgage.searchBanks')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -317,9 +319,9 @@ const MortgageBanksPage = () => {
           </div>
 
           {loading ? (
-            <div className="text-center py-16 text-muted-foreground">Loading banks...</div>
+            <div className="text-center py-16 text-muted-foreground">{t('mortgage.loadingBanks')}</div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 text-muted-foreground">No banks found</div>
+            <div className="text-center py-16 text-muted-foreground">{t('mortgage.noBanksFound')}</div>
           ) : (
             <>
               {/* Comparison Table (Desktop) */}
@@ -328,14 +330,14 @@ const MortgageBanksPage = () => {
                   <table className="w-full">
                     <thead>
                       <tr className="bg-primary/5 border-b border-border">
-                        <th className="text-left p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Bank</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Interest Rate</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Finance %</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Max Amount</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Max Duration</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Down Payment</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Final Payment</th>
-                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">Action</th>
+                        <th className="text-left p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.bank')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.interestRate')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.financePercent')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.maxAmount')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.maxDuration')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.downPayment')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.finalPayment')}</th>
+                        <th className="text-center p-4 text-xs uppercase tracking-wider font-semibold text-muted-foreground">{t('mortgage.action')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -358,21 +360,21 @@ const MortgageBanksPage = () => {
                               <div>
                                 <p className="font-semibold text-foreground text-sm">{bank.name}</p>
                                 {idx === 0 && (
-                                  <Badge className="bg-green-600 hover:bg-green-600 text-white text-[10px] mt-0.5">Lowest Rate</Badge>
+                                   <Badge className="bg-green-600 hover:bg-green-600 text-white text-[10px] mt-0.5">{t('mortgage.lowestRate')}</Badge>
                                 )}
                               </div>
                             </div>
                           </td>
                           <td className="p-4 text-center">
                             <span className="text-lg font-bold text-primary">{bank.interest_rate ?? '—'}%</span>
-                            <p className="text-[10px] text-muted-foreground">monthly</p>
+                            <p className="text-[10px] text-muted-foreground">{t('mortgage.monthly')}</p>
                           </td>
                           <td className="p-4 text-center font-medium text-foreground">{bank.finance_amount_percentage ?? '—'}%</td>
                           <td className="p-4 text-center font-medium text-foreground">
                             {bank.maximum_amount ? `$${bank.maximum_amount.toLocaleString()}` : '—'}
                           </td>
                           <td className="p-4 text-center font-medium text-foreground">
-                            {bank.maximum_duration ? `${bank.maximum_duration} yrs` : '—'}
+                             {bank.maximum_duration ? `${bank.maximum_duration} ${t('mortgage.years')}` : '—'}
                           </td>
                           <td className="p-4 text-center font-medium text-foreground">{bank.down_payment ?? '—'}%</td>
                           <td className="p-4 text-center font-medium text-foreground">{bank.final_payment ?? '—'}%</td>
@@ -387,9 +389,9 @@ const MortgageBanksPage = () => {
                               }}
                             >
                               {selectedBankId === bank.id ? (
-                                <><Check className="h-3.5 w-3.5" /> Selected</>
+                                <><Check className="h-3.5 w-3.5" /> {t('mortgage.selected')}</>
                               ) : (
-                                <><Calculator className="h-3.5 w-3.5" /> Calculate</>
+                                <><Calculator className="h-3.5 w-3.5" /> {t('mortgage.calculate')}</>
                               )}
                             </Button>
                           </td>
@@ -420,21 +422,21 @@ const MortgageBanksPage = () => {
                       <div className="min-w-0 flex-1">
                         <h3 className="font-bold text-foreground truncate">{bank.name}</h3>
                         {idx === 0 && (
-                          <Badge className="bg-green-600 hover:bg-green-600 text-white text-[10px] mt-0.5">Lowest Rate</Badge>
+                          <Badge className="bg-green-600 hover:bg-green-600 text-white text-[10px] mt-0.5">{t('mortgage.lowestRate')}</Badge>
                         )}
                       </div>
                       <div className="text-right shrink-0">
                         <span className="text-xl font-bold text-primary">{bank.interest_rate ?? '—'}%</span>
-                        <p className="text-[10px] text-muted-foreground">monthly</p>
+                        <p className="text-[10px] text-muted-foreground">{t('mortgage.monthly')}</p>
                       </div>
                     </div>
 
                     <div className="p-5 space-y-2.5">
-                      <InfoRow label="Finance Amount" value={`${bank.finance_amount_percentage ?? '—'}%`} />
-                      <InfoRow label="Maximum Amount" value={bank.maximum_amount ? `$${bank.maximum_amount.toLocaleString()}` : '—'} />
-                      <InfoRow label="Maximum Duration" value={bank.maximum_duration ? `${bank.maximum_duration} years` : '—'} />
-                      <InfoRow label="Down Payment" value={`${bank.down_payment ?? '—'}%`} />
-                      <InfoRow label="Final Payment" value={`${bank.final_payment ?? '—'}%`} />
+                       <InfoRow label={t('mortgage.financeAmount')} value={`${bank.finance_amount_percentage ?? '—'}%`} />
+                      <InfoRow label={t('mortgage.maximumAmount')} value={bank.maximum_amount ? `$${bank.maximum_amount.toLocaleString()}` : '—'} />
+                      <InfoRow label={t('mortgage.maximumDuration')} value={bank.maximum_duration ? `${bank.maximum_duration} ${t('mortgage.years')}` : '—'} />
+                      <InfoRow label={t('mortgage.downPayment')} value={`${bank.down_payment ?? '—'}%`} />
+                      <InfoRow label={t('mortgage.finalPayment')} value={`${bank.final_payment ?? '—'}%`} />
                     </div>
 
                     <div className="px-5 pb-5 flex gap-2">
@@ -447,7 +449,7 @@ const MortgageBanksPage = () => {
                         }}
                       >
                         <Calculator className="h-4 w-4" />
-                        {selectedBankId === bank.id ? 'Selected' : 'Calculate'}
+                        {selectedBankId === bank.id ? t('mortgage.selected') : t('mortgage.calculate')}
                       </Button>
                       {bank.bank_info_link && (
                         <a href={bank.bank_info_link} target="_blank" rel="noopener noreferrer">

@@ -364,18 +364,18 @@ const BuyPage = () => {
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
           {!location.province ? (
-            <span className="text-foreground font-medium">{isRent ? 'For Rent' : 'For Sale'}</span>
+            <span className="text-foreground font-medium">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
           ) : (
-            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 21 }); }} className="hover:text-foreground transition-colors">{isRent ? 'For Rent' : 'For Sale'}</button>
+            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 21 }); }} className="hover:text-foreground transition-colors">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</button>
           )}
           {location.province && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               {!location.district ? (
-                <span className="text-foreground font-medium">{location.province} {isRent ? 'For Rent' : 'For Sale'}</span>
+                <span className="text-foreground font-medium">{location.province} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
               ) : (
                 <button onClick={() => { const newLoc = { province: location.province }; setLocation(newLoc); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, ...newLoc, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
-                  {location.province} {isRent ? 'For Rent' : 'For Sale'}
+                  {location.province} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}
                 </button>
               )}
             </>
@@ -384,10 +384,10 @@ const BuyPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               {!location.neighborhood ? (
-                <span className="text-foreground font-medium">{location.district} {isRent ? 'For Rent' : 'For Sale'}</span>
+                <span className="text-foreground font-medium">{location.district} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
               ) : (
                 <button onClick={() => { const newLoc = { province: location.province, district: location.district }; setLocation(newLoc); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, ...newLoc, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
-                  {location.district} {isRent ? 'For Rent' : 'For Sale'}
+                  {location.district} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}
                 </button>
               )}
             </>
@@ -395,7 +395,7 @@ const BuyPage = () => {
           {location.neighborhood && (
             <>
               <span className="text-muted-foreground/50">&gt;</span>
-              <span className="text-foreground font-medium">{location.neighborhood} {isRent ? 'For Rent' : 'For Sale'}</span>
+              <span className="text-foreground font-medium">{location.neighborhood} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
             </>
           )}
         </div>
@@ -403,7 +403,7 @@ const BuyPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            {title} in <span className="text-primary">{totalCount} Properties</span>
+            {title} in <span className="text-primary">{totalCount} {t('buyPage.properties')}</span>
           </h1>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <select
@@ -422,7 +422,7 @@ const BuyPage = () => {
                 const hasLocation = location.province || location.district || location.neighborhood;
                 const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
                 if (!hasFilters) {
-                  toast.error('Please select at least one filter before saving a search.');
+                  toast.error(t('buyPage.selectFilterFirst'));
                   return;
                 }
                 setSaveSearchOpen(true);
@@ -430,7 +430,7 @@ const BuyPage = () => {
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors"
             >
               <Bookmark className="h-4 w-4" />
-              <span className="hidden sm:inline">Save Search</span>
+              <span className="hidden sm:inline">{t('buyPage.saveSearch')}</span>
             </button>
             <div className="flex border border-border rounded-md overflow-hidden">
               <button onClick={() => { setViewMode('grid'); setCurrentPage(1); setFocusListingId(null); }} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-secondary'}`}>
@@ -450,12 +450,12 @@ const BuyPage = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading properties...</span>
+            <span className="ms-3 text-muted-foreground">{t('buyPage.loadingProperties')}</span>
           </div>
         ) : allProperties.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">No properties found</p>
-            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            <p className="text-lg font-medium text-foreground mb-2">{t('buyPage.noPropertiesFound')}</p>
+            <p className="text-muted-foreground">{t('buyPage.tryAdjusting')}</p>
           </div>
         ) : (
           /* Layout with side banner */
