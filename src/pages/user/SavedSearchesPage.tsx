@@ -135,12 +135,12 @@ const SavedSearchesPage = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete saved search?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete "{item.title}".</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                         <AlertDialogTitle>{t('userPages.deleteSearch')}</AlertDialogTitle>
+                         <AlertDialogDescription>{t('userPages.deleteSearchConfirm', { name: item.title })}</AlertDialogDescription>
+                       </AlertDialogHeader>
+                       <AlertDialogFooter>
+                         <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                         <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.delete')}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
