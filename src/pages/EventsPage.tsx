@@ -168,7 +168,7 @@ const EventsPage = () => {
                   numberOfMonths={1}
                 />
                 <div className="p-3 border-t border-border flex justify-end gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => setDateRange({})}>Clear</Button>
+                  <Button variant="ghost" size="sm" onClick={() => setDateRange({})}>{t('filters.clear')}</Button>
                 </div>
               </PopoverContent>
             </Popover>
