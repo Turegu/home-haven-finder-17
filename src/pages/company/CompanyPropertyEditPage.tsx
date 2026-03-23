@@ -562,12 +562,12 @@ const CompanyPropertyEditPage = () => {
               error={errorClass("floor_level") !== ""}
             />
             <FormSelect
-              label="Furniture *"
+              label={t("companyDashboard.furniture") + " *"}
               icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
               value={form.furniture}
               onChange={(v) => updateField("furniture", v)}
               options={(filterOpts["furniture"] || []).map(f => ({ value: f, label: f }))}
-              placeholder="Select"
+              placeholder={t("companyDashboard.select")}
               fieldName="furniture"
               error={errorClass("furniture") !== ""}
             />
