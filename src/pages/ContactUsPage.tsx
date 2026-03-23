@@ -359,7 +359,7 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5 text-sm font-medium">
                   <PhoneCall className="h-3.5 w-3.5 text-muted-foreground" />
-                  Phone
+                  {t('pages.contact.phone')}
                 </Label>
                 <Input
                   id="phone"
