@@ -83,16 +83,16 @@ const Footer = () => {
             <span className="text-xs text-white/40">© 2026 All rights reserved</span>
           </div>
           <div className="flex items-center gap-3">
-            <a href="#" className="p-2 rounded-full bg-background/10 hover:bg-background/20 transition-colors" aria-label="Facebook">
+            <a href="#" className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Facebook">
               <Facebook className="h-4 w-4" />
             </a>
-            <a href="#" className="p-2 rounded-full bg-background/10 hover:bg-background/20 transition-colors" aria-label="Twitter">
+            <a href="#" className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Twitter">
               <Twitter className="h-4 w-4" />
             </a>
-            <a href="#" className="p-2 rounded-full bg-background/10 hover:bg-background/20 transition-colors" aria-label="Instagram">
+            <a href="#" className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Instagram">
               <Instagram className="h-4 w-4" />
             </a>
-            <a href="#" className="p-2 rounded-full bg-background/10 hover:bg-background/20 transition-colors" aria-label="LinkedIn">
+            <a href="#" className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="LinkedIn">
               <Linkedin className="h-4 w-4" />
             </a>
           </div>
