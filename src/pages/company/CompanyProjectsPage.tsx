@@ -39,6 +39,7 @@ const ITEMS_PER_PAGE = 10;
 
 const CompanyProjectsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
