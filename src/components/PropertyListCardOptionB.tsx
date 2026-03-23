@@ -177,7 +177,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
 
           <div className="pr-24">
             {/* Title */}
-            <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-1 line-clamp-1">{property.title}</h3>
 
             {/* Location */}
             <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
