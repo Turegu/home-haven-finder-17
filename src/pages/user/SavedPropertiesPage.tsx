@@ -61,7 +61,7 @@ const SavedPropertiesPage = () => {
     queryClient.invalidateQueries({ queryKey: ['header-counts'] });
     queryClient.invalidateQueries({ queryKey: ['header-saved-items'] });
     window.dispatchEvent(new Event('property-actions-changed'));
-    toast.success("Removed from saved");
+    toast.success(t('userPages.removedFromSaved'));
   };
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
