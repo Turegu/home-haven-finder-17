@@ -83,7 +83,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
           if (error) throw error;
         }
         setIsFollowing(false);
-        toast.success('Unfollowed successfully');
+        toast.success(t('detail.unfollowed'));
       } else {
         if (type === 'company') {
           const { error } = await supabase
