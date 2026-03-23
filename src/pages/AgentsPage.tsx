@@ -328,7 +328,7 @@ const AgentsPage = () => {
                     {agent.avatar_url ? (
                       <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl font-serif">
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl">
                         {agent.name.charAt(0)}
                       </div>
                     )}
