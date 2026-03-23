@@ -81,7 +81,7 @@ const AccountSettingsPage = () => {
         preferred_area_unit: profile.preferred_area_unit,
       } as any).eq("user_id", user.id);
       if (error) throw error;
-      toast.success("Profile updated!");
+      toast.success(t('accountSettings.profileUpdated'));
     } catch (err: any) {
       toast.error(err.message);
     } finally {
