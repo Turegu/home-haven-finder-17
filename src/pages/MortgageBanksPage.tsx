@@ -374,7 +374,7 @@ const MortgageBanksPage = () => {
                             {bank.maximum_amount ? `$${bank.maximum_amount.toLocaleString()}` : '—'}
                           </td>
                           <td className="p-4 text-center font-medium text-foreground">
-                            {bank.maximum_duration ? `${bank.maximum_duration} yrs` : '—'}
+                             {bank.maximum_duration ? `${bank.maximum_duration} ${t('mortgage.years')}` : '—'}
                           </td>
                           <td className="p-4 text-center font-medium text-foreground">{bank.down_payment ?? '—'}%</td>
                           <td className="p-4 text-center font-medium text-foreground">{bank.final_payment ?? '—'}%</td>
