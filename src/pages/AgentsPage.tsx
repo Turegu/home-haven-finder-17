@@ -211,7 +211,7 @@ const AgentsPage = () => {
             </select>
           </div>
           <div className="flex-1 w-full">
-            <Input placeholder="Enter Search Area, City, Address" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border-border" />
+            <Input placeholder={t('filters.searchArea')} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="border-border" />
           </div>
           <LanguageSearchDropdown
             selected={selectedLanguages}
