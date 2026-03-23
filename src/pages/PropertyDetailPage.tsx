@@ -816,7 +816,7 @@ const PropertyDetailPage = () => {
 
                   {property.agentLanguages && property.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
-                      <span className="font-medium text-foreground">Speaks:</span>{' '}
+                      <span className="font-medium text-foreground">{t('property.speaks')}:</span>{' '}
                       {property.agentLanguages.join(', ')}
                     </p>
                   )}
