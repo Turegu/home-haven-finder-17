@@ -51,6 +51,7 @@ const CompanyAgentsPage = () => {
   const [creditAmount, setCreditAmount] = useState("");
   const [sharingCredits, setSharingCredits] = useState(false);
   const { canCreate, membership } = useMembershipLimits(companyId);
+  const [boostAgent, setBoostAgent] = useState<Agent | null>(null);
 
   useEffect(() => {
     const init = async () => {
