@@ -215,8 +215,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{fl.title || "Featured Locations"}</h2>
-              <p className="text-sm text-muted-foreground mt-1">{fl.tagline || "Find Your Neighborhood"}</p>
+              <h2 className="text-2xl font-bold text-foreground">{fl.title || t('home.featuredLocations')}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{fl.tagline || t('home.featuredLocationsTagline')}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
