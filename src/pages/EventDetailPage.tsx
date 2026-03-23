@@ -313,7 +313,7 @@ const EventDetailPage = () => {
 
             {/* Description */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Description</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('event.description')}</h2>
               <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{event.description}</div>
             </div>
 
