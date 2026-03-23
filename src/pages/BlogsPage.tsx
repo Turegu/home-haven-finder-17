@@ -90,7 +90,7 @@ const BlogsPage = () => {
                   {blog.image_url ? (
                     <img src={blog.image_url} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">No image</div>
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">{t('pages.blog.noImage')}</div>
                   )}
                 </div>
                 <div className="p-4 space-y-2">

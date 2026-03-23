@@ -76,9 +76,9 @@ const FaqPage = () => {
         <h1 className="text-3xl font-bold text-foreground mb-8">{t('pages.faq.title')}</h1>
 
         {loading ? (
-          <div className="text-center py-16 text-muted-foreground">Loading...</div>
+          <div className="text-center py-16 text-muted-foreground">{t('common.loading')}</div>
         ) : faqs.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">No FAQs available yet.</div>
+          <div className="text-center py-16 text-muted-foreground">{t('pages.faq.noFaqsYet')}</div>
         ) : (
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, idx) => (
