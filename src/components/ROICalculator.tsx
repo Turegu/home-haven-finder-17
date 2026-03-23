@@ -162,7 +162,7 @@ const ROICalculator = ({
                         <td className="text-end py-2 pe-4 text-foreground">
                           {currency} {p.cumIncome.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                         </td>
-                        <td className="text-right py-2 font-semibold text-primary">
+                        <td className="text-end py-2 font-semibold text-primary">
                           {p.totalReturn.toFixed(1)}%
                         </td>
                       </tr>
