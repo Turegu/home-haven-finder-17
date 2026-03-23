@@ -234,7 +234,7 @@ const ContactUsPage = () => {
     },
     {
       icon: Mail,
-      title: "Email",
+      title: t('pages.contact.email'),
       value: settings.sales_email,
       link: settings.sales_email ? `mailto:${settings.sales_email}` : undefined,
     },
