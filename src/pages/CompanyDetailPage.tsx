@@ -275,6 +275,28 @@ const CompanyDetailPage = () => {
                 <ExpandablePillList items={company.service_areas} maxVisible={6} />
               </div>
             )}
+
+            {/* Office Location Map */}
+            {company.pin_location && (
+              <div className="bg-card rounded-xl border border-border overflow-hidden">
+                <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground px-5 pt-5 pb-3">
+                  <Building2 className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
+                  Office Location
+                </h3>
+                <div
+                  className="h-[200px] cursor-pointer relative group"
+                  onClick={handleMapClick}
+                  title="Click to open in Google Maps"
+                >
+                  <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-3">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
+                      <MapPin className="h-3 w-3 text-primary" /> Open in Google Maps
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </aside>
 
           {/* Main content */}
