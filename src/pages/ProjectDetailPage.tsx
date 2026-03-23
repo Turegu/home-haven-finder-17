@@ -319,7 +319,7 @@ const ProjectDetailPage = () => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-primary mb-1">From $ {project.priceFrom.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-primary mb-1">{t('project.startingFrom')} $ {project.priceFrom.toLocaleString()}</p>
                   <div className="flex items-center gap-1 text-muted-foreground text-sm">
                     <MapPin className="h-4 w-4 text-primary" /><span>{project.location}</span>
                   </div>
