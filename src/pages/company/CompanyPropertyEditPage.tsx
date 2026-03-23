@@ -667,7 +667,7 @@ const CompanyPropertyEditPage = () => {
                   }
                 }}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">max 15</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">{t("companyDashboard.maxChars")}</span>
             </div>
             <Button
               type="button" variant="outline" size="sm"
