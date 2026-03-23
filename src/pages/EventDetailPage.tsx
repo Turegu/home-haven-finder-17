@@ -378,7 +378,7 @@ const EventDetailPage = () => {
 
               {!event.price && (
                 <div className="bg-primary/5 border border-primary/20 rounded-lg px-4 py-3 text-center mb-4">
-                  <p className="text-sm font-medium text-primary">This event is free to attend</p>
+                  <p className="text-sm font-medium text-primary">{t('event.freeToAttend')}</p>
                 </div>
               )}
 
