@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -8,29 +8,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 interface UserLayoutProps {
   children: React.ReactNode;
 }
 
-const sidebarLinks = [
-  { label: "Dashboard", path: "/account", icon: Home, countKey: null },
-  { label: "Account Settings", path: "/account/settings", icon: Settings, countKey: null },
-  { label: "Followed Agents", path: "/account/followed-agents", icon: Users2, countKey: "followed" },
-  { label: "Saved Properties", path: "/account/saved-properties", icon: Heart, countKey: "saved" },
-  { label: "Saved Searches", path: "/account/saved-searches", icon: Search, countKey: "searches" },
-  { label: "Compare List", path: "/account/compare", icon: Layers, countKey: "compare" },
-  { label: "Notifications", path: "/account/notifications", icon: Bell, countKey: "notifications" },
-  { label: "Contacted Properties", path: "/account/contacted", icon: MessageSquare, countKey: "contacted" },
-  { label: "Property Requests", path: "/account/requests", icon: FileText, countKey: null },
-];
-
 const UserLayout = ({ children }: UserLayoutProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Use getSession (memory) instead of getUser (network)
+  const sidebarLinks = [
+    { label: t("userMenu.dashboard"), path: "/account", icon: Home, countKey: null },
+    { label: t("userMenu.accountSettings"), path: "/account/settings", icon: Settings, countKey: null },
+    { label: t("userMenu.followedAgents"), path: "/account/followed-agents", icon: Users2, countKey: "followed" },
+    { label: t("userMenu.savedProperties"), path: "/account/saved-properties", icon: Heart, countKey: "saved" },
+    { label: t("userMenu.savedSearches"), path: "/account/saved-searches", icon: Search, countKey: "searches" },
+    { label: t("userMenu.compareList"), path: "/account/compare", icon: Layers, countKey: "compare" },
+    { label: t("userMenu.notifications"), path: "/account/notifications", icon: Bell, countKey: "notifications" },
+    { label: t("userMenu.contactedProperties"), path: "/account/contacted", icon: MessageSquare, countKey: "contacted" },
+    { label: t("userMenu.propertyRequests"), path: "/account/requests", icon: FileText, countKey: null },
+  ];
+
   const { data: authUser } = useQuery({
     queryKey: ['user-layout-auth'],
     queryFn: async () => {
@@ -91,7 +92,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/login");
-    toast.success("Logged out successfully");
+    toast.success(t("nav.logout"));
   };
 
   return (
@@ -111,7 +112,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors group"
           >
             <Home className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            Back to Homepage
+            {t("dashboard.backToHomepage")}
           </Link>
         </div>
 
@@ -152,7 +153,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 w-full transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {t("nav.logout")}
           </button>
         </div>
       </aside>
@@ -162,7 +163,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-sm font-semibold text-foreground">My Account</span>
+          <span className="text-sm font-semibold text-foreground">{t("dashboard.myAccount")}</span>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </div>
