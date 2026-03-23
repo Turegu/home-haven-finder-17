@@ -269,7 +269,7 @@ const AgentsPage = () => {
                   {/* Right: Info */}
                   <div className="flex-1 p-4 flex flex-col justify-center min-w-0 bg-muted/30">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                      <h3 className="text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                         {company.name}
                       </h3>
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
