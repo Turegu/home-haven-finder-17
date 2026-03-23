@@ -580,18 +580,18 @@ const PropertyDetailPage = () => {
               <h2 className="text-lg font-bold text-foreground mb-4">{t('property.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 
-                <OverviewItem icon={Building} label="Type" value={property.type} />
-                <OverviewItem icon={DollarSign} label="Price" value={`$ ${property.price.toLocaleString()}`} />
-                <OverviewItem icon={Ruler} label="Area" value={formatArea(property.area, property.areaUnit)} />
-                <OverviewItem icon={Home} label="Rooms" value={String(property.bedrooms)} />
-                <OverviewItem icon={Bath} label="Bathrooms" value={String(property.bathrooms)} />
-                <OverviewItem icon={FileText} label="Title Deed" value={property.titleDeed || '—'} />
-                <OverviewItem icon={Car} label="Parking" value={String(property.parkingSpaces)} />
-                <OverviewItem icon={Armchair} label="Furniture" value={property.furniture} />
-                <OverviewItem icon={Layers} label="Floor Level" value={property.floorLevel} />
-                <OverviewItem icon={Hourglass} label="Property Age" value={property.propertyAge} />
-                <OverviewItem icon={Activity} label="Status" value={property.propertyStatus} />
-                <OverviewItem icon={Compass} label="Orientation" value={property.orientation.join(', ')} />
+                <OverviewItem icon={Building} label={t('property.type')} value={property.type} />
+                <OverviewItem icon={DollarSign} label={t('property.price')} value={`$ ${property.price.toLocaleString()}`} />
+                <OverviewItem icon={Ruler} label={t('property.area')} value={formatArea(property.area, property.areaUnit)} />
+                <OverviewItem icon={Home} label={t('property.rooms')} value={String(property.bedrooms)} />
+                <OverviewItem icon={Bath} label={t('property.bathrooms')} value={String(property.bathrooms)} />
+                <OverviewItem icon={FileText} label={t('property.titleDeed')} value={property.titleDeed || '—'} />
+                <OverviewItem icon={Car} label={t('property.parking')} value={String(property.parkingSpaces)} />
+                <OverviewItem icon={Armchair} label={t('property.furniture')} value={property.furniture} />
+                <OverviewItem icon={Layers} label={t('property.floorLevel')} value={property.floorLevel} />
+                <OverviewItem icon={Hourglass} label={t('property.propertyAge')} value={property.propertyAge} />
+                <OverviewItem icon={Activity} label={t('property.status')} value={property.propertyStatus} />
+                <OverviewItem icon={Compass} label={t('property.orientation')} value={property.orientation.join(', ')} />
               </div>
             </div>
 
