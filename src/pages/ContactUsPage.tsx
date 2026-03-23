@@ -350,7 +350,7 @@ const ContactUsPage = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t('pages.contact.yourEmail')}
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   required
