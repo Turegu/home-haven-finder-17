@@ -157,3 +157,17 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* RTL Support */
+[dir="rtl"] {
+  font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+}
+
+[dir="rtl"] .font-display {
+  font-family: 'Noto Sans Arabic', 'Playfair Display', serif;
+}
+
+/* RTL arrow flip */
+[dir="rtl"] .rtl\:rotate-180 {
+  transform: rotate(180deg);
+}
