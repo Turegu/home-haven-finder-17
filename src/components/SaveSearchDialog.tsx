@@ -29,6 +29,7 @@ const SaveSearchDialog = ({
   location,
   keyword,
 }: SaveSearchDialogProps) => {
+  const { t } = useTranslation();
   const [searchName, setSearchName] = useState('');
   const [saving, setSaving] = useState(false);
 
