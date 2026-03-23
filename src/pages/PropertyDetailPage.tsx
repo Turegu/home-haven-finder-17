@@ -316,7 +316,7 @@ const PropertyDetailPage = () => {
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
           <Link to={`/${property.propertyPurpose === 'rent' ? 'rent' : 'buy'}`} className="hover:text-foreground transition-colors">
-            {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+            {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')}
           </Link>
           {property.province && (
             <>
