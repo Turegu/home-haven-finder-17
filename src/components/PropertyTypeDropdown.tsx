@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
@@ -10,6 +11,7 @@ interface PropertyTypeDropdownProps {
 }
 
 export default function PropertyTypeDropdown({ selected, onChange }: PropertyTypeDropdownProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'residential' | 'commercial'>('residential');
   const [open, setOpen] = useState(false);
   const { options: fo } = useFilterOptions("search");
@@ -31,9 +33,9 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
           <span className={selected.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
-            {selected.length > 0 ? `${selected.length} selected` : 'Property Type'}
+            {selected.length > 0 ? `${selected.length} ${t('searchFilters.selected')}` : t('searchFilters.propertyType')}
           </span>
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
+          <ChevronDown className="h-3.5 w-3.5 ms-auto text-amber-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-56 p-0" align="start">
@@ -46,7 +48,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Residential
+            {t('searchFilters.residential')}
           </button>
           <button
             onClick={() => setActiveTab('commercial')}
@@ -56,7 +58,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Commercial
+            {t('searchFilters.commercial')}
           </button>
         </div>
         <div
@@ -73,7 +75,7 @@ export default function PropertyTypeDropdown({ selected, onChange }: PropertyTyp
             <button
               key={type}
               onClick={() => toggleType(type)}
-              className={`w-full text-left px-3 py-1.5 text-sm rounded-md transition-colors ${
+              className={`w-full text-start px-3 py-1.5 text-sm rounded-md transition-colors ${
                 selected.includes(type)
                   ? 'bg-primary text-primary-foreground'
                   : 'hover:bg-muted text-foreground'

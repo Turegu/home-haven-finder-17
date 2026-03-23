@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import { MapPin, ChevronDown, X, Check, ChevronRight } from "lucide-react";
@@ -35,6 +36,7 @@ function useIsRtl() {
 type Step = "province" | "district" | "neighborhood";
 
 const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ value, onChange, compact = false }, ref) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [provinces, setProvinces] = useState<NamePair[]>([]);
   const [districts, setDistricts] = useState<NamePair[]>([]);
@@ -98,7 +100,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
       parts.push(d ? dn(d) : value.district);
     }
     if (value.neighborhood) parts.push(value.neighborhood);
-    return parts.length > 0 ? parts.join(" › ") : "Location";
+    return parts.length > 0 ? parts.join(" › ") : t('searchFilters.location');
   };
 
   const hasSelection = !!(value.province || value.district || value.neighborhood);
@@ -114,10 +116,22 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
     setOpen(false);
   };
 
+  const stepLabelMap: Record<Step, string> = {
+    province: t('searchFilters.province'),
+    district: t('searchFilters.town'),
+    neighborhood: t('searchFilters.neighborhood'),
+  };
+
+  const stepPlaceholderMap: Record<Step, string> = {
+    province: t('searchFilters.searchProvince'),
+    district: t('searchFilters.searchTown'),
+    neighborhood: t('searchFilters.searchNeighborhood'),
+  };
+
   // Get current list and step info
   const stepConfig = {
     province: {
-      label: "Province",
+      label: stepLabelMap.province,
       items: provinces,
       selected: draft.province,
       onSelect: (name: string) => {
@@ -127,7 +141,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
       },
     },
     district: {
-      label: "Town",
+      label: stepLabelMap.district,
       items: districts,
       selected: draft.district,
       onSelect: (name: string) => {
@@ -137,7 +151,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
       },
     },
     neighborhood: {
-      label: "Neighborhood",
+      label: stepLabelMap.neighborhood,
       items: neighborhoods,
       selected: draft.neighborhood,
       onSelect: (name: string) => {
@@ -157,10 +171,10 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 
   // Breadcrumb navigation
   const breadcrumbs: { label: string; step: Step; value?: string }[] = [
-    { label: "Province", step: "province", value: draft.province },
+    { label: stepLabelMap.province, step: "province", value: draft.province },
   ];
-  if (draft.province) breadcrumbs.push({ label: "Town", step: "district", value: draft.district });
-  if (draft.district) breadcrumbs.push({ label: "Neighborhood", step: "neighborhood", value: draft.neighborhood });
+  if (draft.province) breadcrumbs.push({ label: stepLabelMap.district, step: "district", value: draft.district });
+  if (draft.district) breadcrumbs.push({ label: stepLabelMap.neighborhood, step: "neighborhood", value: draft.neighborhood });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -171,11 +185,11 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
             {summaryText()}
           </span>
           {hasSelection ? (
-            <button onClick={handleClear} className="ml-auto shrink-0">
+            <button onClick={handleClear} className="ms-auto shrink-0">
               <X className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
             </button>
           ) : (
-            <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500 shrink-0" />
+            <ChevronDown className="h-3.5 w-3.5 ms-auto text-amber-500 shrink-0" />
           )}
         </button>
       </PopoverTrigger>
@@ -184,7 +198,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
         <div className="flex items-center gap-1 px-3 pt-3 pb-2 text-xs">
           {breadcrumbs.map((bc, i) => (
             <span key={bc.step} className="flex items-center gap-1">
-              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground rtl:rotate-180" />}
               <button
                 onClick={() => { setStep(bc.step); setFilter(""); }}
                 className={`transition-colors ${step === bc.step ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`}
@@ -199,7 +213,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
         <div className="px-3 pb-2">
           <Input
             ref={filterRef}
-            placeholder={`Search ${current.label.toLowerCase()}...`}
+            placeholder={stepPlaceholderMap[step]}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="h-8 text-sm"
@@ -213,7 +227,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
               <button
                 key={item.name}
                 onClick={() => current.onSelect(item.name)}
-                className={`w-full text-left px-2.5 py-2 text-sm rounded-md hover:bg-muted transition-colors flex items-center justify-between ${
+                className={`w-full text-start px-2.5 py-2 text-sm rounded-md hover:bg-muted transition-colors flex items-center justify-between ${
                   current.selected === item.name ? "bg-primary/10 text-primary font-medium" : ""
                 }`}
               >
@@ -222,7 +236,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
               </button>
             ))}
             {filtered.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-6">No results found</p>
+              <p className="text-xs text-muted-foreground text-center py-6">{t('searchFilters.noResultsFound')}</p>
             )}
           </div>
         </ScrollArea>
@@ -231,11 +245,11 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
         <div className="border-t border-border p-2 flex gap-2">
           {draft.province && (
             <Button variant="outline" size="sm" className="flex-1" onClick={() => { setDraft({}); setStep("province"); setFilter(""); }}>
-              Clear
+              {t('searchFilters.clear')}
             </Button>
           )}
           <Button size="sm" className="flex-1" onClick={handleApply} disabled={!draft.province}>
-            <Check className="h-3.5 w-3.5 mr-1" /> Apply
+            <Check className="h-3.5 w-3.5 me-1" /> {t('searchFilters.apply')}
           </Button>
         </div>
       </PopoverContent>

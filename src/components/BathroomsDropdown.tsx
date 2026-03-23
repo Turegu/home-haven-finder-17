@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +11,7 @@ interface BathroomsDropdownProps {
 }
 
 export default function BathroomsDropdown({ value, onChange }: BathroomsDropdownProps) {
+  const { t } = useTranslation();
   const { options: fo } = useFilterOptions("search");
   const bathroomOptions = fo["bathrooms"] || [];
 
@@ -26,14 +28,14 @@ export default function BathroomsDropdown({ value, onChange }: BathroomsDropdown
       <PopoverTrigger asChild>
         <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[100px]">
           <span className={value.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
-            {value.length > 0 ? `${value.join(', ')} Bath` : 'Bathrooms'}
+            {value.length > 0 ? `${value.join(', ')} ${t('searchFilters.bath')}` : t('searchFilters.bathrooms')}
           </span>
           {value.length > 0 && (
-            <Badge variant="default" className="h-4 min-w-[16px] p-0 flex items-center justify-center text-[10px] rounded-full ml-0.5">
+            <Badge variant="default" className="h-4 min-w-[16px] p-0 flex items-center justify-center text-[10px] rounded-full ms-0.5">
               {value.length}
             </Badge>
           )}
-          <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
+          <ChevronDown className="h-3.5 w-3.5 ms-auto text-amber-500" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-44 p-0" align="start">
