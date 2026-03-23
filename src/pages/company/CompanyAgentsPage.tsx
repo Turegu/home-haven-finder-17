@@ -224,10 +224,8 @@ const CompanyAgentsPage = () => {
                           <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
                             <Coins className="h-4 w-4 mr-2" /> Share Credits
                           </DropdownMenuItem>
-                          <DropdownMenuItem disabled className="opacity-60 cursor-not-allowed">
-                            <ArrowUpCircle className="h-4 w-4 mr-2" />
-                            <span>Request Top-Up</span>
-                            <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 bg-amber-50">Pending</Badge>
+                          <DropdownMenuItem onClick={() => setBoostAgent(agent)}>
+                            <Rocket className="h-4 w-4 mr-2" /> Boost Profile
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" /> Delete
