@@ -295,10 +295,10 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
       <div className="relative z-10 text-center px-4 pb-14 pt-16">
         <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
-          {hero?.title || "Your Property, Our Priority"}
+          {hero?.title || t('hero.defaultTitle')}
         </h1>
         <p className="text-white/80 text-sm md:text-base mb-4 font-light">
-          {hero?.subtitle || "Find your dream property across the Middle East & Turkey"}
+          {hero?.subtitle || t('hero.defaultSubtitle')}
         </p>
         {hero?.enable_link && hero?.link_text && (
           <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors cursor-pointer">
