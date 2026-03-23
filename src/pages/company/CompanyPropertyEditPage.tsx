@@ -103,7 +103,7 @@ const CompanyPropertyEditPage = () => {
     open_house_end: "",
   });
 
-  const contractInfo = contractTypes.find(c => c.value === form.contract_type);
+  const contractInfo = contractTypesData.find(c => c.value === form.contract_type);
   const isRent = contractInfo?.purpose === "rent";
   const isCommercial = contractInfo?.classification === "commercial";
   const residentialPropertyTypes = filterOpts["residential_property_types"] || [];
@@ -116,7 +116,7 @@ const CompanyPropertyEditPage = () => {
   };
 
   const handleContractChange = (value: string) => {
-    const info = contractTypes.find(c => c.value === value);
+    const info = contractTypesData.find(c => c.value === value);
     if (!info) return;
     const newTypes = info.classification === "commercial" ? commercialPropertyTypes : residentialPropertyTypes;
     setForm(prev => ({
@@ -467,7 +467,7 @@ const CompanyPropertyEditPage = () => {
               icon={<Home className="h-4 w-4 text-muted-foreground" />}
               value={form.contract_type}
               onChange={handleContractChange}
-              options={contractTypes.map(c => ({ value: c.value, label: c.label }))}
+              options={contractTypesData.map(c => ({ value: c.value, label: t(c.labelKey) }))}
             />
             <FormSelect
               label="Property Type *"
