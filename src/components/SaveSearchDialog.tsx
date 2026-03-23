@@ -74,11 +74,11 @@ const SaveSearchDialog = ({
     setSaving(false);
 
     if (error) {
-      toast.error('Failed to save search. Please try again.');
+      toast.error(t('saveSearch.failed'));
       return;
     }
 
-    toast.success('Search saved!', { description: 'Visit Saved Searches in your dashboard to manage your alerts.' });
+    toast.success(t('saveSearch.success'), { description: t('saveSearch.successDesc') });
     setSearchName('');
     onOpenChange(false);
   };
