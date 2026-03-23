@@ -179,7 +179,7 @@ const AgentDetailPage = () => {
                       </a>
                     )}
                     <a href={`mailto:${agent.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                      <Mail className="h-3 w-3" /> Email
+                      <Mail className="h-3 w-3" /> {t('property.email')}
                     </a>
                     <a href={`https://wa.me/${agent.whatsapp || agent.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
                       <MessageCircle className="h-3 w-3" /> WhatsApp
