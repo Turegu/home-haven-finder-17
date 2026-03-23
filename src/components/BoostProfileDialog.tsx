@@ -81,7 +81,7 @@ const BoostProfileDialog = ({
   const handleBoost = async () => {
     const opt = options.find(o => o.key === selected);
     if (!opt) return;
-    if (balance < opt.credits) {
+    if (!isAdminBoost && balance < opt.credits) {
       toast.error("Insufficient credits.");
       return;
     }
@@ -97,25 +97,27 @@ const BoostProfileDialog = ({
         .eq("id", profileId);
       if (updateErr) throw updateErr;
 
-      // Deduct balance
-      if (balanceSource === "company") {
-        const { error } = await supabase.from("companies").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("agents").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
-        if (error) throw error;
-      }
+      // Deduct balance (skip for admin boost)
+      if (!isAdminBoost) {
+        if (balanceSource === "company") {
+          const { error } = await supabase.from("companies").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("agents").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
+          if (error) throw error;
+        }
 
-      // Log transaction
-      await supabase.from("credit_transactions").insert({
-        company_id: profileType === "company" ? profileId : balanceSourceId,
-        agent_id: profileType === "agent" ? profileId : null,
-        amount: -opt.credits,
-        transaction_type: "spend",
-        description: `Profile boost (${opt.months} months) — ${profileType}`,
-        listing_type: profileType,
-        listing_id: profileId,
-      });
+        // Log transaction
+        await supabase.from("credit_transactions").insert({
+          company_id: profileType === "company" ? profileId : balanceSourceId,
+          agent_id: profileType === "agent" ? profileId : null,
+          amount: -opt.credits,
+          transaction_type: "spend",
+          description: `Profile boost (${opt.months} months) — ${profileType}`,
+          listing_type: profileType,
+          listing_id: profileId,
+        });
+      }
 
       toast.success(`${profileName} profile boosted for ${opt.months} months!`);
       onBoosted();
