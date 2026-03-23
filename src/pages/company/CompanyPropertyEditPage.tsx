@@ -542,12 +542,12 @@ const CompanyPropertyEditPage = () => {
               error={errorClass("rooms") !== ""}
             />
             <FormSelect
-              label="No. Of Bathrooms *"
+              label={t("companyDashboard.noOfBathrooms") + " *"}
               icon={<Bath className="h-4 w-4 text-muted-foreground" />}
               value={form.bathrooms}
               onChange={(v) => updateField("bathrooms", v)}
               options={(filterOpts["bathrooms"] || []).map(b => ({ value: b, label: b }))}
-              placeholder="Select bathrooms"
+              placeholder={t("companyDashboard.selectBathrooms")}
               fieldName="bathrooms"
               error={errorClass("bathrooms") !== ""}
             />
