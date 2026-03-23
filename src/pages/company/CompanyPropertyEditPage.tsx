@@ -678,7 +678,7 @@ const CompanyPropertyEditPage = () => {
             >{t("companyDashboard.addTag")}</Button>
           </div>
           {/* Show selected custom tags (not in presets) */}
-          {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).length > 0 && (
+          {form.advertising_tags.filter(t => !ADVERTISING_TAG_VALUES.includes(t)).length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="text-xs text-muted-foreground mr-1 self-center">{t("companyDashboard.customTags")}</span>
               {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).map((tag) => (
