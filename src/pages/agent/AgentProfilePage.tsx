@@ -432,6 +432,22 @@ const AgentProfilePage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Boost Dialog */}
+      {agent && (
+        <BoostProfileDialog
+          open={boostDialogOpen}
+          onOpenChange={setBoostDialogOpen}
+          profileId={agent.id}
+          profileName={agent.name}
+          profileType="agent"
+          balanceSource="agent"
+          balanceSourceId={agent.id}
+          currentClassification={agent.profile_classification || "standard"}
+          boostEndDate={agent.boost_end_date || null}
+          onBoosted={() => window.location.reload()}
+        />
+      )}
     </AgentLayout>
   );
 };

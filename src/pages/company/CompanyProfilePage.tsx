@@ -539,6 +539,22 @@ const CompanyProfilePage = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Boost Dialog */}
+      {company && (
+        <BoostProfileDialog
+          open={boostDialogOpen}
+          onOpenChange={setBoostDialogOpen}
+          profileId={company.id}
+          profileName={company.name}
+          profileType="company"
+          balanceSource="company"
+          balanceSourceId={company.id}
+          currentClassification={(company as any).profile_classification || "standard"}
+          boostEndDate={(company as any).boost_end_date || null}
+          onBoosted={() => window.location.reload()}
+        />
+      )}
     </CompanyLayout>
   );
 };

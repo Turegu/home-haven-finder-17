@@ -275,6 +275,22 @@ const CompanyAgentsPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Boost Agent Dialog */}
+      {boostAgent && companyId && (
+        <BoostProfileDialog
+          open={!!boostAgent}
+          onOpenChange={(open) => !open && setBoostAgent(null)}
+          profileId={boostAgent.id}
+          profileName={boostAgent.name}
+          profileType="agent"
+          balanceSource="company"
+          balanceSourceId={companyId}
+          currentClassification={boostAgent.profile_classification || "standard"}
+          boostEndDate={boostAgent.boost_end_date}
+          onBoosted={fetchAgents}
+        />
+      )}
     </CompanyLayout>
   );
 };
