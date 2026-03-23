@@ -190,7 +190,7 @@ const AgentsPage = () => {
               value={selectedProvince}
               onChange={(e) => setSelectedProvince(e.target.value)}
             >
-              <option value="">Province</option>
+              <option value="">{t('filters.province')}</option>
               {provinces.map((p) => (
                 <option key={p.name} value={p.name}>{p.name}</option>
               ))}
