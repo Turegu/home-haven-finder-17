@@ -864,7 +864,7 @@ const CompanyPropertyEditPage = () => {
                     className="h-7 text-xs bg-secondary/50 flex-1"
                   />
                   <Input
-                    placeholder="e.g. At signing" value={step.subtitle}
+                    placeholder={t("companyDashboard.atSigning")} value={step.subtitle}
                     onChange={(e) => {
                       const updated = [...paymentPlans];
                       const steps = [...(updated[planIdx].steps ?? [])];
