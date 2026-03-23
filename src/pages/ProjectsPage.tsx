@@ -707,6 +707,7 @@ function ProjectGridCard({ project }: { project: ProjectResult }) {
   );
 }
 function ProjectListCard({ project }: { project: ProjectResult }) {
+  const { t } = useTranslation();
   const images = project.images && project.images.length > 0 ? project.images : ['/placeholder.svg'];
   const loc = project.location || [project.neighbourhood, project.town, project.province].filter(Boolean).join(', ');
   const [currentImage, setCurrentImage] = useState(0);
