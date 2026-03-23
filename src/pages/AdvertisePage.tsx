@@ -131,7 +131,7 @@ const AdvertisePage = () => {
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <Label htmlFor="company_name">Company Name</Label>
+                    <Label htmlFor="company_name">{t('pages.advertise.companyName')}</Label>
                     <Input
                       id="company_name"
                       placeholder="Enter Your Company Name"
