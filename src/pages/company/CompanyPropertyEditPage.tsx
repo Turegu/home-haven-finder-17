@@ -630,16 +630,16 @@ const CompanyPropertyEditPage = () => {
           </div>
           <p className="text-xs text-muted-foreground mb-3">{t("companyDashboard.advertisingTagsDesc")}</p>
           <div className="flex flex-wrap gap-2 mb-4">
-            {advertisingTagOptions.map((tag) => (
+            {ADVERTISING_TAG_OPTIONS.map(({ value, labelKey }) => (
               <button
-                key={tag} type="button"
-                onClick={() => toggleArrayField("advertising_tags", tag)}
+                key={value} type="button"
+                onClick={() => toggleArrayField("advertising_tags", value)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                  form.advertising_tags.includes(tag)
+                  form.advertising_tags.includes(value)
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
                 }`}
-              >{tag}</button>
+              >{t(labelKey)}</button>
             ))}
           </div>
           {/* Custom tag input */}
