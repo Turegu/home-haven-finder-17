@@ -599,12 +599,12 @@ const CompanyPropertyEditPage = () => {
               error={errorClass("property_orientation") !== ""}
             />
             <FormSelect
-              label="Title Deed *"
+              label={t("companyDashboard.titleDeed") + " *"}
               icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
               value={form.title_deed}
               onChange={(v) => updateField("title_deed", v)}
-              options={(filterOpts["title_deed"] || []).map(t => ({ value: t, label: t }))}
-              placeholder="Select"
+              options={(filterOpts["title_deed"] || []).map(td => ({ value: td, label: td }))}
+              placeholder={t("companyDashboard.select")}
               fieldName="title_deed"
               error={errorClass("title_deed") !== ""}
             />
