@@ -364,10 +364,10 @@ const AgentsPage = () => {
 
                     <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 text-sm">
                       <span>
-                        <span className="text-primary font-semibold">For Sale: {ac.buy}</span>
+                        <span className="text-primary font-semibold">{t('filters.forSale')}: {ac.buy}</span>
                       </span>
                       <span>
-                        <span className="text-primary font-semibold">For Rent: {ac.rent}</span>
+                        <span className="text-primary font-semibold">{t('filters.forRent')}: {ac.rent}</span>
                       </span>
                     </div>
                   </div>
