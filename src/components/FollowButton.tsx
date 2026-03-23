@@ -51,25 +51,38 @@ const FollowButton = ({ type, targetId }: FollowButtonProps) => {
     }
 
     setToggling(true);
-    const table = type === 'company' ? 'company_followers' : 'agent_followers';
-    const column = type === 'company' ? 'company_id' : 'agent_id';
 
     try {
       if (isFollowing) {
-        const { error } = await supabase
-          .from(table)
-          .delete()
-          .eq(column, targetId)
-          .eq('user_id', user.id);
-        if (error) throw error;
+        if (type === 'company') {
+          const { error } = await supabase
+            .from('company_followers')
+            .delete()
+            .eq('company_id', targetId)
+            .eq('user_id', user.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from('agent_followers')
+            .delete()
+            .eq('agent_id', targetId)
+            .eq('user_id', user.id);
+          if (error) throw error;
+        }
         setIsFollowing(false);
         toast.success('Unfollowed successfully');
       } else {
-        const insertData = { [column]: targetId, user_id: user.id };
-        const { error } = await supabase
-          .from(table)
-          .insert(insertData);
-        if (error) throw error;
+        if (type === 'company') {
+          const { error } = await supabase
+            .from('company_followers')
+            .insert({ company_id: targetId, user_id: user.id });
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from('agent_followers')
+            .insert({ agent_id: targetId, user_id: user.id });
+          if (error) throw error;
+        }
         setIsFollowing(true);
         toast.success('Following! You\'ll receive updates and announcements.');
       }
