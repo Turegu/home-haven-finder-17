@@ -178,7 +178,7 @@ const AgentsPage = () => {
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
-            Agents
+            {t('nav.agents')}
           </button>
         </div>
 
