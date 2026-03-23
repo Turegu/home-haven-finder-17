@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
-  Globe, Video, Phone, Mail, MessageCircle, UserPlus, Share2, Heart,
+  Globe, Video, Phone, Mail, MessageCircle, Share2, Heart,
   PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity, Home
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
