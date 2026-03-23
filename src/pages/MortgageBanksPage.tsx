@@ -228,7 +228,7 @@ const MortgageBanksPage = () => {
                 {/* Warnings */}
                 {mortgageCalc.warnings.length > 0 && (
                   <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-5">
-                    <p className="text-sm font-semibold text-destructive mb-1">⚠️ Bank Criteria Warning</p>
+                    <p className="text-sm font-semibold text-destructive mb-1">⚠️ {t('mortgage.bankCriteriaWarning')}</p>
                     {mortgageCalc.warnings.map((w, i) => (
                       <p key={i} className="text-xs text-destructive/80">• {w}</p>
                     ))}
