@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Copy, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 interface ShareDropdownProps {
