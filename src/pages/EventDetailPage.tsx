@@ -128,6 +128,25 @@ const EventDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={event.title}
+        description={`${event.eventType} event in ${event.location}. ${event.date ? `Date: ${formatDate(event.date)}.` : ''} ${event.price ? `Ticket: $${event.price.toLocaleString()}` : 'Free admission.'}`}
+        image={event.images?.[0]}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="website"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Event',
+          name: event.title,
+          description: event.description?.slice(0, 200),
+          image: event.images,
+          startDate: event.date,
+          endDate: event.endDate || undefined,
+          location: { '@type': 'Place', name: event.location, address: { '@type': 'PostalAddress', addressLocality: event.town, addressRegion: event.province } },
+          organizer: { '@type': 'Organization', name: event.organizer },
+          offers: event.price ? { '@type': 'Offer', price: event.price, priceCurrency: event.currency } : undefined,
+        }}
+      />
       <Header />
 
       {/* Media Gallery */}
