@@ -49,9 +49,9 @@ const FollowedAgentsPage = () => {
 
   const handleUnfollow = async (id: string) => {
     const { error } = await supabase.from("agent_followers").delete().eq("id", id);
-    if (error) { toast.error("Failed to unfollow"); return; }
+    if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
     setItems(p => p.filter(i => i.id !== id));
-    toast.success("Unfollowed agent");
+    toast.success(t('userPages.unfollowed'));
   };
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
