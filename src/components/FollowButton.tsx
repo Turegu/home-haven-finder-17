@@ -113,8 +113,12 @@ const FollowButton = ({ type, targetId }: FollowButtonProps) => {
   return (
     <Button
       size="sm"
-      variant={isFollowing ? 'outline' : 'default'}
-      className="gap-1.5 h-8 text-xs px-4 rounded-full shrink-0"
+      variant="ghost"
+      className={`gap-1.5 h-8 text-xs px-4 rounded-full shrink-0 ${
+        isFollowing
+          ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
+          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+      }`}
       onClick={handleToggle}
       disabled={toggling}
     >
