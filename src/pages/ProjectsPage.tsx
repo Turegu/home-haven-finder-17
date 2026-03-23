@@ -269,7 +269,7 @@ const ProjectsPage = () => {
                     <SlidersHorizontal className="h-5 w-5 text-primary" />
                     {t('projectsPage.amenities')}
                     {moreFilterCount > 0 && (
-                      <Badge variant="default" className="ml-2">{moreFilterCount} selected</Badge>
+                      <Badge variant="default" className="ml-2">{moreFilterCount} {t('projectsPage.selected')}</Badge>
                     )}
                   </DialogTitle>
                 </DialogHeader>
