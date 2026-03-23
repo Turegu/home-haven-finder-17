@@ -41,14 +41,9 @@ const contractTypesData = [
   { value: "commercial_rent", labelKey: "companyDashboard.commercialForRent", purpose: "rent", classification: "commercial" },
 ];
 
-// Rent durations now fetched dynamically via filterOpts["rent_duration"]
-const advertisingTagOptions = [
-  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
-  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
-  "Lower Price", "Below Market", "Reduced", "Cash Only",
-  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
-  "Fully Renovated", "Motivated Seller", "Open House",
-];
+// Advertising tags now imported from shared data
+import { ADVERTISING_TAG_OPTIONS, ADVERTISING_TAG_VALUES } from "@/data/advertisingTags";
+
 
 const CompanyPropertyEditPage = () => {
   const { t } = useTranslation();
@@ -635,16 +630,16 @@ const CompanyPropertyEditPage = () => {
           </div>
           <p className="text-xs text-muted-foreground mb-3">{t("companyDashboard.advertisingTagsDesc")}</p>
           <div className="flex flex-wrap gap-2 mb-4">
-            {advertisingTagOptions.map((tag) => (
+            {ADVERTISING_TAG_OPTIONS.map(({ value, labelKey }) => (
               <button
-                key={tag} type="button"
-                onClick={() => toggleArrayField("advertising_tags", tag)}
+                key={value} type="button"
+                onClick={() => toggleArrayField("advertising_tags", value)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                  form.advertising_tags.includes(tag)
+                  form.advertising_tags.includes(value)
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
                 }`}
-              >{tag}</button>
+              >{t(labelKey)}</button>
             ))}
           </div>
           {/* Custom tag input */}
@@ -683,10 +678,10 @@ const CompanyPropertyEditPage = () => {
             >{t("companyDashboard.addTag")}</Button>
           </div>
           {/* Show selected custom tags (not in presets) */}
-          {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).length > 0 && (
+          {form.advertising_tags.filter(t => !ADVERTISING_TAG_VALUES.includes(t)).length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="text-xs text-muted-foreground mr-1 self-center">{t("companyDashboard.customTags")}</span>
-              {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).map((tag) => (
+              {form.advertising_tags.filter(t => !ADVERTISING_TAG_VALUES.includes(t)).map((tag) => (
                 <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
                   {tag}
                   <button type="button" onClick={() => toggleArrayField("advertising_tags", tag)} className="hover:opacity-70"><X className="h-3 w-3" /></button>

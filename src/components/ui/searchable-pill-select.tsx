@@ -8,6 +8,8 @@ interface SearchablePillSelectProps {
   selected: string[];
   onToggle: (value: string) => void;
   placeholder?: string;
+  /** Optional map from option value → display label (for i18n) */
+  labelMap?: Record<string, string>;
 }
 
 const SearchablePillSelect = ({
@@ -15,11 +17,14 @@ const SearchablePillSelect = ({
   selected,
   onToggle,
   placeholder = "Search...",
+  labelMap,
 }: SearchablePillSelectProps) => {
   const [search, setSearch] = useState("");
 
+  const getLabel = (o: string) => labelMap?.[o] || o;
+
   const filtered = search
-    ? options.filter((o) => turkishIncludes(o, search))
+    ? options.filter((o) => turkishIncludes(getLabel(o), search))
     : options;
 
   return (
@@ -55,7 +60,7 @@ const SearchablePillSelect = ({
                 : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
             }`}
           >
-            {opt}
+            {getLabel(opt)}
           </button>
         ))}
         {filtered.length === 0 && (

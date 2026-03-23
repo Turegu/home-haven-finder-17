@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -36,13 +37,8 @@ interface UnitForm {
   floor_plans: string[];
 }
 
-const advertisingTagOptions = [
-  "Hot Deal", "Price Drop", "Exclusive", "New Launch", "Best Seller",
-  "Limited Offer", "Negotiable", "Urgent Sale", "Last Chance",
-  "Lower Price", "Below Market", "Reduced", "Cash Only",
-  "Premium Location", "Sea View", "Investor Deal", "Move-In Ready",
-  "Fully Renovated", "Motivated Seller", "Open House",
-];
+import { ADVERTISING_TAG_OPTIONS, ADVERTISING_TAG_VALUES } from "@/data/advertisingTags";
+
 
 const emptyUnit: UnitForm = {
   unit_name: "", unit_type: "apartment", rooms: "", bathrooms: "", car_parking: "",
@@ -51,6 +47,7 @@ const emptyUnit: UnitForm = {
 };
 
 const CompanyProjectUnitsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id: projectId } = useParams();
   const { options: filterOpts } = useFilterOptions("project_unit");
@@ -371,13 +368,14 @@ const CompanyProjectUnitsPage = () => {
             {/* Advertising Tags */}
             <div className="space-y-2">
               <Label className="font-medium flex items-center gap-1.5">
-                <Tag className="h-3.5 w-3.5 text-muted-foreground" /> Advertising Tags
+                <Tag className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.advertisingTags")}
               </Label>
               <SearchablePillSelect
-                options={advertisingTagOptions}
+                options={ADVERTISING_TAG_VALUES}
                 selected={form.advertising_tags}
                 onToggle={(tag) => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter(t => t !== tag) : [...form.advertising_tags, tag])}
-                placeholder="Search tags..."
+                placeholder={t("companyDashboard.typeCustomTag")}
+                labelMap={Object.fromEntries(ADVERTISING_TAG_OPTIONS.map(o => [o.value, t(o.labelKey)]))}
               />
             </div>
 
