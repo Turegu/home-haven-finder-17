@@ -26,6 +26,7 @@ interface SavedProperty {
 const PAGE_SIZE = 10;
 
 const SavedPropertiesPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [items, setItems] = useState<SavedProperty[]>([]);
   const [loading, setLoading] = useState(true);
