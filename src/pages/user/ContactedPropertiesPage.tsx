@@ -23,6 +23,7 @@ interface Inquiry {
 const PAGE_SIZE = 10;
 
 const ContactedPropertiesPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
