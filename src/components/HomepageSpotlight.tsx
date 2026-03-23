@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Building2, User, Rocket } from "lucide-react";
+import { ArrowRight, Building2, User, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,11 +25,13 @@ interface SpotlightAgent {
 
 const sampleCompanies: SpotlightCompany[] = [
   { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c2", name: "Gulf Estates", logo_url: null, company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c2", name: "Gulf Estates International", logo_url: null, company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
   { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
   { id: "sample-c4", name: "Anatolia Homes", logo_url: null, company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c5", name: "Prestige Living", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c5", name: "Prestige Living Co.", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
   { id: "sample-c6", name: "Golden Gate Realty", logo_url: null, company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c7", name: "Riviera Developments", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c8", name: "Horizon Estates", logo_url: null, company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
 ];
 
 const sampleAgents: SpotlightAgent[] = [
@@ -38,10 +41,18 @@ const sampleAgents: SpotlightAgent[] = [
   { id: "sample-a4", name: "Ali Yılmaz", avatar_url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop", designation: "Luxury Specialist", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Anatolia Homes", logo_url: null } },
   { id: "sample-a5", name: "Sara Al-Rashid", avatar_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop", designation: "Investment Advisor", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Prestige Living", logo_url: null } },
   { id: "sample-a6", name: "Mehmet Kara", avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop", designation: "Senior Consultant", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Golden Gate Realty", logo_url: null } },
+  { id: "sample-a7", name: "Leyla Arslan", avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop", designation: "Area Manager", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Riviera Dev.", logo_url: null } },
+  { id: "sample-a8", name: "Karim Saleh", avatar_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&h=120&fit=crop", designation: "Branch Director", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Horizon Estates", logo_url: null } },
 ];
 
+/** Shuffle array and return first N items */
+function pickRandom<T>(arr: T[], count: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
 export const useSpotlightData = () => {
-  const { data: companies = [] } = useQuery({
+  const { data: allCompanies = [] } = useQuery({
     queryKey: ["spotlight-companies"],
     queryFn: async () => {
       const { data } = await supabase
@@ -49,7 +60,7 @@ export const useSpotlightData = () => {
         .select("id, name, logo_url, company_type, profile_classification, boost_end_date")
         .eq("is_verified", true)
         .eq("profile_classification", "boosted")
-        .limit(6);
+        .limit(50);
       return ((data || []) as SpotlightCompany[]).filter(
         c => c.boost_end_date && new Date(c.boost_end_date) > new Date()
       );
@@ -57,7 +68,7 @@ export const useSpotlightData = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: agents = [] } = useQuery({
+  const { data: allAgents = [] } = useQuery({
     queryKey: ["spotlight-agents"],
     queryFn: async () => {
       const { data } = await supabase
@@ -65,7 +76,7 @@ export const useSpotlightData = () => {
         .select("id, name, avatar_url, designation, profile_classification, boost_end_date, companies(name, logo_url)")
         .eq("status", "active")
         .eq("profile_classification", "boosted")
-        .limit(6);
+        .limit(50);
       return ((data || []) as unknown as SpotlightAgent[]).filter(
         a => a.boost_end_date && new Date(a.boost_end_date) > new Date()
       );
@@ -73,10 +84,18 @@ export const useSpotlightData = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  return {
-    companies: companies.length > 0 ? companies : sampleCompanies,
-    agents: agents.length > 0 ? agents : sampleAgents,
-  };
+  // Randomize on each mount — useMemo with empty deps runs once per mount
+  const companies = useMemo(() => {
+    const pool = allCompanies.length > 0 ? allCompanies : sampleCompanies;
+    return pickRandom(pool, 6);
+  }, [allCompanies]);
+
+  const agents = useMemo(() => {
+    const pool = allAgents.length > 0 ? allAgents : sampleAgents;
+    return pickRandom(pool, 6);
+  }, [allAgents]);
+
+  return { companies, agents };
 };
 
 export const TopAgentsSpotlight = () => {
@@ -93,25 +112,49 @@ export const TopAgentsSpotlight = () => {
           View All <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
         {agents.map((a) => (
           <Link
             key={`a-${a.id}`}
             to={a.id.startsWith("sample") ? "/agents" : `/agent/${a.id}`}
-            className="group relative bg-card border border-primary/30 ring-1 ring-primary/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300"
+            className="group block"
           >
-            <div className="absolute top-2 right-2">
-              <Rocket className="h-3.5 w-3.5 text-primary" />
+            <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
+              {/* Image area */}
+              <div className="relative aspect-[4/5] bg-muted overflow-hidden">
+                {a.avatar_url ? (
+                  <img
+                    src={a.avatar_url}
+                    alt={a.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-secondary">
+                    <User className="h-12 w-12 text-muted-foreground/40" />
+                  </div>
+                )}
+                {/* Gradient scrim */}
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
+
+                {/* Boosted badge */}
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-[hsl(var(--warm-accent))] text-[hsl(var(--warm-accent-foreground))] text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                  <Star className="h-2.5 w-2.5 fill-current" />
+                  Top
+                </div>
+
+                {/* Name overlay at bottom */}
+                <div className="absolute bottom-0 inset-x-0 p-3">
+                  <h3 className="text-sm font-bold text-white line-clamp-1">{a.name}</h3>
+                  <p className="text-[11px] text-white/70 line-clamp-1 mt-0.5">{a.companies?.name || "Agent"}</p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-3 py-2.5 text-center border-t border-border">
+                <p className="text-[11px] font-medium text-primary truncate">{a.designation || "Real Estate Agent"}</p>
+              </div>
             </div>
-            <div className="h-16 w-16 rounded-xl bg-muted border border-border flex items-center justify-center overflow-hidden mb-3">
-              {a.avatar_url ? (
-                <img src={a.avatar_url} alt={a.name} className="h-full w-full object-cover" />
-              ) : (
-                <User className="h-7 w-7 text-muted-foreground" />
-              )}
-            </div>
-            <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{a.name}</h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{a.designation || a.companies?.name || "Agent"}</p>
           </Link>
         ))}
       </div>
@@ -133,27 +176,51 @@ export const TopCompaniesSpotlight = () => {
           View All <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
         {companies.map((c) => (
           <Link
             key={`c-${c.id}`}
             to={c.id.startsWith("sample") ? "/agents" : `/company/${c.id}`}
-            className="group relative bg-card border border-primary/30 ring-1 ring-primary/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300"
+            className="group block"
           >
-            <div className="absolute top-2 right-2">
-              <Rocket className="h-3.5 w-3.5 text-primary" />
+            <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
+              {/* Logo area */}
+              <div className="relative aspect-square bg-secondary/50 flex items-center justify-center p-5 overflow-hidden">
+                {/* Subtle pattern background */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{
+                  backgroundImage: "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
+                  backgroundSize: "20px 20px"
+                }} />
+
+                {c.logo_url ? (
+                  <img
+                    src={c.logo_url}
+                    alt={c.name}
+                    className="relative w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="relative flex flex-col items-center gap-2">
+                    <Building2 className="h-10 w-10 text-primary/30" />
+                    <span className="text-xs font-bold text-foreground/40 uppercase tracking-wider">{c.name.slice(0, 2)}</span>
+                  </div>
+                )}
+
+                {/* Boosted badge */}
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-[hsl(var(--warm-accent))] text-[hsl(var(--warm-accent-foreground))] text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                  <Star className="h-2.5 w-2.5 fill-current" />
+                  Top
+                </div>
+              </div>
+
+              {/* Info footer */}
+              <div className="px-3 py-3 border-t border-border text-center">
+                <h3 className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
+                <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">
+                  {c.company_type?.replace(/_/g, " ") || "Real Estate"}
+                </p>
+              </div>
             </div>
-            <div className="h-16 w-16 rounded-xl bg-primary/5 border border-border flex items-center justify-center overflow-hidden mb-3">
-              {c.logo_url ? (
-                <img src={c.logo_url} alt={c.name} className="h-full w-full object-contain p-1" />
-              ) : (
-                <Building2 className="h-7 w-7 text-muted-foreground" />
-              )}
-            </div>
-            <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {c.company_type?.replace(/_/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase()) || "Real Estate"}
-            </p>
           </Link>
         ))}
       </div>
