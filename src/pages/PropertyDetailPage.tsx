@@ -831,7 +831,7 @@ const PropertyDetailPage = () => {
                       />
                       <div className="text-center">
                         <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
-                        <p className="text-xs text-muted-foreground">Real Estate Brokers</p>
+                        <p className="text-xs text-muted-foreground">{t('property.realEstateBrokers')}</p>
                       </div>
                     </Link>
                   )}
