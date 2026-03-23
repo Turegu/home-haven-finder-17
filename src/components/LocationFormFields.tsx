@@ -643,14 +643,14 @@ const LocationFormFields = ({
 
         {/* City/Town (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">City/Town <span className="text-destructive">*</span></Label>
+          <Label className="text-foreground font-medium">{t("locationForm.cityTown")} <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={town}
             onValueChange={handleTownChange}
             options={districts.map((d) => ({ value: d.name, label: d.name }))}
             placeholder={
-              !province ? "Select province first" :
-              loadingDistricts ? "Loading..." : "Select City/Town"
+              !province ? t("locationForm.selectProvinceFirst") :
+              loadingDistricts ? t("locationForm.loading") : t("locationForm.selectCityTown")
             }
             disabled={!province}
           />
