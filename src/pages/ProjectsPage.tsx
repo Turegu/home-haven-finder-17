@@ -476,7 +476,7 @@ const ProjectsPage = () => {
                 const hasLocation = location.province || location.district || location.neighborhood;
                 const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
                 if (!hasFilters) {
-                  toast.error('Please select at least one filter before saving a search.');
+                  toast.error(t('projectsPage.selectFilterFirst'));
                   return;
                 }
                 setSaveSearchOpen(true);
