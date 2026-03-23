@@ -497,9 +497,9 @@ const CompanyPropertyEditPage = () => {
             <div className="space-y-2" data-field="price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                {isRent ? "Rent Price" : "Price"} ({form.currency}) *
+                {isRent ? t("companyDashboard.rentPrice") : t("companyDashboard.price")} ({form.currency}) *
               </Label>
-              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? "Enter rent price" : "Enter price"} />
+              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? t("companyDashboard.enterRentPrice") : t("companyDashboard.enterPrice")} />
             </div>
 
             {isRent && (
