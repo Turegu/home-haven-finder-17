@@ -47,6 +47,7 @@ const emptyUnit: UnitForm = {
 };
 
 const CompanyProjectUnitsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id: projectId } = useParams();
   const { options: filterOpts } = useFilterOptions("project_unit");
