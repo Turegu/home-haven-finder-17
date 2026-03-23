@@ -83,14 +83,14 @@ const AdvertisePage = () => {
   };
 
   const features = [
-    { icon: Home, label: "Photos", desc: "Showcase your listings with professional photos" },
-    { icon: FolderKanban, label: "Floor Plans", desc: "Detailed floor plans for every listing" },
-    { icon: CalendarDays, label: "Videos", desc: "Virtual tours and video walkthroughs" },
-    { icon: Image, label: "Panoramic Views", desc: "360° panoramic view experiences" },
-    { icon: Search, label: "Maps & Nearbys", desc: "Interactive maps with nearby amenities" },
-    { icon: Users, label: "Agent Network", desc: "Build your professional agent network" },
-    { icon: MessageSquare, label: "Inquiries", desc: "Receive inquiries & property requests" },
-    { icon: Building2, label: "Company Profile", desc: "Professional company profile & mini website" },
+    { icon: Home, label: t('pages.advertise.photos'), desc: "Showcase your listings with professional photos" },
+    { icon: FolderKanban, label: t('pages.advertise.floorPlansLabel'), desc: "Detailed floor plans for every listing" },
+    { icon: CalendarDays, label: t('pages.advertise.videos'), desc: "Virtual tours and video walkthroughs" },
+    { icon: Image, label: t('pages.advertise.panoramicViews'), desc: "360° panoramic view experiences" },
+    { icon: Search, label: t('pages.advertise.mapsNearbys'), desc: "Interactive maps with nearby amenities" },
+    { icon: Users, label: t('pages.advertise.agentNetwork'), desc: "Build your professional agent network" },
+    { icon: MessageSquare, label: t('pages.advertise.inquiries'), desc: "Receive inquiries & property requests" },
+    { icon: Building2, label: t('pages.advertise.companyProfile'), desc: "Professional company profile & mini website" },
   ];
 
   return (
