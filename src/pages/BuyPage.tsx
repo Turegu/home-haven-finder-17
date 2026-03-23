@@ -364,9 +364,9 @@ const BuyPage = () => {
           <Link to="/" className="hover:text-foreground transition-colors"><Home className="h-3.5 w-3.5" /></Link>
           <span className="text-muted-foreground/50">&gt;</span>
           {!location.province ? (
-            <span className="text-foreground font-medium">{isRent ? 'For Rent' : 'For Sale'}</span>
+            <span className="text-foreground font-medium">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
           ) : (
-            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 21 }); }} className="hover:text-foreground transition-colors">{isRent ? 'For Rent' : 'For Sale'}</button>
+            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 21 }); }} className="hover:text-foreground transition-colors">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</button>
           )}
           {location.province && (
             <>
