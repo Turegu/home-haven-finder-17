@@ -3,7 +3,7 @@ import { Facebook, Twitter, Instagram, Linkedin, Smartphone } from 'lucide-react
 
 const Footer = () => {
   return (
-    <footer className="bg-foreground text-background">
+    <footer className="bg-[#1a1a1a] text-white">
       {/* App Download Section */}
       <div className="border-b border-background/10">
         <div className="container mx-auto px-4 py-12">
