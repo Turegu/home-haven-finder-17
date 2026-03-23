@@ -97,12 +97,12 @@ const FollowedAgentsPage = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Unfollow {item.agent?.name}?</AlertDialogTitle>
-                        <AlertDialogDescription>You will no longer receive updates from this agent.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('userPages.unfollowAgent', { name: item.agent?.name })}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('userPages.unfollowConfirm')}</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleUnfollow(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Unfollow</AlertDialogAction>
+                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleUnfollow(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('userPages.unfollow')}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
