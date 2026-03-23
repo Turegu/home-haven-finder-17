@@ -680,7 +680,7 @@ const CompanyPropertyEditPage = () => {
                   input.value = "";
                 }
               }}
-            >Add</Button>
+            >{t("companyDashboard.addTag")}</Button>
           </div>
           {/* Show selected custom tags (not in presets) */}
           {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).length > 0 && (
