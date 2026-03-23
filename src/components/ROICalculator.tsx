@@ -174,7 +174,7 @@ const ROICalculator = ({
         </>
       ) : (
         <div className="text-center py-8 text-muted-foreground text-sm">
-          Enter monthly rent to calculate ROI
+          {t('roi.enterMonthlyRent')}
         </div>
       )}
     </div>
