@@ -572,7 +572,7 @@ const CompanyPropertyEditPage = () => {
               error={errorClass("furniture") !== ""}
             />
             <FormSelect
-              label="Parking Spaces"
+              label={t("companyDashboard.parking")}
               icon={<Car className="h-4 w-4 text-muted-foreground" />}
               value={form.parking_spaces}
               onChange={(v) => updateField("parking_spaces", v)}
