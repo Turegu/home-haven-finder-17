@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
-  Globe, Video, Phone, Mail, MessageCircle, Share2, Heart,
+  Globe, Video, Phone, Mail, MessageCircle, Heart,
   PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity, Home
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
@@ -20,6 +20,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 import FollowButton from '@/components/FollowButton';
+import ShareDropdown from '@/components/ShareDropdown';
+import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+import SEOHead from '@/components/SEOHead';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
