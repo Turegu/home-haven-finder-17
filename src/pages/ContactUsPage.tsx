@@ -371,7 +371,7 @@ const ContactUsPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="subject" className="flex items-center gap-1.5 text-sm font-medium">
                   <MessageSquareText className="h-3.5 w-3.5 text-muted-foreground" />
-                  Subject
+                  {t('pages.contact.subject')}
                 </Label>
                 <select
                   id="subject"
