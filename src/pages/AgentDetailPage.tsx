@@ -157,11 +157,11 @@ const AgentDetailPage = () => {
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 mt-3 flex-wrap">
-                    {[
-                      { icon: Home, label: 'Sale', value: counts.buy },
-                      { icon: Home, label: 'Rent', value: counts.rent },
-                      { icon: Building2, label: 'Projects', value: counts.projects },
-                      { icon: Calendar, label: 'Events', value: counts.events },
+                     {[
+                      { icon: Home, label: t('detail.sale'), value: counts.buy },
+                      { icon: Home, label: t('detail.rent'), value: counts.rent },
+                      { icon: Building2, label: t('detail.projects'), value: counts.projects },
+                      { icon: Calendar, label: t('detail.events'), value: counts.events },
                     ].map((s) => (
                       <div key={s.label} className="flex items-center gap-1.5 text-sm">
                         <s.icon className="h-3.5 w-3.5 text-primary" />
