@@ -267,15 +267,15 @@ const ContactUsPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center py-12 lg:py-16">
             <div className="space-y-5 text-center lg:text-left">
               <span className="inline-block text-sm font-semibold tracking-widest uppercase text-primary">
-                Get in Touch
+                {t('pages.contact.getInTouch')}
               </span>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
-                Let's Build Something
+                {t('pages.contact.letsBuild')}
                 <br />
-                <span className="text-primary">Great Together</span>
+                <span className="text-primary">{t('pages.contact.greatTogether')}</span>
               </h1>
               <p className="text-muted-foreground text-lg max-w-md mx-auto lg:mx-0">
-                Have a question or want to work with us? We'd love to hear from you.
+                {t('pages.contact.haveQuestion')}
               </p>
             </div>
             <div className="relative">
