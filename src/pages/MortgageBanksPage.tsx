@@ -367,7 +367,7 @@ const MortgageBanksPage = () => {
                           </td>
                           <td className="p-4 text-center">
                             <span className="text-lg font-bold text-primary">{bank.interest_rate ?? '—'}%</span>
-                            <p className="text-[10px] text-muted-foreground">monthly</p>
+                            <p className="text-[10px] text-muted-foreground">{t('mortgage.monthly')}</p>
                           </td>
                           <td className="p-4 text-center font-medium text-foreground">{bank.finance_amount_percentage ?? '—'}%</td>
                           <td className="p-4 text-center font-medium text-foreground">
