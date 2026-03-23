@@ -803,7 +803,7 @@ const CompanyPropertyEditPage = () => {
           </div>
 
           {paymentPlans.length === 0 && (
-            <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options on this property.</p>
+            <p className="text-xs text-muted-foreground">{t("companyDashboard.noPaymentPlans")}</p>
           )}
 
           {paymentPlans.map((plan, planIdx) => (
