@@ -269,9 +269,9 @@ const AdvertisePage = () => {
       {/* Packages Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Our Packages</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">{t('pages.advertise.ourPackages')}</h2>
           <p className="text-muted-foreground text-center mb-12">
-            Flexible Packages to suit your business goals
+            {t('pages.advertise.flexiblePackages')}
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {packages?.map((pkg) => (
