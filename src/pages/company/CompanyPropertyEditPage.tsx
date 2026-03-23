@@ -412,7 +412,7 @@ const CompanyPropertyEditPage = () => {
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">
-        {isEdit ? "Edit Property" : "New Property"}
+        {isEdit ? t("companyDashboard.editProperty") : t("companyDashboard.newProperty")}
       </h1>
 
       <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
