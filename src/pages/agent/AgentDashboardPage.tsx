@@ -175,11 +175,11 @@ const AgentDashboardPage = () => {
         {/* Credit Balance */}
         <div className="bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Your Credits</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.yourCredits")}</h3>
             <CreditCard className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-2xl font-bold text-foreground">{agent?.credit_balance || 0}</p>
-          <p className="text-xs text-muted-foreground mt-2">Available balance</p>
+          <p className="text-xs text-muted-foreground mt-2">{t("agentDashboard.availableBalance")}</p>
         </div>
 
         {/* Followers */}
