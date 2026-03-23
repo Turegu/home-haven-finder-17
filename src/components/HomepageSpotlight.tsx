@@ -112,7 +112,7 @@ export const TopAgentsSpotlight = () => {
 
                 {/* Company logo - bottom right */}
                 {a.companies?.logo_url && (
-                  <div className="absolute bottom-10 right-2.5">
+                  <div className="absolute bottom-2.5 right-2.5">
                     <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
                   </div>
                 )}
