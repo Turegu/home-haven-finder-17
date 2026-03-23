@@ -162,6 +162,12 @@ const CompanyAgentEditPage = () => {
     }
   };
 
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const validateEmail = (email: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyId) { toast.error("Company not found"); return; }
@@ -169,16 +175,46 @@ const CompanyAgentEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more agents. Please upgrade.`);
       return;
     }
-    if (!form.name.trim()) { toast.error("Agent name is required"); return; }
-    if (!form.email.trim()) { toast.error("Email is required"); return; }
-    if (!form.designation.trim()) { toast.error("Designation is required"); return; }
-    if (!form.phone.trim()) { toast.error("Phone is required"); return; }
-    if (!form.whatsapp.trim()) { toast.error("WhatsApp number is required"); return; }
-    if (!form.service_areas.trim()) { toast.error("Service areas are required"); return; }
-    if (form.languages.length === 0) { toast.error("At least one language is required"); return; }
-    if (!form.registration_number.trim()) { toast.error("Registration number is required"); return; }
-    if (!form.description.trim()) { toast.error("Description is required"); return; }
 
+    // Inline validation
+    const errors: Record<string, string> = {};
+    if (!form.name.trim()) errors.name = "Agent name is required";
+    if (!form.email.trim()) errors.email = "Email is required";
+    else if (!validateEmail(form.email.trim())) errors.email = "Please enter a valid email address";
+    if (!form.designation.trim()) errors.designation = "Designation is required";
+    if (!form.phone.trim()) errors.phone = "Phone is required";
+    if (!form.whatsapp.trim()) errors.whatsapp = "WhatsApp number is required";
+    if (!form.service_areas.trim()) errors.service_areas = "Service areas are required";
+    if (form.languages.length === 0) errors.languages = "At least one language is required";
+    if (!form.registration_number.trim()) errors.registration_number = "Registration number is required";
+    if (!form.description.trim()) errors.description = "Description is required";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstKey = Object.keys(errors)[0];
+      toast.error(errors[firstKey]);
+      // Scroll to first error
+      const el = document.querySelector(`[data-field="${firstKey}"]`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    // Check email uniqueness (only for new agents)
+    if (!isEdit) {
+      const { data: existingAgent } = await supabase
+        .from("agents")
+        .select("id")
+        .eq("email", form.email.trim())
+        .limit(1)
+        .maybeSingle();
+      if (existingAgent) {
+        setFieldErrors({ email: "An agent with this email already exists" });
+        toast.error("An agent with this email already exists");
+        return;
+      }
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     const payload: any = {
@@ -231,6 +267,12 @@ const CompanyAgentEditPage = () => {
     }
   };
 
+  const clearFieldError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => { const n = { ...prev }; delete n[field]; return n; });
+    }
+  };
+
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Agent" : "New Agent"}</h1>
@@ -268,32 +310,40 @@ const CompanyAgentEditPage = () => {
           <SectionHeader icon={<UserCircle className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="name">
                 <Label className="text-foreground font-medium">Agent Name *</Label>
-                <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" required placeholder="Enter Agent Name" />
+                <Input value={form.name} onChange={(e) => { updateField("name", e.target.value); clearFieldError("name"); }} className={`bg-secondary/50 ${fieldErrors.name ? "border-destructive" : ""}`} placeholder="Enter Agent Name" />
+                {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="designation">
                 <Label className="text-foreground font-medium">Agent Designation *</Label>
-                <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" placeholder="Enter Agent Designation" required />
+                <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder="Enter Agent Designation" />
+                {fieldErrors.designation && <p className="text-xs text-destructive">{fieldErrors.designation}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="service_areas">
                 <Label className="text-foreground font-medium">Service Areas *</Label>
-                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." required />
+                <Input value={form.service_areas} onChange={(e) => { updateField("service_areas", e.target.value); clearFieldError("service_areas"); }} className={`bg-secondary/50 ${fieldErrors.service_areas ? "border-destructive" : ""}`} placeholder="Area 1, Area 2, ..." />
+                {fieldErrors.service_areas && <p className="text-xs text-destructive">{fieldErrors.service_areas}</p>}
               </div>
-              <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
+              <div data-field="languages">
+                <MultiSelectLanguages selected={form.languages} onToggle={(lang) => { toggleLanguage(lang); clearFieldError("languages"); }} />
+                {fieldErrors.languages && <p className="text-xs text-destructive">{fieldErrors.languages}</p>}
+              </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="registration_number">
               <Label className="text-foreground font-medium">Registration Number *</Label>
-              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" placeholder="Registration Number" required />
+              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder="Registration Number" />
+              {fieldErrors.registration_number && <p className="text-xs text-destructive">{fieldErrors.registration_number}</p>}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="description">
               <Label className="text-foreground font-medium">Description *</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" placeholder="Write Agent Description" required />
+              <Textarea value={form.description} onChange={(e) => { updateField("description", e.target.value); clearFieldError("description"); }} className={`bg-secondary/50 min-h-[100px] ${fieldErrors.description ? "border-destructive" : ""}`} placeholder="Write Agent Description" />
+              {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
           </div>
         </section>
@@ -303,27 +353,30 @@ const CompanyAgentEditPage = () => {
           <SectionHeader icon={<Phone className="h-4 w-4" />} title="Contact Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="email">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email *
                 </Label>
-                <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" required placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
+                <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
+                {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
                 {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">Email cannot be changed after account creation</p>}
-                {!isEdit && (
+                {!isEdit && !fieldErrors.email && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Mail className="h-3 w-3" /> An invitation email will be sent to this address
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="phone">
                 <Label className="text-foreground font-medium">Phone *</Label>
-                <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
+                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+90 555 123 4567" />
+                {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="whatsapp">
                 <Label className="text-foreground font-medium">WhatsApp Number *</Label>
-                <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" placeholder="+90 555 123 4567" required />
+                <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+90 555 123 4567" />
+                {fieldErrors.whatsapp && <p className="text-xs text-destructive">{fieldErrors.whatsapp}</p>}
               </div>
             </div>
           </div>

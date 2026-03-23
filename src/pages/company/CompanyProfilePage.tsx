@@ -228,10 +228,19 @@ const CompanyProfilePage = () => {
     }
   };
 
+  const [passwordError, setPasswordError] = useState("");
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) { toast.error("Passwords don't match"); return; }
-    if (newPassword.length < 6) { toast.error("Password must be at least 6 characters"); return; }
+    setPasswordError("");
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      return;
+    }
     setChangingPw(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
@@ -239,6 +248,7 @@ const CompanyProfilePage = () => {
       toast.success("Password changed successfully!");
       setNewPassword("");
       setConfirmPassword("");
+      setPasswordError("");
     } catch (err: any) {
       toast.error(err.message || "Failed to change password");
     } finally {
@@ -460,15 +470,18 @@ const CompanyProfilePage = () => {
           {/* Change Password */}
           <div className="mb-6">
             <h3 className="text-sm font-medium text-foreground mb-3">Change Password</h3>
-            <form onSubmit={handleChangePassword} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">New Password</Label>
-                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="bg-secondary/50" minLength={6} required />
+            <form onSubmit={handleChangePassword} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <Label className="text-foreground font-medium">New Password</Label>
+                  <Input type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setPasswordError(""); }} className={`bg-secondary/50 ${passwordError ? "border-destructive" : ""}`} minLength={6} required />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-foreground font-medium">Confirm Password</Label>
+                  <Input type="password" value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); setPasswordError(""); }} className={`bg-secondary/50 ${passwordError ? "border-destructive" : ""}`} minLength={6} required />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Confirm Password</Label>
-                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="bg-secondary/50" minLength={6} required />
-              </div>
+              {passwordError && <p className="text-sm text-destructive font-medium">{passwordError}</p>}
               <div>
                 <Button type="submit" variant="outline" disabled={changingPw}>
                   {changingPw ? "Changing..." : "Update Password"}

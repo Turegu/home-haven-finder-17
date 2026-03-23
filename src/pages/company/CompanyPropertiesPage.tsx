@@ -208,8 +208,8 @@ const CompanyPropertiesPage = () => {
   const roomOptions = filterOpts["rooms"] || [];
   const furnitureOptions = filterOpts["furniture"] || [];
 
-  const maxProps = limits?.max_properties || 1;
-  const usagePercent = Math.min(100, (usage.properties / maxProps) * 100);
+  const maxProps = limits?.max_properties || 0;
+  const usagePercent = maxProps > 0 ? Math.min(100, (usage.properties / maxProps) * 100) : 0;
 
   return (
     <CompanyLayout>
@@ -218,17 +218,26 @@ const CompanyPropertiesPage = () => {
       </div>
 
       {/* Membership Usage */}
-      <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-medium text-muted-foreground">
-              {t("companyDashboard.propertiesUsed", { used: usage.properties, max: maxProps, membership: membership.charAt(0).toUpperCase() + membership.slice(1) })}
-            </span>
-            <span className="text-xs text-muted-foreground">{remainingSlots("properties")} {t("companyDashboard.remaining").toLowerCase()}</span>
+      {maxProps > 0 ? (
+        <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-muted-foreground">
+                {t("companyDashboard.propertiesUsed", { used: usage.properties, max: maxProps, membership: membership.charAt(0).toUpperCase() + membership.slice(1) })}
+              </span>
+              <span className="text-xs text-muted-foreground">{remainingSlots("properties")} {t("companyDashboard.remaining").toLowerCase()}</span>
+            </div>
+            <Progress value={usagePercent} className="h-2" />
           </div>
-          <Progress value={usagePercent} className="h-2" />
         </div>
-      </div>
+      ) : (
+        <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card animate-pulse">
+          <div className="flex-1 space-y-2">
+            <div className="h-3 bg-muted rounded w-1/3" />
+            <div className="h-2 bg-muted rounded w-full" />
+          </div>
+        </div>
+      )}
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">

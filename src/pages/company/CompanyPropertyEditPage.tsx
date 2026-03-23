@@ -269,8 +269,8 @@ const CompanyPropertyEditPage = () => {
     }
     const rules = [
       { field: "title", check: !form.title.trim(), message: "Title is required" },
-      { field: "area", check: !form.area, message: "Area is required" },
-      { field: "price", check: !form.price, message: "Price is required" },
+      { field: "area", check: !form.area || parseFloat(form.area) <= 0, message: "Area must be greater than 0" },
+      { field: "price", check: !form.price || parseFloat(form.price) <= 0, message: "Price must be greater than 0" },
       ...(isRent ? [{ field: "rent_duration", check: !form.rent_duration, message: "Rent duration is required" }] : []),
       { field: "rooms", check: !form.rooms, message: "Rooms selection is required" },
       { field: "bathrooms", check: !form.bathrooms, message: "Bathrooms is required" },
@@ -486,7 +486,7 @@ const CompanyPropertyEditPage = () => {
                 <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
                 {t("companyDashboard.netArea")} ({form.area_unit}) *
               </Label>
-              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
+              <Input type="number" min="1" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
             </div>
 
             <div className="space-y-2" data-field="price">
@@ -494,7 +494,7 @@ const CompanyPropertyEditPage = () => {
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
                 {isRent ? t("companyDashboard.rentPrice") : t("companyDashboard.price")} ({form.currency}) *
               </Label>
-              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? t("companyDashboard.enterRentPrice") : t("companyDashboard.enterPrice")} />
+              <Input type="number" min="1" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? t("companyDashboard.enterRentPrice") : t("companyDashboard.enterPrice")} />
             </div>
 
             {isRent && (
