@@ -250,9 +250,9 @@ const AdvertisePage = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t('pages.advertise.keepInTouch')}</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { icon: Users, title: "Build Your Network", desc: "Create your own network of clients & followers and let them be notified with your updates" },
-              { icon: MessageSquare, title: "Receive Inquiries", desc: "Get inquiries & property requests directly from interested buyers and tenants" },
-              { icon: Search, title: "Claim Your Spot", desc: "Appear in agent search results and let people discover your company" },
+              { icon: Users, title: t('pages.advertise.buildNetwork'), desc: "Create your own network of clients & followers and let them be notified with your updates" },
+              { icon: MessageSquare, title: t('pages.advertise.receiveInquiries'), desc: "Get inquiries & property requests directly from interested buyers and tenants" },
+              { icon: Search, title: t('pages.advertise.claimSpot'), desc: "Appear in agent search results and let people discover your company" },
             ].map((item) => (
               <div key={item.title} className="flex flex-col items-center text-center p-6">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
