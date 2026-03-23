@@ -74,9 +74,9 @@ const AdvertisePage = () => {
     });
     setSubmitting(false);
     if (error) {
-      toast.error("Failed to submit request. Please try again.");
+      toast.error(t('pages.advertise.failedToSubmit'));
     } else {
-      toast.success("Request submitted! Our sales team will contact you shortly.");
+      toast.success(t('pages.advertise.requestSubmitted'));
       setForm({ company_name: "", first_name: "", last_name: "", email: "", phone: "", message: "" });
       setAgreed(false);
     }
