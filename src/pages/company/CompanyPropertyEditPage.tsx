@@ -769,7 +769,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Calendar className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Open House</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.openHouse")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
