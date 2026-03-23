@@ -653,7 +653,7 @@ const CompanyPropertyEditPage = () => {
               <Input
                 id="custom-tag-input"
                 maxLength={15}
-                placeholder="Type custom tag…"
+                placeholder={t("companyDashboard.typeCustomTag")}
                 className="bg-secondary/50 pr-16 text-sm"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
