@@ -209,7 +209,7 @@ const CompanyDetailPage = () => {
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {company.phone && (
                       <a href={`tel:${company.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
-                        <Phone className="h-3 w-3" /> Call
+                        <Phone className="h-3 w-3" /> {t('companyDetail.call')}
                       </a>
                     )}
                     <a href={`mailto:${company.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
