@@ -316,9 +316,9 @@ const AdvertisePage = () => {
                   />
 
                   <div className="border-t border-border pt-3 mt-4 space-y-2 text-xs text-muted-foreground">
-                    <p>$ {pkg.semiannual_price?.toLocaleString()} for 6 Months</p>
-                    <p>$ {pkg.quarterly_price?.toLocaleString()} for 3 Months</p>
-                    <p>$ {pkg.annual_price?.toLocaleString()} for 1 Year</p>
+                    <p>$ {pkg.semiannual_price?.toLocaleString()} {t('pages.advertise.for6Months')}</p>
+                    <p>$ {pkg.quarterly_price?.toLocaleString()} {t('pages.advertise.for3Months')}</p>
+                    <p>$ {pkg.annual_price?.toLocaleString()} {t('pages.advertise.for1Year')}</p>
                   </div>
 
                   <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
