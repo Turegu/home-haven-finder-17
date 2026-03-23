@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 interface CmsContent {
-  hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
+  hero?: { title?: string; subtitle?: string; image_url?: string; hero_images?: string[]; link_url?: string; link_text?: string; enable_link?: boolean };
   second_banner?: { image_url?: string; link_url?: string };
   featured_properties?: { title?: string; tagline?: string };
   featured_projects?: { title?: string; tagline?: string };
