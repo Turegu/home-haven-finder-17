@@ -375,7 +375,7 @@ const AgentsPage = () => {
               );
             })}
             {filteredAgents.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No agents found.</div>
+              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noAgentsFound')}</div>
             )}
           </div>
         )}
