@@ -143,9 +143,15 @@ const AgentDetailPage = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
-                    <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                      <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                    </div>
+                    <Button size="sm" className="gap-1.5 h-8 text-xs px-4 rounded-full shrink-0">
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Follow
+                    </Button>
                   </div>
 
                   {/* Stats */}
