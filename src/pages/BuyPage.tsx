@@ -411,11 +411,11 @@ const BuyPage = () => {
               onChange={(e) => setSortBy(e.target.value)}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="newest">Newest First</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="area_desc">Area: Largest First</option>
-              <option value="area_asc">Area: Smallest First</option>
+              <option value="newest">{t('filters.newest')}</option>
+              <option value="price_asc">{t('filters.priceAsc')}</option>
+              <option value="price_desc">{t('filters.priceDesc')}</option>
+              <option value="area_desc">{t('filters.area')}: ↓</option>
+              <option value="area_asc">{t('filters.area')}: ↑</option>
             </select>
             <button
               onClick={() => {
