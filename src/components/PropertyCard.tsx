@@ -120,7 +120,7 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
           </div>
           <img src={property.agentLogo} alt={property.agentName} className="h-7 w-auto max-w-[60px] object-contain" />
         </div>
-        <h3 className="text-[15px] font-medium text-foreground/90 mb-2 line-clamp-1">{property.title}</h3>
+        <h3 className="text-lg font-medium text-foreground/90 mb-2 line-clamp-1">{property.title}</h3>
         <div className="flex items-center gap-1 text-muted-foreground text-xs mb-3">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
           <span className="line-clamp-1">{property.location}</span>
