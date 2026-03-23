@@ -4,12 +4,12 @@ import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import HeroSearch from '@/components/HeroSearch';
-import HomepageSpotlight from '@/components/HomepageSpotlight';
+import { TopAgentsSpotlight, TopCompaniesSpotlight } from '@/components/HomepageSpotlight';
 
 import Footer from '@/components/Footer';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { mockProjects } from '@/data/mockProperties';
-import { useCmsPage, useFeaturedLocations, usePartners } from '@/hooks/useAppData';
+import { useCmsPage, useFeaturedLocations } from '@/hooks/useAppData';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,14 +21,12 @@ interface CmsContent {
   featured_properties?: { title?: string; tagline?: string };
   featured_projects?: { title?: string; tagline?: string };
   featured_locations?: { title?: string; tagline?: string };
-  partners?: { title?: string; tagline?: string };
 }
 
 // Homepage component
 const Index = () => {
   const { data: cms = {} } = useCmsPage<CmsContent>("home");
   const { data: locations = [] } = useFeaturedLocations();
-  const { data: partners = [] } = usePartners();
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
 
@@ -98,7 +96,6 @@ const Index = () => {
 
   const featuredProperties = displayedProperties.length > 0 ? displayedProperties : sampleProperties;
 
-  // Fetch up to 12 featured projects, randomly show 3
   const { data: allFeaturedProjects = [] } = useQuery({
     queryKey: ['featured-projects-home'],
     queryFn: async () => {
@@ -129,7 +126,6 @@ const Index = () => {
     return shuffled.slice(0, 3);
   }, [allFeaturedProjects]);
 
-  // Fallback to mock if no DB projects
   const featuredProjects = displayedProjects.length > 0 ? displayedProjects : mockProjects;
 
   const hero = cms.hero || {};
@@ -137,7 +133,6 @@ const Index = () => {
   const fp = cms.featured_properties || {};
   const fpr = cms.featured_projects || {};
   const fl = cms.featured_locations || {};
-  const pt = cms.partners || {};
 
   return (
     <div className="min-h-screen bg-background">
@@ -210,6 +205,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Top Agents — before Featured Locations */}
+      <TopAgentsSpotlight />
+
       {/* Featured Locations */}
       <section className="bg-muted/50">
         <div className="container mx-auto px-4 py-14">
@@ -258,69 +256,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Spotlight: Top Companies & Agents */}
-      <HomepageSpotlight />
-
-      {/* Partners */}
-      {partners.length > 0 && (
-        <section className="bg-background py-12 overflow-hidden">
-          <div className="container mx-auto px-4 mb-6 text-center">
-            <h2 className="text-xl font-bold text-foreground">{pt.title || "Our Partners"}</h2>
-            {pt.tagline && <p className="text-sm text-muted-foreground mt-1">{pt.tagline}</p>}
-          </div>
-          {partners.length >= 4 ? (
-            <div className="relative">
-              <div className="flex marquee whitespace-nowrap">
-                {[...partners, ...partners].map((partner, i) => (
-                  <div key={`${partner.id}-${i}`} className="flex-shrink-0 mx-8">
-                    {partner.link_url ? (
-                      <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
-                        {partner.logo_url ? (
-                          <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
-                        ) : (
-                          <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
-                            {partner.name}
-                          </div>
-                        )}
-                      </a>
-                    ) : partner.logo_url ? (
-                      <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
-                    ) : (
-                      <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
-                        {partner.name}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="container mx-auto px-4 flex flex-wrap items-center justify-center gap-8">
-              {partners.map((partner) => (
-                <div key={partner.id}>
-                  {partner.link_url ? (
-                    <a href={partner.link_url} target="_blank" rel="noopener noreferrer">
-                      {partner.logo_url ? (
-                        <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2 hover:shadow-md transition-shadow" />
-                      ) : (
-                        <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg hover:text-primary transition-colors cursor-pointer">
-                          {partner.name}
-                        </div>
-                      )}
-                    </a>
-                  ) : partner.logo_url ? (
-                    <img src={partner.logo_url} alt={partner.name} loading="lazy" className="h-14 w-auto object-contain rounded-lg border border-border bg-card px-4 py-2" />
-                  ) : (
-                    <div className="bg-card border border-border rounded-lg px-8 py-4 text-muted-foreground font-semibold text-lg">
-                      {partner.name}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+      {/* Top Companies — after Featured Locations */}
+      <TopCompaniesSpotlight />
 
       <AiPropertyAgent />
       <Footer />

@@ -16,12 +16,14 @@ interface BoostProfileDialogProps {
   profileId: string;
   profileName: string;
   profileType: "company" | "agent";
-  /** The entity whose balance is used (company_id for company boost, or agent's company_id when company boosts agent, or agent uses own balance) */
+  /** The entity whose balance is used */
   balanceSource: "company" | "agent";
   balanceSourceId: string;
   currentClassification: string;
   boostEndDate: string | null;
   onBoosted: () => void;
+  /** When true, admin boosts without deducting credits */
+  isAdminBoost?: boolean;
 }
 
 interface BoostOption {
@@ -33,7 +35,7 @@ interface BoostOption {
 
 const BoostProfileDialog = ({
   open, onOpenChange, profileId, profileName, profileType,
-  balanceSource, balanceSourceId, currentClassification, boostEndDate, onBoosted
+  balanceSource, balanceSourceId, currentClassification, boostEndDate, onBoosted, isAdminBoost = false
 }: BoostProfileDialogProps) => {
   const [options, setOptions] = useState<BoostOption[]>([]);
   const [selected, setSelected] = useState("");
@@ -61,8 +63,10 @@ const BoostProfileDialog = ({
       ];
       setOptions(opts);
 
-      // Fetch balance
-      if (balanceSource === "company") {
+      // Fetch balance (skip for admin boost)
+      if (isAdminBoost) {
+        setBalance(Infinity);
+      } else if (balanceSource === "company") {
         const { data } = await supabase.from("companies").select("credit_balance").eq("id", balanceSourceId).maybeSingle();
         setBalance(data?.credit_balance || 0);
       } else {
@@ -77,7 +81,7 @@ const BoostProfileDialog = ({
   const handleBoost = async () => {
     const opt = options.find(o => o.key === selected);
     if (!opt) return;
-    if (balance < opt.credits) {
+    if (!isAdminBoost && balance < opt.credits) {
       toast.error("Insufficient credits.");
       return;
     }
@@ -93,25 +97,27 @@ const BoostProfileDialog = ({
         .eq("id", profileId);
       if (updateErr) throw updateErr;
 
-      // Deduct balance
-      if (balanceSource === "company") {
-        const { error } = await supabase.from("companies").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("agents").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
-        if (error) throw error;
-      }
+      // Deduct balance (skip for admin boost)
+      if (!isAdminBoost) {
+        if (balanceSource === "company") {
+          const { error } = await supabase.from("companies").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("agents").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
+          if (error) throw error;
+        }
 
-      // Log transaction
-      await supabase.from("credit_transactions").insert({
-        company_id: profileType === "company" ? profileId : balanceSourceId,
-        agent_id: profileType === "agent" ? profileId : null,
-        amount: -opt.credits,
-        transaction_type: "spend",
-        description: `Profile boost (${opt.months} months) — ${profileType}`,
-        listing_type: profileType,
-        listing_id: profileId,
-      });
+        // Log transaction
+        await supabase.from("credit_transactions").insert({
+          company_id: profileType === "company" ? profileId : balanceSourceId,
+          agent_id: profileType === "agent" ? profileId : null,
+          amount: -opt.credits,
+          transaction_type: "spend",
+          description: `Profile boost (${opt.months} months) — ${profileType}`,
+          listing_type: profileType,
+          listing_id: profileId,
+        });
+      }
 
       toast.success(`${profileName} profile boosted for ${opt.months} months!`);
       onBoosted();
@@ -156,20 +162,28 @@ const BoostProfileDialog = ({
             </Select>
           </div>
 
-          <div className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3">
-            <span className="text-muted-foreground">
-              {balanceSource === "company" ? "Company" : "Agent"} Credit Balance
-            </span>
-            <span className="font-bold text-foreground">{balance} Credits</span>
-          </div>
+          {!isAdminBoost && (
+            <div className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">
+                {balanceSource === "company" ? "Company" : "Agent"} Credit Balance
+              </span>
+              <span className="font-bold text-foreground">{balance} Credits</span>
+            </div>
+          )}
 
-          {selectedOpt && balance < selectedOpt.credits && (
+          {isAdminBoost && (
+            <div className="text-xs text-primary bg-accent rounded px-3 py-2 border border-border">
+              Admin boost — no credits will be deducted.
+            </div>
+          )}
+
+          {!isAdminBoost && selectedOpt && balance < selectedOpt.credits && (
             <p className="text-xs text-destructive">Not enough credits.</p>
           )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleBoost} disabled={!selected || loading || (selectedOpt ? balance < selectedOpt.credits : true)}>
+          <Button onClick={handleBoost} disabled={!selected || loading || (!isAdminBoost && selectedOpt ? balance < selectedOpt.credits : false)}>
             <Rocket className="h-4 w-4 mr-1" />
             {loading ? "Boosting..." : "Confirm Boost"}
           </Button>
