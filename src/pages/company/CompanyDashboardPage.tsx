@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Building2, FolderKanban, Calendar, CreditCard, Phone,
-  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle
+  TrendingUp, Star, ArrowRight, Briefcase, Zap, Crown, AlertTriangle, Rocket
 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import { useSalesContact } from "@/hooks/useSalesContact";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 
 const membershipIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
@@ -27,6 +28,8 @@ interface CompanyData {
   membership: string;
   package_end_date: string | null;
   credit_balance: number;
+  profile_classification: string;
+  boost_end_date: string | null;
 }
 
 interface ListingCounts {
@@ -48,55 +51,49 @@ const CompanyDashboardPage = () => {
   const [creditUsage, setCreditUsage] = useState<CreditUsage>({ premium_properties: 0, featured_properties: 0, premium_projects: 0, featured_projects: 0 });
   const [creditTopups, setCreditTopups] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [boostOpen, setBoostOpen] = useState(false);
   const { usage, limits } = useMembershipLimits(company?.id || null);
   const { openSalesWhatsApp } = useSalesContact();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const fetchData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-      const { data: companyData } = await supabase
-        .from("companies")
-        .select("id, name, logo_url, membership, package_end_date, credit_balance")
-        .eq("owner_user_id", user.id)
-        .limit(1)
-        .maybeSingle();
+    const { data: companyData } = await supabase
+      .from("companies")
+      .select("id, name, logo_url, membership, package_end_date, credit_balance, profile_classification, boost_end_date")
+      .eq("owner_user_id", user.id)
+      .limit(1)
+      .maybeSingle();
 
-      if (!companyData) return;
-      setCompany(companyData);
+    if (!companyData) return;
+    setCompany(companyData as CompanyData);
 
-      
+    const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
+      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
+      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
+      supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
+      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
+      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
+      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
+      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
+      supabase.from("credit_transactions").select("amount").eq("company_id", companyData.id).gt("amount", 0),
+    ]);
 
-      const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
-        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
-        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
-        supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
-        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
-        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
-        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
-        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
-        supabase.from("credit_transactions").select("amount").eq("company_id", companyData.id).gt("amount", 0),
-      ]);
+    setCounts({ properties: propRes.count || 0, projects: projRes.count || 0, events: eventRes.count || 0 });
+    setCreditUsage({
+      premium_properties: premPropRes.count || 0,
+      featured_properties: featPropRes.count || 0,
+      premium_projects: premProjRes.count || 0,
+      featured_projects: featProjRes.count || 0,
+    });
 
-      setCounts({
-        properties: propRes.count || 0,
-        projects: projRes.count || 0,
-        events: eventRes.count || 0,
-      });
-      setCreditUsage({
-        premium_properties: premPropRes.count || 0,
-        featured_properties: featPropRes.count || 0,
-        premium_projects: premProjRes.count || 0,
-        featured_projects: featProjRes.count || 0,
-      });
+    const topups = (txRes.data || []).reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+    setCreditTopups(topups);
+    setLoading(false);
+  };
 
-      const topups = (txRes.data || []).reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
-      setCreditTopups(topups);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const membershipConfig: Record<string, { color: string; bg: string }> = {
     pro: { color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
@@ -125,6 +122,9 @@ const CompanyDashboardPage = () => {
   const premiumPercent = totalListings > 0 ? Math.round((totalPremium / totalListings) * 100) : 0;
   const featuredPercent = totalListings > 0 ? Math.round((totalFeatured / totalListings) * 100) : 0;
   const creditBarPercent = creditTopups > 0 ? Math.round(((company?.credit_balance || 0) / creditTopups) * 100) : 0;
+
+  const isBoosted = company?.profile_classification === "boosted" && company?.boost_end_date && new Date(company.boost_end_date) > new Date();
+  const boostDaysLeft = company?.boost_end_date ? differenceInDays(new Date(company.boost_end_date), new Date()) : null;
 
   return (
     <CompanyLayout>
@@ -163,6 +163,28 @@ const CompanyDashboardPage = () => {
             <p className="text-sm text-muted-foreground">Here's an overview of your account</p>
           </div>
         </div>
+      </div>
+
+      {/* Boost Profile Card */}
+      <div className={`mb-8 rounded-xl border p-5 flex items-center justify-between ${isBoosted ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'}`}>
+        <div className="flex items-center gap-4">
+          <div className={`h-11 w-11 rounded-lg flex items-center justify-center ${isBoosted ? 'bg-primary/10' : 'bg-muted'}`}>
+            <Rocket className={`h-5 w-5 ${isBoosted ? 'text-primary' : 'text-muted-foreground'}`} />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-foreground">
+              {isBoosted ? "Profile Boosted" : "Profile Not Boosted"}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {isBoosted
+                ? `Boosted until ${format(new Date(company!.boost_end_date!), "do MMM yyyy")} (${boostDaysLeft} days left)`
+                : "Boost your profile to appear at the top of search results"}
+            </p>
+          </div>
+        </div>
+        <Button size="sm" variant={isBoosted ? "outline" : "default"} onClick={() => setBoostOpen(true)}>
+          <Rocket className="h-4 w-4 mr-1" /> {isBoosted ? "Extend Boost" : "Boost Profile"}
+        </Button>
       </div>
 
       {/* Stats Row */}
@@ -241,9 +263,6 @@ const CompanyDashboardPage = () => {
         </div>
       </div>
 
-
-
-
       {/* Membership Usage Bars */}
       {limits && (
         <div className="bg-card rounded-xl border border-border p-5 mb-8">
@@ -290,6 +309,22 @@ const CompanyDashboardPage = () => {
           </Link>
         ))}
       </div>
+
+      {/* Boost Dialog */}
+      {company && (
+        <BoostProfileDialog
+          open={boostOpen}
+          onOpenChange={setBoostOpen}
+          profileId={company.id}
+          profileName={company.name}
+          profileType="company"
+          balanceSource="company"
+          balanceSourceId={company.id}
+          currentClassification={company.profile_classification}
+          boostEndDate={company.boost_end_date}
+          onBoosted={() => { setBoostOpen(false); fetchData(); }}
+        />
+      )}
     </CompanyLayout>
   );
 };

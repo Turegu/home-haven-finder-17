@@ -22,6 +22,19 @@ interface SpotlightAgent {
   companies: { name: string; logo_url: string | null } | null;
 }
 
+// Sample data for design preview when no real boosted profiles exist
+const sampleCompanies: SpotlightCompany[] = [
+  { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c2", name: "Gulf Estates", logo_url: null, company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+];
+
+const sampleAgents: SpotlightAgent[] = [
+  { id: "sample-a1", name: "Ayşe Kaya", avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop", designation: "Senior Agent", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Prime Realty", logo_url: null } },
+  { id: "sample-a2", name: "Omar Hassan", avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop", designation: "Property Consultant", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Gulf Estates", logo_url: null } },
+  { id: "sample-a3", name: "Fatma Demir", avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop", designation: "Sales Manager", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Bosphorus Properties", logo_url: null } },
+];
+
 const HomepageSpotlight = () => {
   const { data: companies = [] } = useQuery({
     queryKey: ["spotlight-companies"],
@@ -32,7 +45,6 @@ const HomepageSpotlight = () => {
         .eq("is_verified", true)
         .eq("profile_classification", "boosted")
         .limit(6);
-      // Filter only non-expired boosts
       return ((data || []) as SpotlightCompany[]).filter(
         c => c.boost_end_date && new Date(c.boost_end_date) > new Date()
       );
@@ -56,7 +68,9 @@ const HomepageSpotlight = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  if (companies.length === 0 && agents.length === 0) return null;
+  // Use sample data when no real boosted profiles exist
+  const displayCompanies = companies.length > 0 ? companies : sampleCompanies;
+  const displayAgents = agents.length > 0 ? agents : sampleAgents;
 
   return (
     <section className="container mx-auto px-4 py-14">
@@ -71,10 +85,10 @@ const HomepageSpotlight = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        {companies.map((c) => (
+        {displayCompanies.map((c) => (
           <Link
             key={`c-${c.id}`}
-            to={`/company/${c.id}`}
+            to={c.id.startsWith("sample") ? "/agents" : `/company/${c.id}`}
             className="group relative bg-card border border-primary/30 ring-1 ring-primary/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300"
           >
             <div className="absolute top-2 right-2">
@@ -94,10 +108,10 @@ const HomepageSpotlight = () => {
           </Link>
         ))}
 
-        {agents.map((a) => (
+        {displayAgents.map((a) => (
           <Link
             key={`a-${a.id}`}
-            to={`/agent/${a.id}`}
+            to={a.id.startsWith("sample") ? "/agents" : `/agent/${a.id}`}
             className="group relative bg-card border border-primary/30 ring-1 ring-primary/10 rounded-xl p-4 flex flex-col items-center text-center hover:border-primary/50 hover:shadow-lg transition-all duration-300"
           >
             <div className="absolute top-2 right-2">
