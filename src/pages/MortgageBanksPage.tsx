@@ -205,7 +205,7 @@ const MortgageBanksPage = () => {
               </div>
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Select Bank
+                  {t('mortgage.selectBank')}
                 </label>
                 <select
                   value={selectedBankId || ""}
