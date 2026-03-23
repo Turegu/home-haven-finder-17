@@ -154,7 +154,7 @@ const AdvertisePage = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="last_name">Last Name</Label>
+                      <Label htmlFor="last_name">{t('pages.advertise.lastName')}</Label>
                       <Input
                         id="last_name"
                         placeholder="Enter Your Last Name"
