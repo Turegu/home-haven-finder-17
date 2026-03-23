@@ -182,10 +182,7 @@ const CompanyDetailPage = () => {
                       <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
                       <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
                     </div>
-                    <Button variant="outline" size="sm" className="gap-2 shrink-0">
-                      <UserPlus className="h-3.5 w-3.5" />
-                      Follow
-                    </Button>
+                    <FollowButton type="company" targetId={company.id} />
                   </div>
 
                   {/* Stats */}
