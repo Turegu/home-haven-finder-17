@@ -699,7 +699,7 @@ const LocationFormFields = ({
       {showMap && showPinLocation && onPinLocationChange && (!province || !town) && (
         <div className="h-[280px] rounded-lg border border-dashed border-border flex items-center justify-center bg-muted/30">
           <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <MapPin className="h-4 w-4" /> Select province and city/town to enable map pin placement
+            <MapPin className="h-4 w-4" /> {t("locationForm.enableMapMessage")}
           </p>
         </div>
       )}
