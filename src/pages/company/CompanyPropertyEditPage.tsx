@@ -269,8 +269,8 @@ const CompanyPropertyEditPage = () => {
     }
     const rules = [
       { field: "title", check: !form.title.trim(), message: "Title is required" },
-      { field: "area", check: !form.area, message: "Area is required" },
-      { field: "price", check: !form.price, message: "Price is required" },
+      { field: "area", check: !form.area || parseFloat(form.area) <= 0, message: "Area must be greater than 0" },
+      { field: "price", check: !form.price || parseFloat(form.price) <= 0, message: "Price must be greater than 0" },
       ...(isRent ? [{ field: "rent_duration", check: !form.rent_duration, message: "Rent duration is required" }] : []),
       { field: "rooms", check: !form.rooms, message: "Rooms selection is required" },
       { field: "bathrooms", check: !form.bathrooms, message: "Bathrooms is required" },
