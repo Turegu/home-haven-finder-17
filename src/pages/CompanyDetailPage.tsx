@@ -177,12 +177,12 @@ const CompanyDetailPage = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
+                  <div>
+                    <div className="flex items-center gap-12">
                       <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
-                      <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
+                      <FollowButton type="company" targetId={company.id} />
                     </div>
-                    <FollowButton type="company" targetId={company.id} />
+                    <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
                   </div>
 
                   {/* Stats */}
