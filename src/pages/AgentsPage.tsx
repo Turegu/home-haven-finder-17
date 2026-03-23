@@ -260,7 +260,7 @@ const AgentsPage = () => {
                     {company.logo_url ? (
                       <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl font-serif">
+                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
                         {company.name.charAt(0)}
                       </div>
                     )}
