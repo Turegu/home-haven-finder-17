@@ -112,8 +112,8 @@ export const TopAgentsSpotlight = () => {
 
                 {/* Company logo - bottom right */}
                 {a.companies?.logo_url && (
-                  <div className="absolute bottom-10 right-2.5 h-7 w-7 rounded-full overflow-hidden shadow-lg ring-1 ring-white/20">
-                    <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-full w-full object-cover" />
+                  <div className="absolute bottom-10 right-2.5 h-7 w-7 rounded-md overflow-hidden shadow-lg ring-1 ring-white/20">
+                    <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-full w-full object-contain" />
                   </div>
                 )}
 
