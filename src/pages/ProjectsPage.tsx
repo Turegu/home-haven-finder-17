@@ -224,7 +224,7 @@ const ProjectsPage = () => {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[100px]">
                   <span className={projectStatus ? 'text-foreground' : 'text-muted-foreground'}>
-                    {projectStatus || 'Status'}
+                    {projectStatus || t('projectsPage.status')}
                   </span>
                   <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
