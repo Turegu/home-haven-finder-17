@@ -66,9 +66,9 @@ const AgentDetailPage = () => {
   }, [id]);
 
   const tabs = [
-    { key: 'properties', label: 'Properties', icon: Home },
-    { key: 'projects', label: 'Projects', icon: Building2 },
-    { key: 'events', label: 'Events', icon: Calendar },
+    { key: 'properties', label: t('detail.properties'), icon: Home },
+    { key: 'projects', label: t('detail.projects'), icon: Building2 },
+    { key: 'events', label: t('detail.events'), icon: Calendar },
   ];
 
   if (loading) {
