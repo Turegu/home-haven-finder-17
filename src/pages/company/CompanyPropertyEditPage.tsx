@@ -463,18 +463,18 @@ const CompanyPropertyEditPage = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <FormSelect
-              label="{ t("companyDashboard.contractType") + " *" }"
+              label={t("companyDashboard.contractType") + " *"}
               icon={<Home className="h-4 w-4 text-muted-foreground" />}
               value={form.contract_type}
               onChange={handleContractChange}
               options={contractTypesData.map(c => ({ value: c.value, label: t(c.labelKey) }))}
             />
             <FormSelect
-              label="{ t("companyDashboard.propertyType") + " *" }"
+              label={t("companyDashboard.propertyType") + " *"}
               icon={<Building2 className="h-4 w-4 text-muted-foreground" />}
               value={form.property_type}
               onChange={(v) => updateField("property_type", v)}
-              options={availablePropertyTypes.map(t => ({ value: t, label: t }))}
+              options={availablePropertyTypes.map(pt => ({ value: pt, label: pt }))}
             />
           </div>
         </section>
