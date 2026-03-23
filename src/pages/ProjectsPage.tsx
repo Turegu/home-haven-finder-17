@@ -280,8 +280,8 @@ const ProjectsPage = () => {
                     type="text"
                     value={amenitySearch}
                     onChange={(e) => setAmenitySearch(e.target.value)}
-                    placeholder="Search amenities..."
-                    className="w-full h-9 pl-9 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+                    placeholder={t('projectsPage.searchAmenities')}
+                    className="w-full h-9 ps-9 pe-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
                   />
                 </div>
 
