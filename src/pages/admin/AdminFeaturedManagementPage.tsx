@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowUpCircle, Save, Coins, Rocket, Search, Building2, User } from "lucide-react";
+import { ArrowUpCircle, Save, Coins, Rocket, Search, Building2, User, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
@@ -50,6 +51,15 @@ const AdminFeaturedManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Boost pricing
+  const [boostCompany3, setBoostCompany3] = useState("20");
+  const [boostCompany6, setBoostCompany6] = useState("35");
+  const [boostCompany12, setBoostCompany12] = useState("60");
+  const [boostAgent3, setBoostAgent3] = useState("15");
+  const [boostAgent6, setBoostAgent6] = useState("25");
+  const [boostAgent12, setBoostAgent12] = useState("45");
+  const [savingBoost, setSavingBoost] = useState(false);
+
   // Boost section
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [agents, setAgents] = useState<AgentRow[]>([]);
@@ -60,18 +70,28 @@ const AdminFeaturedManagementPage = () => {
   const fetchAll = async () => {
     setLoading(true);
     const [settingsRes, compRes, agentRes] = await Promise.all([
-      supabase.from("admin_settings").select("setting_key, setting_value").in("setting_key", settings.map(s => s.key)),
+      supabase.from("admin_settings").select("setting_key, setting_value"),
       supabase.from("companies").select("id, name, logo_url, profile_classification, boost_end_date, credit_balance").eq("is_verified", true).order("name"),
       supabase.from("agents").select("id, name, avatar_url, profile_classification, boost_end_date, credit_balance, company_id, companies(name)").eq("status", "active").order("name"),
     ]);
 
     if (settingsRes.data) {
+      const map: Record<string, string> = {};
+      (settingsRes.data as any[]).forEach((d: any) => { map[d.setting_key] = d.setting_value; });
+
       setSettings(prev =>
         prev.map(s => {
-          const found = settingsRes.data!.find(d => d.setting_key === s.key);
+          const found = (settingsRes.data as any[]).find((d: any) => d.setting_key === s.key);
           return found ? { ...s, value: found.setting_value } : s;
         })
       );
+
+      setBoostCompany3(map.boost_company_3_months_credits || "20");
+      setBoostCompany6(map.boost_company_6_months_credits || "35");
+      setBoostCompany12(map.boost_company_12_months_credits || "60");
+      setBoostAgent3(map.boost_agent_3_months_credits || "15");
+      setBoostAgent6(map.boost_agent_6_months_credits || "25");
+      setBoostAgent12(map.boost_agent_12_months_credits || "45");
     }
     setCompanies((compRes.data || []) as CompanyRow[]);
     setAgents((agentRes.data || []) as unknown as AgentRow[]);
@@ -101,6 +121,31 @@ const AdminFeaturedManagementPage = () => {
     }
   };
 
+  const handleSaveBoostPricing = async () => {
+    setSavingBoost(true);
+    try {
+      const boostSettings = [
+        { setting_key: "boost_company_3_months_credits", setting_value: boostCompany3 },
+        { setting_key: "boost_company_6_months_credits", setting_value: boostCompany6 },
+        { setting_key: "boost_company_12_months_credits", setting_value: boostCompany12 },
+        { setting_key: "boost_agent_3_months_credits", setting_value: boostAgent3 },
+        { setting_key: "boost_agent_6_months_credits", setting_value: boostAgent6 },
+        { setting_key: "boost_agent_12_months_credits", setting_value: boostAgent12 },
+      ];
+      for (const s of boostSettings) {
+        const { error } = await supabase
+          .from("admin_settings")
+          .upsert(s, { onConflict: "setting_key" });
+        if (error) throw error;
+      }
+      toast.success("Boost pricing updated successfully");
+    } catch {
+      toast.error("Failed to save boost pricing");
+    } finally {
+      setSavingBoost(false);
+    }
+  };
+
   const filteredCompanies = companies.filter(c => !searchCompany || turkishIncludes(c.name, searchCompany));
   const filteredAgents = agents.filter(a => !searchAgent || turkishIncludes(a.name, searchAgent));
 
@@ -112,13 +157,71 @@ const AdminFeaturedManagementPage = () => {
           <h1 className="text-2xl font-bold text-foreground">Featured Management</h1>
         </div>
         <p className="text-sm text-muted-foreground">
-          Configure listing upgrade costs and boost company/agent profiles.
+          Configure listing upgrade costs, profile boost pricing, and boost company/agent profiles.
         </p>
 
         {loading ? (
           <p className="text-muted-foreground">Loading...</p>
         ) : (
           <>
+            {/* Profile Boost Pricing */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Rocket className="h-5 w-5" /> Profile Boost Pricing
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Set the credit cost for companies and agents to boost their profiles.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-foreground">Company Boost Cost (Credits)</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">3 Months</Label>
+                      <Input type="number" value={boostCompany3} onChange={e => setBoostCompany3(e.target.value)} min="0" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">6 Months</Label>
+                      <Input type="number" value={boostCompany6} onChange={e => setBoostCompany6(e.target.value)} min="0" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">12 Months</Label>
+                      <Input type="number" value={boostCompany12} onChange={e => setBoostCompany12(e.target.value)} min="0" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-foreground">Agent Boost Cost (Credits)</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">3 Months</Label>
+                      <Input type="number" value={boostAgent3} onChange={e => setBoostAgent3(e.target.value)} min="0" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">6 Months</Label>
+                      <Input type="number" value={boostAgent6} onChange={e => setBoostAgent6(e.target.value)} min="0" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">12 Months</Label>
+                      <Input type="number" value={boostAgent12} onChange={e => setBoostAgent12(e.target.value)} min="0" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+                  <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                  <span>These costs are deducted from the company's or agent's credit balance when they boost their profile. Changes take effect immediately for new boosts.</span>
+                </div>
+
+                <Button onClick={handleSaveBoostPricing} disabled={savingBoost} className="gap-2">
+                  <Save className="h-4 w-4" /> {savingBoost ? "Saving..." : "Save Boost Pricing"}
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Listing upgrade costs */}
             <div className="grid gap-6 md:grid-cols-2">
               <Card>
@@ -271,7 +374,7 @@ const AdminFeaturedManagementPage = () => {
           profileName={boostTarget.data.name}
           profileType={boostTarget.type}
           balanceSource={boostTarget.type}
-          balanceSourceId={boostTarget.type === "agent" ? boostTarget.data.id : boostTarget.data.id}
+          balanceSourceId={boostTarget.data.id}
           currentClassification={boostTarget.data.profile_classification || "standard"}
           boostEndDate={boostTarget.data.boost_end_date || null}
           onBoosted={fetchAll}
