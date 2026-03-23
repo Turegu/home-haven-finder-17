@@ -77,7 +77,7 @@ const ROICalculator = ({
         </div>
         <div>
           <label className="text-xs text-muted-foreground block mb-1">
-            Est. Monthly Rent {estimatedMonthlyRent ? "(from avg)" : ""}
+            {t('roi.estMonthlyRent')} {estimatedMonthlyRent ? t('roi.fromAvg') : ""}
           </label>
           <div className="flex items-center border border-border rounded-md overflow-hidden">
             <span className="px-2 text-xs text-muted-foreground bg-muted">{currency}</span>
