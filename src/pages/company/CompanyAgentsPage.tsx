@@ -33,6 +33,8 @@ interface Agent {
   status: string;
   credit_balance: number;
   created_at: string;
+  profile_classification: string;
+  boost_end_date: string | null;
 }
 
 const CompanyAgentsPage = () => {
