@@ -64,16 +64,16 @@ const FaqPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <title>FAQs – Turegu</title>
+      <title>{t('pages.faq.title')} – Turegu</title>
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
+          <Link to="/" className="hover:text-primary">{t('common.home')}</Link>
           <span>/</span>
-          <span className="text-foreground">FAQs</span>
+          <span className="text-foreground">{t('pages.faq.title')}</span>
         </div>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">Frequently Asked Questions</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">{t('pages.faq.title')}</h1>
 
         {loading ? (
           <div className="text-center py-16 text-muted-foreground">Loading...</div>
