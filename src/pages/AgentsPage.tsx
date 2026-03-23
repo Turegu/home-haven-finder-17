@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import { MapPin, Search, Home, Globe, Rocket, Building2 } from 'lucide-react';
 import Header from '@/components/Header';
