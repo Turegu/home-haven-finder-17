@@ -79,12 +79,12 @@ const ContactedPropertiesPage = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">SNo</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Property Name</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Email</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Phone</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Message</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Date</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.sno')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.propertyName')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('auth.email')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('pages.contact.phone')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('pages.contact.message')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
