@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe, BarChart3, Bot } from "lucide-react";
+import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe, BarChart3, Bot, Rocket } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
 import type { AnalyticsPhase } from "@/hooks/useAnalyticsPhase";
@@ -23,6 +23,14 @@ const AdminSettingsPage = () => {
   const [analyticsPhase, setAnalyticsPhase] = useState<AnalyticsPhase>("phase1");
   const [aiSearchEnabled, setAiSearchEnabled] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
+
+  // Boost cost settings
+  const [boostCompany3, setBoostCompany3] = useState("20");
+  const [boostCompany6, setBoostCompany6] = useState("35");
+  const [boostCompany12, setBoostCompany12] = useState("60");
+  const [boostAgent3, setBoostAgent3] = useState("15");
+  const [boostAgent6, setBoostAgent6] = useState("25");
+  const [boostAgent12, setBoostAgent12] = useState("45");
 
   // Pattern
   const [currentPattern, setCurrentPattern] = useState("");
@@ -44,6 +52,12 @@ const AdminSettingsPage = () => {
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setAiSearchEnabled(map.ai_search_enabled !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
+        setBoostCompany3(map.boost_company_3_months_credits || "20");
+        setBoostCompany6(map.boost_company_6_months_credits || "35");
+        setBoostCompany12(map.boost_company_12_months_credits || "60");
+        setBoostAgent3(map.boost_agent_3_months_credits || "15");
+        setBoostAgent6(map.boost_agent_6_months_credits || "25");
+        setBoostAgent12(map.boost_agent_12_months_credits || "45");
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -71,6 +85,12 @@ const AdminSettingsPage = () => {
       saveSetting("map_provider", mapProvider),
       saveSetting("analytics_display_phase", analyticsPhase),
       saveSetting("ai_search_enabled", aiSearchEnabled ? 'true' : 'false'),
+      saveSetting("boost_company_3_months_credits", boostCompany3),
+      saveSetting("boost_company_6_months_credits", boostCompany6),
+      saveSetting("boost_company_12_months_credits", boostCompany12),
+      saveSetting("boost_agent_3_months_credits", boostAgent3),
+      saveSetting("boost_agent_6_months_credits", boostAgent6),
+      saveSetting("boost_agent_12_months_credits", boostAgent12),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
@@ -146,7 +166,57 @@ const AdminSettingsPage = () => {
           </Button>
         </div>
 
-        {/* AI Search */}
+        {/* Boost Cost Settings */}
+        <div className="bg-card rounded-lg border border-border p-6 space-y-5">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Rocket className="h-5 w-5" /> Profile Boost Pricing
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Set the credit cost for companies and agents to boost their profiles.
+          </p>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Company Boost Cost (Credits)</h3>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">3 Months</Label>
+                <Input type="number" value={boostCompany3} onChange={e => setBoostCompany3(e.target.value)} min="0" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">6 Months</Label>
+                <Input type="number" value={boostCompany6} onChange={e => setBoostCompany6(e.target.value)} min="0" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">12 Months</Label>
+                <Input type="number" value={boostCompany12} onChange={e => setBoostCompany12(e.target.value)} min="0" />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Agent Boost Cost (Credits)</h3>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">3 Months</Label>
+                <Input type="number" value={boostAgent3} onChange={e => setBoostAgent3(e.target.value)} min="0" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">6 Months</Label>
+                <Input type="number" value={boostAgent6} onChange={e => setBoostAgent6(e.target.value)} min="0" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">12 Months</Label>
+                <Input type="number" value={boostAgent12} onChange={e => setBoostAgent12(e.target.value)} min="0" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>These costs are deducted from the company's or agent's credit balance when they boost their profile. Changes take effect immediately for new boosts.</span>
+          </div>
+        </div>
+
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Bot className="h-5 w-5" /> AI Property Search

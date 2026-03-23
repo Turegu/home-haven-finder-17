@@ -284,9 +284,11 @@ const AdminCompaniesPage = () => {
           profileId={boostCompany.id}
           profileName={boostCompany.name}
           profileType="company"
-          companyId={boostCompany.id}
+          balanceSource="company"
+          balanceSourceId={boostCompany.id}
           currentClassification={(boostCompany as any).profile_classification || "standard"}
-          onUpgraded={fetchCompanies}
+          boostEndDate={(boostCompany as any).boost_end_date || null}
+          onBoosted={fetchCompanies}
         />
       )}
     </AdminLayout>

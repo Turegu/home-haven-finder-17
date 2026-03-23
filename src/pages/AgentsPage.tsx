@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { turkishIncludes } from '@/lib/utils';
-import { MapPin, Search, User, Users, Home, Building2, Globe, ChevronRight } from 'lucide-react';
+import { MapPin, Search, Home, Globe, Rocket, Building2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -22,6 +22,7 @@ interface CompanyRow {
   town: string | null;
   neighbourhood: string | null;
   profile_classification?: string;
+  boost_end_date?: string | null;
 }
 
 interface AgentRow {
@@ -33,14 +34,15 @@ interface AgentRow {
   languages: string[] | null;
   service_areas: string[] | null;
   profile_classification?: string;
+  boost_end_date?: string | null;
   companies: { name: string; logo_url: string | null } | null;
 }
 
-const tierOrder = (cls?: string) => {
-  if (cls === "premium") return 0;
-  if (cls === "featured") return 1;
-  return 2;
-};
+const isBoosted = (cls?: string, endDate?: string | null) =>
+  cls === "boosted" && endDate && new Date(endDate) > new Date();
+
+const boostOrder = (cls?: string, endDate?: string | null) =>
+  isBoosted(cls, endDate) ? 0 : 1;
 
 const AgentsPage = () => {
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
@@ -56,14 +58,12 @@ const AgentsPage = () => {
   const [companyCounts, setCompanyCounts] = useState<Record<string, { agents: number; buy: number; rent: number }>>({});
   const [agentCounts, setAgentCounts] = useState<Record<string, { buy: number; rent: number }>>({});
 
-  // Fetch provinces on mount
   useEffect(() => {
     supabase.rpc('get_distinct_provinces').then(({ data }) => {
       if (data) setProvinces(data);
     });
   }, []);
 
-  // Fetch towns when province changes
   useEffect(() => {
     if (!selectedProvince) { setTowns([]); setSelectedTown(''); return; }
     supabase.rpc('get_distinct_districts', { p_province: selectedProvince }).then(({ data }) => {
@@ -74,33 +74,28 @@ const AgentsPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // CMS
       const { data: cms } = await supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1);
       if (cms?.[0]) {
         const c = (cms[0] as any).content;
         if (c?.hero?.image_url) setHeroImage(c.hero.image_url);
       }
 
-      // Companies
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
-      // Agents with company join
       const { data: agentData } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, companies(name, logo_url)")
+        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url)")
         .eq("status", "active");
       setAgents((agentData ?? []) as unknown as AgentRow[]);
 
-      // Agent property counts
       if (agentData && agentData.length > 0) {
         const agentIds = agentData.map((a: any) => a.id);
         const aCounts: Record<string, { buy: number; rent: number }> = {};
         agentIds.forEach((id: string) => { aCounts[id] = { buy: 0, rent: 0 }; });
-
         const { data: agentProps } = await supabase
           .from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds);
         (agentProps ?? []).forEach((p: any) => {
@@ -111,16 +106,13 @@ const AgentsPage = () => {
         setAgentCounts(aCounts);
       }
 
-      // Counts per company
       if (compData && compData.length > 0) {
         const ids = compData.map(c => c.id);
         const counts: Record<string, { agents: number; buy: number; rent: number }> = {};
         ids.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
-
         const { data: agentCountsData } = await supabase
           .from("agents").select("company_id").eq("status", "active").in("company_id", ids);
         (agentCountsData ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
-
         const { data: propCounts } = await supabase
           .from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", ids);
         (propCounts ?? []).forEach((p: any) => {
@@ -128,7 +120,6 @@ const AgentsPage = () => {
           if (p.property_purpose === 'rent') counts[p.company_id].rent++;
           else counts[p.company_id].buy++;
         });
-
         setCompanyCounts(counts);
       }
     };
@@ -140,14 +131,14 @@ const AgentsPage = () => {
     if (selectedProvince && c.province !== selectedProvince) return false;
     if (selectedTown && c.town !== selectedTown) return false;
     return true;
-  }).sort((a, b) => tierOrder(a.profile_classification) - tierOrder(b.profile_classification));
+  }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
   const filteredAgents = agents.filter(a => {
     if (searchQuery && !turkishIncludes(a.name, searchQuery)) return false;
     if (selectedProvince && !a.service_areas?.some(area => turkishIncludes(area, selectedProvince))) return false;
     if (selectedTown && !a.service_areas?.some(area => turkishIncludes(area, selectedTown))) return false;
     return true;
-  }).sort((a, b) => tierOrder(a.profile_classification) - tierOrder(b.profile_classification));
+  }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
   const typeLabel = (t: string | null) => {
     if (!t) return 'Real Estate Company';
@@ -253,12 +244,19 @@ const AgentsPage = () => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
               const speaksLangs = company.languages?.join(', ');
+              const boosted = isBoosted(company.profile_classification, company.boost_end_date);
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
-                  className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
-                  
-                  {/* Left: Logo area - white background */}
-                  <div className="w-28 sm:w-36 shrink-0 bg-card border-r border-border flex items-center justify-center p-4">
+                  className={`group flex bg-card rounded-xl border overflow-hidden hover:shadow-lg transition-all duration-300 ${
+                    boosted
+                      ? 'border-primary/40 ring-1 ring-primary/20 shadow-md'
+                      : 'border-border hover:border-primary/20'
+                  }`}>
+
+                  {/* Left: Logo area */}
+                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-4 ${
+                    boosted ? 'bg-primary/5' : 'bg-card'
+                  }`}>
                     {company.logo_url ? (
                       <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
@@ -268,11 +266,14 @@ const AgentsPage = () => {
                     )}
                   </div>
 
-                  {/* Right: Info - grey background */}
+                  {/* Right: Info */}
                   <div className="flex-1 p-4 flex flex-col justify-center min-w-0 bg-muted/30">
-                    <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
-                      {company.name}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                        {company.name}
+                      </h3>
+                      {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
+                    </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
                       {typeLabel(company.company_type)}
                     </p>
@@ -282,7 +283,6 @@ const AgentsPage = () => {
                       <span className="truncate">{headOffice || 'Head office location not set'}</span>
                     </div>
 
-                    {/* Stats row */}
                     <div className="flex items-center gap-4 mt-3 text-sm">
                       <span>
                         <span className="font-semibold text-primary">{counts.rent}</span>
@@ -295,7 +295,6 @@ const AgentsPage = () => {
                       </span>
                     </div>
 
-                    {/* Languages */}
                     <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
                       <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span className="text-muted-foreground">Speaks:</span>
@@ -313,12 +312,19 @@ const AgentsPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredAgents.map((agent) => {
               const ac = agentCounts[agent.id] || { buy: 0, rent: 0 };
+              const boosted = isBoosted(agent.profile_classification, agent.boost_end_date);
               return (
                 <Link key={agent.id} to={`/agents/${agent.id}`}
-                  className="group flex bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
-                  
-                  {/* Left: Avatar - dark bg like reference */}
-                  <div className="w-28 sm:w-32 shrink-0 bg-muted border-r border-border overflow-hidden">
+                  className={`group flex bg-card rounded-xl border overflow-hidden hover:shadow-lg transition-all duration-300 ${
+                    boosted
+                      ? 'border-primary/40 ring-1 ring-primary/20 shadow-md'
+                      : 'border-border hover:border-primary/20'
+                  }`}>
+
+                  {/* Left: Avatar */}
+                  <div className={`w-28 sm:w-32 shrink-0 border-r border-border overflow-hidden ${
+                    boosted ? 'bg-primary/5' : 'bg-muted'
+                  }`}>
                     {agent.avatar_url ? (
                       <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
@@ -330,12 +336,14 @@ const AgentsPage = () => {
 
                   {/* Right: Info */}
                   <div className="flex-1 p-4 flex flex-col min-w-0 bg-card">
-                    {/* Top row: name + company logo */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <h3 className="text-base font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
-                          {agent.name}
-                        </h3>
+                        <div className="flex items-center gap-1.5">
+                          <h3 className="text-base font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                            {agent.name}
+                          </h3>
+                          {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}
+                        </div>
                         <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>
                       </div>
                       {agent.companies?.logo_url ? (
@@ -347,13 +355,11 @@ const AgentsPage = () => {
                       )}
                     </div>
 
-                    {/* Languages */}
                     <p className="text-xs text-muted-foreground mt-2">
                       <span>Languages: </span>
                       <span className="text-foreground font-medium">{agent.languages?.join(', ') || '—'}</span>
                     </p>
 
-                    {/* Stats row - bottom */}
                     <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 text-sm">
                       <span>
                         <span className="text-primary font-semibold">For Sale: {ac.buy}</span>

@@ -19,10 +19,11 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle } from "lucide-react";
+import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle, Rocket } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 
 interface Agent {
   id: string;
@@ -32,6 +33,8 @@ interface Agent {
   status: string;
   credit_balance: number;
   created_at: string;
+  profile_classification: string;
+  boost_end_date: string | null;
 }
 
 const CompanyAgentsPage = () => {
@@ -48,6 +51,7 @@ const CompanyAgentsPage = () => {
   const [creditAmount, setCreditAmount] = useState("");
   const [sharingCredits, setSharingCredits] = useState(false);
   const { canCreate, membership } = useMembershipLimits(companyId);
+  const [boostAgent, setBoostAgent] = useState<Agent | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -68,7 +72,7 @@ const CompanyAgentsPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("agents")
-      .select("id, name, email, phone, status, credit_balance, created_at")
+      .select("id, name, email, phone, status, credit_balance, created_at, profile_classification, boost_end_date")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
     if (error) toast.error("Failed to fetch agents");
@@ -220,10 +224,8 @@ const CompanyAgentsPage = () => {
                           <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
                             <Coins className="h-4 w-4 mr-2" /> Share Credits
                           </DropdownMenuItem>
-                          <DropdownMenuItem disabled className="opacity-60 cursor-not-allowed">
-                            <ArrowUpCircle className="h-4 w-4 mr-2" />
-                            <span>Request Top-Up</span>
-                            <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0 border-amber-400 text-amber-600 bg-amber-50">Pending</Badge>
+                          <DropdownMenuItem onClick={() => setBoostAgent(agent)}>
+                            <Rocket className="h-4 w-4 mr-2" /> Boost Profile
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" /> Delete
@@ -273,6 +275,22 @@ const CompanyAgentsPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Boost Agent Dialog */}
+      {boostAgent && companyId && (
+        <BoostProfileDialog
+          open={!!boostAgent}
+          onOpenChange={(open) => !open && setBoostAgent(null)}
+          profileId={boostAgent.id}
+          profileName={boostAgent.name}
+          profileType="agent"
+          balanceSource="company"
+          balanceSourceId={companyId}
+          currentClassification={boostAgent.profile_classification || "standard"}
+          boostEndDate={boostAgent.boost_end_date}
+          onBoosted={fetchAgents}
+        />
+      )}
     </CompanyLayout>
   );
 };
