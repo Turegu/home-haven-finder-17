@@ -90,10 +90,10 @@ const UserDashboardPage = () => {
         {/* Welcome Header */}
         <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-2xl p-6 border border-primary/10">
           <h1 className="text-2xl font-bold text-foreground">
-            Welcome back, {displayName}! 👋
+            {t('dashboard.welcomeBack', { name: displayName })}
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Here's a quick overview of your activity.
+            {t('dashboard.quickOverview')}
           </p>
         </div>
 
