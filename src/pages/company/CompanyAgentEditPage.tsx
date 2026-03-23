@@ -353,13 +353,14 @@ const CompanyAgentEditPage = () => {
           <SectionHeader icon={<Phone className="h-4 w-4" />} title="Contact Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="email">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email *
                 </Label>
-                <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" required placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
+                <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
+                {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
                 {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">Email cannot be changed after account creation</p>}
-                {!isEdit && (
+                {!isEdit && !fieldErrors.email && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Mail className="h-3 w-3" /> An invitation email will be sent to this address
                   </p>
