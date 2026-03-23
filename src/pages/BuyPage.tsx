@@ -372,10 +372,10 @@ const BuyPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               {!location.district ? (
-                <span className="text-foreground font-medium">{location.province} {isRent ? 'For Rent' : 'For Sale'}</span>
+                <span className="text-foreground font-medium">{location.province} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
               ) : (
                 <button onClick={() => { const newLoc = { province: location.province }; setLocation(newLoc); setCurrentPage(1); setCommittedParams(prev => ({ ...prev, ...newLoc, district: undefined, neighborhood: undefined, page: 1 })); }} className="hover:text-foreground transition-colors">
-                  {location.province} {isRent ? 'For Rent' : 'For Sale'}
+                  {location.province} {isRent ? t('buyPage.forRent') : t('buyPage.forSale')}
                 </button>
               )}
             </>
