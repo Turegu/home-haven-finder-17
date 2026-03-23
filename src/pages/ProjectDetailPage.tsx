@@ -273,7 +273,7 @@ const ProjectDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/projects?province=${encodeURIComponent(project.province)}`} className="hover:text-foreground transition-colors">
-                {project.province} Projects
+                {project.province} {t('project.projects')}
               </Link>
             </>
           )}
