@@ -39,6 +39,7 @@ const GRID_ITEMS = 15;
 const LIST_ITEMS = 21;
 
 const ProjectsPage = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const { options: fo } = useFilterOptions("search");
   const unitTypes = fo["project_unit_types"] || [];
