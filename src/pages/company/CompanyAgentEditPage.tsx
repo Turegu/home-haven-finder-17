@@ -310,32 +310,40 @@ const CompanyAgentEditPage = () => {
           <SectionHeader icon={<UserCircle className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="name">
                 <Label className="text-foreground font-medium">Agent Name *</Label>
-                <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" required placeholder="Enter Agent Name" />
+                <Input value={form.name} onChange={(e) => { updateField("name", e.target.value); clearFieldError("name"); }} className={`bg-secondary/50 ${fieldErrors.name ? "border-destructive" : ""}`} placeholder="Enter Agent Name" />
+                {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="designation">
                 <Label className="text-foreground font-medium">Agent Designation *</Label>
-                <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" placeholder="Enter Agent Designation" required />
+                <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder="Enter Agent Designation" />
+                {fieldErrors.designation && <p className="text-xs text-destructive">{fieldErrors.designation}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2">
+              <div className="space-y-2" data-field="service_areas">
                 <Label className="text-foreground font-medium">Service Areas *</Label>
-                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Area 1, Area 2, ..." required />
+                <Input value={form.service_areas} onChange={(e) => { updateField("service_areas", e.target.value); clearFieldError("service_areas"); }} className={`bg-secondary/50 ${fieldErrors.service_areas ? "border-destructive" : ""}`} placeholder="Area 1, Area 2, ..." />
+                {fieldErrors.service_areas && <p className="text-xs text-destructive">{fieldErrors.service_areas}</p>}
               </div>
-              <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
+              <div data-field="languages">
+                <MultiSelectLanguages selected={form.languages} onToggle={(lang) => { toggleLanguage(lang); clearFieldError("languages"); }} />
+                {fieldErrors.languages && <p className="text-xs text-destructive">{fieldErrors.languages}</p>}
+              </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="registration_number">
               <Label className="text-foreground font-medium">Registration Number *</Label>
-              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" placeholder="Registration Number" required />
+              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder="Registration Number" />
+              {fieldErrors.registration_number && <p className="text-xs text-destructive">{fieldErrors.registration_number}</p>}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" data-field="description">
               <Label className="text-foreground font-medium">Description *</Label>
-              <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" placeholder="Write Agent Description" required />
+              <Textarea value={form.description} onChange={(e) => { updateField("description", e.target.value); clearFieldError("description"); }} className={`bg-secondary/50 min-h-[100px] ${fieldErrors.description ? "border-destructive" : ""}`} placeholder="Write Agent Description" />
+              {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
           </div>
         </section>
