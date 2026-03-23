@@ -101,11 +101,11 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
 
           {/* Details */}
           <div className="space-y-1.5">
-            <Label>Additional details <span className="text-muted-foreground text-xs">(optional)</span></Label>
+            <Label>{t('report.details')} <span className="text-muted-foreground text-xs">({t('report.detailsOptional')})</span></Label>
             <Textarea
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              placeholder="Provide more details about the issue..."
+              placeholder={t('report.detailsPlaceholder')}
               rows={3}
               maxLength={1000}
             />
