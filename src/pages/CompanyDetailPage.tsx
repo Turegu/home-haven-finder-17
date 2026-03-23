@@ -166,7 +166,7 @@ const CompanyDetailPage = () => {
             <div className="flex-1 p-5 sm:p-6">
               <div className="flex items-start gap-4">
                 {/* Logo */}
-                <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
+                <div className="shrink-0 w-20 h-20 sm:w-32 sm:h-32 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
                   {company.logo_url ? (
                     <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain p-1.5" />
                   ) : (
