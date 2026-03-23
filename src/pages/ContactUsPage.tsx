@@ -318,9 +318,9 @@ const ContactUsPage = () => {
       <section className="container mx-auto px-4 pb-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Contact Us</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('pages.contact.title')}</h2>
             <p className="text-muted-foreground mt-2">
-              If you have any questions or comments, we'd love to hear from you
+              {t('pages.contact.questionsOrComments')}
             </p>
           </div>
 
