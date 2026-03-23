@@ -293,7 +293,7 @@ const CompanyDetailPage = () => {
                   <CompanyOfficeMap pinLocation={company.pin_location} companyName={company.name} />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-3">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-card/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-foreground shadow flex items-center gap-1.5">
-                      <MapPin className="h-3 w-3 text-primary" /> Open in Google Maps
+                      <MapPin className="h-3 w-3 text-primary" /> {t('companyDetail.openInGoogleMaps')}
                     </span>
                   </div>
                 </div>
