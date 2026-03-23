@@ -179,7 +179,7 @@ export const TopCompaniesSpotlight = () => {
           >
             <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Logo area */}
-              <div className="relative aspect-[4/3] bg-white dark:bg-card flex items-center justify-center p-3 overflow-hidden" style={{ aspectRatio: '5/3' }}>
+              <div className="relative aspect-[4/3] bg-white dark:bg-card flex items-end justify-center px-3 pb-3 pt-8 overflow-hidden" style={{ aspectRatio: '5/3' }}>
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                   backgroundImage: "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
                   backgroundSize: "20px 20px"
