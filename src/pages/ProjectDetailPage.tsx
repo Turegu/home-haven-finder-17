@@ -28,6 +28,7 @@ import SEOHead from '@/components/SEOHead';
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   useTrackPageView(id, 'project');
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
