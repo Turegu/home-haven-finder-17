@@ -459,7 +459,7 @@ const ProjectsPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            Projects in <span className="text-primary">{totalCount} Projects</span>
+            {t('projectsPage.projectsIn')} <span className="text-primary">{totalCount} {t('projectsPage.projects')}</span>
           </h1>
           <div className="flex items-center gap-3">
             <select
@@ -467,9 +467,9 @@ const ProjectsPage = () => {
               onChange={(e) => setSortBy(e.target.value)}
               className="flex items-center gap-1 px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <option value="newest">Newest First</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
+              <option value="newest">{t('projectsPage.newestFirst')}</option>
+              <option value="price_asc">{t('projectsPage.priceLowHigh')}</option>
+              <option value="price_desc">{t('projectsPage.priceHighLow')}</option>
             </select>
             <button
               onClick={() => {
