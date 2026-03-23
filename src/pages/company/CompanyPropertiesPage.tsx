@@ -208,7 +208,6 @@ const CompanyPropertiesPage = () => {
   const roomOptions = filterOpts["rooms"] || [];
   const furnitureOptions = filterOpts["furniture"] || [];
 
-  const limitsLoaded = limits !== null && limits !== undefined;
   const maxProps = limits?.max_properties || 0;
   const usagePercent = maxProps > 0 ? Math.min(100, (usage.properties / maxProps) * 100) : 0;
 
