@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
 
 const AgentNotificationsPage = () => {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
