@@ -83,7 +83,10 @@ export function useFilterCategories(context: string) {
 
         for (const opt of opts ?? []) {
           if (!optionsByCategory[opt.category_id]) optionsByCategory[opt.category_id] = [];
-          optionsByCategory[opt.category_id].push(opt);
+          optionsByCategory[opt.category_id].push({
+            ...opt,
+            translations: (opt.translations as Record<string, string>) ?? null,
+          });
         }
       }
 
