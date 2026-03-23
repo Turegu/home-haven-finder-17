@@ -119,15 +119,15 @@ const MortgageBanksPage = () => {
             <Landmark className="h-8 w-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-3 font-playfair">
-            Mortgage & Bank Loans
+            {t('mortgage.heroTitle')}
           </h1>
           <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
-            Compare mortgage rates from leading banks and calculate your monthly installments
+            {t('mortgage.heroSubtitle')}
           </p>
           <div className="flex items-center justify-center gap-2 mt-4 text-sm text-primary-foreground/70">
-            <Link to="/" className="hover:text-primary-foreground transition-colors">Home</Link>
+            <Link to="/" className="hover:text-primary-foreground transition-colors">{t('mortgage.home')}</Link>
             <span>›</span>
-            <span className="text-primary-foreground font-medium">Mortgage & Bank Loans</span>
+            <span className="text-primary-foreground font-medium">{t('mortgage.heroTitle')}</span>
           </div>
         </div>
       </div>
