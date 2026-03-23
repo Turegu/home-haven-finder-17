@@ -104,17 +104,23 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
     }
   };
 
+  const sizeClasses = size === 'md'
+    ? 'h-10 text-sm px-5 gap-2'
+    : 'h-8 text-xs px-4 gap-1.5';
+
+  const iconSize = size === 'md' ? 'h-4 w-4' : 'h-3.5 w-3.5';
+
   if (loading) {
     return (
-      <Button size="sm" variant="outline" className="gap-1.5 h-8 text-xs px-4 rounded-full shrink-0" disabled>
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-      </Button>
+      <button className={`inline-flex items-center rounded-full shrink-0 font-medium bg-muted text-muted-foreground ${sizeClasses}`} disabled>
+        <Loader2 className={`${iconSize} animate-spin`} />
+      </button>
     );
   }
 
   return (
     <button
-      className={`inline-flex items-center gap-1.5 h-8 text-xs px-4 rounded-full shrink-0 font-medium transition-colors disabled:opacity-50 ${
+      className={`inline-flex items-center rounded-full shrink-0 font-medium transition-colors disabled:opacity-50 ${sizeClasses} ${
         isFollowing
           ? 'bg-primary text-primary-foreground hover:bg-primary/80'
           : 'bg-muted text-muted-foreground hover:bg-muted-foreground/20'
@@ -123,11 +129,11 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
       disabled={toggling}
     >
       {toggling ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <Loader2 className={`${iconSize} animate-spin`} />
       ) : isFollowing ? (
-        <UserCheck className="h-3.5 w-3.5" />
+        <UserCheck className={iconSize} />
       ) : (
-        <UserPlus className="h-3.5 w-3.5" />
+        <UserPlus className={iconSize} />
       )}
       {isFollowing ? 'Following' : 'Follow'}
     </button>
