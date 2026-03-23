@@ -2,7 +2,7 @@ import { useState, useEffect, lazy } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-  MapPin, BedDouble, Bath, Maximize, Building, Share2, Heart,
+  MapPin, BedDouble, Bath, Maximize, Building, Heart,
   ChevronLeft, ChevronRight, Camera, Images, Globe,
   Video, Phone, Mail, MessageCircle,
   PersonStanding, Clock, CalendarDays, X, Printer, Flag,
@@ -25,6 +25,8 @@ import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 import FollowButton from '@/components/FollowButton';
+import ShareDropdown from '@/components/ShareDropdown';
+import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // Lazy-load heavy below-the-fold components
@@ -277,10 +279,7 @@ const PropertyDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container mx-auto px-4 py-12 flex flex-col items-center justify-center gap-3 min-h-[60vh]">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Loading property...</p>
-        </div>
+        <PropertyDetailSkeleton />
         <Footer />
       </div>
     );
@@ -436,20 +435,7 @@ const PropertyDetailPage = () => {
 
         {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({ title: property.title, url: window.location.href });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-                toast.success('Link copied to clipboard');
-              }
-            }}
-            className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform"
-            title="Share"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
+          <ShareDropdown title={property.title} />
           <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save to favorites">
             <Heart className="h-4 w-4" />
           </button>
