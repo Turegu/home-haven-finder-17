@@ -356,7 +356,6 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
   const featLocs = content.featured_locations || {};
   const partnersContent = content.partners || {};
 
-  const heroRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
 
   const heroSlideRef = useRef<HTMLInputElement>(null);
