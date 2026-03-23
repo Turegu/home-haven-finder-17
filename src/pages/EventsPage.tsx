@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
   ChevronDown, CalendarDays, Loader2, X, Home,
