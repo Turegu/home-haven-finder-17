@@ -143,9 +143,15 @@ const AgentDetailPage = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
-                    <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                      <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                    </div>
+                    <Button size="sm" className="gap-1.5 h-8 text-xs px-4 rounded-full shrink-0">
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Follow
+                    </Button>
                   </div>
 
                   {/* Stats */}
@@ -164,7 +170,7 @@ const AgentDetailPage = () => {
                     ))}
                   </div>
 
-                  {/* Contact pills + Follow */}
+                  {/* Contact pills */}
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {agent.phone && (
                       <a href={`tel:${agent.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
@@ -177,10 +183,6 @@ const AgentDetailPage = () => {
                     <a href={`https://wa.me/${agent.whatsapp || agent.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
                       <MessageCircle className="h-3 w-3" /> WhatsApp
                     </a>
-                    <Button size="sm" className="gap-1.5 h-8 text-xs px-4 rounded-full">
-                      <UserPlus className="h-3.5 w-3.5" />
-                      Follow
-                    </Button>
                   </div>
                 </div>
               </div>
