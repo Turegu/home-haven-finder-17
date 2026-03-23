@@ -35,8 +35,8 @@ const ForgotPasswordPage = () => {
       <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-xl border border-border">
         <div className="text-center">
           <Link to="/" className="text-3xl font-bold text-primary">turegu</Link>
-          <h1 className="text-xl font-bold mt-4 text-foreground">Reset Password</h1>
-          <p className="text-sm text-muted-foreground mt-1">Enter your email to receive a reset link</p>
+           <h1 className="text-xl font-bold mt-4 text-foreground">{t('auth.resetPassword')}</h1>
+           <p className="text-sm text-muted-foreground mt-1">{t('auth.enterEmailReset')}</p>
         </div>
 
         {sent ? (
