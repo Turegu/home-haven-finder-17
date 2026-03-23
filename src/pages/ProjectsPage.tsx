@@ -344,7 +344,7 @@ const ProjectsPage = () => {
                     >
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {extAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).length === 0 && (
-                          <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+                          <p className="col-span-full text-sm text-muted-foreground text-center py-8">{t('projectsPage.noAmenitiesFound')}</p>
                         )}
                         {extAmenityOptions.filter(o => turkishIncludes(o, amenitySearch)).map((opt) => {
                           const IconComp = getIcon(opt, 'exterior');
