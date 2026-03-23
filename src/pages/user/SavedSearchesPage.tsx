@@ -93,7 +93,7 @@ const SavedSearchesPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Saved Searches</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.savedSearches')}</h1>
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
