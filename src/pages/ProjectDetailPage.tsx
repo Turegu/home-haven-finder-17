@@ -378,7 +378,7 @@ const ProjectDetailPage = () => {
                   )}
                   {project.exteriorAmenities.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-foreground text-sm mb-2">Exterior Amenities</h3>
+                      <h3 className="font-semibold text-foreground text-sm mb-2">{t('project.exteriorAmenities')}</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {project.exteriorAmenities.map((a: string) => {
                           const Icon = getIcon(a, 'exterior');
