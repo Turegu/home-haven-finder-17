@@ -361,11 +361,11 @@ const ProjectDetailPage = () => {
             {/* Amenities */}
             {(project.interiorAmenities.length > 0 || project.exteriorAmenities.length > 0) && (
               <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">Amenities</h2>
+                <h2 className="text-lg font-bold text-foreground mb-4">{t('project.amenities')}</h2>
                 <div className="space-y-4">
                   {project.interiorAmenities.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-foreground text-sm mb-2">Interior Amenities</h3>
+                      <h3 className="font-semibold text-foreground text-sm mb-2">{t('project.interiorAmenities')}</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {project.interiorAmenities.map((a: string) => {
                           const Icon = getIcon(a, 'interior');
