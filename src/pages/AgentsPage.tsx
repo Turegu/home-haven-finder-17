@@ -228,14 +228,14 @@ const AgentsPage = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-foreground">
-            {activeTab === 'companies' ? 'Companies' : 'Agents'}
+            {activeTab === 'companies' ? t('filters.companies') : t('nav.agents')}
           </h2>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Sort By:</span>
+            <span className="text-muted-foreground">{t('filters.sortBy')}:</span>
             <select className="border border-border rounded-lg px-3 py-1.5 bg-background text-foreground text-sm">
-              <option>Please Select</option>
-              <option>Name A-Z</option>
-              <option>Name Z-A</option>
+              <option>{t('filters.pleaseSelect')}</option>
+              <option>{t('filters.nameAZ')}</option>
+              <option>{t('filters.nameZA')}</option>
             </select>
           </div>
         </div>
