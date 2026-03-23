@@ -35,7 +35,7 @@ const SaveSearchDialog = ({
 
   const handleSave = async () => {
     if (!searchName.trim()) {
-      toast.error('Please enter a name for this search.');
+      toast.error(t('saveSearch.enterName'));
       return;
     }
 
