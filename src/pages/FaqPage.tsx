@@ -22,6 +22,7 @@ const FaqPage = () => {
 
   useEffect(() => {
     const fetchFaqs = async () => {
+      const langCode = i18n.language === 'ar' ? 'ar' : 'en';
       const { data } = await supabase
         .from("faqs")
         .select("id, sort_order")
@@ -29,16 +30,26 @@ const FaqPage = () => {
         .order("sort_order", { ascending: true });
 
       if (data && data.length > 0) {
+        // Try current language first, fall back to English
         const { data: trans } = await supabase
           .from("faq_translations")
-          .select("faq_id, question, answer")
-          .eq("language_code", "en")
+          .select("faq_id, question, answer, language_code")
+          .in("language_code", [langCode, "en"])
           .in("faq_id", data.map(f => f.id));
 
         const transMap: Record<string, { question: string; answer: string }> = {};
-        if (trans) (trans as any[]).forEach((t: any) => {
-          transMap[t.faq_id] = { question: t.question, answer: t.answer };
-        });
+        if (trans) {
+          // First load English as fallback
+          (trans as any[]).filter((t: any) => t.language_code === 'en').forEach((t: any) => {
+            transMap[t.faq_id] = { question: t.question, answer: t.answer };
+          });
+          // Then override with current language
+          if (langCode !== 'en') {
+            (trans as any[]).filter((t: any) => t.language_code === langCode).forEach((t: any) => {
+              transMap[t.faq_id] = { question: t.question, answer: t.answer };
+            });
+          }
+        }
 
         setFaqs(data.map(f => ({
           id: f.id,
@@ -49,7 +60,7 @@ const FaqPage = () => {
       setLoading(false);
     };
     fetchFaqs();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="min-h-screen bg-background">
