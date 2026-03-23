@@ -22,6 +22,7 @@ interface FollowedAgent {
 const PAGE_SIZE = 12;
 
 const FollowedAgentsPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<FollowedAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
