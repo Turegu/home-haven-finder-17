@@ -532,12 +532,12 @@ const CompanyPropertyEditPage = () => {
               options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
             <FormSelect
-              label="No. Of Rooms *"
+              label={t("companyDashboard.noOfRooms") + " *"}
               icon={<BedDouble className="h-4 w-4 text-muted-foreground" />}
               value={form.rooms}
               onChange={(v) => updateField("rooms", v)}
               options={(filterOpts["rooms"] || []).map(r => ({ value: r, label: r }))}
-              placeholder="Select rooms"
+              placeholder={t("companyDashboard.selectRooms")}
               fieldName="rooms"
               error={errorClass("rooms") !== ""}
             />
