@@ -28,6 +28,7 @@ import FollowButton from '@/components/FollowButton';
 import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import SEOHead from '@/components/SEOHead';
 
 // Lazy-load heavy below-the-fold components
 const NearbyPlacesMap = lazy(() => import('@/components/NearbyPlacesMap'));
