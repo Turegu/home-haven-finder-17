@@ -179,7 +179,7 @@ export const TopCompaniesSpotlight = () => {
           >
             <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Logo area */}
-              <div className="relative aspect-[4/3] bg-secondary/50 flex items-center justify-center p-4 overflow-hidden">
+              <div className="relative aspect-[4/3] bg-white dark:bg-card flex items-center justify-center p-4 overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                   backgroundImage: "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
                   backgroundSize: "20px 20px"
@@ -206,8 +206,8 @@ export const TopCompaniesSpotlight = () => {
               </div>
 
               {/* Info footer */}
-              <div className="px-3 py-3 border-t border-border text-center">
-                <h3 className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
+              <div className="px-3 py-3 border-t border-border text-center bg-secondary/50">
+                <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">
                   {c.company_type?.replace(/_/g, " ") || "Real Estate"}
                 </p>
