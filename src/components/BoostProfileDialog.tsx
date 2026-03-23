@@ -35,7 +35,7 @@ interface BoostOption {
 
 const BoostProfileDialog = ({
   open, onOpenChange, profileId, profileName, profileType,
-  balanceSource, balanceSourceId, currentClassification, boostEndDate, onBoosted
+  balanceSource, balanceSourceId, currentClassification, boostEndDate, onBoosted, isAdminBoost = false
 }: BoostProfileDialogProps) => {
   const [options, setOptions] = useState<BoostOption[]>([]);
   const [selected, setSelected] = useState("");
