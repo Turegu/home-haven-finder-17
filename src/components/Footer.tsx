@@ -77,10 +77,10 @@ const Footer = () => {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold text-primary">turegu</span>
-            <span className="text-xs text-background/40">© 2026 All rights reserved</span>
+            <span className="text-xs text-white/40">© 2026 All rights reserved</span>
           </div>
           <div className="flex items-center gap-3">
             <a href="#" className="p-2 rounded-full bg-background/10 hover:bg-background/20 transition-colors" aria-label="Facebook">
