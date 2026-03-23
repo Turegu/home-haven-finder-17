@@ -193,7 +193,7 @@ const ProjectsPage = () => {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[110px]">
                   <span className={selectedUnitTypes.length > 0 ? 'text-foreground' : 'text-muted-foreground'}>
-                    {selectedUnitTypes.length > 0 ? `${selectedUnitTypes.length} selected` : 'Unit Type'}
+                    {selectedUnitTypes.length > 0 ? `${selectedUnitTypes.length} ${t('projectsPage.selected')}` : t('projectsPage.unitType')}
                   </span>
                   <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
