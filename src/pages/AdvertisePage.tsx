@@ -105,20 +105,20 @@ const AdvertisePage = () => {
             {/* Left - Value Props */}
             <div className="text-primary-foreground">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Easily register & enjoy
+                {t('pages.advertise.easilyRegister')}
               </h1>
               <ul className="space-y-4 text-lg">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 mt-0.5 shrink-0" />
-                  <span>Create a company profile & your network of professional agents</span>
+                  <span>{t('pages.advertise.createCompanyProfile')}</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 mt-0.5 shrink-0" />
-                  <span>Choose your suitable membership package</span>
+                  <span>{t('pages.advertise.chooseMembership')}</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 mt-0.5 shrink-0" />
-                  <span>Control your marketing strategy with listings & advertising banner management</span>
+                  <span>{t('pages.advertise.controlMarketing')}</span>
                 </li>
               </ul>
             </div>
