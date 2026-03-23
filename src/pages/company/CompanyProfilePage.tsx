@@ -19,10 +19,11 @@ import {
 import { toast } from "sonner";
 import {
   Save, Lock, Upload, X, ImageIcon, Building2, Phone, Mail,
-  MapPin, FileText, Globe, ChevronDown, Search, Grid3X3
+  MapPin, FileText, Globe, ChevronDown, Search, Grid3X3, Rocket
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import PatternLock from "@/components/admin/PatternLock";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
