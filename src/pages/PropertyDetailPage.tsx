@@ -849,7 +849,7 @@ const PropertyDetailPage = () => {
 
                   {realCompanyId && (
                     <div className="flex justify-center mb-3">
-                      <FollowButton type="company" targetId={realCompanyId} />
+                      <FollowButton type="company" targetId={realCompanyId} size="md" />
                     </div>
                   )}
                 </>

@@ -249,13 +249,7 @@ const AgentDetailPage = () => {
                   <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
                   Service Areas
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {agent.service_areas.map((area) => (
-                    <span key={area} className="text-xs bg-secondary text-secondary-foreground px-2.5 py-1 rounded-full">
-                      {area}
-                    </span>
-                  ))}
-                </div>
+                <ExpandablePillList items={agent.service_areas} maxVisible={6} />
               </div>
             )}
           </aside>
