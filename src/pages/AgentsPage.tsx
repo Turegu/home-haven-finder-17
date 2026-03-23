@@ -288,12 +288,12 @@ const AgentsPage = () => {
                     <div className="flex items-center gap-4 mt-3 text-sm">
                       <span>
                         <span className="font-semibold text-primary">{counts.rent}</span>
-                        <span className="text-muted-foreground ml-1">For Rent</span>
+                        <span className="text-muted-foreground ms-1">{t('filters.forRent')}</span>
                       </span>
                       <span className="text-border">·</span>
                       <span>
                         <span className="font-semibold text-primary">{counts.buy}</span>
-                        <span className="text-muted-foreground ml-1">For Sale</span>
+                        <span className="text-muted-foreground ms-1">{t('filters.forSale')}</span>
                       </span>
                     </div>
 
