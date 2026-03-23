@@ -427,7 +427,7 @@ const MortgageBanksPage = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <span className="text-xl font-bold text-primary">{bank.interest_rate ?? '—'}%</span>
-                        <p className="text-[10px] text-muted-foreground">monthly</p>
+                        <p className="text-[10px] text-muted-foreground">{t('mortgage.monthly')}</p>
                       </div>
                     </div>
 
