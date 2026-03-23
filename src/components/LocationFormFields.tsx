@@ -632,12 +632,12 @@ const LocationFormFields = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Province (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">Province <span className="text-destructive">*</span></Label>
+          <Label className="text-foreground font-medium">{t("locationForm.province")} <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={province}
             onValueChange={handleProvinceChange}
             options={provinces.map((p) => ({ value: p.name, label: p.name }))}
-            placeholder={loadingProvinces ? "Loading..." : "Select Province"}
+            placeholder={loadingProvinces ? t("locationForm.loading") : t("locationForm.selectProvince")}
           />
         </div>
 
