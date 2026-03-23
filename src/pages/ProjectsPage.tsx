@@ -846,7 +846,7 @@ function ProjectListCard({ project }: { project: ProjectResult }) {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Maximize className="h-4 w-4" />
-                  <span className="font-medium text-foreground">{project.max_units ?? 0} Units</span>
+                  <span className="font-medium text-foreground">{project.max_units ?? 0} {t('projectsPage.units')}</span>
                 </span>
               </div>
               {descriptionSnippet && (
