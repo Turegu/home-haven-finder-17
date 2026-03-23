@@ -206,8 +206,8 @@ export const TopCompaniesSpotlight = () => {
               </div>
 
               {/* Info footer */}
-              <div className="px-3 py-3 border-t border-border text-center">
-                <h3 className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
+              <div className="px-3 py-3 border-t border-border text-center bg-secondary/50">
+                <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">
                   {c.company_type?.replace(/_/g, " ") || "Real Estate"}
                 </p>
