@@ -329,6 +329,7 @@ export default function PropertyFiltersModal({
         {/* Options content */}
         <div className="overflow-hidden px-6 py-4">
           <div
+            key={activeTab}
             className="overflow-y-auto h-[38vh] -mx-1 px-1 scrollbar-thin"
             onWheel={(e) => {
               const el = e.currentTarget;
