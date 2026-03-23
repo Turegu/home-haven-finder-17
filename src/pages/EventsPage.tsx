@@ -148,14 +148,14 @@ const EventsPage = () => {
             {/* Date Range Picker */}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 border border-border rounded-md px-3 py-2 h-10 min-w-[120px] sm:min-w-[160px] text-sm hover:border-primary/50 transition-colors bg-background">
-                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                <button className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[140px]">
+                  <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className={dateRange.from ? 'text-foreground' : 'text-muted-foreground'}>
                     {dateRange.from
                       ? `${dateRange.from.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}${dateRange.to ? ` - ${dateRange.to.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
                       : 'Date Range'}
                   </span>
-                  <ChevronDown className="h-3 w-3 ml-auto text-muted-foreground" />
+                  <ChevronDown className="h-3.5 w-3.5 ml-auto text-amber-500" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
