@@ -414,13 +414,5 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
     </>
   );
 };
-          </div>
-        </div>
-      </div>
-
-      <Footer />
-    </div>
-  );
-};
 
 export default CompanyDetailPage;

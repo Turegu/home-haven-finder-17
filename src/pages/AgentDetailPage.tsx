@@ -372,13 +372,5 @@ const AgentPropertiesTab = ({ agentId }: { agentId: string }) => {
     </>
   );
 };
-          </div>
-        </div>
-      </div>
-
-      <Footer />
-    </div>
-  );
-};
 
 export default AgentDetailPage;
