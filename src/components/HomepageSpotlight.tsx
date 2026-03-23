@@ -143,6 +143,13 @@ export const TopAgentsSpotlight = () => {
                   Top
                 </div>
 
+                {/* Company logo */}
+                {a.companies?.logo_url && (
+                  <div className="absolute top-2.5 right-2.5 h-8 w-8 rounded-lg bg-white shadow-md flex items-center justify-center overflow-hidden">
+                    <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-full w-full object-contain p-0.5" />
+                  </div>
+                )}
+
                 {/* Name overlay at bottom */}
                 <div className="absolute bottom-0 inset-x-0 p-3">
                   <h3 className="text-sm font-bold text-white line-clamp-1">{a.name}</h3>
