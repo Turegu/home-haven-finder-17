@@ -291,7 +291,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
         />
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
-      <div className="relative z-10 text-center px-4 pb-8 pt-16">
+      <div className="relative z-10 text-center px-4 pb-14 pt-16">
         <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
           {hero?.title || "Your Property, Our Priority"}
         </h1>
