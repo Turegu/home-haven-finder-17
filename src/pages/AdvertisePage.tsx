@@ -247,7 +247,7 @@ const AdvertisePage = () => {
       {/* Keep In Touch Section */}
       <section className="py-20 bg-muted/50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Keep In Touch</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t('pages.advertise.keepInTouch')}</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
               { icon: Users, title: "Build Your Network", desc: "Create your own network of clients & followers and let them be notified with your updates" },
