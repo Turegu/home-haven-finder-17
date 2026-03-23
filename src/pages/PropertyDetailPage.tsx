@@ -346,7 +346,7 @@ const PropertyDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/buy?purpose=${property.propertyPurpose || 'buy'}&province=${encodeURIComponent(property.province)}&town=${encodeURIComponent(property.town)}&neighbourhood=${encodeURIComponent(property.neighbourhood)}`} className="hover:text-foreground transition-colors">
-                {property.neighbourhood} {property.propertyPurpose === 'rent' ? 'For Rent' : 'For Sale'}
+                {property.neighbourhood} {property.propertyPurpose === 'rent' ? t('property.forRent') : t('property.forSale')}
               </Link>
             </>
           )}
