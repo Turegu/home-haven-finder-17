@@ -190,7 +190,7 @@ const AdvertisePage = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="message">Message (Optional)</Label>
+                    <Label htmlFor="message">{t('pages.advertise.messageOptional')}</Label>
                     <Textarea
                       id="message"
                       placeholder="Tell us about your advertising needs..."
