@@ -282,7 +282,7 @@ const AdminBannersPage = () => {
           <div className="space-y-4 mt-2">
             <div className="bg-muted/50 border border-border rounded-md p-3 text-xs text-muted-foreground">
               <p className="font-medium text-foreground mb-0.5">Required Dimensions:</p>
-              <p>Horizontal: 1172px × 206px &nbsp;|&nbsp; Vertical: 225px × 513px</p>
+              <p>Horizontal: 1172 × 206 px &nbsp;|&nbsp; Vertical: 225 × 513 px</p>
             </div>
 
             <div>
