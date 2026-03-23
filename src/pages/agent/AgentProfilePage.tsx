@@ -114,6 +114,7 @@ const AgentProfilePage = () => {
   const [patternError, setPatternError] = useState(false);
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [boostDialogOpen, setBoostDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
