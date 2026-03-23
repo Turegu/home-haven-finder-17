@@ -249,12 +249,12 @@ const ContactUsPage = () => {
   ].filter((card) => card.value && card.value.trim() !== "");
 
   const subjectOptions = [
-    "General Inquiries",
-    "Property Inquiry",
-    "Partnership",
-    "Advertising",
-    "Technical Support",
-    "Other",
+    { key: "generalInquiries", label: t('pages.contact.generalInquiries') },
+    { key: "propertyInquiry", label: t('pages.contact.propertyInquiry') },
+    { key: "partnership", label: t('pages.contact.partnership') },
+    { key: "advertising", label: t('pages.contact.advertising') },
+    { key: "technicalSupport", label: t('pages.contact.technicalSupport') },
+    { key: "other", label: t('pages.contact.other') },
   ];
 
   return (
