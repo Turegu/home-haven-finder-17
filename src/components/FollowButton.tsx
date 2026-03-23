@@ -16,6 +16,7 @@ interface FollowButtonProps {
 }
 
 const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
