@@ -109,7 +109,7 @@ const SavedSearchesPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Search className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No saved searches yet.</p>
+            <p className="text-muted-foreground">{t('userPages.noSavedSearches')}</p>
           </div>
         ) : (
           <>
