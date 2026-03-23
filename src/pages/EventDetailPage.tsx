@@ -282,8 +282,8 @@ const EventDetailPage = () => {
                   <span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4 text-warm" />{formatDate(event.date)}</span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span>Ad ID: <span className="font-medium text-foreground">{event.listingId}</span></span>
-                  <span>Added: <span className="font-medium text-foreground">{event.listingDate}</span></span>
+                  <span>{t('event.adId')}: <span className="font-medium text-foreground">{event.listingId}</span></span>
+                  <span>{t('event.added')}: <span className="font-medium text-foreground">{event.listingDate}</span></span>
                 </div>
               </div>
             </div>
