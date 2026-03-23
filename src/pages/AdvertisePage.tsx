@@ -166,7 +166,7 @@ const AdvertisePage = () => {
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('pages.advertise.email')}</Label>
                     <Input
                       id="email"
                       type="email"
