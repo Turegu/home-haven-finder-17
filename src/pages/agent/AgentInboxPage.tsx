@@ -13,6 +13,7 @@ import { Search, Eye, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 const AgentInboxPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
