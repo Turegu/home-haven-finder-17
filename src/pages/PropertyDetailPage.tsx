@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
