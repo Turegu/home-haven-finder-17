@@ -16,9 +16,10 @@ import {
 import { toast } from "sonner";
 import {
   Save, Lock, Upload, X, ImageIcon, UserCircle, Phone, Mail,
-  FileText, Globe, ChevronDown, Search, Grid3X3, Briefcase
+  FileText, Globe, ChevronDown, Search, Grid3X3, Briefcase, Rocket
 } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 
 import { allLanguages } from "@/data/languages";
 const languageOptions = allLanguages;
