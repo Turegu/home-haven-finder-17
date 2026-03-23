@@ -54,13 +54,13 @@ const SaveSearchDialog = ({
       .eq('user_id', user.id);
 
     if (countErr) {
-      toast.error('Failed to check saved searches.');
+      toast.error(t('saveSearch.failed'));
       setSaving(false);
       return;
     }
 
     if ((count ?? 0) >= MAX_SAVED_SEARCHES) {
-      toast.error(`You can save a maximum of ${MAX_SAVED_SEARCHES} searches. Please delete one first.`);
+      toast.error(t('saveSearch.maxReached', { max: MAX_SAVED_SEARCHES }));
       setSaving(false);
       return;
     }
