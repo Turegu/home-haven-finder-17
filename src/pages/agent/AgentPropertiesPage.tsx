@@ -41,6 +41,7 @@ const ITEMS_PER_PAGE = 10;
 
 const AgentPropertiesPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: analyticsPhase } = useAnalyticsPhase();
   const [properties, setProperties] = useState<AgentProperty[]>([]);
   const [loading, setLoading] = useState(true);
