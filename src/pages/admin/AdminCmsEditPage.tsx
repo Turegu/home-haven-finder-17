@@ -356,26 +356,58 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
   const featLocs = content.featured_locations || {};
   const partnersContent = content.partners || {};
 
-  const heroRef = useRef<HTMLInputElement>(null);
   const bannerRef = useRef<HTMLInputElement>(null);
+
+  const heroSlideRef = useRef<HTMLInputElement>(null);
+  const heroImages: string[] = hero.hero_images || (hero.image_url ? [hero.image_url] : []);
+
+  const addHeroImage = async (file: File) => {
+    const url = await uploadImage(file, "hero");
+    if (url) {
+      const updated = [...heroImages, url];
+      updateSection("hero", "hero_images", updated);
+      // keep image_url synced to first image for backward compat
+      if (updated.length === 1) updateSection("hero", "image_url", url);
+    }
+  };
+
+  const removeHeroImage = (idx: number) => {
+    const updated = heroImages.filter((_, i) => i !== idx);
+    updateSection("hero", "hero_images", updated);
+    updateSection("hero", "image_url", updated[0] || "");
+  };
 
   return (
     <>
-      <SectionCard title="Hero" subtitle="Bg (2000px × 560px)">
+      <SectionCard title="Hero Slideshow" subtitle="Upload up to 5 images (2000px × 560px). Images rotate automatically on the homepage.">
+        <input ref={heroSlideRef} type="file" accept="image/*" className="hidden"
+          onChange={async (e) => { const f = e.target.files?.[0]; if (f) await addHeroImage(f); e.target.value = ''; }} />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4">
+          {heroImages.map((url, idx) => (
+            <div key={idx} className="relative group rounded-lg overflow-hidden border border-border aspect-[21/9]">
+              <img src={url} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
+              <button onClick={() => removeHeroImage(idx)} className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Trash2 className="h-3 w-3" />
+              </button>
+              <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">{idx + 1}</span>
+            </div>
+          ))}
+          {heroImages.length < 5 && (
+            <button onClick={() => heroSlideRef.current?.click()} className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border aspect-[21/9] hover:border-primary hover:bg-primary/5 transition-colors text-muted-foreground">
+              <Plus className="h-5 w-5" />
+              <span className="text-[10px] mt-1">Add Slide</span>
+            </button>
+          )}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <input ref={heroRef} type="file" accept="image/*" className="hidden"
-              onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "hero"); if (url) updateSection("hero", "image_url", url); } }} />
-            <ImageUploadBox preview={hero.image_url} onClick={() => heroRef.current?.click()} />
-          </div>
           <div className="space-y-3">
             <div><Label>Title</Label><Input value={hero.title || ""} onChange={(e) => updateSection("hero", "title", e.target.value)} /></div>
             <div><Label>SubTitle</Label><Input value={hero.subtitle || ""} onChange={(e) => updateSection("hero", "subtitle", e.target.value)} /></div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <div><Label>Link URL</Label><Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." /></div>
-          <div><Label>Link Text</Label><Input value={hero.link_text || ""} onChange={(e) => updateSection("hero", "link_text", e.target.value)} /></div>
+          <div className="space-y-3">
+            <div><Label>Link URL</Label><Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." /></div>
+            <div><Label>Link Text</Label><Input value={hero.link_text || ""} onChange={(e) => updateSection("hero", "link_text", e.target.value)} /></div>
+          </div>
         </div>
         <div className="flex items-center gap-2 mt-3">
           <Checkbox checked={hero.enable_link ?? true} onCheckedChange={(v) => updateSection("hero", "enable_link", v)} />

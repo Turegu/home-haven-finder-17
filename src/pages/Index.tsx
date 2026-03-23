@@ -13,10 +13,10 @@ import { useCmsPage, useFeaturedLocations } from '@/hooks/useAppData';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
 interface CmsContent {
-  hero?: { title?: string; subtitle?: string; image_url?: string; link_url?: string; link_text?: string; enable_link?: boolean };
+  hero?: { title?: string; subtitle?: string; image_url?: string; hero_images?: string[]; link_url?: string; link_text?: string; enable_link?: boolean };
   second_banner?: { image_url?: string; link_url?: string };
   featured_properties?: { title?: string; tagline?: string };
   featured_projects?: { title?: string; tagline?: string };
@@ -265,17 +265,31 @@ const Index = () => {
   );
 };
 
-// Hero banner content component
+// Hero banner slideshow component
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
+  const images = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
     <div className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}>
-      <img
-        src={hero?.image_url || defaultBg}
-        alt={hero?.title || "Banner"}
-        className="absolute inset-0 w-full h-full object-cover"
-        loading="lazy"
-      />
+      {images.map((src, idx) => (
+        <img
+          key={src}
+          src={src}
+          alt={`${hero?.title || "Banner"} ${idx + 1}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === currentIndex ? 'opacity-100' : 'opacity-0'}`}
+          loading={idx === 0 ? "eager" : "lazy"}
+        />
+      ))}
       <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
       <div className="relative z-10 text-center px-4 pb-8 pt-16">
         <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
@@ -290,6 +304,18 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
           </span>
         )}
       </div>
+      {/* Slide indicators */}
+      {images.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+          {images.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/50'}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
