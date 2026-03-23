@@ -3,34 +3,36 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, FolderKanban, Calendar, Users,
-  UserCircle, Bell, Mail, LogOut, Menu, Users2, Home
+  UserCircle, Bell, Mail, LogOut, Menu, Users2, Home, Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 interface CompanyLayoutProps {
   children: React.ReactNode;
 }
 
-const mainLinks = [
-  { label: "Dashboard", path: "/company", icon: LayoutDashboard },
-  { label: "Properties Management", path: "/company/properties", icon: Building2 },
-  { label: "Projects Management", path: "/company/projects", icon: FolderKanban },
-  { label: "Events Management", path: "/company/events", icon: Calendar },
-  { label: "Agents Management", path: "/company/agents", icon: Users },
-  { label: "Followers", path: "/company/followers", icon: Users2 },
-  { label: "Inbox", path: "/company/inbox", icon: Mail },
-  { label: "Notifications", path: "/company/notifications", icon: Bell },
-];
-
-const settingsLink = { label: "Company Profile Settings", path: "/company/profile", icon: UserCircle };
-
 const CompanyLayout = ({ children }: CompanyLayoutProps) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const mainLinks = [
+    { label: t("companyDashboard.dashboard"), path: "/company", icon: LayoutDashboard },
+    { label: t("companyDashboard.propertiesManagement"), path: "/company/properties", icon: Building2 },
+    { label: t("companyDashboard.projectsManagement"), path: "/company/projects", icon: FolderKanban },
+    { label: t("companyDashboard.eventsManagement"), path: "/company/events", icon: Calendar },
+    { label: t("companyDashboard.agentsManagement"), path: "/company/agents", icon: Users },
+    { label: t("companyDashboard.followers"), path: "/company/followers", icon: Users2 },
+    { label: t("companyDashboard.inbox"), path: "/company/inbox", icon: Mail },
+    { label: t("companyDashboard.notifications"), path: "/company/notifications", icon: Bell },
+  ];
+
+  const settingsLink = { label: t("companyDashboard.profileSettings"), path: "/company/profile", icon: UserCircle };
 
   const { data: companyData } = useQuery({
     queryKey: ['company-layout-auth'],
@@ -48,7 +50,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
         .maybeSingle();
       if (!company) {
         await supabase.auth.signOut();
-        toast.error("No company associated with this account");
+        toast.error(t("companyDashboard.noCompanyFound"));
         navigate("/company/login");
         return null;
       }
@@ -64,7 +66,14 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/company/login");
-    toast.success("Logged out successfully");
+    toast.success(t("companyDashboard.logout"));
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'ar' ? 'en' : 'ar';
+    i18n.changeLanguage(newLang);
+    document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = newLang;
   };
 
   const renderLink = (link: typeof settingsLink) => {
@@ -96,9 +105,18 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-3">
             <Link to="/company" className="text-xl font-bold text-primary">turegu</Link>
-            <Link to="/" className="text-muted-foreground hover:text-primary transition-colors" title="Go to Homepage">
-              <Home className="h-4 w-4" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleLanguage}
+                className="text-muted-foreground hover:text-primary transition-colors"
+                title={i18n.language === 'ar' ? 'English' : 'العربية'}
+              >
+                <Globe className="h-4 w-4" />
+              </button>
+              <Link to="/" className="text-muted-foreground hover:text-primary transition-colors" title={t("dashboard.backToHomepage")}>
+                <Home className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {companyLogo ? (
@@ -110,7 +128,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
             )}
             <div className="min-w-0">
               <p className="text-sm font-semibold text-foreground truncate">{companyName}</p>
-              <p className="text-xs text-muted-foreground">Company</p>
+              <p className="text-xs text-muted-foreground">{t("companyDashboard.company")}</p>
             </div>
           </div>
         </div>
@@ -127,7 +145,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 w-full transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {t("companyDashboard.logout")}
           </button>
         </div>
       </aside>
@@ -137,7 +155,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-sm font-semibold text-foreground">Company Portal</span>
+          <span className="text-sm font-semibold text-foreground">{t("companyDashboard.portal")}</span>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </div>

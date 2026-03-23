@@ -3,33 +3,35 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, FolderKanban, Calendar,
-  UserCircle, Bell, Mail, LogOut, Menu, Users2, Home
+  UserCircle, Bell, Mail, LogOut, Menu, Users2, Home, Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 interface AgentLayoutProps {
   children: React.ReactNode;
 }
 
-const mainLinks = [
-  { label: "Dashboard", path: "/agent", icon: LayoutDashboard },
-  { label: "Properties", path: "/agent/properties", icon: Building2 },
-  { label: "Projects", path: "/agent/projects", icon: FolderKanban },
-  { label: "Events", path: "/agent/events", icon: Calendar },
-  { label: "Followers", path: "/agent/followers", icon: Users2 },
-  { label: "Notifications", path: "/agent/notifications", icon: Bell },
-  { label: "Inbox", path: "/agent/inbox", icon: Mail },
-];
-
-const settingsLink = { label: "Profile Settings", path: "/agent/profile", icon: UserCircle };
-
 const AgentLayout = ({ children }: AgentLayoutProps) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const mainLinks = [
+    { label: t("agentDashboard.dashboard"), path: "/agent", icon: LayoutDashboard },
+    { label: t("agentDashboard.properties"), path: "/agent/properties", icon: Building2 },
+    { label: t("agentDashboard.projects"), path: "/agent/projects", icon: FolderKanban },
+    { label: t("agentDashboard.events"), path: "/agent/events", icon: Calendar },
+    { label: t("agentDashboard.followers"), path: "/agent/followers", icon: Users2 },
+    { label: t("agentDashboard.notifications"), path: "/agent/notifications", icon: Bell },
+    { label: t("agentDashboard.inbox"), path: "/agent/inbox", icon: Mail },
+  ];
+
+  const settingsLink = { label: t("agentDashboard.profileSettings"), path: "/agent/profile", icon: UserCircle };
 
   const { data: agentData } = useQuery({
     queryKey: ['agent-layout-auth'],
@@ -47,7 +49,7 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
         .maybeSingle();
       if (!agent) {
         await supabase.auth.signOut();
-        toast.error("No agent account found");
+        toast.error(t("agentDashboard.noAgentFound"));
         navigate("/agent/login");
         return null;
       }
@@ -63,7 +65,14 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/agent/login");
-    toast.success("Logged out successfully");
+    toast.success(t("agentDashboard.logout"));
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'ar' ? 'en' : 'ar';
+    i18n.changeLanguage(newLang);
+    document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = newLang;
   };
 
   const renderLink = (link: typeof settingsLink) => {
@@ -95,9 +104,18 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-3">
             <Link to="/agent" className="text-xl font-bold text-primary">turegu</Link>
-            <Link to="/" className="text-muted-foreground hover:text-primary transition-colors" title="Go to Homepage">
-              <Home className="h-4 w-4" />
-            </Link>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleLanguage}
+                className="text-muted-foreground hover:text-primary transition-colors"
+                title={i18n.language === 'ar' ? 'English' : 'العربية'}
+              >
+                <Globe className="h-4 w-4" />
+              </button>
+              <Link to="/" className="text-muted-foreground hover:text-primary transition-colors" title={t("dashboard.backToHomepage")}>
+                <Home className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {agentAvatar ? (
@@ -109,7 +127,7 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
             )}
             <div className="min-w-0">
               <p className="text-sm font-semibold text-foreground truncate">{agentName}</p>
-              <p className="text-xs text-muted-foreground">Agent</p>
+              <p className="text-xs text-muted-foreground">{t("agentDashboard.agent")}</p>
             </div>
           </div>
         </div>
@@ -126,7 +144,7 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 w-full transition-colors"
           >
             <LogOut className="h-4 w-4" />
-            Logout
+            {t("agentDashboard.logout")}
           </button>
         </div>
       </aside>
@@ -136,7 +154,7 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <span className="text-sm font-semibold text-foreground">Agent Portal</span>
+          <span className="text-sm font-semibold text-foreground">{t("agentDashboard.portal")}</span>
         </header>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </div>
