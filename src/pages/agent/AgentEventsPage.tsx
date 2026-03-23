@@ -20,6 +20,7 @@ const ITEMS_PER_PAGE = 10;
 
 const AgentEventsPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
