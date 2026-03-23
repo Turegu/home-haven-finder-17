@@ -140,7 +140,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
             ))
           )}
           <button onClick={clearAll} className="text-xs text-destructive hover:underline ml-1">
-            Clear all
+            {t('searchFilters.clearAllFilters')}
           </button>
         </div>
       )}
