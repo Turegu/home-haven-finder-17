@@ -54,7 +54,7 @@ const SavedPropertiesPage = () => {
 
   const handleRemove = async (id: string) => {
     const { error } = await supabase.from("saved_properties").delete().eq("id", id);
-    if (error) { toast.error("Failed to remove"); return; }
+    if (error) { toast.error(t('userPages.failedToRemove')); return; }
     setItems(p => p.filter(i => i.id !== id));
     queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
     queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
