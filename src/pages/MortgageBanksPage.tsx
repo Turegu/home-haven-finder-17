@@ -238,31 +238,31 @@ const MortgageBanksPage = () => {
                 {/* Result Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <ResultCard
-                    label="Loan Amount"
+                    label={t('mortgage.loanAmount')}
                     value={`$${fmt(mortgageCalc.loanAmount)}`}
-                    sub="After down payment"
+                    sub={t('mortgage.afterDownPayment')}
                   />
                   <ResultCard
-                    label="Monthly Installment"
+                    label={t('mortgage.monthlyInstallment')}
                     value={`$${fmt(mortgageCalc.monthlyPayment)}`}
-                    sub={`For ${loanDuration * 12} months`}
+                    sub={t('mortgage.forMonths', { months: loanDuration * 12 })}
                     highlight
                   />
                   <ResultCard
-                    label="Total Interest"
+                    label={t('mortgage.totalInterest')}
                     value={`$${fmt(mortgageCalc.totalInterest)}`}
-                    sub={`At ${selectedBank.interest_rate}%/mo`}
+                    sub={`${t('mortgage.at')} ${selectedBank.interest_rate}%/${t('mortgage.monthly')}`}
                   />
                   <ResultCard
-                    label="Total Payment"
+                    label={t('mortgage.totalPayment')}
                     value={`$${fmt(mortgageCalc.totalPayment)}`}
-                    sub="Principal + Interest"
+                    sub={t('mortgage.principalPlusInterest')}
                   />
                   {mortgageCalc.finalPaymentAmt > 0 && (
                     <ResultCard
-                      label="Final (Balloon) Payment"
+                      label={t('mortgage.finalBalloonPayment')}
                       value={`$${fmt(mortgageCalc.finalPaymentAmt)}`}
-                      sub={`${selectedBank.final_payment}% of loan`}
+                      sub={`${selectedBank.final_payment}% ${t('mortgage.ofLoan')}`}
                     />
                   )}
                 </div>
