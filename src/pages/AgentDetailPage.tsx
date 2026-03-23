@@ -132,7 +132,7 @@ const AgentDetailPage = () => {
             <div className="flex-1 p-5 sm:p-6">
               <div className="flex items-start gap-4">
                 {/* Avatar */}
-                <div className="shrink-0 w-20 h-20 sm:w-28 sm:h-28 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
+                <div className="shrink-0 w-20 h-20 sm:w-32 sm:h-32 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
                   {agent.avatar_url ? (
                     <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover" />
                   ) : (
