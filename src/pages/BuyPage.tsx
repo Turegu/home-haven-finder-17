@@ -329,8 +329,8 @@ const BuyPage = () => {
               isRent={isRent}
             />
             <Button className="h-10 px-6 font-semibold" onClick={handleSearch} disabled={isFetching}>
-              {isFetching ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Search className="h-4 w-4 mr-1" />}
-              Search
+              {isFetching ? <Loader2 className="h-4 w-4 me-1 animate-spin" /> : <Search className="h-4 w-4 me-1" />}
+              {t('hero.search')}
             </Button>
           </div>
 
