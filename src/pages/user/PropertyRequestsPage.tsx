@@ -22,6 +22,7 @@ interface RequestItem {
 const PAGE_SIZE = 10;
 
 const PropertyRequestsPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
