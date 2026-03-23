@@ -97,7 +97,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
                         <h4 className="text-sm font-semibold text-foreground">{cat.title}</h4>
                         {selected.length > 0 && (
                           <button onClick={() => clearFilter(cat.category_key)} className="text-xs text-destructive hover:underline">
-                            Clear
+                            {t('searchFilters.clear')}
                           </button>
                         )}
                       </div>
