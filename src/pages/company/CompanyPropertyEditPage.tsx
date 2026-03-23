@@ -773,7 +773,7 @@ const CompanyPropertyEditPage = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Starting Date And Time</Label>
+              <Label className="text-foreground font-medium">{t("companyDashboard.startingDateTime")}</Label>
               <Input type="datetime-local" value={form.open_house_start} onChange={(e) => updateField("open_house_start", e.target.value)} className="bg-secondary/50" />
             </div>
             <div className="space-y-2">
