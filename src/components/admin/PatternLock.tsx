@@ -137,7 +137,7 @@ const PatternLock = ({ onPatternComplete, error = false, disabled = false }: Pat
         ))}
       </svg>
 
-      <div className="grid grid-cols-3 gap-0 w-full h-full">
+      <div className="grid grid-cols-3 gap-0 w-full h-full" dir="ltr">
         {Array.from({ length: DOT_COUNT }).map((_, i) => {
           const isSelected = selectedDots.includes(i);
           return (
