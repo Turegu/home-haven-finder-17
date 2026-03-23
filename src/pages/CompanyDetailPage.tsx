@@ -271,8 +271,8 @@ const CompanyDetailPage = () => {
             {company.service_areas && company.service_areas.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-                  <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />
-                  Service Areas
+                  <MapPin className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
+                  {t('companyDetail.serviceAreas')}
                 </h3>
                 <ExpandablePillList items={company.service_areas} maxVisible={6} />
               </div>
