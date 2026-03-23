@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['Roboto', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
         serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
