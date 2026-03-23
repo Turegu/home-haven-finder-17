@@ -26,15 +26,24 @@ const FollowButton = ({ type, targetId }: FollowButtonProps) => {
         return;
       }
 
-      const table = type === 'company' ? 'company_followers' : 'agent_followers';
-      const column = type === 'company' ? 'company_id' : 'agent_id';
-
-      const { data } = await supabase
-        .from(table)
-        .select('id')
-        .eq(column, targetId)
-        .eq('user_id', user.id)
-        .maybeSingle();
+      let followData = null;
+      if (type === 'company') {
+        const { data } = await supabase
+          .from('company_followers')
+          .select('id')
+          .eq('company_id', targetId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        followData = data;
+      } else {
+        const { data } = await supabase
+          .from('agent_followers')
+          .select('id')
+          .eq('agent_id', targetId)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        followData = data;
+      }
 
       setIsFollowing(!!data);
       setLoading(false);
