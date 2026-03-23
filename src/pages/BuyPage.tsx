@@ -450,12 +450,12 @@ const BuyPage = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading properties...</span>
+            <span className="ms-3 text-muted-foreground">{t('buyPage.loadingProperties')}</span>
           </div>
         ) : allProperties.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">No properties found</p>
-            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            <p className="text-lg font-medium text-foreground mb-2">{t('buyPage.noPropertiesFound')}</p>
+            <p className="text-muted-foreground">{t('buyPage.tryAdjusting')}</p>
           </div>
         ) : (
           /* Layout with side banner */
