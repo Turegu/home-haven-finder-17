@@ -124,33 +124,33 @@ const UserDashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Quick Actions */}
           <div className="bg-card rounded-xl border border-border p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t('dashboard.quickActions')}</h2>
             <div className="space-y-2">
               <Link to="/buy" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Browse Properties</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.browseProperties')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
               <Link to="/projects" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <Layers className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Explore Projects</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.exploreProjects')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
               <Link to="/property-request" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <FileText className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Submit Property Request</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.submitPropertyRequest')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
               <Link to="/agents" className="flex items-center justify-between px-4 py-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors group">
                 <div className="flex items-center gap-3">
                   <Users2 className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Find Agents</span>
+                  <span className="text-sm font-medium text-foreground">{t('dashboard.findAgents')}</span>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               </Link>
