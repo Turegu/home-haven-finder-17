@@ -128,7 +128,9 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
+const App = () => {
+  useDirection();
+  return (
   <QueryClientProvider client={queryClient}>
     <AreaUnitProvider>
     <TooltipProvider>
