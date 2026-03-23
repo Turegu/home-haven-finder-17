@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
+import PropertyCard from '@/components/PropertyCard';
 
 interface AgentData {
   id: string;
@@ -100,13 +102,13 @@ const AgentDetailPage = () => {
         </div>
       </div>
 
-      {/* ── Banner: company cover inherited ── */}
+      {/* ── Banner: company cover inherited — compact height ── */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="relative rounded-2xl overflow-hidden bg-muted">
+        <div className="relative rounded-2xl overflow-hidden bg-muted h-[120px] sm:h-[140px] lg:h-[160px]">
           {companyCover ? (
-            <img src={companyCover} alt="" className="w-full h-auto block" />
+            <img src={companyCover} alt="" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-[120px] sm:h-[140px] lg:h-[160px] bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
+            <div className="w-full h-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
           )}
           {/* Utility buttons */}
           <div className="absolute top-3 right-3 flex gap-1.5">
@@ -289,7 +291,7 @@ const AgentDetailPage = () => {
             </div>
 
             {/* Tab content */}
-            {activeTab === 'properties' && <div className="text-center py-12 text-muted-foreground text-sm">No properties found for this agent.</div>}
+            {activeTab === 'properties' && <AgentPropertiesTab agentId={agent.id} />}
             {activeTab === 'projects' && <div className="text-center py-12 text-muted-foreground text-sm">No projects found for this agent.</div>}
             {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this agent.</div>}
           </div>
@@ -298,6 +300,76 @@ const AgentDetailPage = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const AgentPropertiesTab = ({ agentId }: { agentId: string }) => {
+  const [filters, setFilters] = useState<ProfileFilters>({ purpose: 'all', propertyType: 'all', rooms: 'all', minPrice: '', maxPrice: '' });
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProperties = useCallback(async () => {
+    setLoading(true);
+    let query = supabase
+      .from('properties')
+      .select('*, agents(name, avatar_url), companies(name, logo_url)')
+      .eq('agent_id', agentId)
+      .eq('status', 'active')
+      .limit(50);
+
+    if (filters.purpose !== 'all') query = query.eq('property_purpose', filters.purpose);
+    if (filters.propertyType !== 'all') query = query.eq('property_type', filters.propertyType);
+    if (filters.rooms !== 'all') query = query.eq('rooms', filters.rooms);
+    if (filters.minPrice) query = query.gte('price', Number(filters.minPrice));
+    if (filters.maxPrice) query = query.lte('price', Number(filters.maxPrice));
+
+    const { data } = await query.order('created_at', { ascending: false });
+    setProperties(data || []);
+    setLoading(false);
+  }, [agentId, filters]);
+
+  useEffect(() => { fetchProperties(); }, [fetchProperties]);
+
+  return (
+    <>
+      <ProfileListingFilters onFiltersChange={setFilters} />
+      {loading ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">Loading properties...</div>
+      ) : properties.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">No properties match the selected filters.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {properties.map((p) => (
+            <Link key={p.id} to={`/property/${p.id}`}>
+              <PropertyCard
+                property={{
+                  id: p.id,
+                  title: p.title,
+                  price: p.price ?? 0,
+                  currency: p.currency ?? 'USD',
+                  location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
+                  city: p.town ?? '',
+                  type: p.property_type,
+                  area: p.area ?? 0,
+                  areaUnit: p.area_unit ?? 'm²',
+                  bedrooms: p.bedrooms ?? 0,
+                  bathrooms: p.bathrooms ?? 0,
+                  images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
+                  agentLogo: p.companies?.logo_url ?? '',
+                  agentName: p.agents?.name ?? '',
+                  agentAvatar: p.agents?.avatar_url ?? '',
+                  companyName: p.companies?.name ?? '',
+                  isFeatured: false,
+                  listingTier: 'standard',
+                  listingType: p.property_purpose === 'rent' ? 'rent' : 'buy',
+                  advertisingTags: p.advertising_tags ?? [],
+                }}
+              />
+            </Link>
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 

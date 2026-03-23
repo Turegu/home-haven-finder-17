@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Phone, Mail, MessageCircle, UserPlus, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
 import Header from '@/components/Header';
@@ -6,6 +6,8 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
+import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
+import PropertyCard from '@/components/PropertyCard';
 
 interface CompanyData {
   id: string;
@@ -331,7 +333,7 @@ const CompanyDetailPage = () => {
                 {companyAgents.length === 0 && <div className="col-span-full text-center py-12 text-muted-foreground text-sm">No agents found.</div>}
               </div>
             )}
-            {activeTab === 'properties' && <div className="text-center py-12 text-muted-foreground text-sm">No properties found for this company.</div>}
+            {activeTab === 'properties' && <CompanyPropertiesTab companyId={company.id} />}
             {activeTab === 'projects' && <div className="text-center py-12 text-muted-foreground text-sm">No projects found for this company.</div>}
             {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this company.</div>}
           </div>
@@ -340,6 +342,76 @@ const CompanyDetailPage = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
+  const [filters, setFilters] = useState<ProfileFilters>({ purpose: 'all', propertyType: 'all', rooms: 'all', minPrice: '', maxPrice: '' });
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProperties = useCallback(async () => {
+    setLoading(true);
+    let query = supabase
+      .from('properties')
+      .select('*, agents(name, avatar_url), companies(name, logo_url)')
+      .eq('company_id', companyId)
+      .eq('status', 'active')
+      .limit(50);
+
+    if (filters.purpose !== 'all') query = query.eq('property_purpose', filters.purpose);
+    if (filters.propertyType !== 'all') query = query.eq('property_type', filters.propertyType);
+    if (filters.rooms !== 'all') query = query.eq('rooms', filters.rooms);
+    if (filters.minPrice) query = query.gte('price', Number(filters.minPrice));
+    if (filters.maxPrice) query = query.lte('price', Number(filters.maxPrice));
+
+    const { data } = await query.order('created_at', { ascending: false });
+    setProperties(data || []);
+    setLoading(false);
+  }, [companyId, filters]);
+
+  useEffect(() => { fetchProperties(); }, [fetchProperties]);
+
+  return (
+    <>
+      <ProfileListingFilters onFiltersChange={setFilters} />
+      {loading ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">Loading properties...</div>
+      ) : properties.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">No properties match the selected filters.</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {properties.map((p) => (
+            <Link key={p.id} to={`/property/${p.id}`}>
+              <PropertyCard
+                property={{
+                  id: p.id,
+                  title: p.title,
+                  price: p.price ?? 0,
+                  currency: p.currency ?? 'USD',
+                  location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
+                  city: p.town ?? '',
+                  type: p.property_type,
+                  area: p.area ?? 0,
+                  areaUnit: p.area_unit ?? 'm²',
+                  bedrooms: p.bedrooms ?? 0,
+                  bathrooms: p.bathrooms ?? 0,
+                  images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
+                  agentLogo: p.companies?.logo_url ?? '',
+                  agentName: p.agents?.name ?? '',
+                  agentAvatar: p.agents?.avatar_url ?? '',
+                  companyName: p.companies?.name ?? '',
+                  isFeatured: false,
+                  listingTier: 'standard',
+                  listingType: p.property_purpose === 'rent' ? 'rent' : 'buy',
+                  advertisingTags: p.advertising_tags ?? [],
+                }}
+              />
+            </Link>
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 
