@@ -450,7 +450,7 @@ const PropertyDetailPage = () => {
             />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />No video available for this listing.</div>
+              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />{t('property.noVideo')}</div>
             </div>
           )}
         </div>
