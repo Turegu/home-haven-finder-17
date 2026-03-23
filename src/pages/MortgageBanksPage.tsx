@@ -389,9 +389,9 @@ const MortgageBanksPage = () => {
                               }}
                             >
                               {selectedBankId === bank.id ? (
-                                <><Check className="h-3.5 w-3.5" /> Selected</>
+                                <><Check className="h-3.5 w-3.5" /> {t('mortgage.selected')}</>
                               ) : (
-                                <><Calculator className="h-3.5 w-3.5" /> Calculate</>
+                                <><Calculator className="h-3.5 w-3.5" /> {t('mortgage.calculate')}</>
                               )}
                             </Button>
                           </td>
