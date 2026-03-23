@@ -35,6 +35,7 @@ import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placehol
 const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
 
 const BuyPage = () => {
+  const { t } = useTranslation();
   const routerLocation = useLocation();
   const [searchParams] = useSearchParams();
 
