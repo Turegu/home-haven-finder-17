@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 const UserLoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,19 +79,19 @@ const UserLoginPage = () => {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-            <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">OR</span></div>
+            <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">{t('common.or')}</span></div>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email" required />
+              <Label htmlFor="email">{t('auth.email')}</Label>
+              <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={t('auth.email')} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" required />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
+                <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder={t('auth.password')} required />
+                <button type="button" className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -100,16 +102,16 @@ const UserLoginPage = () => {
                 <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="rounded border-border" />
                 <span className="text-muted-foreground">Remember me</span>
               </label>
-              <Link to="/forgot-password" className="text-primary hover:underline">Forgot Password?</Link>
+              <Link to="/forgot-password" className="text-primary hover:underline">{t('auth.forgotPassword')}</Link>
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Logging in..." : "Log in"}
+              {loading ? `${t('common.loading')}` : t('auth.signIn')}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account? <Link to="/register" className="text-primary hover:underline font-medium">Sign Up</Link>
+            {t('auth.dontHaveAccount')} <Link to="/register" className="text-primary hover:underline font-medium">{t('auth.signUp')}</Link>
           </p>
 
           <p className="text-center text-xs text-muted-foreground">
