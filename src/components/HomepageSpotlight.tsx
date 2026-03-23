@@ -25,50 +25,29 @@ interface SpotlightAgent {
 
 const sampleCompanies: SpotlightCompany[] = [
   { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c2", name: "Gulf Estates International", logo_url: null, company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c4", name: "Anatolia Homes", logo_url: null, company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c2", name: "Gulf Estates International", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c4", name: "Anatolia Homes", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
   { id: "sample-c5", name: "Prestige Living Co.", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c6", name: "Golden Gate Realty", logo_url: null, company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c7", name: "Riviera Developments", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "property_developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c8", name: "Horizon Estates", logo_url: null, company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c6", name: "Golden Gate Realty", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
 ];
 
 const sampleAgents: SpotlightAgent[] = [
-  { id: "sample-a1", name: "Ayşe Kaya", avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop", designation: "Senior Agent", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Prime Realty", logo_url: null } },
-  { id: "sample-a2", name: "Omar Hassan", avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop", designation: "Property Consultant", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Gulf Estates", logo_url: null } },
-  { id: "sample-a3", name: "Fatma Demir", avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop", designation: "Sales Manager", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Bosphorus Properties", logo_url: null } },
-  { id: "sample-a4", name: "Ali Yılmaz", avatar_url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop", designation: "Luxury Specialist", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Anatolia Homes", logo_url: null } },
-  { id: "sample-a5", name: "Sara Al-Rashid", avatar_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop", designation: "Investment Advisor", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Prestige Living", logo_url: null } },
-  { id: "sample-a6", name: "Mehmet Kara", avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop", designation: "Senior Consultant", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Golden Gate Realty", logo_url: null } },
-  { id: "sample-a7", name: "Leyla Arslan", avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop", designation: "Area Manager", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Riviera Dev.", logo_url: null } },
-  { id: "sample-a8", name: "Karim Saleh", avatar_url: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&h=120&fit=crop", designation: "Branch Director", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Horizon Estates", logo_url: null } },
+  { id: "sample-a1", name: "Ayşe Kaya", avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop", designation: "Senior Agent", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Prime Realty", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=80&h=80&fit=crop" } },
+  { id: "sample-a2", name: "Omar Hassan", avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop", designation: "Property Consultant", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Gulf Estates", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=80&h=80&fit=crop" } },
+  { id: "sample-a3", name: "Fatma Demir", avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop", designation: "Sales Manager", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=80&h=80&fit=crop" } },
+  { id: "sample-a4", name: "Ali Yılmaz", avatar_url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=500&fit=crop", designation: "Luxury Specialist", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Anatolia Homes", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=80&h=80&fit=crop" } },
+  { id: "sample-a5", name: "Sara Al-Rashid", avatar_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop", designation: "Investment Advisor", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Prestige Living", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=80&h=80&fit=crop" } },
+  { id: "sample-a6", name: "Mehmet Kara", avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop", designation: "Senior Consultant", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString(), companies: { name: "Golden Gate Realty", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=80&h=80&fit=crop" } },
 ];
 
-/** Shuffle array and return first N items */
 function pickRandom<T>(arr: T[], count: number): T[] {
   const shuffled = [...arr].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
 
-export const useSpotlightData = () => {
-  const { data: allCompanies = [] } = useQuery({
-    queryKey: ["spotlight-companies"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("companies")
-        .select("id, name, logo_url, company_type, profile_classification, boost_end_date")
-        .eq("is_verified", true)
-        .eq("profile_classification", "boosted")
-        .limit(50);
-      return ((data || []) as SpotlightCompany[]).filter(
-        c => c.boost_end_date && new Date(c.boost_end_date) > new Date()
-      );
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: allAgents = [] } = useQuery({
+export const TopAgentsSpotlight = () => {
+  const { data: dbAgents } = useQuery({
     queryKey: ["spotlight-agents"],
     queryFn: async () => {
       const { data } = await supabase
@@ -84,22 +63,10 @@ export const useSpotlightData = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Randomize on each mount — useMemo with empty deps runs once per mount
-  const companies = useMemo(() => {
-    const pool = allCompanies.length > 0 ? allCompanies : sampleCompanies;
-    return pickRandom(pool, 6);
-  }, [allCompanies]);
-
   const agents = useMemo(() => {
-    const pool = allAgents.length > 0 ? allAgents : sampleAgents;
+    const pool = dbAgents && dbAgents.length > 0 ? dbAgents : sampleAgents;
     return pickRandom(pool, 6);
-  }, [allAgents]);
-
-  return { companies, agents };
-};
-
-export const TopAgentsSpotlight = () => {
-  const { agents } = useSpotlightData();
+  }, [dbAgents]);
 
   return (
     <section className="container mx-auto px-4 py-14">
@@ -138,14 +105,14 @@ export const TopAgentsSpotlight = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
 
                 {/* Boosted badge */}
-                <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-[hsl(var(--warm-accent))] text-[hsl(var(--warm-accent-foreground))] text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
                   <Star className="h-2.5 w-2.5 fill-current" />
                   Top
                 </div>
 
                 {/* Company logo */}
                 {a.companies?.logo_url && (
-                  <div className="absolute top-2.5 right-2.5 h-8 w-8 rounded-lg bg-white shadow-md flex items-center justify-center overflow-hidden">
+                  <div className="absolute top-2.5 right-2.5 h-8 w-8 rounded-lg bg-background shadow-md flex items-center justify-center overflow-hidden">
                     <img src={a.companies.logo_url} alt={a.companies.name || ""} className="h-full w-full object-contain p-0.5" />
                   </div>
                 )}
@@ -170,7 +137,26 @@ export const TopAgentsSpotlight = () => {
 };
 
 export const TopCompaniesSpotlight = () => {
-  const { companies } = useSpotlightData();
+  const { data: dbCompanies } = useQuery({
+    queryKey: ["spotlight-companies"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("companies")
+        .select("id, name, logo_url, company_type, profile_classification, boost_end_date")
+        .eq("is_verified", true)
+        .eq("profile_classification", "boosted")
+        .limit(50);
+      return ((data || []) as SpotlightCompany[]).filter(
+        c => c.boost_end_date && new Date(c.boost_end_date) > new Date()
+      );
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const companies = useMemo(() => {
+    const pool = dbCompanies && dbCompanies.length > 0 ? dbCompanies : sampleCompanies;
+    return pickRandom(pool, 6);
+  }, [dbCompanies]);
 
   return (
     <section className="container mx-auto px-4 py-14">
@@ -194,7 +180,6 @@ export const TopCompaniesSpotlight = () => {
             <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Logo area */}
               <div className="relative aspect-square bg-secondary/50 flex items-center justify-center p-5 overflow-hidden">
-                {/* Subtle pattern background */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                   backgroundImage: "radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)",
                   backgroundSize: "20px 20px"
@@ -214,7 +199,7 @@ export const TopCompaniesSpotlight = () => {
                 )}
 
                 {/* Boosted badge */}
-                <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-[hsl(var(--warm-accent))] text-[hsl(var(--warm-accent-foreground))] text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-primary text-primary-foreground text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
                   <Star className="h-2.5 w-2.5 fill-current" />
                   Top
                 </div>
@@ -235,7 +220,6 @@ export const TopCompaniesSpotlight = () => {
   );
 };
 
-// Keep default export for backward compatibility
 const HomepageSpotlight = () => (
   <>
     <TopAgentsSpotlight />
