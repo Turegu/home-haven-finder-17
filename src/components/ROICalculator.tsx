@@ -144,10 +144,10 @@ const ROICalculator = ({
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border text-muted-foreground">
-                    <th className="text-left py-2 pr-4">Year</th>
-                    <th className="text-right py-2 pr-4">Property Value</th>
-                    <th className="text-right py-2 pr-4">Cum. Rental Income</th>
-                    <th className="text-right py-2">Total Return</th>
+                    <th className="text-start py-2 pe-4">{t('roi.year')}</th>
+                    <th className="text-end py-2 pe-4">{t('roi.propertyValueCol')}</th>
+                    <th className="text-end py-2 pe-4">{t('roi.cumRentalIncome')}</th>
+                    <th className="text-end py-2">{t('roi.totalReturn')}</th>
                   </tr>
                 </thead>
                 <tbody>
