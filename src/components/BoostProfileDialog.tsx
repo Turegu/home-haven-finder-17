@@ -16,12 +16,14 @@ interface BoostProfileDialogProps {
   profileId: string;
   profileName: string;
   profileType: "company" | "agent";
-  /** The entity whose balance is used (company_id for company boost, or agent's company_id when company boosts agent, or agent uses own balance) */
+  /** The entity whose balance is used */
   balanceSource: "company" | "agent";
   balanceSourceId: string;
   currentClassification: string;
   boostEndDate: string | null;
   onBoosted: () => void;
+  /** When true, admin boosts without deducting credits */
+  isAdminBoost?: boolean;
 }
 
 interface BoostOption {
