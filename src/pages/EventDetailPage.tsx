@@ -271,7 +271,7 @@ const EventDetailPage = () => {
                 </div>
               </div>
               <p className="text-2xl font-bold text-primary mb-2">
-                {event.price ? `$ ${event.price.toLocaleString()}` : 'Open Invitation'}
+                {event.price ? `$ ${event.price.toLocaleString()}` : t('event.openInvitation')}
               </p>
               <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
                 <MapPin className="h-4 w-4 text-primary" /><span>{event.location}</span>
