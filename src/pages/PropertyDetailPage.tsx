@@ -577,7 +577,7 @@ const PropertyDetailPage = () => {
 
             {/* Overview */}
             <div className="bg-card rounded-xl border border-border p-6">
-              <h2 className="text-lg font-bold text-foreground mb-4">Overview</h2>
+              <h2 className="text-lg font-bold text-foreground mb-4">{t('property.overview')}</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 
                 <OverviewItem icon={Building} label="Type" value={property.type} />
