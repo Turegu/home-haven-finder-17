@@ -110,35 +110,35 @@ const AccountSettingsPage = () => {
   return (
     <UserLayout>
       <div className="max-w-3xl space-y-8">
-        <h1 className="text-2xl font-bold text-foreground">Account Settings</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('accountSettings.title')}</h1>
 
         {/* Personal Information */}
         <div className="bg-card rounded-xl border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('accountSettings.personalInfo')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>First Name *</Label>
+              <Label>{t('accountSettings.firstName')} *</Label>
               <Input value={profile.first_name} onChange={e => upd("first_name", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Last Name *</Label>
+              <Label>{t('accountSettings.lastName')} *</Label>
               <Input value={profile.last_name} onChange={e => upd("last_name", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Display Name *</Label>
+              <Label>{t('accountSettings.displayName')} *</Label>
               <Input value={profile.display_name} onChange={e => upd("display_name", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label>{t('accountSettings.email')}</Label>
               <Input value={email} disabled className="bg-muted" />
             </div>
             <div className="space-y-2">
-              <Label>Phone Number (optional)</Label>
+              <Label>{t('accountSettings.phone')}</Label>
               <Input value={profile.phone} onChange={e => upd("phone", e.target.value)} placeholder="e.g. +90 555 123 4567" />
             </div>
             <div className="flex items-center gap-3 pt-6">
               <Switch checked={profile.show_phone} onCheckedChange={v => upd("show_phone", v)} />
-              <Label className="text-sm">Show phone to companies & agents</Label>
+              <Label className="text-sm">{t('accountSettings.showPhone')}</Label>
             </div>
           </div>
         </div>
