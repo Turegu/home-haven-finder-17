@@ -504,12 +504,12 @@ const CompanyPropertyEditPage = () => {
 
             {isRent && (
               <FormSelect
-                label="Rental Duration *"
+                label={t("companyDashboard.rentalDuration") + " *"}
                 icon={<Clock className="h-4 w-4 text-muted-foreground" />}
                 value={form.rent_duration}
                 onChange={(v) => updateField("rent_duration", v)}
                 options={(filterOpts["rent_duration"] || []).map(d => ({ value: d, label: d }))}
-                placeholder="Select duration"
+                placeholder={t("companyDashboard.selectDuration")}
                 fieldName="rent_duration"
                 error={errorClass("rent_duration") !== ""}
               />
