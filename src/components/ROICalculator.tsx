@@ -86,7 +86,7 @@ const ROICalculator = ({
               value={customMonthlyRent ?? Math.round(estimatedMonthlyRent ?? 0)}
               onChange={(e) => setCustomMonthlyRent(Number(e.target.value) || null)}
               className="w-full px-2 py-2 text-sm bg-background focus:outline-none"
-              placeholder="Monthly rent"
+              placeholder={t('roi.monthlyRentPlaceholder')}
             />
           </div>
         </div>
