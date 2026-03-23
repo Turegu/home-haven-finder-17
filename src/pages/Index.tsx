@@ -172,11 +172,11 @@ const Index = () => {
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{fpr.title || "Featured Projects"}</h2>
-              <p className="text-sm text-muted-foreground mt-1">{fpr.tagline || "New developments & off-plan projects"}</p>
+              <h2 className="text-2xl font-bold text-foreground">{fpr.title || t('home.featuredProjects')}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{fpr.tagline || t('home.featuredProjectsTagline')}</p>
             </div>
             <Link to="/projects" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-              View All <ArrowRight className="h-4 w-4" />
+              {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
