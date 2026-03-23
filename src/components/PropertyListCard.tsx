@@ -286,12 +286,12 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
               </span>
               <span className="flex items-center gap-1">
                 <Bath className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.bathrooms}</span> Bath
+                <span className="font-medium text-foreground">{property.bathrooms}</span> {t('listCard.bath')}
               </span>
               {property.bedrooms > 0 && (
                 <span className="flex items-center gap-1">
                   <BedDouble className="h-3.5 w-3.5" />
-                  <span className="font-medium text-foreground">{property.bedrooms}</span> Bed
+                  <span className="font-medium text-foreground">{property.bedrooms}</span> {t('listCard.bed')}
                 </span>
               )}
             </div>
