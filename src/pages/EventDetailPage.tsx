@@ -245,7 +245,7 @@ const EventDetailPage = () => {
             <>
               <span className="text-muted-foreground/50">&gt;</span>
               <Link to={`/events?province=${encodeURIComponent(event.province)}&town=${encodeURIComponent(event.town)}&neighbourhood=${encodeURIComponent(event.neighbourhood)}`} className="hover:text-foreground transition-colors">
-                {event.neighbourhood} Events
+                {event.neighbourhood} {t('event.events')}
               </Link>
             </>
           )}
