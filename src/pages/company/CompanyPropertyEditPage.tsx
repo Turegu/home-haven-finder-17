@@ -798,7 +798,7 @@ const CompanyPropertyEditPage = () => {
                 steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
               }])}
             >
-              <Plus className="h-3 w-3 mr-1" /> Add Plan
+              <Plus className="h-3 w-3 mr-1" /> {t("companyDashboard.addPlan")}
             </Button>
           </div>
 
