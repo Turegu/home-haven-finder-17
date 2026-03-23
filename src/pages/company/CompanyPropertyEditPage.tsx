@@ -486,7 +486,7 @@ const CompanyPropertyEditPage = () => {
                 <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
                 {t("companyDashboard.netArea")} ({form.area_unit}) *
               </Label>
-              <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
+              <Input type="number" min="1" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
             </div>
 
             <div className="space-y-2" data-field="price">
