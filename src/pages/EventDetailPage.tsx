@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-  MapPin, Clock, CalendarDays, Phone, Mail, Share2, Heart,
+  MapPin, Clock, CalendarDays, Phone, Mail, Heart,
   ChevronLeft, ChevronRight, Camera, Video, Home,
   MessageCircle, PersonStanding, X, Building, DollarSign, Users, Ticket, FileDown, Timer
 } from 'lucide-react';
@@ -14,6 +14,9 @@ import StreetView from '@/components/StreetView';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
+import ShareDropdown from '@/components/ShareDropdown';
+import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+import SEOHead from '@/components/SEOHead';
 
 const EventDetailPage = () => {
   const { id } = useParams();
@@ -92,7 +95,7 @@ const EventDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">Loading event...</div>
+        <PropertyDetailSkeleton />
         <Footer />
       </div>
     );
@@ -125,6 +128,25 @@ const EventDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={event.title}
+        description={`${event.eventType} event in ${event.location}. ${event.date ? `Date: ${formatDate(event.date)}.` : ''} ${event.price ? `Ticket: $${event.price.toLocaleString()}` : 'Free admission.'}`}
+        image={event.images?.[0]}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="website"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Event',
+          name: event.title,
+          description: event.description?.slice(0, 200),
+          image: event.images,
+          startDate: event.date,
+          endDate: event.endDate || undefined,
+          location: { '@type': 'Place', name: event.location, address: { '@type': 'PostalAddress', addressLocality: event.town, addressRegion: event.province } },
+          organizer: { '@type': 'Organization', name: event.organizer },
+          offers: event.price ? { '@type': 'Offer', price: event.price, priceCurrency: event.currency } : undefined,
+        }}
+      />
       <Header />
 
       {/* Media Gallery */}
@@ -180,7 +202,7 @@ const EventDetailPage = () => {
 
         {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button onClick={() => { if (navigator.share) { navigator.share({ title: event.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Share"><Share2 className="h-4 w-4" /></button>
+          <ShareDropdown title={event.title} />
           <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save"><Heart className="h-4 w-4" /></button>
         </div>
       </div>

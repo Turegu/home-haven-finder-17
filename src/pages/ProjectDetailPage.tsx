@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   MapPin, Building, Maximize, ChevronLeft, ChevronRight, Camera, Images,
-  Globe, Video, Phone, Mail, MessageCircle, Share2, Heart,
+  Globe, Video, Phone, Mail, MessageCircle, Heart,
   PersonStanding, X, Hash, DollarSign, Ruler, Layers, CalendarCheck, HardHat, Activity, Home
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
@@ -20,6 +20,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 import FollowButton from '@/components/FollowButton';
+import ShareDropdown from '@/components/ShareDropdown';
+import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+import SEOHead from '@/components/SEOHead';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
@@ -114,7 +117,7 @@ const ProjectDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container mx-auto px-4 py-20 text-center text-muted-foreground">Loading project...</div>
+        <PropertyDetailSkeleton />
         <Footer />
       </div>
     );
@@ -144,6 +147,22 @@ const ProjectDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={project.title}
+        description={`${project.projectType} project in ${project.location}. Starting from $${project.priceFrom?.toLocaleString()}. ${project.developer ? `By ${project.developer}.` : ''}`}
+        image={project.images?.[0]}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="product"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateListing',
+          name: project.title,
+          description: project.description?.slice(0, 200),
+          image: project.images,
+          address: { '@type': 'PostalAddress', addressLocality: project.town, addressRegion: project.province },
+          offers: { '@type': 'Offer', priceCurrency: project.currency, price: project.priceFrom },
+        }}
+      />
       <Header />
 
       {/* Media Gallery */}
@@ -227,7 +246,7 @@ const ProjectDetailPage = () => {
 
         {/* Action buttons */}
         <div className="absolute top-4 left-4 flex gap-2 z-10">
-          <button onClick={() => { if (navigator.share) { navigator.share({ title: project.title, url: window.location.href }); } else { navigator.clipboard.writeText(window.location.href); } }} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Share"><Share2 className="h-4 w-4" /></button>
+          <ShareDropdown title={project.title} />
           <button onClick={() => navigate('/login')} className="bg-background/90 p-2 rounded-full shadow-sm hover:bg-background active:scale-95 transition-transform" title="Save"><Heart className="h-4 w-4" /></button>
         </div>
       </div>

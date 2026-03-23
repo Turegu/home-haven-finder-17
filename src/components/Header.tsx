@@ -5,6 +5,7 @@ import {
   Menu, X, User, LogOut, Settings, Users2, Search,
   MessageSquare, FileText, MapPin
 } from 'lucide-react';
+import DarkModeToggle from '@/components/DarkModeToggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLanguages, useCurrencies } from '@/hooks/useAppData';
@@ -273,7 +274,8 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <DarkModeToggle />
             {/* Notifications Dropdown */}
             <div className="relative" ref={notifRef}>
               <button
