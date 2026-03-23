@@ -829,7 +829,7 @@ const CompanyPropertyEditPage = () => {
                     }}
                     className="rounded"
                   />
-                  Active
+                  {t("companyDashboard.active")}
                 </label>
                 <Button
                   type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
