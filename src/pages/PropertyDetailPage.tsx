@@ -24,6 +24,7 @@ import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import ReportPropertyDialog from '@/components/ReportPropertyDialog';
+import FollowButton from '@/components/FollowButton';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 
 // Lazy-load heavy below-the-fold components
