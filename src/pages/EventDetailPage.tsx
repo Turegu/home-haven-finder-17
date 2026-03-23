@@ -320,7 +320,7 @@ const EventDetailPage = () => {
             {/* Map placeholder */}
             <div className="bg-card rounded-xl border border-border overflow-hidden">
               <div className="px-6 py-4 border-b border-border">
-                <h2 className="text-lg font-bold text-foreground">Location on Map</h2>
+                <h2 className="text-lg font-bold text-foreground">{t('event.locationOnMap')}</h2>
               </div>
               <div className="h-[300px] bg-muted flex items-center justify-center text-muted-foreground">Map View — {event.location}</div>
             </div>
