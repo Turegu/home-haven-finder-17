@@ -62,7 +62,7 @@ const ResetPasswordPage = () => {
       <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-xl border border-border">
         <div className="text-center">
           <Link to="/" className="text-3xl font-bold text-primary">turegu</Link>
-          <h1 className="text-xl font-bold mt-4 text-foreground">Set New Password</h1>
+          <h1 className="text-xl font-bold mt-4 text-foreground">{t('auth.setNewPassword')}</h1>
         </div>
         <form onSubmit={handleReset} className="space-y-4">
           <div className="space-y-2">
