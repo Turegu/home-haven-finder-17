@@ -589,12 +589,12 @@ const CompanyPropertyEditPage = () => {
               error={errorClass("property_age") !== ""}
             />
             <FormSelect
-              label="Orientation *"
+              label={t("companyDashboard.orientation") + " *"}
               icon={<Compass className="h-4 w-4 text-muted-foreground" />}
               value={form.property_orientation}
               onChange={(v) => updateField("property_orientation", v)}
               options={(filterOpts["orientation"] || []).map(o => ({ value: o, label: o }))}
-              placeholder="Select"
+              placeholder={t("companyDashboard.select")}
               fieldName="property_orientation"
               error={errorClass("property_orientation") !== ""}
             />
