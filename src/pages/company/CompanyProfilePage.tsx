@@ -136,7 +136,7 @@ const CompanyProfilePage = () => {
   const [newPattern, setNewPattern] = useState<number[]>([]);
   const [patternError, setPatternError] = useState(false);
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
-
+  const [boostDialogOpen, setBoostDialogOpen] = useState(false);
   useEffect(() => {
     const fetchCompany = async () => {
       const { data: { user } } = await supabase.auth.getUser();
