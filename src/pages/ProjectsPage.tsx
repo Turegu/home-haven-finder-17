@@ -504,12 +504,12 @@ const ProjectsPage = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading projects...</span>
+            <span className="ms-3 text-muted-foreground">{t('projectsPage.loadingProjects')}</span>
           </div>
         ) : projects.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">No projects found</p>
-            <p className="text-muted-foreground">Try adjusting your filters or search criteria.</p>
+            <p className="text-lg font-medium text-foreground mb-2">{t('projectsPage.noProjectsFound')}</p>
+            <p className="text-muted-foreground">{t('projectsPage.tryAdjusting')}</p>
           </div>
         ) : (
           /* Layout with side banner */
