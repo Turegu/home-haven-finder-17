@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Globe, ChevronDown, Ruler, Bell, Heart, Layers,
   Menu, X, User, LogOut, Settings, Users2, Search,
-  MessageSquare, FileText, MapPin
+  MessageSquare, FileText, MapPin, LayoutDashboard
 } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { Button } from '@/components/ui/button';
