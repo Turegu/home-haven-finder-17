@@ -150,15 +150,15 @@ const SaveSearchDialog = ({
               </div>
             )}
 
-            <p className="text-xs text-muted-foreground">Maximum {MAX_SAVED_SEARCHES} saved searches allowed.</p>
+            <p className="text-xs text-muted-foreground">{t('saveSearch.maxSearches', { max: MAX_SAVED_SEARCHES })}</p>
           </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t('common.cancel')}</Button>
           <Button onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Bookmark className="h-4 w-4 mr-1.5" />}
-            Save
+            {saving ? <Loader2 className="h-4 w-4 me-1.5 animate-spin" /> : <Bookmark className="h-4 w-4 me-1.5" />}
+            {t('common.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

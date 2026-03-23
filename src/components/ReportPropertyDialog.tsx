@@ -136,8 +136,8 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
           )}
 
           <Button onClick={handleSubmit} disabled={submitting} className="w-full">
-            {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            SEND REPORT
+            {submitting && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+            {t('report.send')}
           </Button>
         </div>
       </DialogContent>

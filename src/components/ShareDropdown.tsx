@@ -34,6 +34,7 @@ const EmailIcon = () => (
 );
 
 const ShareDropdown = ({ title, url }: ShareDropdownProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -50,16 +51,16 @@ const ShareDropdown = ({ title, url }: ShareDropdownProps) => {
   const copyLink = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
-    toast.success('Link copied!');
+    toast.success(t('share.linkCopied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
   const items = [
-    { label: 'WhatsApp', icon: <WhatsAppIcon />, onClick: () => window.open(`https://wa.me/?text=${encodeURIComponent(title + ' ' + shareUrl)}`, '_blank') },
-    { label: 'Facebook', icon: <FacebookIcon />, onClick: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank') },
-    { label: 'X (Twitter)', icon: <XTwitterIcon />, onClick: () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`, '_blank') },
-    { label: 'Email', icon: <EmailIcon />, onClick: () => window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(shareUrl)}`, '_blank') },
-    { label: copied ? 'Copied!' : 'Copy Link', icon: copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-muted-foreground" />, onClick: copyLink },
+    { label: t('share.whatsapp'), icon: <WhatsAppIcon />, onClick: () => window.open(`https://wa.me/?text=${encodeURIComponent(title + ' ' + shareUrl)}`, '_blank') },
+    { label: t('share.facebook'), icon: <FacebookIcon />, onClick: () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank') },
+    { label: t('share.twitter'), icon: <XTwitterIcon />, onClick: () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(shareUrl)}`, '_blank') },
+    { label: t('share.email'), icon: <EmailIcon />, onClick: () => window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(shareUrl)}`, '_blank') },
+    { label: copied ? t('share.copied') : t('share.copyLink'), icon: copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-muted-foreground" />, onClick: copyLink },
   ];
 
   return (

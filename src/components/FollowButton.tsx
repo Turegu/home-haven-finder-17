@@ -137,7 +137,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
       ) : (
         <UserPlus className={iconSize} />
       )}
-      {isFollowing ? 'Following' : 'Follow'}
+      {isFollowing ? t('detail.following') : t('detail.follow')}
     </button>
   );
 };
