@@ -19,6 +19,7 @@ import defaultProjectLogo from '@/assets/default-project-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
+import FollowButton from '@/components/FollowButton';
 
 const ProjectDetailPage = () => {
   const { id } = useParams();
