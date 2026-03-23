@@ -17,6 +17,7 @@ const SearchablePillSelect = ({
   selected,
   onToggle,
   placeholder = "Search...",
+  labelMap,
 }: SearchablePillSelectProps) => {
   const [search, setSearch] = useState("");
 
