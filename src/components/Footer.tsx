@@ -39,7 +39,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <h4 className="font-semibold text-sm mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-background/60">
+            <ul className="space-y-2 text-sm text-white/60">
               <li><Link to="/advertise" className="hover:text-background transition-colors">About Us</Link></li>
               <li><Link to="/advertise" className="hover:text-background transition-colors">Advertise With Us</Link></li>
               <li><Link to="/advertise" className="hover:text-background transition-colors">Contact</Link></li>
