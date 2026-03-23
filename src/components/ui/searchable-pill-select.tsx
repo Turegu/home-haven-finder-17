@@ -21,8 +21,10 @@ const SearchablePillSelect = ({
 }: SearchablePillSelectProps) => {
   const [search, setSearch] = useState("");
 
+  const getLabel = (o: string) => labelMap?.[o] || o;
+
   const filtered = search
-    ? options.filter((o) => turkishIncludes(o, search))
+    ? options.filter((o) => turkishIncludes(getLabel(o), search))
     : options;
 
   return (
