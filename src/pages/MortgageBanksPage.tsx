@@ -153,7 +153,7 @@ const MortgageBanksPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-                  Property Price (USD)
+                  {t('mortgage.propertyPrice')}
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
