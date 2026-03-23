@@ -260,7 +260,7 @@ const AgentsPage = () => {
                     {company.logo_url ? (
                       <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl font-serif">
+                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
                         {company.name.charAt(0)}
                       </div>
                     )}
@@ -269,7 +269,7 @@ const AgentsPage = () => {
                   {/* Right: Info */}
                   <div className="flex-1 p-4 flex flex-col justify-center min-w-0 bg-muted/30">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                      <h3 className="text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                         {company.name}
                       </h3>
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
@@ -328,7 +328,7 @@ const AgentsPage = () => {
                     {agent.avatar_url ? (
                       <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl font-serif">
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl">
                         {agent.name.charAt(0)}
                       </div>
                     )}
@@ -339,7 +339,7 @@ const AgentsPage = () => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h3 className="text-base font-bold text-foreground leading-snug font-serif group-hover:text-primary transition-colors duration-300 truncate">
+                          <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                             {agent.name}
                           </h3>
                           {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}

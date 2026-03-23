@@ -180,7 +180,7 @@ const CompanyDetailPage = () => {
                 <div className="flex-1 min-w-0">
                   <div>
                     <div className="flex items-center gap-12">
-                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight font-serif">{company.name}</h1>
+                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
                       <FollowButton type="company" targetId={company.id} />
                     </div>
                     <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
