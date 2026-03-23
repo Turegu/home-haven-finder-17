@@ -96,7 +96,7 @@ const AccountSettingsPage = () => {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPw });
       if (error) throw error;
-      toast.success("Password changed!");
+      toast.success(t('accountSettings.passwordChanged'));
       setOldPw(""); setNewPw("");
     } catch (err: any) {
       toast.error(err.message);
