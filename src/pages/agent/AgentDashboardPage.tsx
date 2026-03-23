@@ -159,7 +159,7 @@ const AgentDashboardPage = () => {
           return (
             <div className={`rounded-xl border p-5 ${mem.bg}`}>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Company Plan</h3>
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("agentDashboard.companyPlan")}</h3>
                 <MembershipIcon className="h-5 w-5 text-primary" />
               </div>
               <p className={`text-xl font-bold ${mem.color} capitalize`}>{company?.membership}</p>
