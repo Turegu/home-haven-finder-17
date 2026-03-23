@@ -33,6 +33,7 @@ const MONTHS = [
 ];
 
 const CompanyCreditHistoryPage = () => {
+  const { t } = useTranslation();
   const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
   const [balance, setBalance] = useState(0);
   const [totalTopups, setTotalTopups] = useState(0);
