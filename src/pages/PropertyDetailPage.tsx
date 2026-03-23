@@ -766,15 +766,15 @@ const PropertyDetailPage = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Total Cost</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('property.totalCost')}</p>
                   <p className="text-lg font-bold text-foreground">${totalPayment.toFixed(2)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Monthly Payment</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('property.monthlyPayment')}</p>
                   <p className="text-lg font-bold text-primary">${monthlyPayment.toFixed(2)}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1">Total Interest</p>
+                  <p className="text-xs text-muted-foreground mb-1">{t('property.totalInterest')}</p>
                   <p className="text-lg font-bold text-foreground">${totalInterest.toFixed(2)}</p>
                 </div>
               </div>
