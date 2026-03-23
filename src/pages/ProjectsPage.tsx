@@ -253,7 +253,7 @@ const ProjectsPage = () => {
               onClick={() => setFilterOpen(true)}
             >
               <SlidersHorizontal className="h-4 w-4" />
-              Filter
+              {t('projectsPage.filter')}
               {moreFilterCount > 0 && (
                 <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
                   {moreFilterCount}
