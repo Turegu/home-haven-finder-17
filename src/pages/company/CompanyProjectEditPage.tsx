@@ -763,19 +763,19 @@ const CompanyProjectEditPage = () => {
 
         {/* ─── Advertising Tags ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Tag className="h-4 w-4" />} title="Advertising Tags" />
-          <p className="text-xs text-muted-foreground mb-3">Select preset tags or create your own (max 15 characters each)</p>
+          <SectionHeader icon={<Tag className="h-4 w-4" />} title={t("companyDashboard.advertisingTags")} />
+          <p className="text-xs text-muted-foreground mb-3">{t("companyDashboard.advertisingTagsDesc")}</p>
           <div className="flex flex-wrap gap-2 mb-4">
-            {advertisingTagOptions.map((tag) => (
+            {ADVERTISING_TAG_OPTIONS.map(({ value, labelKey }) => (
               <button
-                key={tag} type="button"
-                onClick={() => updateField("advertising_tags", form.advertising_tags.includes(tag) ? form.advertising_tags.filter((t: string) => t !== tag) : [...form.advertising_tags, tag])}
+                key={value} type="button"
+                onClick={() => updateField("advertising_tags", form.advertising_tags.includes(value) ? form.advertising_tags.filter((v: string) => v !== value) : [...form.advertising_tags, value])}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                  form.advertising_tags.includes(tag)
+                  form.advertising_tags.includes(value)
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
                 }`}
-              >{tag}</button>
+              >{t(labelKey)}</button>
             ))}
           </div>
           <div className="flex items-center gap-2">
@@ -783,7 +783,7 @@ const CompanyProjectEditPage = () => {
               <Input
                 id="proj-custom-tag-input"
                 maxLength={15}
-                placeholder="Type custom tag…"
+                placeholder={t("companyDashboard.typeCustomTag")}
                 className="bg-secondary/50 pr-16 text-sm"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -797,7 +797,7 @@ const CompanyProjectEditPage = () => {
                   }
                 }}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">max 15</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">{t("companyDashboard.maxChars")}</span>
             </div>
             <Button
               type="button" variant="outline" size="sm"
@@ -810,15 +810,15 @@ const CompanyProjectEditPage = () => {
                   input.value = "";
                 }
               }}
-            >Add</Button>
+            >{t("companyDashboard.addTag")}</Button>
           </div>
-          {form.advertising_tags.filter((t: string) => !advertisingTagOptions.includes(t)).length > 0 && (
+          {form.advertising_tags.filter((v: string) => !ADVERTISING_TAG_VALUES.includes(v)).length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
-              <span className="text-xs text-muted-foreground mr-1 self-center">Custom:</span>
-              {form.advertising_tags.filter((t: string) => !advertisingTagOptions.includes(t)).map((tag: string) => (
+              <span className="text-xs text-muted-foreground mr-1 self-center">{t("companyDashboard.customTags")}</span>
+              {form.advertising_tags.filter((v: string) => !ADVERTISING_TAG_VALUES.includes(v)).map((tag: string) => (
                 <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
                   {tag}
-                  <button type="button" onClick={() => updateField("advertising_tags", form.advertising_tags.filter((t: string) => t !== tag))} className="hover:opacity-70"><X className="h-3 w-3" /></button>
+                  <button type="button" onClick={() => updateField("advertising_tags", form.advertising_tags.filter((v: string) => v !== tag))} className="hover:opacity-70"><X className="h-3 w-3" /></button>
                 </span>
               ))}
             </div>
