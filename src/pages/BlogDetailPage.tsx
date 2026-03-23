@@ -61,11 +61,11 @@ const BlogDetailPage = () => {
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary">Home</Link>
+          <Link to="/" className="hover:text-primary">{t('common.home')}</Link>
           <span>/</span>
-          <Link to="/blog" className="hover:text-primary">Blogs</Link>
+          <Link to="/blog" className="hover:text-primary">{t('pages.blog.blogs')}</Link>
           <span>/</span>
-          <span className="text-foreground line-clamp-1">{translation?.title || "Blog"}</span>
+          <span className="text-foreground line-clamp-1">{translation?.title || t('pages.blog.title')}</span>
         </div>
 
         <h1 className="text-3xl font-bold text-foreground mb-4">{translation?.title}</h1>

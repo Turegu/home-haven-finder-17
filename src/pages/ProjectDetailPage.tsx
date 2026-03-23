@@ -425,7 +425,7 @@ const ProjectDetailPage = () => {
 
                   {project.agentLanguages && project.agentLanguages.length > 0 && (
                     <p className="text-xs text-muted-foreground text-center mb-4">
-                      <span className="font-medium text-foreground">Speaks:</span> {project.agentLanguages.join(', ')}
+                      <span className="font-medium text-foreground">{t('property.speaks')}:</span> {project.agentLanguages.join(', ')}
                     </p>
                   )}
 

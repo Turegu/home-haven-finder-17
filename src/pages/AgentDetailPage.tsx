@@ -282,7 +282,7 @@ const AgentDetailPage = () => {
             {/* Tab content */}
             {activeTab === 'properties' && <AgentPropertiesTab agentId={agent.id} />}
             {activeTab === 'projects' && <AgentProjectsTab agentId={agent.id} />}
-            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">No events found for this agent.</div>}
+            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">{t('detail.noEventsForAgent')}</div>}
           </div>
         </div>
       </div>
