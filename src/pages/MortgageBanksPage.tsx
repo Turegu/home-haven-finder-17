@@ -283,7 +283,7 @@ const MortgageBanksPage = () => {
                   {selectedBank.bank_info_link && (
                     <a href={selectedBank.bank_info_link} target="_blank" rel="noopener noreferrer">
                       <Button variant="outline" size="sm" className="gap-1.5 shrink-0">
-                        <ExternalLink className="h-3.5 w-3.5" /> Visit Bank
+                        <ExternalLink className="h-3.5 w-3.5" /> {t('mortgage.visitBank')}
                       </Button>
                     </a>
                   )}
