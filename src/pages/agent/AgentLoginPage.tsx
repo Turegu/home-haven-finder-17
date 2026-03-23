@@ -88,7 +88,7 @@ const AgentLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4" dir="ltr">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl shadow-lg border border-border p-8">
           <div className="text-center mb-8">
