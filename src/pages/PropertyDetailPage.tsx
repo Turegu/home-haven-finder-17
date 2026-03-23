@@ -644,7 +644,7 @@ const PropertyDetailPage = () => {
             {/* Payment Plans */}
             {propertyPaymentPlans.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">Payment Plan</h2>
+                <h2 className="text-lg font-bold text-foreground mb-4">{t('property.paymentPlan')}</h2>
                 {propertyPaymentPlans.map((plan) => (
                   <div key={plan.id} className="mb-4 last:mb-0">
                     {propertyPaymentPlans.length > 1 && (
