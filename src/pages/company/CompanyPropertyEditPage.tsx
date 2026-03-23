@@ -51,6 +51,7 @@ const advertisingTagOptions = [
 ];
 
 const CompanyPropertyEditPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
