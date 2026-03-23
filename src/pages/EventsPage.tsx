@@ -260,7 +260,7 @@ const EventsPage = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Loading events...</span>
+            <span className="ms-3 text-muted-foreground">{t('event.loadingEvents')}</span>
           </div>
         ) : allEvents.length === 0 ? (
           <div className="text-center py-20">
