@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
-const DarkModeToggle = () => {
+const DarkModeToggle = ({ compact = false }: { compact?: boolean }) => {
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === 'undefined') return false;
     const stored = localStorage.getItem('theme');
