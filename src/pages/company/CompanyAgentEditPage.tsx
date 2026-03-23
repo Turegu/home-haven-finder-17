@@ -162,6 +162,12 @@ const CompanyAgentEditPage = () => {
     }
   };
 
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const validateEmail = (email: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyId) { toast.error("Company not found"); return; }
@@ -169,16 +175,46 @@ const CompanyAgentEditPage = () => {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more agents. Please upgrade.`);
       return;
     }
-    if (!form.name.trim()) { toast.error("Agent name is required"); return; }
-    if (!form.email.trim()) { toast.error("Email is required"); return; }
-    if (!form.designation.trim()) { toast.error("Designation is required"); return; }
-    if (!form.phone.trim()) { toast.error("Phone is required"); return; }
-    if (!form.whatsapp.trim()) { toast.error("WhatsApp number is required"); return; }
-    if (!form.service_areas.trim()) { toast.error("Service areas are required"); return; }
-    if (form.languages.length === 0) { toast.error("At least one language is required"); return; }
-    if (!form.registration_number.trim()) { toast.error("Registration number is required"); return; }
-    if (!form.description.trim()) { toast.error("Description is required"); return; }
 
+    // Inline validation
+    const errors: Record<string, string> = {};
+    if (!form.name.trim()) errors.name = "Agent name is required";
+    if (!form.email.trim()) errors.email = "Email is required";
+    else if (!validateEmail(form.email.trim())) errors.email = "Please enter a valid email address";
+    if (!form.designation.trim()) errors.designation = "Designation is required";
+    if (!form.phone.trim()) errors.phone = "Phone is required";
+    if (!form.whatsapp.trim()) errors.whatsapp = "WhatsApp number is required";
+    if (!form.service_areas.trim()) errors.service_areas = "Service areas are required";
+    if (form.languages.length === 0) errors.languages = "At least one language is required";
+    if (!form.registration_number.trim()) errors.registration_number = "Registration number is required";
+    if (!form.description.trim()) errors.description = "Description is required";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      const firstKey = Object.keys(errors)[0];
+      toast.error(errors[firstKey]);
+      // Scroll to first error
+      const el = document.querySelector(`[data-field="${firstKey}"]`);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    // Check email uniqueness (only for new agents)
+    if (!isEdit) {
+      const { data: existingAgent } = await supabase
+        .from("agents")
+        .select("id")
+        .eq("email", form.email.trim())
+        .limit(1)
+        .maybeSingle();
+      if (existingAgent) {
+        setFieldErrors({ email: "An agent with this email already exists" });
+        toast.error("An agent with this email already exists");
+        return;
+      }
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     const payload: any = {
@@ -228,6 +264,12 @@ const CompanyAgentEditPage = () => {
       toast.error(err.message || "Save failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const clearFieldError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => { const n = { ...prev }; delete n[field]; return n; });
     }
   };
 
