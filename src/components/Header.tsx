@@ -247,6 +247,7 @@ const Header = () => {
                 </div>
               )}
             </div>
+            <DarkModeToggle compact />
           </div>
 
           <div className="hidden md:flex items-center gap-4">
