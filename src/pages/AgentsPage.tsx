@@ -358,7 +358,7 @@ const AgentsPage = () => {
                     </div>
 
                     <p className="text-xs text-muted-foreground mt-2">
-                      <span>Languages: </span>
+                      <span>{t('filters.languages')}: </span>
                       <span className="text-foreground font-medium">{agent.languages?.join(', ') || '—'}</span>
                     </p>
 
