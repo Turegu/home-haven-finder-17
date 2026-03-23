@@ -6,16 +6,45 @@
     <title>Turegu – Real Estate Properties, Projects & Events</title>
     <meta name="description" content="Find your dream property across the Middle East & Turkey. Browse residential properties for sale and rent, new development projects, and real estate events on Turegu." />
     <meta name="author" content="Turegu" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://turegu.com" />
 
     <meta property="og:title" content="Turegu – Your Property, Our Priority" />
     <meta property="og:description" content="Search properties, projects and events across the Middle East & Turkey." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Turegu" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://turegu.com" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@turegu" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RealEstateAgent",
+      "name": "Turegu",
+      "url": "https://turegu.com",
+      "description": "Find your dream property across the Middle East & Turkey.",
+      "sameAs": [],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://turegu.com/buy?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script>
+      // Initialize dark mode before render to prevent flash
+      (function() {
+        var theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
 
   <body>
