@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -529,6 +530,7 @@ const LocationFormFields = ({
   showMap = true,
   className = "",
 }: LocationFormFieldsProps) => {
+  const { t } = useTranslation();
   const [provinces, setProvinces] = useState<NamePair[]>([]);
   const [districts, setDistricts] = useState<NamePair[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<NamePair[]>([]);
@@ -630,25 +632,25 @@ const LocationFormFields = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Province (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">Province <span className="text-destructive">*</span></Label>
+          <Label className="text-foreground font-medium">{t("locationForm.province")} <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={province}
             onValueChange={handleProvinceChange}
             options={provinces.map((p) => ({ value: p.name, label: p.name }))}
-            placeholder={loadingProvinces ? "Loading..." : "Select Province"}
+            placeholder={loadingProvinces ? t("locationForm.loading") : t("locationForm.selectProvince")}
           />
         </div>
 
         {/* City/Town (required) */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">City/Town <span className="text-destructive">*</span></Label>
+          <Label className="text-foreground font-medium">{t("locationForm.cityTown")} <span className="text-destructive">*</span></Label>
           <SearchableSelect
             value={town}
             onValueChange={handleTownChange}
             options={districts.map((d) => ({ value: d.name, label: d.name }))}
             placeholder={
-              !province ? "Select province first" :
-              loadingDistricts ? "Loading..." : "Select City/Town"
+              !province ? t("locationForm.selectProvinceFirst") :
+              loadingDistricts ? t("locationForm.loading") : t("locationForm.selectCityTown")
             }
             disabled={!province}
           />
@@ -656,14 +658,14 @@ const LocationFormFields = ({
 
         {/* Neighbourhood */}
         <div className="space-y-2">
-          <Label className="text-foreground font-medium">Neighbourhood</Label>
+          <Label className="text-foreground font-medium">{t("locationForm.neighbourhood")}</Label>
           <SearchableSelect
             value={neighbourhood}
             onValueChange={handleNeighbourhoodChange}
             options={neighborhoods.map((n) => ({ value: n.name, label: n.name }))}
             placeholder={
-              !town ? "Select city/town first" :
-              loadingNeighborhoods ? "Loading..." : "Select Neighbourhood"
+              !town ? t("locationForm.selectCityTownFirst") :
+              loadingNeighborhoods ? t("locationForm.loading") : t("locationForm.selectNeighbourhood")
             }
             disabled={!town}
           />
@@ -672,12 +674,12 @@ const LocationFormFields = ({
         {/* Pin Location coordinate display */}
         {showPinLocation && (
           <div className="space-y-2">
-            <Label className="text-foreground font-medium">Pin Coordinates</Label>
+            <Label className="text-foreground font-medium">{t("locationForm.pinCoordinates")}</Label>
             <Input
               value={pinLocation}
               readOnly
               className="bg-secondary/50"
-              placeholder={!province || !town ? "Select province & city first" : "Click on map to set pin"}
+              placeholder={!province || !town ? t("locationForm.selectProvinceAndCity") : t("locationForm.clickMapToPin")}
             />
           </div>
         )}
@@ -697,7 +699,7 @@ const LocationFormFields = ({
       {showMap && showPinLocation && onPinLocationChange && (!province || !town) && (
         <div className="h-[280px] rounded-lg border border-dashed border-border flex items-center justify-center bg-muted/30">
           <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <MapPin className="h-4 w-4" /> Select province and city/town to enable map pin placement
+            <MapPin className="h-4 w-4" /> {t("locationForm.enableMapMessage")}
           </p>
         </div>
       )}

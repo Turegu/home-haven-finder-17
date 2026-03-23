@@ -412,7 +412,7 @@ const CompanyPropertyEditPage = () => {
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">
-        {isEdit ? "Edit Property" : "New Property"}
+        {isEdit ? t("companyDashboard.editProperty") : t("companyDashboard.newProperty")}
       </h1>
 
       <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
@@ -427,7 +427,7 @@ const CompanyPropertyEditPage = () => {
             <div className="space-y-2" data-field="title">
               <Label className="text-foreground font-medium">{ t("companyDashboard.propertyTitle") + " *" }</Label>
               <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
-              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
+              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 {t("companyDashboard.characters")}</p>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">{ t("companyDashboard.propertyDescription") }</Label>
@@ -483,13 +483,13 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.price") + " >Pricing & Size< " + t("companyDashboard.netArea") }</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.pricingSize")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="space-y-2" data-field="area">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
-                Net Area ({form.area_unit}) *
+                {t("companyDashboard.netArea")} ({form.area_unit}) *
               </Label>
               <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className={`bg-secondary/50 ${errorClass("area")}`} />
             </div>
@@ -497,19 +497,19 @@ const CompanyPropertyEditPage = () => {
             <div className="space-y-2" data-field="price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                {isRent ? "Rent Price" : "Price"} ({form.currency}) *
+                {isRent ? t("companyDashboard.rentPrice") : t("companyDashboard.price")} ({form.currency}) *
               </Label>
-              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? "Enter rent price" : "Enter price"} />
+              <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className={`bg-secondary/50 ${errorClass("price")}`} placeholder={isRent ? t("companyDashboard.enterRentPrice") : t("companyDashboard.enterPrice")} />
             </div>
 
             {isRent && (
               <FormSelect
-                label="Rental Duration *"
+                label={t("companyDashboard.rentalDuration") + " *"}
                 icon={<Clock className="h-4 w-4 text-muted-foreground" />}
                 value={form.rent_duration}
                 onChange={(v) => updateField("rent_duration", v)}
                 options={(filterOpts["rent_duration"] || []).map(d => ({ value: d, label: d }))}
-                placeholder="Select duration"
+                placeholder={t("companyDashboard.selectDuration")}
                 fieldName="rent_duration"
                 error={errorClass("rent_duration") !== ""}
               />
@@ -525,86 +525,86 @@ const CompanyPropertyEditPage = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FormSelect
-              label="Property Status"
+              label={t("companyDashboard.propertyStatus")}
               icon={<Activity className="h-4 w-4 text-muted-foreground" />}
               value={form.property_status}
               onChange={(v) => updateField("property_status", v)}
               options={(filterOpts["property_status"] || []).map(o => ({ value: o, label: o }))}
             />
             <FormSelect
-              label="No. Of Rooms *"
+              label={t("companyDashboard.noOfRooms") + " *"}
               icon={<BedDouble className="h-4 w-4 text-muted-foreground" />}
               value={form.rooms}
               onChange={(v) => updateField("rooms", v)}
               options={(filterOpts["rooms"] || []).map(r => ({ value: r, label: r }))}
-              placeholder="Select rooms"
+              placeholder={t("companyDashboard.selectRooms")}
               fieldName="rooms"
               error={errorClass("rooms") !== ""}
             />
             <FormSelect
-              label="No. Of Bathrooms *"
+              label={t("companyDashboard.noOfBathrooms") + " *"}
               icon={<Bath className="h-4 w-4 text-muted-foreground" />}
               value={form.bathrooms}
               onChange={(v) => updateField("bathrooms", v)}
               options={(filterOpts["bathrooms"] || []).map(b => ({ value: b, label: b }))}
-              placeholder="Select bathrooms"
+              placeholder={t("companyDashboard.selectBathrooms")}
               fieldName="bathrooms"
               error={errorClass("bathrooms") !== ""}
             />
             <FormSelect
-              label="Floor Level *"
+              label={t("companyDashboard.floorLevel") + " *"}
               icon={<Layers className="h-4 w-4 text-muted-foreground" />}
               value={form.floor_level}
               onChange={(v) => updateField("floor_level", v)}
               options={(filterOpts["floor_level"] || []).map(f => ({ value: f, label: f }))}
-              placeholder="Select floor"
+              placeholder={t("companyDashboard.selectFloor")}
               fieldName="floor_level"
               error={errorClass("floor_level") !== ""}
             />
             <FormSelect
-              label="Furniture *"
+              label={t("companyDashboard.furniture") + " *"}
               icon={<Sofa className="h-4 w-4 text-muted-foreground" />}
               value={form.furniture}
               onChange={(v) => updateField("furniture", v)}
               options={(filterOpts["furniture"] || []).map(f => ({ value: f, label: f }))}
-              placeholder="Select"
+              placeholder={t("companyDashboard.select")}
               fieldName="furniture"
               error={errorClass("furniture") !== ""}
             />
             <FormSelect
-              label="Parking Spaces"
+              label={t("companyDashboard.parking")}
               icon={<Car className="h-4 w-4 text-muted-foreground" />}
               value={form.parking_spaces}
               onChange={(v) => updateField("parking_spaces", v)}
               options={(filterOpts["parking"] || []).map(p => ({ value: p, label: p }))}
             />
             <FormSelect
-              label="Property Age *"
+              label={t("companyDashboard.propertyAge") + " *"}
               icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
               value={form.property_age}
               onChange={(v) => updateField("property_age", v)}
               options={(filterOpts["property_age"] || []).map(a => ({ value: a, label: a }))}
-              placeholder="Select"
+              placeholder={t("companyDashboard.select")}
               fieldName="property_age"
               error={errorClass("property_age") !== ""}
             />
             <FormSelect
-              label="Orientation *"
+              label={t("companyDashboard.orientation") + " *"}
               icon={<Compass className="h-4 w-4 text-muted-foreground" />}
               value={form.property_orientation}
               onChange={(v) => updateField("property_orientation", v)}
               options={(filterOpts["orientation"] || []).map(o => ({ value: o, label: o }))}
-              placeholder="Select"
+              placeholder={t("companyDashboard.select")}
               fieldName="property_orientation"
               error={errorClass("property_orientation") !== ""}
             />
             <FormSelect
-              label="Title Deed *"
+              label={t("companyDashboard.titleDeed") + " *"}
               icon={<ScrollText className="h-4 w-4 text-muted-foreground" />}
               value={form.title_deed}
               onChange={(v) => updateField("title_deed", v)}
-              options={(filterOpts["title_deed"] || []).map(t => ({ value: t, label: t }))}
-              placeholder="Select"
+              options={(filterOpts["title_deed"] || []).map(td => ({ value: td, label: td }))}
+              placeholder={t("companyDashboard.select")}
               fieldName="title_deed"
               error={errorClass("title_deed") !== ""}
             />
@@ -631,9 +631,9 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Tag className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Advertising Tags</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.advertisingTags")}</h2>
           </div>
-          <p className="text-xs text-muted-foreground mb-3">Select preset tags or create your own (max 15 characters each)</p>
+          <p className="text-xs text-muted-foreground mb-3">{t("companyDashboard.advertisingTagsDesc")}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {advertisingTagOptions.map((tag) => (
               <button
@@ -653,7 +653,7 @@ const CompanyPropertyEditPage = () => {
               <Input
                 id="custom-tag-input"
                 maxLength={15}
-                placeholder="Type custom tag…"
+                placeholder={t("companyDashboard.typeCustomTag")}
                 className="bg-secondary/50 pr-16 text-sm"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -667,7 +667,7 @@ const CompanyPropertyEditPage = () => {
                   }
                 }}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">max 15</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">{t("companyDashboard.maxChars")}</span>
             </div>
             <Button
               type="button" variant="outline" size="sm"
@@ -680,12 +680,12 @@ const CompanyPropertyEditPage = () => {
                   input.value = "";
                 }
               }}
-            >Add</Button>
+            >{t("companyDashboard.addTag")}</Button>
           </div>
           {/* Show selected custom tags (not in presets) */}
           {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
-              <span className="text-xs text-muted-foreground mr-1 self-center">Custom:</span>
+              <span className="text-xs text-muted-foreground mr-1 self-center">{t("companyDashboard.customTags")}</span>
               {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).map((tag) => (
                 <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
                   {tag}
@@ -718,7 +718,7 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.media") }</h2>
           </div>
           <div className="space-y-3 mb-6">
-            <Label className="text-foreground font-medium">Images</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.images")}</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
@@ -730,13 +730,13 @@ const CompanyPropertyEditPage = () => {
               ))}
               <label className="w-24 h-24 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
                 <Upload className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground mt-1">{uploadingImages ? "Uploading..." : "Browse"}</span>
+                <span className="text-[10px] text-muted-foreground mt-1">{uploadingImages ? t("companyDashboard.uploadingFiles") : t("companyDashboard.browseFiles")}</span>
                 <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploadingImages} />
               </label>
             </div>
           </div>
           <div className="space-y-3 mb-6">
-            <Label className="text-foreground font-medium">Plans</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.plansLabel")}</Label>
             <div className="flex flex-wrap gap-3">
               {planFiles.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
@@ -748,19 +748,19 @@ const CompanyPropertyEditPage = () => {
               ))}
               <label className="w-24 h-24 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
                 <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground mt-1">{uploadingPlans ? "Uploading..." : "Browse"}</span>
+                <span className="text-[10px] text-muted-foreground mt-1">{uploadingPlans ? t("companyDashboard.uploadingFiles") : t("companyDashboard.browseFiles")}</span>
                 <input type="file" accept="image/*" multiple onChange={handlePlanUpload} className="hidden" disabled={uploadingPlans} />
               </label>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Video Link</Label>
-              <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder="Enter Video Link" />
+              <Label className="text-foreground font-medium">{t("companyDashboard.videoLink")}</Label>
+              <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enterVideoLink")} />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">360 View Link</Label>
-              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" placeholder="Enter 360 View Link" />
+              <Label className="text-foreground font-medium">{t("companyDashboard.view360Link")}</Label>
+              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enter360ViewLink")} />
             </div>
           </div>
         </section>
@@ -769,15 +769,15 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><Calendar className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Open House</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.openHouse")}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Starting Date And Time</Label>
+              <Label className="text-foreground font-medium">{t("companyDashboard.startingDateTime")}</Label>
               <Input type="datetime-local" value={form.open_house_start} onChange={(e) => updateField("open_house_start", e.target.value)} className="bg-secondary/50" />
             </div>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Ending Date And Time</Label>
+              <Label className="text-foreground font-medium">{t("companyDashboard.endingDateTime")}</Label>
               <Input type="datetime-local" value={form.open_house_end} onChange={(e) => updateField("open_house_end", e.target.value)} className="bg-secondary/50" />
             </div>
           </div>
@@ -788,7 +788,7 @@ const CompanyPropertyEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <div className="flex items-center gap-3 mb-6 pb-3 border-b border-border/60">
             <span className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary"><DollarSign className="h-4 w-4" /></span>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">Payment Plans</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">{t("companyDashboard.paymentPlans")}</h2>
             <Button
               type="button" variant="outline" size="sm" className="h-7 text-xs ml-auto"
               onClick={() => setPaymentPlans(prev => [...prev, {
@@ -798,12 +798,12 @@ const CompanyPropertyEditPage = () => {
                 steps: [{ id: `ls-${Date.now()}`, percentage: 0, title: "", subtitle: "" }],
               }])}
             >
-              <Plus className="h-3 w-3 mr-1" /> Add Plan
+              <Plus className="h-3 w-3 mr-1" /> {t("companyDashboard.addPlan")}
             </Button>
           </div>
 
           {paymentPlans.length === 0 && (
-            <p className="text-xs text-muted-foreground">No payment plans. Add one to show installment options on this property.</p>
+            <p className="text-xs text-muted-foreground">{t("companyDashboard.noPaymentPlans")}</p>
           )}
 
           {paymentPlans.map((plan, planIdx) => (
@@ -829,7 +829,7 @@ const CompanyPropertyEditPage = () => {
                     }}
                     className="rounded"
                   />
-                  Active
+                  {t("companyDashboard.active")}
                 </label>
                 <Button
                   type="button" variant="ghost" size="icon" className="h-6 w-6 text-destructive"
@@ -853,7 +853,7 @@ const CompanyPropertyEditPage = () => {
                     className="h-7 text-xs w-16 bg-secondary/50 text-center"
                   />
                   <Input
-                    placeholder="e.g. Down payment" value={step.title}
+                    placeholder={t("companyDashboard.downPayment")} value={step.title}
                     onChange={(e) => {
                       const updated = [...paymentPlans];
                       const steps = [...(updated[planIdx].steps ?? [])];
@@ -864,7 +864,7 @@ const CompanyPropertyEditPage = () => {
                     className="h-7 text-xs bg-secondary/50 flex-1"
                   />
                   <Input
-                    placeholder="e.g. At signing" value={step.subtitle}
+                    placeholder={t("companyDashboard.atSigning")} value={step.subtitle}
                     onChange={(e) => {
                       const updated = [...paymentPlans];
                       const steps = [...(updated[planIdx].steps ?? [])];
@@ -898,7 +898,7 @@ const CompanyPropertyEditPage = () => {
                   setPaymentPlans(updated);
                 }}
               >
-                <Plus className="h-3 w-3 mr-1" /> Add Step
+                <Plus className="h-3 w-3 mr-1" /> {t("companyDashboard.addStep")}
               </Button>
             </div>
           ))}
@@ -907,14 +907,14 @@ const CompanyPropertyEditPage = () => {
 
         {/* Submit */}
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => navigate("/company/properties")}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={() => navigate("/company/properties")}>{t("companyDashboard.cancel")}</Button>
           <Button type="button" variant="secondary" disabled={loading} onClick={() => handleSave("draft")}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Saving..." : "Save as Draft"}
+            {loading ? t("companyDashboard.savingText") : t("companyDashboard.saveAsDraft")}
           </Button>
           <Button type="button" disabled={loading} onClick={handlePublishClick}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
+            {loading ? t("companyDashboard.publishingText") : isEdit ? t("companyDashboard.updatePublish") : t("companyDashboard.publish")}
           </Button>
         </div>
 
