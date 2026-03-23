@@ -46,10 +46,10 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
   }, [open]);
 
   const handleSubmit = async () => {
-    if (!reason) { toast.error("Please select a reason."); return; }
+    if (!reason) { toast.error(t('report.selectReasonError')); return; }
     if (!isSignedIn) {
-      if (!email.trim()) { toast.error("Email is required."); return; }
-      if (!phone.trim()) { toast.error("Phone number is required."); return; }
+      if (!email.trim()) { toast.error(t('report.emailError')); return; }
+      if (!phone.trim()) { toast.error(t('report.phoneError')); return; }
     }
 
     setSubmitting(true);
