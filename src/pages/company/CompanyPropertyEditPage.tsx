@@ -681,7 +681,7 @@ const CompanyPropertyEditPage = () => {
           {form.advertising_tags.filter(t => !ADVERTISING_TAG_VALUES.includes(t)).length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="text-xs text-muted-foreground mr-1 self-center">{t("companyDashboard.customTags")}</span>
-              {form.advertising_tags.filter(t => !advertisingTagOptions.includes(t)).map((tag) => (
+              {form.advertising_tags.filter(t => !ADVERTISING_TAG_VALUES.includes(t)).map((tag) => (
                 <span key={tag} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">
                   {tag}
                   <button type="button" onClick={() => toggleArrayField("advertising_tags", tag)} className="hover:opacity-70"><X className="h-3 w-3" /></button>
