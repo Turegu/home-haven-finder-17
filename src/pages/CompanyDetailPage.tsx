@@ -80,9 +80,9 @@ const CompanyDetailPage = () => {
     fetchCompany();
   }, [id]);
 
-  const typeLabel = (t: string | null) => {
-    if (!t) return 'Real Estate Company';
-    return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeLabel = (tp: string | null) => {
+    if (!tp) return t('detail.realEstateCompany');
+    return tp.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   };
 
   const handleMapClick = () => {
