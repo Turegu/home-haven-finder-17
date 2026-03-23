@@ -1,4 +1,5 @@
 import { useState, useEffect, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
   Heart, Layers, Phone, Mail, MessageCircle,
@@ -21,6 +22,7 @@ interface PropertyListCardProps {
 }
 
 const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, onLocationClick }: PropertyListCardProps) => {
+  const { t } = useTranslation();
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(isSaved);
   const [isComparedLocal, setIsComparedLocal] = useState(isCompared);
@@ -284,12 +286,12 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
               </span>
               <span className="flex items-center gap-1">
                 <Bath className="h-3.5 w-3.5" />
-                <span className="font-medium text-foreground">{property.bathrooms}</span> Bath
+                <span className="font-medium text-foreground">{property.bathrooms}</span> {t('listCard.bath')}
               </span>
               {property.bedrooms > 0 && (
                 <span className="flex items-center gap-1">
                   <BedDouble className="h-3.5 w-3.5" />
-                  <span className="font-medium text-foreground">{property.bedrooms}</span> Bed
+                  <span className="font-medium text-foreground">{property.bedrooms}</span> {t('listCard.bed')}
                 </span>
               )}
             </div>
@@ -321,7 +323,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEmailDialogOpen(true); }}
               >
                 <Mail className="h-4 w-4" />
-                Email
+                {t('listCard.email')}
               </button>
               <div className="w-px h-5 bg-border" />
               <button
@@ -329,7 +331,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
               >
                 <MessageCircle className="h-4 w-4" />
-                WhatsApp
+                {t('listCard.whatsApp')}
               </button>
             </div>
           </div>

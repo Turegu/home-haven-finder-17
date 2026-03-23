@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import UserLayout from "@/components/user/UserLayout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +19,7 @@ interface UserNotification {
 const PAGE_SIZE = 15;
 
 const NotificationsPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<UserNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -57,7 +59,7 @@ const NotificationsPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.notifications')}</h1>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3, 4, 5].map(i => (
@@ -74,7 +76,7 @@ const NotificationsPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Bell className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No notifications found.</p>
+            <p className="text-muted-foreground">{t('userPages.noNotifications')}</p>
           </div>
         ) : (
           <>
@@ -96,7 +98,7 @@ const NotificationsPage = () => {
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+                <span className="text-sm text-muted-foreground">{t('userPages.page')} {page} {t('common.of')} {totalPages}</span>
                 <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>

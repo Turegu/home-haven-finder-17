@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import UserLayout from "@/components/user/UserLayout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,6 +23,7 @@ interface RequestItem {
 const PAGE_SIZE = 10;
 
 const PropertyRequestsPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -60,7 +62,7 @@ const PropertyRequestsPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Property Requests</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.propertyRequests')}</h1>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
@@ -75,7 +77,7 @@ const PropertyRequestsPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <FileText className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No property requests found.</p>
+            <p className="text-muted-foreground">{t('userPages.noPropertyRequests')}</p>
           </div>
         ) : (
           <>
@@ -83,13 +85,13 @@ const PropertyRequestsPage = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">SNo</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Enquiry Type</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Property Type</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Province</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Budget</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Status</th>
-                    <th className="text-left py-3 px-4 text-muted-foreground font-medium">Date</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.sno')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.enquiryType')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('filters.propertyType')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('filters.province')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.budget')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('property.status')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -116,7 +118,7 @@ const PropertyRequestsPage = () => {
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+                <span className="text-sm text-muted-foreground">{t('userPages.page')} {page} {t('common.of')} {totalPages}</span>
                 <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>

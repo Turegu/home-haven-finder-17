@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
@@ -25,6 +26,7 @@ interface SavedProperty {
 const PAGE_SIZE = 10;
 
 const SavedPropertiesPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [items, setItems] = useState<SavedProperty[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,14 +54,14 @@ const SavedPropertiesPage = () => {
 
   const handleRemove = async (id: string) => {
     const { error } = await supabase.from("saved_properties").delete().eq("id", id);
-    if (error) { toast.error("Failed to remove"); return; }
+    if (error) { toast.error(t('userPages.failedToRemove')); return; }
     setItems(p => p.filter(i => i.id !== id));
     queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
     queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     queryClient.invalidateQueries({ queryKey: ['header-counts'] });
     queryClient.invalidateQueries({ queryKey: ['header-saved-items'] });
     window.dispatchEvent(new Event('property-actions-changed'));
-    toast.success("Removed from saved");
+    toast.success(t('userPages.removedFromSaved'));
   };
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
@@ -68,7 +70,7 @@ const SavedPropertiesPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Saved Properties</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.savedProperties')}</h1>
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
@@ -85,8 +87,8 @@ const SavedPropertiesPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Heart className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No saved properties yet.</p>
-            <Link to="/buy"><Button variant="outline" className="mt-4">Browse Properties</Button></Link>
+            <p className="text-muted-foreground">{t('userPages.noSavedProperties')}</p>
+            <Link to="/buy"><Button variant="outline" className="mt-4">{t('userPages.browseProperties')}</Button></Link>
           </div>
         ) : (
           <>
@@ -105,17 +107,17 @@ const SavedPropertiesPage = () => {
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="ghost" size="sm" className="text-destructive">
-                            <Trash2 className="h-4 w-4 mr-1" /> Remove
+                            <Trash2 className="h-4 w-4 mr-1" /> {t('common.remove')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Remove saved property?</AlertDialogTitle>
-                            <AlertDialogDescription>This will remove the property from your saved list.</AlertDialogDescription>
+                             <AlertDialogTitle>{t('userPages.removeSavedProperty')}</AlertDialogTitle>
+                             <AlertDialogDescription>{t('userPages.removeFromSaved')}</AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleRemove(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Remove</AlertDialogAction>
+                             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                             <AlertDialogAction onClick={() => handleRemove(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.remove')}</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
@@ -129,7 +131,7 @@ const SavedPropertiesPage = () => {
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+                <span className="text-sm text-muted-foreground">{t('userPages.page')} {page} {t('common.of')} {totalPages}</span>
                 <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>

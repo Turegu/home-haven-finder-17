@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
@@ -24,6 +25,7 @@ interface SavedSearch {
 const PAGE_SIZE = 10;
 
 const SavedSearchesPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [items, setItems] = useState<SavedSearch[]>([]);
@@ -52,10 +54,10 @@ const SavedSearchesPage = () => {
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("saved_searches").delete().eq("id", id);
-    if (error) { toast.error("Failed to delete"); return; }
+    if (error) { toast.error(t('userPages.failedToDelete')); return; }
     setItems(p => p.filter(i => i.id !== id));
     queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
-    toast.success("Search deleted");
+    toast.success(t('userPages.searchDeleted'));
   };
 
   const handleRunSearch = (search: SavedSearch) => {
@@ -81,8 +83,8 @@ const SavedSearchesPage = () => {
     if (params.propertyTypes) parts.push(`Type: ${params.propertyTypes}`);
     if (params.minPrice || params.maxPrice) parts.push(`Price: ${params.minPrice || "—"}–${params.maxPrice || "—"}`);
     if (params.rooms) parts.push(`Rooms: ${params.rooms}`);
-    if (params.q) parts.push(`Keyword: ${params.q}`);
-    return parts.length > 0 ? parts.join(" • ") : "No filters";
+    if (params.q) parts.push(`${t('saveSearch.keyword')}: ${params.q}`);
+    return parts.length > 0 ? parts.join(" • ") : t('userPages.noFilters');
   };
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
@@ -91,7 +93,7 @@ const SavedSearchesPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Saved Searches</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.savedSearches')}</h1>
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
@@ -107,7 +109,7 @@ const SavedSearchesPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Search className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">No saved searches yet.</p>
+            <p className="text-muted-foreground">{t('userPages.noSavedSearches')}</p>
           </div>
         ) : (
           <>
@@ -120,10 +122,10 @@ const SavedSearchesPage = () => {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-foreground text-sm">{item.title}</p>
                     <p className="text-xs text-muted-foreground truncate">{getParamsSummary(item.search_params)}</p>
-                    <p className="text-xs text-muted-foreground">Saved: {format(new Date(item.created_at), "MMM dd, yyyy")}</p>
+                     <p className="text-xs text-muted-foreground">{t('userPages.saved')}: {format(new Date(item.created_at), "MMM dd, yyyy")}</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => handleRunSearch(item)} className="gap-1 shrink-0">
-                    <Play className="h-3 w-3" /> Run
+                   <Button variant="outline" size="sm" onClick={() => handleRunSearch(item)} className="gap-1 shrink-0">
+                     <Play className="h-3 w-3" /> {t('userPages.run')}
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -133,12 +135,12 @@ const SavedSearchesPage = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete saved search?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete "{item.title}".</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                         <AlertDialogTitle>{t('userPages.deleteSearch')}</AlertDialogTitle>
+                         <AlertDialogDescription>{t('userPages.deleteSearchConfirm', { name: item.title })}</AlertDialogDescription>
+                       </AlertDialogHeader>
+                       <AlertDialogFooter>
+                         <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                         <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.delete')}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -150,7 +152,7 @@ const SavedSearchesPage = () => {
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+                <span className="text-sm text-muted-foreground">{t('userPages.page')} {page} {t('common.of')} {totalPages}</span>
                 <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>

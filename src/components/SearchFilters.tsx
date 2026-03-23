@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ChevronDown, X, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ interface SearchFiltersProps {
 }
 
 export default function SearchFilters({ context, selectedFilters, onFiltersChange, quickFilterKeys, inline = false }: SearchFiltersProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useFilterCategories(context);
   const categories = data?.categories ?? [];
   const optionsByCategory = data?.optionsByCategory ?? {};
@@ -65,7 +67,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
           <DialogTrigger asChild>
             <button className="flex items-center gap-1.5 px-3 py-2 text-sm text-primary font-medium hover:bg-secondary rounded-md transition-colors">
               <SlidersHorizontal className="h-4 w-4" />
-              Filters
+              {t('searchFilters.filters')}
               {activeCount > 0 && (
                 <Badge variant="default" className="h-5 w-5 p-0 flex items-center justify-center text-[10px] rounded-full">
                   {activeCount}
@@ -76,10 +78,10 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
           <DialogContent className="sm:max-w-[540px] max-h-[85vh] flex flex-col p-0">
             <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
               <DialogTitle className="flex items-center justify-between">
-                More Filters
+                {t('searchFilters.moreFilters')}
                 {activeCount > 0 && (
                   <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-destructive">
-                    Clear All
+                    {t('searchFilters.clearAll')}
                   </Button>
                 )}
               </DialogTitle>
@@ -95,7 +97,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
                         <h4 className="text-sm font-semibold text-foreground">{cat.title}</h4>
                         {selected.length > 0 && (
                           <button onClick={() => clearFilter(cat.category_key)} className="text-xs text-destructive hover:underline">
-                            Clear
+                            {t('searchFilters.clear')}
                           </button>
                         )}
                       </div>
@@ -117,7 +119,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
             </ScrollArea>
             <div className="px-6 py-4 border-t border-border">
               <Button className="w-full" size="lg">
-                Show Results
+                {t('searchFilters.showResults')}
               </Button>
             </div>
           </DialogContent>
@@ -138,7 +140,7 @@ export default function SearchFilters({ context, selectedFilters, onFiltersChang
             ))
           )}
           <button onClick={clearAll} className="text-xs text-destructive hover:underline ml-1">
-            Clear all
+            {t('searchFilters.clearAllFilters')}
           </button>
         </div>
       )}

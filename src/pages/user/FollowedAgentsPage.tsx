@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ interface FollowedAgent {
 const PAGE_SIZE = 12;
 
 const FollowedAgentsPage = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<FollowedAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -47,9 +49,9 @@ const FollowedAgentsPage = () => {
 
   const handleUnfollow = async (id: string) => {
     const { error } = await supabase.from("agent_followers").delete().eq("id", id);
-    if (error) { toast.error("Failed to unfollow"); return; }
+    if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
     setItems(p => p.filter(i => i.id !== id));
-    toast.success("Unfollowed agent");
+    toast.success(t('userPages.unfollowed'));
   };
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
@@ -58,7 +60,7 @@ const FollowedAgentsPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Followed Agents</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('userPages.followedAgents')}</h1>
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map(i => (
@@ -74,8 +76,8 @@ const FollowedAgentsPage = () => {
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
             <Users2 className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">You are not following any agents yet.</p>
-            <Link to="/agents"><Button variant="outline" className="mt-4">Browse Agents</Button></Link>
+            <p className="text-muted-foreground">{t('userPages.noFollowedAgents')}</p>
+            <Link to="/agents"><Button variant="outline" className="mt-4">{t('userPages.browseAgents')}</Button></Link>
           </div>
         ) : (
           <>
@@ -95,12 +97,12 @@ const FollowedAgentsPage = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Unfollow {item.agent?.name}?</AlertDialogTitle>
-                        <AlertDialogDescription>You will no longer receive updates from this agent.</AlertDialogDescription>
+                        <AlertDialogTitle>{t('userPages.unfollowAgent', { name: item.agent?.name })}</AlertDialogTitle>
+                        <AlertDialogDescription>{t('userPages.unfollowConfirm')}</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleUnfollow(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Unfollow</AlertDialogAction>
+                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleUnfollow(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('userPages.unfollow')}</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -112,7 +114,7 @@ const FollowedAgentsPage = () => {
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-muted-foreground">Page {page} of {totalPages}</span>
+                <span className="text-sm text-muted-foreground">{t('userPages.page')} {page} {t('common.of')} {totalPages}</span>
                 <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
