@@ -92,15 +92,15 @@ const SaveSearchDialog = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bookmark className="h-5 w-5 text-primary" />
-            Save Search
+            {t('saveSearch.title')}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Search Name</label>
+            <label className="text-sm font-medium text-foreground">{t('saveSearch.searchName')}</label>
             <Input
-              placeholder="e.g. 3-bed apartments in Istanbul"
+              placeholder={t('saveSearch.placeholder')}
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSave()}
