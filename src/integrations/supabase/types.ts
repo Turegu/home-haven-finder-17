@@ -379,6 +379,7 @@ export type Database = {
           about: string | null
           boost_end_date: string | null
           company_type: Database["public"]["Enums"]["company_type"] | null
+          company_types: string[] | null
           cover_url: string | null
           created_at: string
           created_by: string | null
@@ -408,6 +409,7 @@ export type Database = {
           about?: string | null
           boost_end_date?: string | null
           company_type?: Database["public"]["Enums"]["company_type"] | null
+          company_types?: string[] | null
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -437,6 +439,7 @@ export type Database = {
           about?: string | null
           boost_end_date?: string | null
           company_type?: Database["public"]["Enums"]["company_type"] | null
+          company_types?: string[] | null
           cover_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -2543,6 +2546,7 @@ export type Database = {
         | "brokerage"
         | "property_management"
         | "consulting"
+        | "marketing_agency"
       membership_type: "basic" | "lite" | "plus" | "pro"
     }
     CompositeTypes: {
@@ -2678,6 +2682,7 @@ export const Constants = {
         "brokerage",
         "property_management",
         "consulting",
+        "marketing_agency",
       ],
       membership_type: ["basic", "lite", "plus", "pro"],
     },
