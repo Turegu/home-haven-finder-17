@@ -159,8 +159,9 @@ const AgentLoginPage = () => {
     const patternStr = pattern.join(",");
     if (patternStr === savedPattern) {
       setPatternError(false);
-      toast.success("Welcome to your Company Dashboard!");
-      navigate("/company");
+      const welcomeMsg = pendingRedirect === "/agent" ? "Welcome to your Agent Dashboard!" : "Welcome to your Company Dashboard!";
+      toast.success(welcomeMsg);
+      navigate(pendingRedirect);
     } else {
       setPatternError(true);
       toast.error("Wrong pattern. Try again.");
