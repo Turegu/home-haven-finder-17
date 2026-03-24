@@ -49,7 +49,7 @@ interface ContactCompanyDialogProps {
   projectUnits?: ProjectUnitOption[];
 }
 
-const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, listingType = 'property', projectUnits }: ContactCompanyDialogProps) => {
+const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, companyLogo, listingType = 'property', projectUnits }: ContactCompanyDialogProps) => {
   const defaultMessages: Record<string, string> = {
     property: 'Hi!, I am interested in your property please contact me.',
     project: 'Hi!, I am interested in your project please contact me.',
