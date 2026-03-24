@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import AnnouncementHistory from "@/components/AnnouncementHistory";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
@@ -154,6 +155,9 @@ const AgentFollowersPage = () => {
             </TableBody>
           </Table>
         </div>
+
+        {/* Announcement History */}
+        <AnnouncementHistory companyId={companyId} />
 
         <Dialog open={announcementOpen} onOpenChange={setAnnouncementOpen}>
           <DialogContent className="sm:max-w-lg">
