@@ -130,9 +130,25 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         await supabase.from('user_inquiries').insert(inquiryData);
       }
 
-      if (companyId) {
+      // Route to company inbox — if agent is assigned, include agent_id so company knows which agent it's for
+      // If no agent assigned, companyId will be set; if agent assigned, companyId is null
+      const targetCompanyId = companyId || (agentId ? null : null);
+      
+      // We need to find the agent's company if only agentId is set
+      let inboxCompanyId = companyId;
+      if (!inboxCompanyId && agentId) {
+        const { data: agentData } = await supabase
+          .from('agents')
+          .select('company_id')
+          .eq('id', agentId)
+          .maybeSingle();
+        inboxCompanyId = agentData?.company_id || null;
+      }
+
+      if (inboxCompanyId) {
         const inboxData: any = {
-          company_id: companyId,
+          company_id: inboxCompanyId,
+          agent_id: agentId || null,
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
