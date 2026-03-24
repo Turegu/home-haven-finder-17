@@ -111,26 +111,22 @@ const AgentsPage = () => {
           ? supabase.from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", compIds)
           : Promise.resolve({ data: [] }),
       ]);
-      let resultIdx = 0;
-
       if (agentIds.length > 0) {
         const aCounts: Record<string, { buy: number; rent: number }> = {};
         agentIds.forEach((id: string) => { aCounts[id] = { buy: 0, rent: 0 }; });
-        (countResults[resultIdx]?.data ?? []).forEach((p: any) => {
+        ((agentPropsRes as any)?.data ?? []).forEach((p: any) => {
           if (!aCounts[p.agent_id]) return;
           if (p.property_purpose === 'rent') aCounts[p.agent_id].rent++;
           else aCounts[p.agent_id].buy++;
         });
         setAgentCounts(aCounts);
-        resultIdx++;
       }
 
       if (compIds.length > 0) {
         const counts: Record<string, { agents: number; buy: number; rent: number }> = {};
         compIds.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
-        (countResults[resultIdx]?.data ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
-        resultIdx++;
-        (countResults[resultIdx]?.data ?? []).forEach((p: any) => {
+        ((compAgentsRes as any)?.data ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
+        ((compPropsRes as any)?.data ?? []).forEach((p: any) => {
           if (!counts[p.company_id]) return;
           if (p.property_purpose === 'rent') counts[p.company_id].rent++;
           else counts[p.company_id].buy++;
