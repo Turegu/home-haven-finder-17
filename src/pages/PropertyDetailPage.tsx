@@ -106,6 +106,9 @@ const PropertyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [contactPhone, setContactPhone] = useState<string | null>(null);
+  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
+  const [contactName, setContactName] = useState<string>('');
   const [companyVerified, setCompanyVerified] = useState(false);
   const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
