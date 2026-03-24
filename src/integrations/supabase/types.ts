@@ -578,6 +578,7 @@ export type Database = {
       }
       company_inbox: {
         Row: {
+          agent_id: string | null
           budget: string | null
           company_id: string
           created_at: string
@@ -592,6 +593,7 @@ export type Database = {
           property_id: string | null
         }
         Insert: {
+          agent_id?: string | null
           budget?: string | null
           company_id: string
           created_at?: string
@@ -606,6 +608,7 @@ export type Database = {
           property_id?: string | null
         }
         Update: {
+          agent_id?: string | null
           budget?: string | null
           company_id?: string
           created_at?: string
@@ -620,6 +623,13 @@ export type Database = {
           property_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "company_inbox_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "company_inbox_company_id_fkey"
             columns: ["company_id"]

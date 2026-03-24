@@ -1,0 +1,1 @@
+ALTER TABLE public.company_inbox ADD COLUMN agent_id uuid REFERENCES public.agents(id) ON DELETE SET NULL;
