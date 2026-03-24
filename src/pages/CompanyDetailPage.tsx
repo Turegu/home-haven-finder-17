@@ -398,34 +398,37 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
       ) : properties.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground text-sm">No properties match the selected filters.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-4">
           {properties.map((p) => (
-            <Link key={p.id} to={`/property/${p.id}`}>
-              <PropertyCard
-                property={{
-                  id: p.id,
-                  title: p.title,
-                  price: p.price ?? 0,
-                  currency: p.currency ?? 'USD',
-                  location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
-                  city: p.town ?? '',
-                  type: p.property_type,
-                  area: p.area ?? 0,
-                  areaUnit: p.area_unit ?? 'm²',
-                  bedrooms: p.bedrooms ?? 0,
-                  bathrooms: p.bathrooms ?? 0,
-                  images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
-                  agentLogo: p.companies?.logo_url ?? '',
-                  agentName: p.agents?.name ?? '',
-                  agentAvatar: p.agents?.avatar_url ?? '',
-                  companyName: p.companies?.name ?? '',
-                  isFeatured: false,
-                  listingTier: 'standard',
-                  listingType: p.property_purpose === 'rent' ? 'rent' : 'buy',
-                  advertisingTags: p.advertising_tags ?? [],
-                }}
-              />
-            </Link>
+            <PropertyListCard
+              key={p.id}
+              property={{
+                id: p.id,
+                title: p.title,
+                price: p.price ?? 0,
+                currency: p.currency ?? 'USD',
+                location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A',
+                city: p.town ?? '',
+                type: p.property_type,
+                area: p.area ?? 0,
+                areaUnit: p.area_unit ?? 'm²',
+                bedrooms: p.bedrooms ?? 0,
+                bathrooms: p.bathrooms ?? 0,
+                images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
+                agentLogo: p.companies?.logo_url ?? '',
+                agentName: p.agents?.name ?? '',
+                agentAvatar: p.agents?.avatar_url ?? '',
+                companyName: p.companies?.name ?? '',
+                isFeatured: false,
+                listingTier: (p.property_classification as 'premium' | 'featured' | 'standard') || 'standard',
+                listingType: p.property_purpose === 'rent' ? 'rent' : 'buy',
+                advertisingTags: p.advertising_tags ?? [],
+                contactPhone: p.agents?.phone ?? p.companies?.phone ?? null,
+                contactWhatsapp: p.agents?.whatsapp ?? p.companies?.whatsapp ?? null,
+                companyId: p.company_id,
+                agentId: p.agent_id,
+              }}
+            />
           ))}
         </div>
       )}
