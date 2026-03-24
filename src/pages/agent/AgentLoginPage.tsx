@@ -43,7 +43,7 @@ const AgentLoginPage = () => {
   const handleAgentLogin = async (userId: string) => {
     const { data: agent, error: agentError } = await supabase
       .from("agents")
-      .select("id, status")
+      .select("id, status, company_id")
       .eq("user_id", userId)
       .limit(1)
       .maybeSingle();
@@ -57,6 +57,22 @@ const AgentLoginPage = () => {
     if (agent.status !== "active") {
       await supabase.auth.signOut();
       toast.error("Your agent account is not active yet. Contact your company admin.");
+      return;
+    }
+
+    // Check company-specific pattern for the agent's company
+    const { data: patternData } = await supabase
+      .from("company_pattern_codes")
+      .select("pattern_code")
+      .eq("company_id", agent.company_id)
+      .limit(1)
+      .maybeSingle();
+
+    if (patternData && patternData.pattern_code) {
+      setSavedPattern(patternData.pattern_code);
+      setPendingRedirect("/agent");
+      setStep("pattern");
+      toast.info("Please draw the company pattern to continue.");
       return;
     }
 
