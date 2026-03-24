@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface CompanyRow {
   id: string;
   name: string;
-  company_type: string | null;
+  company_types: string[] | null;
   logo_url: string | null;
   cover_url: string | null;
   languages: string[] | null;
