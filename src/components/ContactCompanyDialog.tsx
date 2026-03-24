@@ -198,14 +198,21 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3">
+            {agentAvatar && (
+              <img
+                src={agentAvatar}
+                alt={companyName || 'agent'}
+                className="h-10 w-10 rounded-lg object-cover border border-border flex-shrink-0"
+              />
+            )}
+            <DialogTitle className="flex-1">Email {companyName || 'company'}</DialogTitle>
             {companyLogo && (
               <img
                 src={companyLogo}
-                alt={companyName || 'company'}
-                className="h-10 w-10 rounded-lg object-contain border border-border flex-shrink-0"
+                alt="Company"
+                className="h-10 w-auto max-w-[80px] rounded-lg object-contain border border-border flex-shrink-0 me-6"
               />
             )}
-            <DialogTitle>Email {companyName || 'company'}</DialogTitle>
           </div>
         </DialogHeader>
 
