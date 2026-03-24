@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Building2, User, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCompanyTypes } from "@/data/companyTypes";
 
 interface SpotlightCompany {
   id: string;
