@@ -7,10 +7,11 @@ import { type PropertyMoreFilters, type BasicFilters, type RangeFilters, emptyMo
 import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search, LayoutGrid, List, Map,
-  ChevronLeft, ChevronRight, Loader2, Bookmark, X, Home
+  ChevronLeft, ChevronRight, Loader2, Bookmark, Home
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
+import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyListCard from '@/components/PropertyListCard';
@@ -285,21 +286,12 @@ const BuyPage = () => {
           {/* Search row */}
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 min-w-[140px] sm:min-w-[200px]">
-              <input
-                type="text"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder={t('hero.searchPlaceholder')}
-                className="w-full h-10 ps-3 pe-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-              />
-              {keyword && (
-                <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+            <KeywordAutocomplete
+              value={keyword}
+              onChange={setKeyword}
+              onEnter={handleSearch}
+              className="flex-1 min-w-[140px] sm:min-w-[200px]"
+            />
             <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />
             <AreaDropdown minArea={minArea} maxArea={maxArea} onChange={(min, max) => { setMinArea(min); setMaxArea(max); }} />
