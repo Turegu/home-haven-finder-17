@@ -25,6 +25,16 @@ interface Suggestion {
   type: 'property' | 'place';
 }
 
+let autocompleteService: google.maps.places.AutocompleteService | null = null;
+function getAutocompleteService(): google.maps.places.AutocompleteService | null {
+  if (autocompleteService) return autocompleteService;
+  if (typeof google !== 'undefined' && google.maps?.places) {
+    autocompleteService = new google.maps.places.AutocompleteService();
+    return autocompleteService;
+  }
+  return null;
+}
+
 export default function KeywordAutocomplete({
   value,
   onChange,
@@ -34,6 +44,7 @@ export default function KeywordAutocomplete({
   className,
 }: KeywordAutocompleteProps) {
   const { t } = useTranslation();
+  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: LIBRARIES });
   const { data: allowedCountry } = useAllowedCountry();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -41,10 +52,6 @@ export default function KeywordAutocomplete({
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    ensurePlacesLib();
-  }, []);
 
   // Close on outside click
   useEffect(() => {
