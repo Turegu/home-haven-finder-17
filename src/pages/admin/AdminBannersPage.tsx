@@ -69,6 +69,7 @@ const emptyForm = {
 };
 
 const AdminBannersPage = () => {
+  const { isTestMode } = useTestMode();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
