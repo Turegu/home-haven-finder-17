@@ -34,16 +34,16 @@ const AdminDashboardPage = () => {
   }, []);
 
   const summaryCards = [
-    { label: "Properties", count: 0, icon: Home, color: "bg-amber-50 border-amber-200", iconColor: "text-amber-600" },
-    { label: "Projects", count: 0, icon: FolderKanban, color: "bg-yellow-50 border-yellow-200", iconColor: "text-yellow-600" },
-    { label: "Events", count: 0, icon: CalendarDays, color: "bg-emerald-50 border-emerald-200", iconColor: "text-emerald-600" },
+    { label: "Properties", count: 0, icon: Home, gradient: "from-sky-500 to-blue-600", iconBg: "bg-white/20" },
+    { label: "Projects", count: 0, icon: FolderKanban, gradient: "from-amber-500 to-orange-600", iconBg: "bg-white/20" },
+    { label: "Events", count: 0, icon: CalendarDays, gradient: "from-teal-500 to-emerald-600", iconBg: "bg-white/20" },
   ];
 
   const membershipCards = [
-    { label: "Basic members", count: stats.basicCompanies, color: "bg-lime-50 border-lime-200", barColor: "bg-lime-500", icon: Briefcase },
-    { label: "Lite members", count: stats.liteCompanies, color: "bg-purple-50 border-purple-200", barColor: "bg-purple-500", icon: Zap },
-    { label: "Plus members", count: stats.plusCompanies, color: "bg-orange-50 border-orange-200", barColor: "bg-orange-500", icon: Star },
-    { label: "Pro members", count: stats.proCompanies, color: "bg-emerald-50 border-emerald-200", barColor: "bg-emerald-500", icon: Crown },
+    { label: "Basic", count: stats.basicCompanies, icon: Briefcase, gradient: "from-slate-500 to-slate-700", accent: "bg-slate-600" },
+    { label: "Lite", count: stats.liteCompanies, icon: Zap, gradient: "from-violet-500 to-purple-700", accent: "bg-violet-600" },
+    { label: "Plus", count: stats.plusCompanies, icon: Star, gradient: "from-amber-500 to-orange-600", accent: "bg-amber-600" },
+    { label: "Pro", count: stats.proCompanies, icon: Crown, gradient: "from-teal-500 to-emerald-700", accent: "bg-teal-600" },
   ];
 
   return (
@@ -53,25 +53,31 @@ const AdminDashboardPage = () => {
       {/* Top summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {summaryCards.map((card) => (
-          <div key={card.label} className={`rounded-xl border p-6 ${card.color}`}>
-            <div className="flex items-center justify-between mb-4">
+          <div key={card.label} className={`rounded-xl bg-gradient-to-br ${card.gradient} p-6 text-white shadow-lg`}>
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <p className="text-3xl font-bold text-foreground">{card.count}</p>
-                <p className="text-sm font-medium text-muted-foreground">{card.label}</p>
+                <p className="text-4xl font-bold">{card.count}</p>
+                <p className="text-sm font-medium text-white/80 mt-1">{card.label}</p>
               </div>
-              <card.icon className={`h-10 w-10 ${card.iconColor}`} />
+              <div className={`${card.iconBg} rounded-xl p-3`}>
+                <card.icon className="h-8 w-8 text-white" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="space-y-2.5">
+              <div className="flex items-center justify-between text-xs text-white/70">
                 <span>Premium Listing</span>
                 <span>0%</span>
               </div>
-              <Progress value={0} className="h-2" />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="h-1.5 rounded-full bg-white/20">
+                <div className="h-full rounded-full bg-white/60" style={{ width: "0%" }} />
+              </div>
+              <div className="flex items-center justify-between text-xs text-white/70">
                 <span>Featured Listing</span>
                 <span>0%</span>
               </div>
-              <Progress value={0} className="h-2" />
+              <div className="h-1.5 rounded-full bg-white/20">
+                <div className="h-full rounded-full bg-white/60" style={{ width: "0%" }} />
+              </div>
             </div>
           </div>
         ))}
@@ -80,16 +86,18 @@ const AdminDashboardPage = () => {
       {/* Membership cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {membershipCards.map((card) => (
-          <div key={card.label} className={`rounded-xl border overflow-hidden ${card.color}`}>
-            <div className="p-6">
+          <div key={card.label} className={`rounded-xl bg-gradient-to-br ${card.gradient} overflow-hidden shadow-lg text-white`}>
+            <div className="p-6 pb-4">
               <div className="flex items-center justify-between">
-                <p className="text-4xl font-bold text-foreground">{card.count}</p>
-                <card.icon className="h-8 w-8 text-muted-foreground" />
+                <p className="text-5xl font-bold">{card.count}</p>
+                <div className="bg-white/15 rounded-xl p-2.5">
+                  <card.icon className="h-7 w-7 text-white" />
+                </div>
               </div>
-              <p className="text-sm font-medium text-muted-foreground mt-1">Companies</p>
+              <p className="text-sm font-medium text-white/75 mt-2">Companies</p>
             </div>
-            <div className={`${card.barColor} text-white text-center py-2 text-sm font-medium`}>
-              {card.label}
+            <div className="bg-black/15 text-center py-2.5 text-sm font-semibold tracking-wide">
+              {card.label} Members
             </div>
           </div>
         ))}
