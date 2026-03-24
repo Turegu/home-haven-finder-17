@@ -18,6 +18,7 @@ interface Follower {
   user_id: string;
   created_at: string;
   profile?: { display_name: string | null; phone: string | null; show_phone: boolean; user_id: string };
+  email?: string;
 }
 
 const AgentFollowersPage = () => {

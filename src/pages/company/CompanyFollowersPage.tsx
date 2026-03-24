@@ -262,7 +262,7 @@ const CompanyFollowersPage = () => {
                   <TableRow key={f.id}>
                     <TableCell className="font-medium">{idx + 1}</TableCell>
                     <TableCell>{f.profile?.display_name || "—"}</TableCell>
-                    <TableCell className="text-muted-foreground">{"—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{f.email || "—"}</TableCell>
                     <TableCell>
                       {f.profile?.show_phone && f.profile?.phone
                         ? f.profile.phone
