@@ -252,6 +252,38 @@ const AdminSettingsPage = () => {
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Lock className="h-5 w-5" /> Pattern Lock
           </h2>
+
+          {/* Pattern Login Toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4">
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                Pattern Login is {patternActive ? "Active" : "Inactive"}
+              </p>
+              {!currentPattern && (
+                <p className="text-xs text-muted-foreground mt-0.5">Set a pattern first to activate</p>
+              )}
+            </div>
+            <Switch
+              checked={patternActive}
+              disabled={!currentPattern}
+              onCheckedChange={async (val) => {
+                setPatternActive(val);
+                // Upsert the setting
+                const { data: existing } = await supabase
+                  .from("admin_settings")
+                  .select("id")
+                  .eq("setting_key", "admin_pattern_active")
+                  .maybeSingle();
+                if (existing) {
+                  await supabase.from("admin_settings").update({ setting_value: String(val) }).eq("setting_key", "admin_pattern_active");
+                } else {
+                  await supabase.from("admin_settings").insert({ setting_key: "admin_pattern_active", setting_value: String(val) });
+                }
+                toast({ title: val ? "Pattern login activated" : "Pattern login deactivated" });
+              }}
+            />
+          </div>
+
           <p className="text-sm text-muted-foreground">
             {currentPattern ? "A pattern is currently set." : "No pattern set yet."}
           </p>
