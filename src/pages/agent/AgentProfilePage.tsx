@@ -383,7 +383,7 @@ const AgentProfilePage = () => {
               <div>
                 <h3 className="text-sm font-medium text-foreground">Pattern Lock</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {currentPatternCode ? "Pattern lock is active. You'll need to draw it when logging in." : "No pattern lock set. You can log in with credentials only."}
+                  {currentPatternCode ? "A pattern lock has been set." : "No pattern lock set. You can log in with credentials only."}
                 </p>
               </div>
             </div>
@@ -391,26 +391,28 @@ const AgentProfilePage = () => {
               <div>
                 <p className="text-sm font-medium text-foreground">Pattern Login</p>
                 <p className="text-xs text-muted-foreground">
-                  {currentPatternCode
+                  {!currentPatternCode
+                    ? "Set a pattern first to enable this"
+                    : patternActive
                     ? "Active — pattern required at login"
-                    : "Set a pattern first to enable this"}
+                    : "Inactive — login with credentials only"}
                 </p>
               </div>
               <Switch
-                checked={!!currentPatternCode}
+                checked={patternActive}
                 disabled={!currentPatternCode}
                 onCheckedChange={async (checked) => {
-                  if (!checked && agent) {
+                  if (agent) {
                     try {
                       const { error } = await supabase
                         .from("agent_pattern_codes")
-                        .delete()
+                        .update({ is_active: checked })
                         .eq("agent_id", agent.id);
                       if (error) throw error;
-                      setCurrentPatternCode("");
-                      toast.success("Pattern lock disabled");
+                      setPatternActive(checked);
+                      toast.success(checked ? "Pattern login activated" : "Pattern login deactivated");
                     } catch (err: any) {
-                      toast.error(err.message || "Failed to disable pattern");
+                      toast.error(err.message || "Failed to update pattern status");
                     }
                   }
                 }}
