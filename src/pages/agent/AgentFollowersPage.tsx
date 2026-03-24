@@ -156,6 +156,9 @@ const AgentFollowersPage = () => {
           </Table>
         </div>
 
+        {/* Announcement History */}
+        <AnnouncementHistory companyId={companyId} />
+
         <Dialog open={announcementOpen} onOpenChange={setAnnouncementOpen}>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader><DialogTitle className="flex items-center gap-2"><Megaphone className="h-5 w-5" /> Send Announcement</DialogTitle></DialogHeader>
