@@ -275,6 +275,7 @@ const AgentsPage = () => {
                       <h3 className="text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                         {company.name}
                       </h3>
+                      {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
