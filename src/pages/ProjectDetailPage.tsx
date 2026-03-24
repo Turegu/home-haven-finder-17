@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -34,6 +35,8 @@ const ProjectDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [contactPhone, setContactPhone] = useState<string | null>(null);
+  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
@@ -46,7 +49,7 @@ const ProjectDetailPage = () => {
       setLoading(true);
       const { data } = await supabase
         .from('projects')
-        .select('*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url)), companies(id, name, logo_url)')
+        .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
         .eq('id', id)
         .maybeSingle();
       if (data) {
@@ -89,6 +92,13 @@ const ProjectDetailPage = () => {
         });
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+        if (p.agents) {
+          setContactPhone(p.agents.phone || null);
+          setContactWhatsapp(p.agents.whatsapp || null);
+        } else {
+          setContactPhone(p.companies?.phone || null);
+          setContactWhatsapp(p.companies?.whatsapp || null);
+        }
 
         // Fetch project units for contact dialog
         const { data: units } = await supabase
@@ -462,11 +472,19 @@ const ProjectDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />{t('property.call')}</button>
+                <button onClick={() => {
+                  if (contactPhone) window.open(`tel:${contactPhone}`, '_self');
+                  else toast.error('No phone number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />{t('property.call')}</button>
                 <div className="w-px h-6 bg-border" />
                 <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Mail className="h-4 w-4" />{t('property.email')}</button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />{t('property.whatsApp')}</button>
+                <button onClick={() => {
+                  if (contactWhatsapp) {
+                    const cleaned = contactWhatsapp.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${cleaned}?text=Hi, I am interested in your project: ${encodeURIComponent(project.title)}`, '_blank');
+                  } else toast.error('No WhatsApp number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />{t('property.whatsApp')}</button>
               </div>
             </div>
 
@@ -494,9 +512,9 @@ const ProjectDetailPage = () => {
           images: project.images,
           listingId: project.listingId,
         }}
-        companyId={realCompanyId}
+        companyId={realAgentId ? null : realCompanyId}
         agentId={realAgentId}
-        companyName={project.agentCompany}
+        companyName={realAgentId ? project.agentName : project.agentCompany}
         listingType="project"
         projectUnits={projectUnits}
       />

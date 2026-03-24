@@ -106,6 +106,9 @@ const PropertyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [contactPhone, setContactPhone] = useState<string | null>(null);
+  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
+  const [contactName, setContactName] = useState<string>('');
   const [companyVerified, setCompanyVerified] = useState(false);
   const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
@@ -121,7 +124,7 @@ const PropertyDetailPage = () => {
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
-        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type, is_verified)), companies(id, name, logo_url, company_type, is_verified)")
+        .select("*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
         .eq("id", id)
         .maybeSingle();
       if (data) {
@@ -175,6 +178,16 @@ const PropertyDetailPage = () => {
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
         setCompanyVerified(p.companies?.is_verified || p.agents?.companies?.is_verified || false);
+        // Set contact info: agent takes priority over company
+        if (p.agents) {
+          setContactPhone(p.agents.phone || null);
+          setContactWhatsapp(p.agents.whatsapp || null);
+          setContactName(p.agents.name || '');
+        } else {
+          setContactPhone(p.companies?.phone || null);
+          setContactWhatsapp(p.companies?.whatsapp || null);
+          setContactName(p.companies?.name || '');
+        }
         setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
 
         // Fetch similar properties
@@ -867,7 +880,11 @@ const PropertyDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button onClick={() => { trackInquiryClick(id!, 'property', 'call'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => {
+                  trackInquiryClick(id!, 'property', 'call');
+                  if (contactPhone) window.open(`tel:${contactPhone}`, '_self');
+                  else toast.error('No phone number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Phone className="h-4 w-4" />
                   {t('property.call')}
                 </button>
@@ -877,7 +894,13 @@ const PropertyDetailPage = () => {
                   {t('property.email')}
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button onClick={() => { trackInquiryClick(id!, 'property', 'whatsapp'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => {
+                  trackInquiryClick(id!, 'property', 'whatsapp');
+                  if (contactWhatsapp) {
+                    const cleaned = contactWhatsapp.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${cleaned}?text=Hi, I am interested in your property: ${encodeURIComponent(property.title)}`, '_blank');
+                  } else toast.error('No WhatsApp number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
                   {t('property.whatsApp')}
                 </button>
@@ -923,9 +946,9 @@ const PropertyDetailPage = () => {
           listingId: property.listingId,
           floorLevel: property.floorLevel,
         }}
-        companyId={realCompanyId}
+        companyId={realAgentId ? null : realCompanyId}
         agentId={realAgentId}
-        companyName={property.agentCompany}
+        companyName={realAgentId ? property.agentName : property.agentCompany}
       />
 
       <ReportPropertyDialog

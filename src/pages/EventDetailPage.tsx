@@ -14,6 +14,7 @@ import NearbyPlacesMap from '@/components/NearbyPlacesMap';
 import StreetView from '@/components/StreetView';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
@@ -27,6 +28,8 @@ const EventDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [contactPhone, setContactPhone] = useState<string | null>(null);
+  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
@@ -38,7 +41,7 @@ const EventDetailPage = () => {
       setLoading(true);
       const { data } = await supabase
         .from('events')
-        .select('*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url)), companies(id, name, logo_url)')
+        .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
         .eq('id', id)
         .maybeSingle();
       if (data) {
@@ -76,6 +79,13 @@ const EventDetailPage = () => {
         });
         setRealAgentId(e.agents?.id || null);
         setRealCompanyId(e.companies?.id || e.agents?.companies?.id || null);
+        if (e.agents) {
+          setContactPhone(e.agents.phone || null);
+          setContactWhatsapp(e.agents.whatsapp || null);
+        } else {
+          setContactPhone(e.companies?.phone || null);
+          setContactWhatsapp(e.companies?.whatsapp || null);
+        }
       }
       setLoading(false);
     };
@@ -383,11 +393,19 @@ const EventDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />{t('property.call')}</button>
+                <button onClick={() => {
+                  if (contactPhone) window.open(`tel:${contactPhone}`, '_self');
+                  else toast.error('No phone number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Phone className="h-4 w-4" />{t('property.call')}</button>
                 <div className="w-px h-6 bg-border" />
                 <button onClick={() => setEmailDialogOpen(true)} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><Mail className="h-4 w-4" />{t('property.email')}</button>
                 <div className="w-px h-6 bg-border" />
-                <button className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />{t('property.whatsApp')}</button>
+                <button onClick={() => {
+                  if (contactWhatsapp) {
+                    const cleaned = contactWhatsapp.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${cleaned}?text=Hi, I am interested in your event: ${encodeURIComponent(event.title)}`, '_blank');
+                  } else toast.error('No WhatsApp number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm"><MessageCircle className="h-4 w-4" />{t('property.whatsApp')}</button>
               </div>
             </div>
 
@@ -415,9 +433,9 @@ const EventDetailPage = () => {
           images: event.images,
           listingId: event.listingId,
         }}
-        companyId={realCompanyId}
+        companyId={realAgentId ? null : realCompanyId}
         agentId={realAgentId}
-        companyName={event.agentCompany || event.organizer}
+        companyName={realAgentId ? event.agentName : (event.agentCompany || event.organizer)}
         listingType="event"
       />
 

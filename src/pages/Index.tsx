@@ -37,7 +37,7 @@ const Index = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from('properties')
-        .select('*, agents(name, avatar_url), companies(name, logo_url)')
+        .select('*, agents(name, avatar_url, phone, whatsapp), companies(name, logo_url, phone, whatsapp)')
         .eq('status', 'active')
         .eq('display_on_homepage', true)
         .limit(12);
@@ -62,6 +62,10 @@ const Index = () => {
         listingTier: 'standard' as const,
         listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
         advertisingTags: p.advertising_tags ?? [],
+        contactPhone: p.agents?.phone ?? p.companies?.phone ?? null,
+        contactWhatsapp: p.agents?.whatsapp ?? p.companies?.whatsapp ?? null,
+        companyId: p.company_id ?? null,
+        agentId: p.agent_id ?? null,
       }));
     },
   });
