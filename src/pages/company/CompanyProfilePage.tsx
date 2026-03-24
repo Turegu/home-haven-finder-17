@@ -272,10 +272,10 @@ const CompanyProfilePage = () => {
         try {
           const { error } = await supabase
             .from("company_pattern_codes")
-            .update({ pattern_code: newPattern.join(",") })
-            .eq("company_id", company!.id);
+            .upsert({ company_id: company!.id, pattern_code: newPattern.join(","), is_active: true }, { onConflict: "company_id" });
           if (error) throw error;
           setCurrentPatternCode(newPattern.join(","));
+          setPatternActive(true);
           toast.success("Pattern lock updated!");
           setPatternDialogOpen(false);
         } catch (err: any) {
