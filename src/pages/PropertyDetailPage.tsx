@@ -27,6 +27,7 @@ import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 import FollowButton from '@/components/FollowButton';
 import ShareDropdown from '@/components/ShareDropdown';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import SEOHead from '@/components/SEOHead';
@@ -105,6 +106,7 @@ const PropertyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
+  const [companyVerified, setCompanyVerified] = useState(false);
   const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
@@ -119,7 +121,7 @@ const PropertyDetailPage = () => {
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
-        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type)), companies(id, name, logo_url, company_type)")
+        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type, is_verified)), companies(id, name, logo_url, company_type, is_verified)")
         .eq("id", id)
         .maybeSingle();
       if (data) {
@@ -172,6 +174,7 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+        setCompanyVerified(p.companies?.is_verified || p.agents?.companies?.is_verified || false);
         setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
 
         // Fetch similar properties
@@ -802,7 +805,7 @@ const PropertyDetailPage = () => {
                         <Building className="h-10 w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName || 'Loading...'}</h3>
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors flex items-center justify-center gap-1">{property.agentName || 'Loading...'}{companyVerified && <VerifiedBadge size="sm" />}</h3>
                     {property.agentDesignation && (
                       <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
                     )}
@@ -830,7 +833,7 @@ const PropertyDetailPage = () => {
                         className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity"
                       />
                       <div className="text-center">
-                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
+                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors flex items-center justify-center gap-1">{property.agentCompany}{companyVerified && <VerifiedBadge size="sm" />}</h4>
                         <p className="text-xs text-muted-foreground">{t('property.realEstateBrokers')}</p>
                       </div>
                     </Link>
@@ -851,7 +854,7 @@ const PropertyDetailPage = () => {
                         <Building className="h-10 w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentCompany || 'Company'}</h3>
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors flex items-center justify-center gap-1">{property.agentCompany || 'Company'}{companyVerified && <VerifiedBadge size="sm" />}</h3>
                     <p className="text-sm text-muted-foreground">{t('property.realEstateBrokers')}</p>
                   </Link>
 
