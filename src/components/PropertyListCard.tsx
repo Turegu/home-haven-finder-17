@@ -312,7 +312,14 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
             <div className="flex items-center gap-0">
               <button
                 className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => {
+                  e.preventDefault(); e.stopPropagation();
+                  if (property.contactPhone) {
+                    window.open(`tel:${property.contactPhone}`, '_self');
+                  } else {
+                    toast.error('No phone number available');
+                  }
+                }}
               >
                 <Phone className="h-4 w-4" />
                 Call
@@ -328,7 +335,15 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
               <div className="w-px h-5 bg-border" />
               <button
                 className="flex items-center justify-center gap-1.5 text-primary hover:bg-secondary px-3 py-2 rounded-lg text-sm"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => {
+                  e.preventDefault(); e.stopPropagation();
+                  if (property.contactWhatsapp) {
+                    const cleaned = property.contactWhatsapp.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${cleaned}`, '_blank');
+                  } else {
+                    toast.error('No WhatsApp number available');
+                  }
+                }}
               >
                 <MessageCircle className="h-4 w-4" />
                 {t('listCard.whatsApp')}
