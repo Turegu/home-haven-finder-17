@@ -24,12 +24,12 @@ interface SpotlightAgent {
 }
 
 const sampleCompanies: SpotlightCompany[] = [
-  { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c2", name: "Gulf Estates International", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c4", name: "Anatolia Homes", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c5", name: "Prestige Living Co.", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c6", name: "Golden Gate Realty", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c2", name: "Gulf Estates International", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_types: ["developer"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c4", name: "Anatolia Homes", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_types: ["developer"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c5", name: "Prestige Living Co.", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c6", name: "Golden Gate Realty", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
 ];
 
 const sampleAgents: SpotlightAgent[] = [
