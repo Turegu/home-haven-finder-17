@@ -7,9 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -501,10 +499,36 @@ const CompanyProfilePage = () => {
 
           {/* Pattern Lock */}
           <div className="pt-4 border-t border-border/60">
-            <h3 className="text-sm font-medium text-foreground mb-3">Pattern Lock</h3>
-            <p className="text-xs text-muted-foreground mb-3">Change the pattern used for dashboard login verification.</p>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-sm font-medium text-foreground">Pattern Lock</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {currentPatternCode ? "Pattern lock is active. You'll need to draw it when logging in." : "No pattern lock set. You can log in with credentials only."}
+                </p>
+              </div>
+              {currentPatternCode && (
+                <Switch
+                  checked={!!currentPatternCode}
+                  onCheckedChange={async (checked) => {
+                    if (!checked && company) {
+                      try {
+                        const { error } = await supabase
+                          .from("company_pattern_codes")
+                          .delete()
+                          .eq("company_id", company.id);
+                        if (error) throw error;
+                        setCurrentPatternCode("");
+                        toast.success("Pattern lock disabled");
+                      } catch (err: any) {
+                        toast.error(err.message || "Failed to disable pattern");
+                      }
+                    }
+                  }}
+                />
+              )}
+            </div>
             <Button type="button" variant="outline" onClick={openPatternDialog}>
-              <Grid3X3 className="h-4 w-4 mr-2" /> Change Pattern Lock
+              <Grid3X3 className="h-4 w-4 mr-2" /> {currentPatternCode ? "Change Pattern Lock" : "Set Pattern Lock"}
             </Button>
           </div>
         </section>

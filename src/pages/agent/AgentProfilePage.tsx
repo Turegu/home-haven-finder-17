@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
 } from "@/components/ui/dialog";
@@ -378,10 +379,36 @@ const AgentProfilePage = () => {
           </div>
 
           <div className="pt-4 border-t border-border/60">
-            <h3 className="text-sm font-medium text-foreground mb-3">Pattern Lock</h3>
-            <p className="text-xs text-muted-foreground mb-3">Change the pattern used for dashboard login verification.</p>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-sm font-medium text-foreground">Pattern Lock</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {currentPatternCode ? "Pattern lock is active. You'll need to draw it when logging in." : "No pattern lock set. You can log in with credentials only."}
+                </p>
+              </div>
+              {currentPatternCode && (
+                <Switch
+                  checked={!!currentPatternCode}
+                  onCheckedChange={async (checked) => {
+                    if (!checked && agent) {
+                      try {
+                        const { error } = await supabase
+                          .from("agent_pattern_codes")
+                          .delete()
+                          .eq("agent_id", agent.id);
+                        if (error) throw error;
+                        setCurrentPatternCode("");
+                        toast.success("Pattern lock disabled");
+                      } catch (err: any) {
+                        toast.error(err.message || "Failed to disable pattern");
+                      }
+                    }
+                  }}
+                />
+              )}
+            </div>
             <Button type="button" variant="outline" onClick={openPatternDialog}>
-              <Grid3X3 className="h-4 w-4 mr-2" /> Change Pattern Lock
+              <Grid3X3 className="h-4 w-4 mr-2" /> {currentPatternCode ? "Change Pattern Lock" : "Set Pattern Lock"}
             </Button>
           </div>
         </section>
