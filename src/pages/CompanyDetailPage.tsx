@@ -12,9 +12,10 @@ import { supabase } from '@/integrations/supabase/client';
 import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
-import PropertyCard from '@/components/PropertyCard';
-import FeaturedProjectCard from '@/components/FeaturedProjectCard';
+import PropertyListCard from '@/components/PropertyListCard';
+import EventListCard from '@/components/EventListCard';
 import FollowButton from '@/components/FollowButton';
+import type { EventResult } from '@/hooks/useEventSearch';
 
 interface CompanyData {
   id: string;
