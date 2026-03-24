@@ -87,6 +87,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
         .update({ title: editTitle.trim(), message: editMessage.trim() })
         .eq("title", editAnn.title)
         .eq("message", editAnn.message)
+        .eq("notification_type", "announcement")
         .eq("source_company_id", companyId!);
       toast.success("Announcement updated");
       setEditOpen(false);
@@ -181,7 +182,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-orange-500 hover:text-orange-600"
+                    className="h-8 w-8 text-amber-500 hover:text-amber-600"
                     onClick={() => setRecallId(ann.id)}
                     title="Recall from users"
                   >
@@ -244,7 +245,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRecall} className="bg-orange-500 hover:bg-orange-600">
+            <AlertDialogAction onClick={handleRecall} className="bg-amber-500 hover:bg-amber-600">
               Recall
             </AlertDialogAction>
           </AlertDialogFooter>
