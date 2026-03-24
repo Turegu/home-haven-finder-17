@@ -138,6 +138,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthPromptProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Index />} />
