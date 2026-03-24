@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home, BadgeCheck } from 'lucide-react';
+import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
@@ -185,7 +186,7 @@ const CompanyDetailPage = () => {
                     <div className="flex items-center gap-12">
                       <div className="flex items-center gap-1.5">
                         <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
-                        {company.is_verified && <BadgeCheck className="h-5 w-5 text-blue-500 shrink-0" />}
+                        {company.is_verified && <VerifiedBadge />}
                       </div>
                       <FollowButton type="company" targetId={company.id} />
                     </div>

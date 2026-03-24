@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import { formatCompanyTypes } from '@/data/companyTypes';
-import { MapPin, Search, Home, Globe, Rocket, Building2, BadgeCheck } from 'lucide-react';
+import { MapPin, Search, Home, Globe, Rocket, Building2 } from 'lucide-react';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -273,7 +274,7 @@ const AgentsPage = () => {
                       <h3 className="text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                         {company.name}
                       </h3>
-                      {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
+                      {company.is_verified && <VerifiedBadge size="sm" />}
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
@@ -349,7 +350,7 @@ const AgentsPage = () => {
                         <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                             {agent.name}
                           </h3>
-                          {agent.companies?.is_verified && <BadgeCheck className="h-3.5 w-3.5 text-blue-500 shrink-0" />}
+                          {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
                           {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>
