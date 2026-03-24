@@ -70,14 +70,14 @@ const PatternLock = ({ onPatternComplete, error = false, disabled = false }: Pat
   }, []);
 
   const handleStart = useCallback((clientX: number, clientY: number) => {
-    if (disabled) return;
+    if (disabled || isLockedOut) return;
     const dot = getDotAtPosition(clientX, clientY);
     if (dot !== null) {
       setIsDrawing(true);
       setSelectedDots([dot]);
       setCurrentPos({ x: clientX, y: clientY });
     }
-  }, [disabled, getDotAtPosition]);
+  }, [disabled, isLockedOut, getDotAtPosition]);
 
   const handleMove = useCallback((clientX: number, clientY: number) => {
     if (!isDrawing || disabled) return;
