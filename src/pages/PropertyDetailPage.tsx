@@ -854,7 +854,7 @@ const PropertyDetailPage = () => {
                         <Building className="h-10 w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentCompany || 'Company'}</h3>
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors flex items-center justify-center gap-1">{property.agentCompany || 'Company'}{companyVerified && <VerifiedBadge size="sm" />}</h3>
                     <p className="text-sm text-muted-foreground">{t('property.realEstateBrokers')}</p>
                   </Link>
 
