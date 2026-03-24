@@ -24,6 +24,7 @@ const AdminSettingsPage = () => {
   const [analyticsPhase, setAnalyticsPhase] = useState<AnalyticsPhase>("phase1");
   const [aiSearchEnabled, setAiSearchEnabled] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
+  const [patternActive, setPatternActive] = useState(true);
 
 
   // Pattern
