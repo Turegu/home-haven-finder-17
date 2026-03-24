@@ -946,9 +946,9 @@ const PropertyDetailPage = () => {
           listingId: property.listingId,
           floorLevel: property.floorLevel,
         }}
-        companyId={realCompanyId}
+        companyId={realAgentId ? null : realCompanyId}
         agentId={realAgentId}
-        companyName={property.agentCompany}
+        companyName={realAgentId ? property.agentName : property.agentCompany}
       />
 
       <ReportPropertyDialog
