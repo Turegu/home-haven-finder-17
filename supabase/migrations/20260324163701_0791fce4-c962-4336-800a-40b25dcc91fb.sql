@@ -1,0 +1,1 @@
+UPDATE agents SET user_id = 'c524a057-8bf9-4b86-a695-c3d0c8425250', status = 'active' WHERE id = 'fa05ddf7-a4eb-4080-9d9d-0a59c9e65602';
