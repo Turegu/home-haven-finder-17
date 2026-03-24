@@ -79,30 +79,42 @@ const AgentsPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: cms } = await supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1);
-      if (cms?.[0]) {
-        const c = (cms[0] as any).content;
+      // Fire all primary queries in parallel
+      const [cmsRes, compRes, agentRes] = await Promise.all([
+        supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1),
+        supabase.from("companies").select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified"),
+        supabase.from("agents").select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url, is_verified)").eq("status", "active"),
+      ]);
+
+      if (cmsRes.data?.[0]) {
+        const c = (cmsRes.data[0] as any).content;
         if (c?.hero?.image_url) setHeroImage(c.hero.image_url);
       }
 
-      const { data: compData } = await supabase
-        .from("companies")
-        .select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified");
-      setCompanies((compData ?? []) as CompanyRow[]);
+      const compData = compRes.data ?? [];
+      const agentData = agentRes.data ?? [];
+      setCompanies(compData as CompanyRow[]);
+      setAgents(agentData as unknown as AgentRow[]);
 
-      const { data: agentData } = await supabase
-        .from("agents")
-        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url, is_verified)")
-        .eq("status", "active");
-      setAgents((agentData ?? []) as unknown as AgentRow[]);
+      // Fire count queries in parallel
+      const agentIds = agentData.map((a: any) => a.id);
+      const compIds = compData.map(c => c.id);
 
-      if (agentData && agentData.length > 0) {
-        const agentIds = agentData.map((a: any) => a.id);
+      const [agentPropsRes, compAgentsRes, compPropsRes] = await Promise.all([
+        agentIds.length > 0
+          ? supabase.from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds)
+          : Promise.resolve({ data: [] }),
+        compIds.length > 0
+          ? supabase.from("agents").select("company_id").eq("status", "active").in("company_id", compIds)
+          : Promise.resolve({ data: [] }),
+        compIds.length > 0
+          ? supabase.from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", compIds)
+          : Promise.resolve({ data: [] }),
+      ]);
+      if (agentIds.length > 0) {
         const aCounts: Record<string, { buy: number; rent: number }> = {};
         agentIds.forEach((id: string) => { aCounts[id] = { buy: 0, rent: 0 }; });
-        const { data: agentProps } = await supabase
-          .from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds);
-        (agentProps ?? []).forEach((p: any) => {
+        ((agentPropsRes as any)?.data ?? []).forEach((p: any) => {
           if (!aCounts[p.agent_id]) return;
           if (p.property_purpose === 'rent') aCounts[p.agent_id].rent++;
           else aCounts[p.agent_id].buy++;
@@ -110,16 +122,11 @@ const AgentsPage = () => {
         setAgentCounts(aCounts);
       }
 
-      if (compData && compData.length > 0) {
-        const ids = compData.map(c => c.id);
+      if (compIds.length > 0) {
         const counts: Record<string, { agents: number; buy: number; rent: number }> = {};
-        ids.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
-        const { data: agentCountsData } = await supabase
-          .from("agents").select("company_id").eq("status", "active").in("company_id", ids);
-        (agentCountsData ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
-        const { data: propCounts } = await supabase
-          .from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", ids);
-        (propCounts ?? []).forEach((p: any) => {
+        compIds.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
+        ((compAgentsRes as any)?.data ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
+        ((compPropsRes as any)?.data ?? []).forEach((p: any) => {
           if (!counts[p.company_id]) return;
           if (p.property_purpose === 'rent') counts[p.company_id].rent++;
           else counts[p.company_id].buy++;
