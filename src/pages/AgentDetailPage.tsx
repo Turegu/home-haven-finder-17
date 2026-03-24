@@ -59,11 +59,13 @@ const AgentDetailPage = () => {
       setAgent(agentData);
 
       if (agentData) {
-        const { count: buyCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "buy");
-        const { count: rentCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "rent");
-        const { count: projCount } = await supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active");
-        const { count: evtCount } = await supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active");
-        setCounts({ buy: buyCount ?? 0, rent: rentCount ?? 0, projects: projCount ?? 0, events: evtCount ?? 0 });
+        const [buyRes, rentRes, projRes, evtRes] = await Promise.all([
+          supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "buy"),
+          supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "rent"),
+          supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
+          supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
+        ]);
+        setCounts({ buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 });
       }
       setLoading(false);
     };
