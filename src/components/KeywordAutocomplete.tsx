@@ -43,7 +43,7 @@ function getAutocompleteService(): google.maps.places.AutocompleteService | null
   return null;
 }
 
-const DEFAULT_CONFIG: Required<AutocompleteSearchConfig> = { properties: 3, projects: 0, places: 4 };
+const DEFAULT_CONFIG: Required<AutocompleteSearchConfig> = { properties: 3, projects: 0, events: 0, places: 4 };
 
 export default function KeywordAutocomplete({
   value,
