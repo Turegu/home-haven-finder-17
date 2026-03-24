@@ -87,8 +87,7 @@ const AgentsPage = () => {
 
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified")
-        .eq("is_verified", true);
+        .select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified");
       setCompanies((compData ?? []) as CompanyRow[]);
 
       const { data: agentData } = await supabase
