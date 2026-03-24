@@ -232,10 +232,10 @@ export default function PropertyFiltersModal({
           inline-flex items-center gap-2 ps-3 pe-3.5 py-2 text-[13px] font-medium rounded-lg
           transition-all duration-200 ease-out
           ${isActive
-            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-[1.02]'
+            ? 'bg-primary text-primary-foreground'
             : count > 0
-              ? 'bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 hover:shadow-sm'
-              : 'bg-background text-muted-foreground border border-border hover:border-primary/30 hover:text-foreground hover:bg-background hover:shadow-sm'
+              ? 'bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15'
+              : 'bg-background text-muted-foreground border border-border hover:border-primary/30 hover:text-foreground hover:bg-muted/50'
           }
         `}
       >
