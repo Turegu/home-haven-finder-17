@@ -128,6 +128,7 @@ const CompanyProfilePage = () => {
   const [newPattern, setNewPattern] = useState<number[]>([]);
   const [patternError, setPatternError] = useState(false);
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
+  const [patternActive, setPatternActive] = useState(false);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
   useEffect(() => {
     const fetchCompany = async () => {
