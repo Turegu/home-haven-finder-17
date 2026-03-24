@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { AuthPromptProvider } from "@/hooks/useAuthPrompt";
 import { useDirection } from "@/hooks/useDirection";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -137,6 +138,7 @@ const App = () => {
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthPromptProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -242,7 +244,7 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
-        
+        </AuthPromptProvider>
       </BrowserRouter>
       <BackToTop />
     </TooltipProvider>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, lazy } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -473,11 +474,16 @@ const ProjectsPage = () => {
               <option value="price_desc">{t('projectsPage.priceHighLow')}</option>
             </select>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const hasLocation = location.province || location.district || location.neighborhood;
                 const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
                 if (!hasFilters) {
                   toast.error(t('projectsPage.selectFilterFirst'));
+                  return;
+                }
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                  window.dispatchEvent(new Event('auth-prompt-open'));
                   return;
                 }
                 setSaveSearchOpen(true);

@@ -1280,5 +1280,21 @@
     "enableMapMessage": "Select province and city/town to enable map pin placement",
     "boundaryNotAvailable": "District boundary not available — pin placement unrestricted.",
     "loading": "Loading..."
+  },
+  "authPrompt": {
+    "title": "Sign in to unlock all features",
+    "subtitle": "Create a free account and enjoy these powerful tools",
+    "continueGoogle": "Continue with Google",
+    "googleFailed": "Google sign-in failed",
+    "features": {
+      "searchAll": "Search all properties across Turkey",
+      "viewFull": "View photos, videos, 3D tours & smart map",
+      "saveCompare": "Save & compare favorite properties",
+      "marketTrends": "Stay updated with market prices & trends",
+      "followAgents": "Follow agents & get new offer alerts",
+      "aiSearch": "AI-powered property search assistant",
+      "aiAnalysis": "AI comparison & investment analysis",
+      "galleryTools": "Interactive gallery & viewing tools"
+    }
   }
 }

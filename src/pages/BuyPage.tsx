@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
 import { toast } from 'sonner';
@@ -418,11 +419,16 @@ const BuyPage = () => {
               <option value="area_asc">{t('filters.area')}: ↑</option>
             </select>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const hasLocation = location.province || location.district || location.neighborhood;
                 const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
                 if (!hasFilters) {
                   toast.error(t('buyPage.selectFilterFirst'));
+                  return;
+                }
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                  window.dispatchEvent(new Event('auth-prompt-open'));
                   return;
                 }
                 setSaveSearchOpen(true);
