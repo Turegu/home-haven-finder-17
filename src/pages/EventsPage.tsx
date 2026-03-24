@@ -17,6 +17,7 @@ import EventListCard from '@/components/EventListCard';
 import EventGridCard from '@/components/EventGridCard';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
+import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 
 const EventsPage = () => {
   const { t } = useTranslation();
