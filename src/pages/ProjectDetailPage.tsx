@@ -91,6 +91,13 @@ const ProjectDetailPage = () => {
         });
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+        if (p.agents) {
+          setContactPhone(p.agents.phone || null);
+          setContactWhatsapp(p.agents.whatsapp || null);
+        } else {
+          setContactPhone(p.companies?.phone || null);
+          setContactWhatsapp(p.companies?.whatsapp || null);
+        }
 
         // Fetch project units for contact dialog
         const { data: units } = await supabase
