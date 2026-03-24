@@ -278,7 +278,10 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 size="sm"
                 variant="outline"
                 className="h-8 text-xs gap-1"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => {
+                  e.preventDefault(); e.stopPropagation();
+                  if (property.contactPhone) window.open(`tel:${property.contactPhone}`, '_self');
+                }}
               >
                 <Phone className="h-3.5 w-3.5" /> Call
               </Button>
@@ -293,7 +296,13 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               <Button
                 size="sm"
                 className="h-8 text-xs gap-1 bg-primary hover:bg-primary/90"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => {
+                  e.preventDefault(); e.stopPropagation();
+                  if (property.contactWhatsapp) {
+                    const cleaned = property.contactWhatsapp.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${cleaned}`, '_blank');
+                  }
+                }}
               >
                 <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
               </Button>
