@@ -70,7 +70,7 @@ export default function KeywordAutocomplete({
   className,
 }: KeywordAutocompleteProps) {
   const { t } = useTranslation();
-  const { allowedCountry } = useAllowedCountry();
+  const { data: allowedCountry } = useAllowedCountry();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
