@@ -89,6 +89,17 @@ const AdminCompaniesPage = () => {
     }
   };
 
+  const handleToggleVerified = async (company: Company) => {
+    const newValue = !company.is_verified;
+    const { error } = await supabase.from("companies").update({ is_verified: newValue }).eq("id", company.id);
+    if (error) {
+      toast.error("Failed to update verification status");
+    } else {
+      toast.success(`${company.name} ${newValue ? "verified" : "unverified"}`);
+      fetchCompanies();
+    }
+  };
+
   const membershipColor = (m: string) => {
     switch (m) {
       case "pro": return "bg-emerald-100 text-emerald-800";
