@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 import { Button } from '@/components/ui/button';
 import LocationPicker from '@/components/LocationPicker';
