@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home, BadgeCheck } from 'lucide-react';
+import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
