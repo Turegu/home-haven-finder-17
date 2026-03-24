@@ -11,6 +11,7 @@ import PatternLock from "@/components/admin/PatternLock";
 
 type LoginMode = "agent" | "company";
 type LoginStep = "credentials" | "pattern";
+type PendingRedirect = "/agent" | "/company";
 
 const AgentLoginPage = () => {
   const navigate = useNavigate();
