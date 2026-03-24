@@ -52,7 +52,7 @@ const CompanyDetailPage = () => {
     const fetchCompany = async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location, is_verified")
         .eq("id", id)
         .maybeSingle();
       setCompany(data as CompanyData | null);
