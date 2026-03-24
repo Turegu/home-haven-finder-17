@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, MapPin, Home, Building2 } from 'lucide-react';
+import { X, MapPin, Home, Building2, CalendarDays } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useJsApiLoader } from '@react-google-maps/api';
