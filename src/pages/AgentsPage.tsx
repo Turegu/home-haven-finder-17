@@ -276,7 +276,7 @@ const AgentsPage = () => {
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
-                      {typeLabel(company.company_type)}
+                      {typeLabel(company.company_types)}
                     </p>
 
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
