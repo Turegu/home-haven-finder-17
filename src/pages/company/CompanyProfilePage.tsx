@@ -507,32 +507,35 @@ const CompanyProfilePage = () => {
                 </p>
               </div>
             </div>
-            {currentPatternCode && (
-              <div className="flex items-center justify-between mb-3 p-3 rounded-lg bg-secondary/50">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Pattern Login</p>
-                  <p className="text-xs text-muted-foreground">{currentPatternCode ? "Active — pattern required at login" : "Inactive — credentials only"}</p>
-                </div>
-                <Switch
-                  checked={!!currentPatternCode}
-                  onCheckedChange={async (checked) => {
-                    if (!checked && company) {
-                      try {
-                        const { error } = await supabase
-                          .from("company_pattern_codes")
-                          .delete()
-                          .eq("company_id", company.id);
-                        if (error) throw error;
-                        setCurrentPatternCode("");
-                        toast.success("Pattern lock disabled");
-                      } catch (err: any) {
-                        toast.error(err.message || "Failed to disable pattern");
-                      }
-                    }
-                  }}
-                />
+            <div className="flex items-center justify-between mb-3 p-3 rounded-lg bg-secondary/50">
+              <div>
+                <p className="text-sm font-medium text-foreground">Pattern Login</p>
+                <p className="text-xs text-muted-foreground">
+                  {currentPatternCode
+                    ? "Active — pattern required at login"
+                    : "Set a pattern first to enable this"}
+                </p>
               </div>
-            )}
+              <Switch
+                checked={!!currentPatternCode}
+                disabled={!currentPatternCode}
+                onCheckedChange={async (checked) => {
+                  if (!checked && company) {
+                    try {
+                      const { error } = await supabase
+                        .from("company_pattern_codes")
+                        .delete()
+                        .eq("company_id", company.id);
+                      if (error) throw error;
+                      setCurrentPatternCode("");
+                      toast.success("Pattern lock disabled");
+                    } catch (err: any) {
+                      toast.error(err.message || "Failed to disable pattern");
+                    }
+                  }
+                }}
+              />
+            </div>
             <Button type="button" variant="outline" onClick={openPatternDialog}>
               <Grid3X3 className="h-4 w-4 mr-2" /> {currentPatternCode ? "Change Pattern Lock" : "Set Pattern Lock"}
             </Button>
