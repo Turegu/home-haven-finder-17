@@ -121,9 +121,9 @@ const AgentFollowersPage = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-16">
+                <TableRow><TableCell colSpan={5} className="text-center py-16">
                   <div className="flex flex-col items-center gap-2">
                     <Users className="h-12 w-12 text-muted-foreground/40" />
                     <p className="text-muted-foreground font-medium">No Followers Found</p>
@@ -133,6 +133,7 @@ const AgentFollowersPage = () => {
                 <TableRow key={f.id}>
                   <TableCell className="font-medium">{idx + 1}</TableCell>
                   <TableCell>{f.profile?.display_name || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{f.email || "—"}</TableCell>
                   <TableCell>{f.profile?.show_phone && f.profile?.phone ? f.profile.phone : <span className="text-muted-foreground/50">Hidden</span>}</TableCell>
                   <TableCell className="text-muted-foreground">{new Date(f.created_at).toLocaleDateString()}</TableCell>
                 </TableRow>
