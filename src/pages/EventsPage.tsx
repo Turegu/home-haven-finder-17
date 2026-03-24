@@ -345,7 +345,7 @@ const EventsPage = () => {
 
             {/* Vertical Sidebar Banner */}
             <div className="hidden lg:block w-[225px] shrink-0">
-              <div className="sticky top-[160px]">
+              <div className="sticky top-[200px]">
                 <BannerDisplay pageName="events" bannerType="vertical" />
               </div>
             </div>
