@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback, lazy } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
+import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 import { Link, useSearchParams } from 'react-router-dom';
 import { turkishIncludes } from '@/lib/utils';
 import {
   Search, LayoutGrid, List, Map,
   MapPin, Building, Maximize, Phone, Mail, Heart, SlidersHorizontal, Loader2,
   TreePine, Lamp, Check, ChevronLeft, ChevronRight, Bookmark, ChevronDown, Camera, Calendar,
-  Crown, Star, Tag, X, Home
+  Crown, Star, Tag, Home
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -174,21 +175,22 @@ const ProjectsPage = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative min-w-[140px] max-w-[200px]">
-              <input
-                type="text"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder={t('projectsPage.searchKeyword')}
-                className="w-full h-10 ps-3 pe-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-              />
-              {keyword && (
-                <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+            <KeywordAutocomplete
+              value={keyword}
+              onChange={(val) => {
+                setKeyword(val);
+                if (val === '' && keyword.trim()) {
+                  setTimeout(() => {
+                    setCommittedParams(prev => ({ ...prev, keyword: undefined, page: 1 }));
+                    setCurrentPage(1);
+                  }, 0);
+                }
+              }}
+              onEnter={handleSearch}
+              placeholder={t('projectsPage.searchKeyword')}
+              className="min-w-[140px] max-w-[200px]"
+              searchConfig={{ properties: 0, projects: 5, places: 10 }}
+            />
 
             {/* Unit Type dropdown */}
             <Popover>
