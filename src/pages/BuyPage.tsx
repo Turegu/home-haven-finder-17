@@ -273,6 +273,10 @@ const BuyPage = () => {
       listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
       rentDuration: p.rent_duration,
       advertisingTags: p.advertising_tags ?? [],
+      contactPhone: (p as any).agents?.phone ?? (p as any).companies?.phone ?? null,
+      contactWhatsapp: (p as any).agents?.whatsapp ?? (p as any).companies?.whatsapp ?? null,
+      companyId: p.company_id ?? null,
+      agentId: p.agent_id ?? null,
     };
   }
 
