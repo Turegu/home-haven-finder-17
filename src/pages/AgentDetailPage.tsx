@@ -48,7 +48,7 @@ const AgentDetailPage = () => {
     const fetchAgent = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_type, cover_url)")
+        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_type, cover_url, is_verified)")
         .eq("id", id)
         .maybeSingle();
       const agentData = data as unknown as AgentData | null;
