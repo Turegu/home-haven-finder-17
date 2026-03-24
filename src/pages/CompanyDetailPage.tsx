@@ -373,7 +373,7 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
     setLoading(true);
     let query = supabase
       .from('properties')
-      .select('*, agents(name, avatar_url), companies(name, logo_url)')
+      .select('*, agents(name, avatar_url, phone, whatsapp), companies(name, logo_url, phone, whatsapp)')
       .eq('company_id', companyId)
       .eq('status', 'active')
       .limit(50);
