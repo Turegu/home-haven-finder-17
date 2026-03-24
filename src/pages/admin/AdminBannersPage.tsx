@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, Pencil, Search, ImageIcon, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";
 
 interface Banner {
   id: string;
