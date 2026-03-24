@@ -78,6 +78,13 @@ const EventDetailPage = () => {
         });
         setRealAgentId(e.agents?.id || null);
         setRealCompanyId(e.companies?.id || e.agents?.companies?.id || null);
+        if (e.agents) {
+          setContactPhone(e.agents.phone || null);
+          setContactWhatsapp(e.agents.whatsapp || null);
+        } else {
+          setContactPhone(e.companies?.phone || null);
+          setContactWhatsapp(e.companies?.whatsapp || null);
+        }
       }
       setLoading(false);
     };
