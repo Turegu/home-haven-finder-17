@@ -39,6 +39,7 @@ const MEMBERSHIP_COLORS: Record<string, string> = {
 
 const AdminCompaniesPage = () => {
   const navigate = useNavigate();
+  const { isTestMode } = useTestMode();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
