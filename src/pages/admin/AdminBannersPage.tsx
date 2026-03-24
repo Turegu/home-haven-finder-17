@@ -332,15 +332,18 @@ const AdminBannersPage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Start Display Date</Label>
-                <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
-              </div>
-              <div>
-                <Label>End Display Date</Label>
-                <Input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
-              </div>
+            <div>
+              <Label>Duration {isTestMode && <span className="text-xs text-amber-500 ml-1">(minutes in test mode)</span>}</Label>
+              <Select value={String(form.duration_months)} onValueChange={(v) => setForm({ ...form, duration_months: Number(v) })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DURATION_OPTIONS.map((d) => (
+                    <SelectItem key={d.value} value={String(d.value)}>
+                      {getTestAwareDurationLabel(d.value, isTestMode)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
