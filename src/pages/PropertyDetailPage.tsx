@@ -121,7 +121,7 @@ const PropertyDetailPage = () => {
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
-        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type)), companies(id, name, logo_url, company_type)")
+        .select("*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url, company_type, is_verified)), companies(id, name, logo_url, company_type, is_verified)")
         .eq("id", id)
         .maybeSingle();
       if (data) {
