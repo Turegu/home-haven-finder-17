@@ -13,17 +13,9 @@ import { toast } from "sonner";
 import { ImageIcon, RotateCcw, Save } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import type { Database } from "@/integrations/supabase/types";
+import { companyTypes } from "@/data/companyTypes";
 
-type CompanyType = Database["public"]["Enums"]["company_type"];
 type MembershipType = Database["public"]["Enums"]["membership_type"];
-
-const companyTypes: { value: CompanyType; label: string }[] = [
-  { value: "real_estate_agency", label: "Real Estate Agency" },
-  { value: "developer", label: "Developer" },
-  { value: "brokerage", label: "Brokerage" },
-  { value: "property_management", label: "Property Management" },
-  { value: "consulting", label: "Consulting" },
-];
 
 const languageOptions = ["English", "Arabic", "Turkish", "Russian", "German", "French", "Italian"];
 const packageOptions: { value: MembershipType; label: string }[] = [
