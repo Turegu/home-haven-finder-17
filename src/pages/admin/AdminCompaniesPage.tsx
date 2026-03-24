@@ -327,8 +327,10 @@ const AdminCompaniesPage = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSorted.map((company, idx) => (
-                  <TableRow key={company.id} className="hover:bg-muted/30">
+                filteredAndSorted.map((company, idx) => {
+                  const expiring = isExpiringSoon(company);
+                  return (
+                  <TableRow key={company.id} className={`hover:bg-muted/30 ${expiring ? "bg-destructive/10" : ""}`}>
                     <TableCell>
                       <Checkbox
                         checked={selected.includes(company.id)}
