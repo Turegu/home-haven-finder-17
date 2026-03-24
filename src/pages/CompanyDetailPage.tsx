@@ -471,48 +471,10 @@ const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
       ) : projects.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground text-sm">No projects match the selected filters.</div>
       ) : (
-        <div className="space-y-4">
-          {projects.map((p) => {
-            const loc = p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A';
-            return (
-              <Link key={p.id} to={`/projects/${p.id}`} className="block bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
-                <div className="flex flex-col sm:flex-row">
-                  <div className="relative w-full sm:w-[240px] h-[180px] shrink-0 overflow-hidden">
-                    <img src={p.images?.[0] || '/placeholder.svg'} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    {p.project_status && (
-                      <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2.5 py-1 rounded">{p.project_status}</span>
-                    )}
-                  </div>
-                  <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">{p.title}</h3>
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
-                        <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span className="truncate">{loc}</span>
-                      </div>
-                      <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-                        <span>{p.project_type || 'residential'}</span>
-                        <span>·</span>
-                        <span>{p.min_units ?? 0} {t('projects.units')}</span>
-                      </div>
-                      {p.description && (
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{p.description.replace(/[#*_~`>]/g, '').slice(0, 180)}</p>
-                      )}
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {p.companies?.logo_url && <img src={p.companies.logo_url} alt="" className="h-6 w-auto object-contain" />}
-                        <span className="text-xs text-muted-foreground">{p.developer || p.companies?.name || ''}</span>
-                      </div>
-                      {p.min_price != null && (
-                        <span className="text-sm font-semibold text-primary">{t('projects.startingFrom')} {p.currency ?? 'USD'} {Number(p.min_price).toLocaleString()}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="space-y-6">
+          {projects.map((p) => (
+            <ProjectListCard key={p.id} project={p} />
+          ))}
         </div>
       )}
     </>
