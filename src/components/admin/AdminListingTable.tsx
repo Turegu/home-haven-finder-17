@@ -340,6 +340,7 @@ const AdminListingTable = ({
                   onCheckedChange={toggleAll}
                 />
               </th>
+              <th className="p-3 text-left font-semibold text-foreground w-12">#</th>
               {columns.map((col) => (
                 <th key={col.key} className="p-3 text-left font-semibold text-foreground whitespace-nowrap">
                   {col.label}
@@ -357,7 +358,7 @@ const AdminListingTable = ({
                 </td>
               </tr>
             ) : (
-              paginated.map((item) => (
+              paginated.map((item, idx) => (
                 <tr key={item.id} className="border-t border-border hover:bg-muted/30 transition-colors">
                   <td className="p-3">
                     <Checkbox
@@ -365,6 +366,7 @@ const AdminListingTable = ({
                       onCheckedChange={() => toggleSelect(item.id)}
                     />
                   </td>
+                  <td className="p-3 text-muted-foreground text-xs font-medium">{(page - 1) * ITEMS_PER_PAGE + idx + 1}</td>
                   {columns.map((col) => (
                     <td key={col.key} className="p-3 text-foreground">
                       <span className="flex items-center gap-1.5">
