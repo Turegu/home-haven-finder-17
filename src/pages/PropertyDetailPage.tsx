@@ -833,7 +833,7 @@ const PropertyDetailPage = () => {
                         className="h-14 w-auto max-w-[120px] rounded-lg object-contain group-hover:opacity-80 transition-opacity"
                       />
                       <div className="text-center">
-                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">{property.agentCompany}</h4>
+                        <h4 className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors flex items-center justify-center gap-1">{property.agentCompany}{companyVerified && <VerifiedBadge size="sm" />}</h4>
                         <p className="text-xs text-muted-foreground">{t('property.realEstateBrokers')}</p>
                       </div>
                     </Link>
