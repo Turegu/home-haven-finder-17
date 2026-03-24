@@ -178,6 +178,16 @@ const PropertyDetailPage = () => {
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
         setCompanyVerified(p.companies?.is_verified || p.agents?.companies?.is_verified || false);
+        // Set contact info: agent takes priority over company
+        if (p.agents) {
+          setContactPhone(p.agents.phone || null);
+          setContactWhatsapp(p.agents.whatsapp || null);
+          setContactName(p.agents.name || '');
+        } else {
+          setContactPhone(p.companies?.phone || null);
+          setContactWhatsapp(p.companies?.whatsapp || null);
+          setContactName(p.companies?.name || '');
+        }
         setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
 
         // Fetch similar properties
