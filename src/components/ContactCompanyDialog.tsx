@@ -44,6 +44,7 @@ interface ContactCompanyDialogProps {
   companyId: string | null;
   agentId: string | null;
   companyName?: string;
+  companyLogo?: string | null;
   listingType?: 'property' | 'project' | 'event';
   projectUnits?: ProjectUnitOption[];
 }
