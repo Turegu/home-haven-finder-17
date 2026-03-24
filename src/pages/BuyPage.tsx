@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
+import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import PropertyListCard from '@/components/PropertyListCard';
