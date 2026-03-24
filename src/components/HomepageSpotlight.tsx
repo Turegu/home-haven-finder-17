@@ -142,7 +142,7 @@ export const TopCompaniesSpotlight = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, logo_url, company_type, profile_classification, boost_end_date")
+        .select("id, name, logo_url, company_types, profile_classification, boost_end_date")
         .eq("is_verified", true)
         .eq("profile_classification", "boosted")
         .limit(50);
