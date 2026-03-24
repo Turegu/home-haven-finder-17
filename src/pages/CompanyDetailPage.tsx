@@ -13,6 +13,7 @@ import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyListCard from '@/components/PropertyListCard';
+import ProjectListCard from '@/components/ProjectListCard';
 import EventListCard from '@/components/EventListCard';
 import FollowButton from '@/components/FollowButton';
 import type { EventResult } from '@/hooks/useEventSearch';

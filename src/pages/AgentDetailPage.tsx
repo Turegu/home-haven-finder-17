@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
-import FeaturedProjectCard from '@/components/FeaturedProjectCard';
+import ProjectListCard from '@/components/ProjectListCard';
 import FollowButton from '@/components/FollowButton';
 
 interface AgentData {
