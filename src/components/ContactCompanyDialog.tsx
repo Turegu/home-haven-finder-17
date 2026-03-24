@@ -196,7 +196,16 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Email {companyName || 'company'}</DialogTitle>
+          <div className="flex items-center gap-3">
+            {companyLogo && (
+              <img
+                src={companyLogo}
+                alt={companyName || 'company'}
+                className="h-10 w-10 rounded-lg object-contain border border-border flex-shrink-0"
+              />
+            )}
+            <DialogTitle>Email {companyName || 'company'}</DialogTitle>
+          </div>
         </DialogHeader>
 
         {/* Property summary */}
