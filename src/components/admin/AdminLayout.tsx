@@ -164,6 +164,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           </div>
         </header>
 
+        {/* Floating Test Mode Badge */}
+        {isTestMode && (
+          <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg animate-pulse">
+            <FlaskConical className="h-4 w-4" />
+            <span className="text-sm font-bold">TEST MODE — Months → Minutes</span>
+          </div>
+        )}
+
         {/* Content */}
         <main className="flex-1 p-4 md:p-6">
           {children}
