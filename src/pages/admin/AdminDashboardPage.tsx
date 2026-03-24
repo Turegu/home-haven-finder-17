@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Building2, Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
 
 interface Stats {
   totalCompanies: number;
@@ -53,30 +52,26 @@ const AdminDashboardPage = () => {
       {/* Top summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {summaryCards.map((card) => (
-          <div key={card.label} className={`rounded-xl bg-gradient-to-br ${card.gradient} p-6 text-white shadow-lg`}>
+          <div key={card.label} className={`rounded-xl border p-6 ${card.bg}`}>
             <div className="flex items-center justify-between mb-5">
               <div>
-                <p className="text-4xl font-bold">{card.count}</p>
-                <p className="text-sm font-medium text-white/80 mt-1">{card.label}</p>
+                <p className="text-4xl font-bold text-foreground">{card.count}</p>
+                <p className="text-sm font-medium text-muted-foreground mt-1">{card.label}</p>
               </div>
-              <div className={`${card.iconBg} rounded-xl p-3`}>
-                <card.icon className="h-8 w-8 text-white" />
-              </div>
+              <card.icon className={`h-9 w-9 ${card.iconColor}`} />
             </div>
             <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-xs text-white/70">
-                <span>Premium Listing</span>
-                <span>0%</span>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Premium Listing</span><span>0%</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/20">
-                <div className="h-full rounded-full bg-white/60" style={{ width: "0%" }} />
+              <div className={`h-1.5 rounded-full ${card.barBg}`}>
+                <div className={`h-full rounded-full ${card.barFill}`} style={{ width: "0%" }} />
               </div>
-              <div className="flex items-center justify-between text-xs text-white/70">
-                <span>Featured Listing</span>
-                <span>0%</span>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Featured Listing</span><span>0%</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/20">
-                <div className="h-full rounded-full bg-white/60" style={{ width: "0%" }} />
+              <div className={`h-1.5 rounded-full ${card.barBg}`}>
+                <div className={`h-full rounded-full ${card.barFill}`} style={{ width: "0%" }} />
               </div>
             </div>
           </div>
@@ -86,17 +81,15 @@ const AdminDashboardPage = () => {
       {/* Membership cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {membershipCards.map((card) => (
-          <div key={card.label} className={`rounded-xl bg-gradient-to-br ${card.gradient} overflow-hidden shadow-lg text-white`}>
+          <div key={card.label} className={`rounded-xl border overflow-hidden ${card.bg}`}>
             <div className="p-6 pb-4">
               <div className="flex items-center justify-between">
-                <p className="text-5xl font-bold">{card.count}</p>
-                <div className="bg-white/15 rounded-xl p-2.5">
-                  <card.icon className="h-7 w-7 text-white" />
-                </div>
+                <p className="text-5xl font-bold text-foreground">{card.count}</p>
+                <card.icon className={`h-8 w-8 ${card.iconColor}`} />
               </div>
-              <p className="text-sm font-medium text-white/75 mt-2">Companies</p>
+              <p className="text-sm font-medium text-muted-foreground mt-2">Companies</p>
             </div>
-            <div className="bg-black/15 text-center py-2.5 text-sm font-semibold tracking-wide">
+            <div className={`${card.barBg} text-white text-center py-2.5 text-sm font-semibold`}>
               {card.label} Members
             </div>
           </div>
