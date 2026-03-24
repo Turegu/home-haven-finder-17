@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, MapPin, Home } from 'lucide-react';
+import { X, MapPin, Home, Building2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useJsApiLoader } from '@react-google-maps/api';
@@ -9,20 +9,27 @@ import { cn } from '@/lib/utils';
 
 const LIBRARIES: ('places')[] = ['places'];
 
+export interface AutocompleteSearchConfig {
+  properties?: number;  // max property results (default 3)
+  projects?: number;    // max project results (default 0)
+  places?: number;      // max Google Places results (default 4)
+}
+
 interface KeywordAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string, type: 'property' | 'place') => void;
+  onSelect?: (value: string, type: 'property' | 'project' | 'place') => void;
   onEnter?: () => void;
   placeholder?: string;
   className?: string;
+  searchConfig?: AutocompleteSearchConfig;
 }
 
 interface Suggestion {
   id: string;
   text: string;
   subtext?: string;
-  type: 'property' | 'place';
+  type: 'property' | 'project' | 'place';
 }
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
@@ -35,6 +42,8 @@ function getAutocompleteService(): google.maps.places.AutocompleteService | null
   return null;
 }
 
+const DEFAULT_CONFIG: Required<AutocompleteSearchConfig> = { properties: 3, projects: 0, places: 4 };
+
 export default function KeywordAutocomplete({
   value,
   onChange,
@@ -42,8 +51,10 @@ export default function KeywordAutocomplete({
   onEnter,
   placeholder,
   className,
+  searchConfig,
 }: KeywordAutocompleteProps) {
   const { t } = useTranslation();
+  const config = { ...DEFAULT_CONFIG, ...searchConfig };
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: LIBRARIES });
   const { data: allowedCountry } = useAllowedCountry();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -53,7 +64,6 @@ export default function KeywordAutocomplete({
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -73,68 +83,102 @@ export default function KeywordAutocomplete({
 
     const results: Suggestion[] = [];
 
-    // 1. Search property titles from DB
-    try {
-      const { data } = await supabase
-        .from('properties')
-        .select('id, title, property_type, town, province')
-        .eq('status', 'active')
-        .ilike('title', `%${query}%`)
-        .limit(3);
+    // Run DB queries in parallel
+    const dbPromises: Promise<void>[] = [];
 
-      if (data) {
-        data.forEach((p) => {
-          results.push({
-            id: `prop-${p.id}`,
-            text: p.title,
-            subtext: [p.property_type, p.town, p.province].filter(Boolean).join(' · '),
-            type: 'property',
-          });
-        });
-      }
-    } catch {
-      // silently fail
+    // 1. Properties
+    if (config.properties > 0) {
+      dbPromises.push(
+        supabase
+          .from('properties')
+          .select('id, title, property_type, town, province')
+          .eq('status', 'active')
+          .ilike('title', `%${query}%`)
+          .limit(config.properties)
+          .then(({ data }) => {
+            if (data) {
+              data.forEach((p) => {
+                results.push({
+                  id: `prop-${p.id}`,
+                  text: p.title,
+                  subtext: [p.property_type, p.town, p.province].filter(Boolean).join(' · '),
+                  type: 'property',
+                });
+              });
+            }
+          })
+          .catch(() => {})
+      );
     }
 
-    // 2. Google Places autocomplete
-    try {
-      const service = getAutocompleteService();
-      if (service) {
-        const countryCode = allowedCountry === 'syria' ? 'sy' : allowedCountry === 'algeria' ? 'dz' : 'tr';
-        const predictions = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve) => {
-          service.getPlacePredictions(
-            {
-              input: query,
-              componentRestrictions: { country: countryCode },
-              types: ['geocode', 'establishment'],
-            },
-            (preds, status) => {
-              if (status === google.maps.places.PlacesServiceStatus.OK && preds) {
-                resolve(preds);
-              } else {
-                resolve([]);
-              }
+    // 2. Projects
+    if (config.projects > 0) {
+      dbPromises.push(
+        supabase
+          .from('projects')
+          .select('id, title, project_type, town, province, developer')
+          .eq('status', 'active')
+          .ilike('title', `%${query}%`)
+          .limit(config.projects)
+          .then(({ data }) => {
+            if (data) {
+              data.forEach((p) => {
+                results.push({
+                  id: `proj-${p.id}`,
+                  text: p.title,
+                  subtext: [p.developer, p.town, p.province].filter(Boolean).join(' · '),
+                  type: 'project',
+                });
+              });
             }
-          );
-        });
+          })
+          .catch(() => {})
+      );
+    }
 
-        predictions.slice(0, 4).forEach((p) => {
-          results.push({
-            id: `place-${p.place_id}`,
-            text: p.structured_formatting.main_text,
-            subtext: p.structured_formatting.secondary_text,
-            type: 'place',
+    await Promise.all(dbPromises);
+
+    // 3. Google Places
+    if (config.places > 0) {
+      try {
+        const service = getAutocompleteService();
+        if (service) {
+          const countryCode = allowedCountry === 'syria' ? 'sy' : allowedCountry === 'algeria' ? 'dz' : 'tr';
+          const predictions = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve) => {
+            service.getPlacePredictions(
+              {
+                input: query,
+                componentRestrictions: { country: countryCode },
+                types: ['geocode', 'establishment'],
+              },
+              (preds, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && preds) {
+                  resolve(preds);
+                } else {
+                  resolve([]);
+                }
+              }
+            );
           });
-        });
+
+          predictions.slice(0, config.places).forEach((p) => {
+            results.push({
+              id: `place-${p.place_id}`,
+              text: p.structured_formatting.main_text,
+              subtext: p.structured_formatting.secondary_text,
+              type: 'place',
+            });
+          });
+        }
+      } catch {
+        // silently fail
       }
-    } catch {
-      // silently fail
     }
 
     setSuggestions(results);
     setIsOpen(results.length > 0);
     setActiveIndex(-1);
-  }, [allowedCountry]);
+  }, [allowedCountry, config.properties, config.projects, config.places]);
 
   const handleInputChange = (val: string) => {
     onChange(val);
@@ -173,6 +217,42 @@ export default function KeywordAutocomplete({
     }
   };
 
+  const renderSection = (
+    items: Suggestion[],
+    label: string,
+    icon: React.ReactNode,
+    startIndex: number,
+    showDivider: boolean,
+  ) => {
+    if (items.length === 0) return null;
+    return (
+      <>
+        {showDivider && <div className="border-t border-border" />}
+        <p className="px-3 pt-2 pb-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+        {items.map((s, i) => {
+          const idx = startIndex + i;
+          return (
+            <button
+              key={s.id}
+              className={cn(
+                "w-full flex items-start gap-2.5 px-3 py-2 text-start hover:bg-muted transition-colors text-sm",
+                idx === activeIndex && "bg-muted"
+              )}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => handleSelect(s)}
+            >
+              {icon}
+              <div className="min-w-0">
+                <p className="font-medium text-foreground truncate">{s.text}</p>
+                {s.subtext && <p className="text-xs text-muted-foreground truncate">{s.subtext}</p>}
+              </div>
+            </button>
+          );
+        })}
+      </>
+    );
+  };
+
   return (
     <div ref={containerRef} className={cn("relative", className)}>
       <input
@@ -197,62 +277,28 @@ export default function KeywordAutocomplete({
 
       {isOpen && suggestions.length > 0 && (() => {
         const propertySuggestions = suggestions.filter(s => s.type === 'property');
+        const projectSuggestions = suggestions.filter(s => s.type === 'project');
         const placeSuggestions = suggestions.filter(s => s.type === 'place');
-        let flatIndex = -1;
+        let offset = 0;
+
         return (
-          <div className="absolute top-full start-0 end-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-[320px] overflow-y-auto">
-            {propertySuggestions.length > 0 && (
-              <>
-                <p className="px-3 pt-2 pb-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Listings</p>
-                {propertySuggestions.map((s) => {
-                  flatIndex++;
-                  const idx = flatIndex;
-                  return (
-                    <button
-                      key={s.id}
-                      className={cn(
-                        "w-full flex items-start gap-2.5 px-3 py-2 text-start hover:bg-muted transition-colors text-sm",
-                        idx === activeIndex && "bg-muted"
-                      )}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelect(s)}
-                    >
-                      <Home className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                      <div className="min-w-0">
-                        <p className="font-medium text-foreground truncate">{s.text}</p>
-                        {s.subtext && <p className="text-xs text-muted-foreground truncate">{s.subtext}</p>}
-                      </div>
-                    </button>
-                  );
-                })}
-              </>
+          <div className="absolute top-full start-0 end-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-[420px] overflow-y-auto">
+            {renderSection(
+              propertySuggestions, 'Listings',
+              <Home className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
+              offset, false
             )}
-            {placeSuggestions.length > 0 && (
-              <>
-                {propertySuggestions.length > 0 && <div className="border-t border-border" />}
-                <p className="px-3 pt-2 pb-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Places</p>
-                {placeSuggestions.map((s) => {
-                  flatIndex++;
-                  const idx = flatIndex;
-                  return (
-                    <button
-                      key={s.id}
-                      className={cn(
-                        "w-full flex items-start gap-2.5 px-3 py-2 text-start hover:bg-muted transition-colors text-sm",
-                        idx === activeIndex && "bg-muted"
-                      )}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelect(s)}
-                    >
-                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-                      <div className="min-w-0">
-                        <p className="font-medium text-foreground truncate">{s.text}</p>
-                        {s.subtext && <p className="text-xs text-muted-foreground truncate">{s.subtext}</p>}
-                      </div>
-                    </button>
-                  );
-                })}
-              </>
+            {(() => { offset += propertySuggestions.length; return null; })()}
+            {renderSection(
+              projectSuggestions, 'Projects',
+              <Building2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
+              offset, propertySuggestions.length > 0
+            )}
+            {(() => { offset += projectSuggestions.length; return null; })()}
+            {renderSection(
+              placeSuggestions, 'Places',
+              <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />,
+              offset, (propertySuggestions.length + projectSuggestions.length) > 0
             )}
           </div>
         );
