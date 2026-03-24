@@ -139,6 +139,32 @@ export default function KeywordAutocomplete({
       );
     }
 
+    // 3. Events
+    if (config.events > 0) {
+      dbPromises.push(
+        Promise.resolve(
+          supabase
+            .from('events')
+            .select('id, title, event_type, town, province, organizer')
+            .eq('status', 'active')
+            .ilike('title', `%${query}%`)
+            .limit(config.events)
+        ).then(({ data }) => {
+            if (data) {
+              data.forEach((e) => {
+                results.push({
+                  id: `evt-${e.id}`,
+                  text: e.title,
+                  subtext: [e.event_type, e.organizer, e.town, e.province].filter(Boolean).join(' · '),
+                  type: 'event',
+                });
+              });
+            }
+          })
+          .catch(() => {})
+      );
+    }
+
     await Promise.all(dbPromises);
 
     // 3. Google Places
