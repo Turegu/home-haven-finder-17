@@ -111,19 +111,21 @@ const AgentLoginPage = () => {
       return;
     }
 
-    // Fallback to admin_settings pattern
-    const { data: adminData } = await supabase
-      .from("admin_settings")
-      .select("setting_value")
-      .eq("setting_key", "company_pattern_code")
-      .limit(1);
+    // Only fallback to admin_settings if no company-specific pattern record exists at all
+    if (!patternData) {
+      const { data: adminData } = await supabase
+        .from("admin_settings")
+        .select("setting_value")
+        .eq("setting_key", "company_pattern_code")
+        .limit(1);
 
-    if (adminData?.[0]) {
-      setSavedPattern((adminData[0] as any).setting_value);
-      setPendingRedirect("/company");
-      setStep("pattern");
-      toast.info("Please draw the pattern to continue.");
-      return;
+      if (adminData?.[0]) {
+        setSavedPattern((adminData[0] as any).setting_value);
+        setPendingRedirect("/company");
+        setStep("pattern");
+        toast.info("Please draw the pattern to continue.");
+        return;
+      }
     }
 
     toast.success("Welcome to your Company Dashboard!");
