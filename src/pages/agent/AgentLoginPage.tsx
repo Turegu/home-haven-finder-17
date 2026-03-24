@@ -63,12 +63,12 @@ const AgentLoginPage = () => {
     // Check agent-specific pattern
     const { data: agentPatternData } = await supabase
       .from("agent_pattern_codes")
-      .select("pattern_code")
+      .select("pattern_code, is_active")
       .eq("agent_id", agent.id)
       .limit(1)
       .maybeSingle();
 
-    if (agentPatternData && agentPatternData.pattern_code) {
+    if (agentPatternData && agentPatternData.pattern_code && agentPatternData.is_active) {
       setSavedPattern(agentPatternData.pattern_code);
       setPendingRedirect("/agent");
       setStep("pattern");
@@ -98,12 +98,12 @@ const AgentLoginPage = () => {
     // Check company-specific pattern
     const { data: patternData } = await supabase
       .from("company_pattern_codes")
-      .select("pattern_code")
+      .select("pattern_code, is_active")
       .eq("company_id", company.id)
       .limit(1)
       .maybeSingle();
 
-    if (patternData && patternData.pattern_code) {
+    if (patternData && patternData.pattern_code && patternData.is_active) {
       setSavedPattern(patternData.pattern_code);
       setPendingRedirect("/company");
       setStep("pattern");

@@ -128,6 +128,7 @@ const CompanyProfilePage = () => {
   const [newPattern, setNewPattern] = useState<number[]>([]);
   const [patternError, setPatternError] = useState(false);
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
+  const [patternActive, setPatternActive] = useState(false);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
   useEffect(() => {
     const fetchCompany = async () => {
@@ -164,10 +165,13 @@ const CompanyProfilePage = () => {
         // Fetch current pattern
         const { data: patternData } = await supabase
           .from("company_pattern_codes")
-          .select("pattern_code")
+          .select("pattern_code, is_active")
           .eq("company_id", data.id)
           .maybeSingle();
-        if (patternData) setCurrentPatternCode(patternData.pattern_code);
+        if (patternData) {
+          setCurrentPatternCode(patternData.pattern_code);
+          setPatternActive(patternData.is_active ?? true);
+        }
       }
       setLoading(false);
     };
@@ -268,10 +272,10 @@ const CompanyProfilePage = () => {
         try {
           const { error } = await supabase
             .from("company_pattern_codes")
-            .update({ pattern_code: newPattern.join(",") })
-            .eq("company_id", company!.id);
+            .upsert({ company_id: company!.id, pattern_code: newPattern.join(","), is_active: true }, { onConflict: "company_id" });
           if (error) throw error;
           setCurrentPatternCode(newPattern.join(","));
+          setPatternActive(true);
           toast.success("Pattern lock updated!");
           setPatternDialogOpen(false);
         } catch (err: any) {
@@ -503,7 +507,7 @@ const CompanyProfilePage = () => {
               <div>
                 <h3 className="text-sm font-medium text-foreground">Pattern Lock</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {currentPatternCode ? "Pattern lock is active. You'll need to draw it when logging in." : "No pattern lock set. You can log in with credentials only."}
+                  {currentPatternCode ? "A pattern lock has been set." : "No pattern lock set. You can log in with credentials only."}
                 </p>
               </div>
             </div>
@@ -511,26 +515,28 @@ const CompanyProfilePage = () => {
               <div>
                 <p className="text-sm font-medium text-foreground">Pattern Login</p>
                 <p className="text-xs text-muted-foreground">
-                  {currentPatternCode
+                  {!currentPatternCode
+                    ? "Set a pattern first to enable this"
+                    : patternActive
                     ? "Active — pattern required at login"
-                    : "Set a pattern first to enable this"}
+                    : "Inactive — login with credentials only"}
                 </p>
               </div>
               <Switch
-                checked={!!currentPatternCode}
+                checked={patternActive}
                 disabled={!currentPatternCode}
                 onCheckedChange={async (checked) => {
-                  if (!checked && company) {
+                  if (company) {
                     try {
                       const { error } = await supabase
                         .from("company_pattern_codes")
-                        .delete()
+                        .update({ is_active: checked })
                         .eq("company_id", company.id);
                       if (error) throw error;
-                      setCurrentPatternCode("");
-                      toast.success("Pattern lock disabled");
+                      setPatternActive(checked);
+                      toast.success(checked ? "Pattern login activated" : "Pattern login deactivated");
                     } catch (err: any) {
-                      toast.error(err.message || "Failed to disable pattern");
+                      toast.error(err.message || "Failed to update pattern status");
                     }
                   }
                 }}

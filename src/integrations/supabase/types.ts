@@ -111,6 +111,7 @@ export type Database = {
           agent_id: string
           created_at: string
           id: string
+          is_active: boolean
           pattern_code: string
           updated_at: string
         }
@@ -118,6 +119,7 @@ export type Database = {
           agent_id: string
           created_at?: string
           id?: string
+          is_active?: boolean
           pattern_code?: string
           updated_at?: string
         }
@@ -125,6 +127,7 @@ export type Database = {
           agent_id?: string
           created_at?: string
           id?: string
+          is_active?: boolean
           pattern_code?: string
           updated_at?: string
         }
@@ -686,6 +689,7 @@ export type Database = {
           company_id: string
           created_at: string
           id: string
+          is_active: boolean
           pattern_code: string
           updated_at: string
         }
@@ -693,6 +697,7 @@ export type Database = {
           company_id: string
           created_at?: string
           id?: string
+          is_active?: boolean
           pattern_code?: string
           updated_at?: string
         }
@@ -700,6 +705,7 @@ export type Database = {
           company_id?: string
           created_at?: string
           id?: string
+          is_active?: boolean
           pattern_code?: string
           updated_at?: string
         }

@@ -114,7 +114,8 @@ const AgentProfilePage = () => {
   const [newPattern, setNewPattern] = useState<number[]>([]);
   const [patternError, setPatternError] = useState(false);
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
-  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [patternActive, setPatternActive] = useState(false);
+  const [_companyId, setCompanyId] = useState<string | null>(null);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -146,10 +147,13 @@ const AgentProfilePage = () => {
         // Fetch agent's own pattern
         const { data: patternData } = await supabase
           .from("agent_pattern_codes")
-          .select("pattern_code")
+          .select("pattern_code, is_active")
           .eq("agent_id", data.id)
           .maybeSingle();
-        if (patternData) setCurrentPatternCode(patternData.pattern_code);
+        if (patternData) {
+          setCurrentPatternCode(patternData.pattern_code);
+          setPatternActive(patternData.is_active ?? true);
+        }
       }
       setLoading(false);
     };
@@ -228,9 +232,10 @@ const AgentProfilePage = () => {
         try {
           const { error } = await supabase
             .from("agent_pattern_codes")
-            .upsert({ agent_id: agent!.id, pattern_code: newPattern.join(",") }, { onConflict: "agent_id" });
+            .upsert({ agent_id: agent!.id, pattern_code: newPattern.join(","), is_active: true }, { onConflict: "agent_id" });
           if (error) throw error;
           setCurrentPatternCode(newPattern.join(","));
+          setPatternActive(true);
           toast.success("Pattern lock updated!");
           setPatternDialogOpen(false);
         } catch (err: any) {
@@ -383,7 +388,7 @@ const AgentProfilePage = () => {
               <div>
                 <h3 className="text-sm font-medium text-foreground">Pattern Lock</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {currentPatternCode ? "Pattern lock is active. You'll need to draw it when logging in." : "No pattern lock set. You can log in with credentials only."}
+                  {currentPatternCode ? "A pattern lock has been set." : "No pattern lock set. You can log in with credentials only."}
                 </p>
               </div>
             </div>
@@ -391,26 +396,28 @@ const AgentProfilePage = () => {
               <div>
                 <p className="text-sm font-medium text-foreground">Pattern Login</p>
                 <p className="text-xs text-muted-foreground">
-                  {currentPatternCode
+                  {!currentPatternCode
+                    ? "Set a pattern first to enable this"
+                    : patternActive
                     ? "Active — pattern required at login"
-                    : "Set a pattern first to enable this"}
+                    : "Inactive — login with credentials only"}
                 </p>
               </div>
               <Switch
-                checked={!!currentPatternCode}
+                checked={patternActive}
                 disabled={!currentPatternCode}
                 onCheckedChange={async (checked) => {
-                  if (!checked && agent) {
+                  if (agent) {
                     try {
                       const { error } = await supabase
                         .from("agent_pattern_codes")
-                        .delete()
+                        .update({ is_active: checked })
                         .eq("agent_id", agent.id);
                       if (error) throw error;
-                      setCurrentPatternCode("");
-                      toast.success("Pattern lock disabled");
+                      setPatternActive(checked);
+                      toast.success(checked ? "Pattern login activated" : "Pattern login deactivated");
                     } catch (err: any) {
-                      toast.error(err.message || "Failed to disable pattern");
+                      toast.error(err.message || "Failed to update pattern status");
                     }
                   }
                 }}
