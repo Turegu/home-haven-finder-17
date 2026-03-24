@@ -20,21 +20,27 @@ const AgentInboxPage = () => {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("inquiry");
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [agentId, setAgentId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<any>(null);
 
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: agent } = await supabase.from("agents").select("company_id").eq("user_id", user.id).limit(1).maybeSingle();
-      if (agent) { setCompanyId(agent.company_id); fetchItems(agent.company_id); }
+      const { data: agent } = await supabase.from("agents").select("id, company_id").eq("user_id", user.id).limit(1).maybeSingle();
+      if (agent) {
+        setCompanyId(agent.company_id);
+        setAgentId(agent.id);
+        fetchItems(agent.company_id, agent.id);
+      }
     };
     init();
   }, []);
 
-  const fetchItems = async (cId: string) => {
+  const fetchItems = async (cId: string, aId: string) => {
     setLoading(true);
-    const { data } = await supabase.from("company_inbox").select("*").eq("company_id", cId).order("created_at", { ascending: false });
+    // Show only messages assigned to this agent
+    const { data } = await supabase.from("company_inbox").select("*").eq("company_id", cId).eq("agent_id", aId).order("created_at", { ascending: false });
     setItems(data || []);
     setLoading(false);
   };
