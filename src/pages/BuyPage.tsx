@@ -405,7 +405,10 @@ const BuyPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            {title} in <span className="text-primary">{totalCount} {t('buyPage.properties')}</span>
+            <span className="text-primary">{totalCount}</span> {title}
+            {(location.neighborhood || location.district || location.province || keyword.trim()) && (
+              <> in <span className="text-primary">{location.neighborhood || location.district || location.province || keyword.trim()}</span></>
+            )}
           </h1>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <select
