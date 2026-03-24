@@ -201,7 +201,7 @@ const AgentDetailPage = () => {
                 to={`/company/${agent.companies.id}`}
                 className="lg:w-[280px] xl:w-[320px] shrink-0 border-t lg:border-t-0 lg:border-l border-border p-5 flex items-center gap-4 hover:bg-muted/50 transition-colors group"
               >
-                <div className="w-14 h-14 rounded-xl bg-background border border-border shadow-sm overflow-hidden shrink-0">
+                <div className="w-20 h-20 rounded-xl bg-background border border-border shadow-sm overflow-hidden shrink-0">
                   {agent.companies.logo_url ? (
                     <img src={agent.companies.logo_url} alt={agent.companies.name} className="w-full h-full object-contain p-1.5" />
                   ) : (
