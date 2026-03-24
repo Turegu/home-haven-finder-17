@@ -330,7 +330,7 @@ const AgentsPage = () => {
                   }`}>
 
                   {/* Left: Avatar */}
-                  <div className={`w-28 sm:w-32 shrink-0 border-r border-border overflow-hidden ${
+                  <div className={`w-28 sm:w-32 shrink-0 border-r border-border overflow-hidden max-h-[180px] ${
                     boosted ? 'bg-primary/5' : 'bg-muted'
                   }`}>
                     {agent.avatar_url ? (
