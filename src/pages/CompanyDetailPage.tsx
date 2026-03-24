@@ -353,7 +353,7 @@ const CompanyDetailPage = () => {
             )}
             {activeTab === 'properties' && <CompanyPropertiesTab companyId={company.id} />}
             {activeTab === 'projects' && <CompanyProjectsTab companyId={company.id} />}
-            {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">{t('companyDetail.noEventsFound')}</div>}
+            {activeTab === 'events' && <CompanyEventsTab companyId={company.id} />}
           </div>
         </div>
       </div>
