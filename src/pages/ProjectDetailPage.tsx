@@ -516,6 +516,7 @@ const ProjectDetailPage = () => {
         agentId={realAgentId}
         companyName={realAgentId ? project.agentName : project.agentCompany}
         companyLogo={project.companyLogo}
+        agentAvatar={realAgentId ? project.agentLogo : null}
         listingType="project"
         projectUnits={projectUnits}
       />
