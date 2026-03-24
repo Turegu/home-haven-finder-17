@@ -188,7 +188,7 @@ const CompanyDetailPage = () => {
                       </div>
                       <FollowButton type="company" targetId={company.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
+                    <p className="text-sm text-muted-foreground">{typeLabel(company.company_types)}</p>
                   </div>
 
                   {/* Stats */}
