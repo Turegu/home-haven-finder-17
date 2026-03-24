@@ -55,7 +55,7 @@ const AdminCreateCompanyPage = () => {
 
   const handleReset = () => {
     setForm({
-      name: "", company_type: "", service_areas: "", languages: [],
+      name: "", company_types: [], service_areas: "", languages: [],
       registration_number: "", about: "", email: "", phone: "", whatsapp: "",
       membership: "basic", duration: "", province: "", town: "",
       neighbourhood: "", pin_location: "",
