@@ -51,6 +51,7 @@ const CompanyDetailPage = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ agents: 0, buy: 0, rent: 0, projects: 0, events: 0 });
+  const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;

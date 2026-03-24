@@ -45,6 +45,7 @@ const AgentDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
+  const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
