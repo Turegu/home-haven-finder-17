@@ -103,6 +103,14 @@ const AdminBannersPage = () => {
 
   const openEdit = (banner: Banner) => {
     setEditing(banner);
+    // Try to infer duration from start/end dates, default to 1
+    let duration_months = 1;
+    if (banner.start_date && banner.end_date) {
+      const diffMs = new Date(banner.end_date).getTime() - new Date(banner.start_date).getTime();
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      if (diffDays > 150) duration_months = 6;
+      else if (diffDays > 60) duration_months = 3;
+    }
     setForm({
       name: banner.name,
       page_name: banner.page_name,
@@ -110,8 +118,7 @@ const AdminBannersPage = () => {
       page_position: banner.page_position,
       link_url: banner.link_url || "",
       banner_text: banner.banner_text || "",
-      start_date: banner.start_date ? banner.start_date.slice(0, 10) : "",
-      end_date: banner.end_date ? banner.end_date.slice(0, 10) : "",
+      duration_months,
     });
     setImageFile(null);
     setImagePreview(banner.image_url);
