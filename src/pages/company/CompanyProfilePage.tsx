@@ -101,7 +101,7 @@ const CompanyProfilePage = () => {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    company_type: "" as string,
+    company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
