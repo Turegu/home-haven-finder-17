@@ -249,7 +249,7 @@ const CompanyDetailPage = () => {
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-lg font-bold text-foreground mb-2">{t('companyDetail.about', { name: company.name })}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line break-words overflow-hidden">
             {company.about || t('companyDetail.defaultAbout', { name: company.name })}
           </p>
         </div>
