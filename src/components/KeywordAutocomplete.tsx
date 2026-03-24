@@ -307,8 +307,10 @@ export default function KeywordAutocomplete({
       {isOpen && suggestions.length > 0 && (() => {
         const propertySuggestions = suggestions.filter(s => s.type === 'property');
         const projectSuggestions = suggestions.filter(s => s.type === 'project');
+        const eventSuggestions = suggestions.filter(s => s.type === 'event');
         const placeSuggestions = suggestions.filter(s => s.type === 'place');
         let offset = 0;
+        let prevCount = 0;
 
         return (
           <div className="absolute top-full start-0 end-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-[420px] overflow-y-auto">
@@ -317,17 +319,23 @@ export default function KeywordAutocomplete({
               <Home className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
               offset, false
             )}
-            {(() => { offset += propertySuggestions.length; return null; })()}
+            {(() => { offset += propertySuggestions.length; prevCount += propertySuggestions.length; return null; })()}
             {renderSection(
               projectSuggestions, 'Projects',
               <Building2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
-              offset, propertySuggestions.length > 0
+              offset, prevCount > 0
             )}
-            {(() => { offset += projectSuggestions.length; return null; })()}
+            {(() => { offset += projectSuggestions.length; prevCount += projectSuggestions.length; return null; })()}
+            {renderSection(
+              eventSuggestions, 'Events',
+              <CalendarDays className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
+              offset, prevCount > 0
+            )}
+            {(() => { offset += eventSuggestions.length; prevCount += eventSuggestions.length; return null; })()}
             {renderSection(
               placeSuggestions, 'Places',
               <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />,
-              offset, (propertySuggestions.length + projectSuggestions.length) > 0
+              offset, prevCount > 0
             )}
           </div>
         );
