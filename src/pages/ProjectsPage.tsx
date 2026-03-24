@@ -463,7 +463,10 @@ const ProjectsPage = () => {
         {/* Results Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-lg font-bold text-foreground">
-            {t('projectsPage.projectsIn')} <span className="text-primary">{totalCount} {t('projectsPage.projects')}</span>
+            <span className="text-primary">{totalCount}</span> {t('projectsPage.projects')}
+            {(location.neighborhood || location.district || location.province || keyword.trim()) && (
+              <> in <span className="text-primary">{location.neighborhood || location.district || location.province || keyword.trim()}</span></>
+            )}
           </h1>
           <div className="flex items-center gap-3">
             <select
