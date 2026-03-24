@@ -18,8 +18,31 @@ const PatternLock = ({ onPatternComplete, error = false, disabled = false }: Pat
   const [selectedDots, setSelectedDots] = useState<number[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null);
+  const [countdown, setCountdown] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const dotRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const isLockedOut = lockoutUntil !== null && Date.now() < lockoutUntil;
+
+  // Countdown timer
+  useEffect(() => {
+    if (!lockoutUntil) return;
+    const tick = () => {
+      const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      if (remaining <= 0) {
+        setLockoutUntil(null);
+        setCountdown(0);
+        setFailedAttempts(0);
+      } else {
+        setCountdown(remaining);
+      }
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [lockoutUntil]);
 
   const getDotCenter = useCallback((index: number) => {
     const dot = dotRefs.current[index];
