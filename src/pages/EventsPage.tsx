@@ -3,7 +3,7 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Search, LayoutGrid, List, Map, ChevronLeft, ChevronRight,
-  ChevronDown, CalendarDays, Loader2, X, Home,
+  ChevronDown, CalendarDays, Loader2, Home,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -17,6 +17,7 @@ import EventListCard from '@/components/EventListCard';
 import EventGridCard from '@/components/EventGridCard';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
+import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 
 const EventsPage = () => {
   const { t } = useTranslation();
@@ -102,21 +103,22 @@ const EventsPage = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
-            <div className="relative flex-1 min-w-[140px] sm:min-w-[200px]">
-              <input
-                type="text"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder={t('event.searchEvents')}
-                className="w-full h-10 pl-3 pr-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
-              />
-              {keyword && (
-                <button onClick={() => setKeyword('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
+            <KeywordAutocomplete
+              value={keyword}
+              onChange={(val) => {
+                setKeyword(val);
+                if (val === '' && keyword.trim()) {
+                  setTimeout(() => {
+                    setCommittedParams(prev => ({ ...prev, keyword: undefined, page: 1 }));
+                    setCurrentPage(1);
+                  }, 0);
+                }
+              }}
+              onEnter={handleSearch}
+              placeholder={t('event.searchEvents')}
+              className="flex-1 min-w-[140px] sm:min-w-[200px]"
+              searchConfig={{ properties: 0, projects: 0, events: 5, places: 10 }}
+            />
 
             {/* Event Type Dropdown */}
             <Popover>
@@ -263,9 +265,12 @@ const EventsPage = () => {
             <span className="ms-3 text-muted-foreground">{t('event.loadingEvents')}</span>
           </div>
         ) : allEvents.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">{t('event.noEventsFound')}</p>
-            <p className="text-muted-foreground">{t('event.tryAdjusting')}</p>
+          <div className="text-center py-24">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+              <CalendarDays className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <p className="text-lg font-semibold text-foreground mb-1">{t('event.noEventsFound')}</p>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">{t('event.tryAdjusting')}</p>
           </div>
         ) : (
           <div className="flex gap-6">

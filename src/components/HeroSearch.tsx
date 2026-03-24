@@ -88,7 +88,7 @@ const HeroSearch = () => {
               onChange={setKeyword}
               onEnter={handleSearch}
               className="flex-1"
-              searchConfig={{ properties: 5, projects: 5, places: 10 }}
+              searchConfig={{ properties: 5, projects: 5, events: 3, places: 10 }}
             />
             </div>
             <Button className="h-10 px-6 font-semibold shrink-0" onClick={handleSearch}>

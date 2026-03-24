@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, MapPin, Home, Building2 } from 'lucide-react';
+import { X, MapPin, Home, Building2, CalendarDays } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useJsApiLoader } from '@react-google-maps/api';
@@ -10,15 +10,16 @@ import { cn } from '@/lib/utils';
 const LIBRARIES: ('places')[] = ['places'];
 
 export interface AutocompleteSearchConfig {
-  properties?: number;  // max property results (default 3)
-  projects?: number;    // max project results (default 0)
-  places?: number;      // max Google Places results (default 4)
+  properties?: number;
+  projects?: number;
+  events?: number;
+  places?: number;
 }
 
 interface KeywordAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string, type: 'property' | 'project' | 'place') => void;
+  onSelect?: (value: string, type: 'property' | 'project' | 'event' | 'place') => void;
   onEnter?: () => void;
   placeholder?: string;
   className?: string;
@@ -29,7 +30,7 @@ interface Suggestion {
   id: string;
   text: string;
   subtext?: string;
-  type: 'property' | 'project' | 'place';
+  type: 'property' | 'project' | 'event' | 'place';
 }
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
@@ -42,7 +43,7 @@ function getAutocompleteService(): google.maps.places.AutocompleteService | null
   return null;
 }
 
-const DEFAULT_CONFIG: Required<AutocompleteSearchConfig> = { properties: 3, projects: 0, places: 4 };
+const DEFAULT_CONFIG: Required<AutocompleteSearchConfig> = { properties: 3, projects: 0, events: 0, places: 4 };
 
 export default function KeywordAutocomplete({
   value,
@@ -138,6 +139,32 @@ export default function KeywordAutocomplete({
       );
     }
 
+    // 3. Events
+    if (config.events > 0) {
+      dbPromises.push(
+        Promise.resolve(
+          supabase
+            .from('events')
+            .select('id, title, event_type, town, province, organizer')
+            .eq('status', 'active')
+            .ilike('title', `%${query}%`)
+            .limit(config.events)
+        ).then(({ data }) => {
+            if (data) {
+              data.forEach((e) => {
+                results.push({
+                  id: `evt-${e.id}`,
+                  text: e.title,
+                  subtext: [e.event_type, e.organizer, e.town, e.province].filter(Boolean).join(' · '),
+                  type: 'event',
+                });
+              });
+            }
+          })
+          .catch(() => {})
+      );
+    }
+
     await Promise.all(dbPromises);
 
     // 3. Google Places
@@ -180,7 +207,7 @@ export default function KeywordAutocomplete({
     setSuggestions(results);
     setIsOpen(results.length > 0);
     setActiveIndex(-1);
-  }, [allowedCountry, config.properties, config.projects, config.places]);
+  }, [allowedCountry, config.properties, config.projects, config.events, config.places]);
 
   const handleInputChange = (val: string) => {
     onChange(val);
@@ -280,8 +307,10 @@ export default function KeywordAutocomplete({
       {isOpen && suggestions.length > 0 && (() => {
         const propertySuggestions = suggestions.filter(s => s.type === 'property');
         const projectSuggestions = suggestions.filter(s => s.type === 'project');
+        const eventSuggestions = suggestions.filter(s => s.type === 'event');
         const placeSuggestions = suggestions.filter(s => s.type === 'place');
         let offset = 0;
+        let prevCount = 0;
 
         return (
           <div className="absolute top-full start-0 end-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-[420px] overflow-y-auto">
@@ -290,17 +319,23 @@ export default function KeywordAutocomplete({
               <Home className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
               offset, false
             )}
-            {(() => { offset += propertySuggestions.length; return null; })()}
+            {(() => { offset += propertySuggestions.length; prevCount += propertySuggestions.length; return null; })()}
             {renderSection(
               projectSuggestions, 'Projects',
               <Building2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
-              offset, propertySuggestions.length > 0
+              offset, prevCount > 0
             )}
-            {(() => { offset += projectSuggestions.length; return null; })()}
+            {(() => { offset += projectSuggestions.length; prevCount += projectSuggestions.length; return null; })()}
+            {renderSection(
+              eventSuggestions, 'Events',
+              <CalendarDays className="h-4 w-4 text-primary mt-0.5 shrink-0" />,
+              offset, prevCount > 0
+            )}
+            {(() => { offset += eventSuggestions.length; prevCount += eventSuggestions.length; return null; })()}
             {renderSection(
               placeSuggestions, 'Places',
               <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />,
-              offset, (propertySuggestions.length + projectSuggestions.length) > 0
+              offset, prevCount > 0
             )}
           </div>
         );
