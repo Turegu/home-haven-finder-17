@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Search, Eye, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 const AgentInboxPage = () => {
   const { t } = useTranslation();
