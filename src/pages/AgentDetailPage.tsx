@@ -212,7 +212,7 @@ const AgentDetailPage = () => {
                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{t('detail.company')}</p>
                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{agent.companies.name}</h3>
                   <p className="text-xs text-muted-foreground">
-                    {agent.companies.company_type?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Real Estate Company'}
+                    {formatCompanyTypes(agent.companies.company_types)}
                   </p>
                 </div>
               </Link>
