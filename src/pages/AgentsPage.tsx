@@ -95,9 +95,7 @@ const AgentsPage = () => {
         .from("agents")
         .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url, is_verified)")
         .eq("status", "active");
-      // Only show agents whose company is verified (unverified companies return null via RLS)
-      const verifiedAgents = ((agentData ?? []) as unknown as AgentRow[]).filter(a => a.companies != null);
-      setAgents(verifiedAgents);
+      setAgents((agentData ?? []) as unknown as AgentRow[]);
 
       if (agentData && agentData.length > 0) {
         const agentIds = agentData.map((a: any) => a.id);
