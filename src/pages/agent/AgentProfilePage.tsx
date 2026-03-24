@@ -114,7 +114,8 @@ const AgentProfilePage = () => {
   const [newPattern, setNewPattern] = useState<number[]>([]);
   const [patternError, setPatternError] = useState(false);
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
-  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [patternActive, setPatternActive] = useState(false);
+  const [_companyId, setCompanyId] = useState<string | null>(null);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
 
   useEffect(() => {
