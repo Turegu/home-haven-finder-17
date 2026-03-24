@@ -418,11 +418,16 @@ const BuyPage = () => {
               <option value="area_asc">{t('filters.area')}: ↑</option>
             </select>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const hasLocation = location.province || location.district || location.neighborhood;
                 const hasFilters = hasLocation || keyword.trim() || Object.keys(selectedBadges).length > 0;
                 if (!hasFilters) {
                   toast.error(t('buyPage.selectFilterFirst'));
+                  return;
+                }
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                  window.dispatchEvent(new Event('auth-prompt-open'));
                   return;
                 }
                 setSaveSearchOpen(true);
