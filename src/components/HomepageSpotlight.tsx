@@ -85,7 +85,7 @@ export const TopAgentsSpotlight = () => {
         {agents.map((a) => (
           <Link
             key={`a-${a.id}`}
-            to={a.id.startsWith("sample") ? "/agents" : `/agent/${a.id}`}
+            to={a.id.startsWith("sample") ? "/agents" : `/agents/${a.id}`}
             className="group block"
           >
             <div className="relative overflow-hidden rounded-2xl bg-card border border-border shadow-sm hover:shadow-xl transition-all duration-500">
