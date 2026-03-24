@@ -14,6 +14,7 @@ import NearbyPlacesMap from '@/components/NearbyPlacesMap';
 import StreetView from '@/components/StreetView';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
