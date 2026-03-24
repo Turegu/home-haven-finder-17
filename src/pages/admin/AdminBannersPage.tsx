@@ -155,6 +155,10 @@ const AdminBannersPage = () => {
       image_url = urlData.publicUrl;
     }
 
+    const now = new Date();
+    const start_date = now.toISOString();
+    const end_date = getTestAwareEndDate(form.duration_months, isTestMode);
+
     const payload = {
       name: form.name,
       page_name: form.page_name,
@@ -163,8 +167,8 @@ const AdminBannersPage = () => {
       link_url: form.link_url || null,
       banner_text: form.banner_text || null,
       image_url,
-      start_date: form.start_date || null,
-      end_date: form.end_date || null,
+      start_date,
+      end_date,
     };
 
     if (editing) {
