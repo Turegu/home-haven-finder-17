@@ -69,31 +69,42 @@ const AdminCreateCompanyPage = () => {
       return;
     }
 
+    if (form.membership !== "basic" && !form.duration) {
+      toast.error("Please select a package duration");
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
-      const { error } = await supabase.from("companies").insert({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone || null,
-        whatsapp: form.whatsapp || null,
-        company_types: form.company_types.length > 0 ? form.company_types : null,
-        service_areas: form.service_areas ? form.service_areas.split(",").map(s => s.trim()) : null,
-        languages: form.languages.length > 0 ? form.languages : null,
-        registration_number: form.registration_number || null,
-        about: form.about || null,
-        membership: form.membership,
-        province: form.province || null,
-        town: form.town || null,
-        neighbourhood: form.neighbourhood || null,
-        pin_location: form.pin_location || null,
-        created_by: user?.id || null,
+      const { data, error } = await supabase.functions.invoke("create-company-user", {
+        body: {
+          email: form.email.trim(),
+          companyData: {
+            name: form.name.trim(),
+            phone: form.phone || null,
+            whatsapp: form.whatsapp || null,
+            company_types: form.company_types.length > 0 ? form.company_types : null,
+            service_areas: form.service_areas ? form.service_areas.split(",").map(s => s.trim()) : null,
+            languages: form.languages.length > 0 ? form.languages : null,
+            registration_number: form.registration_number || null,
+            about: form.about || null,
+            membership: form.membership,
+            duration: form.duration || null,
+            province: form.province || null,
+            town: form.town || null,
+            neighbourhood: form.neighbourhood || null,
+            pin_location: form.pin_location || null,
+            created_by: user?.id || null,
+          },
+        },
       });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
-      toast.success("Company created successfully! A verification email will be sent.");
+      toast.success("Company created successfully! An invitation email has been sent.");
       navigate("/admin/companies");
     } catch (err: any) {
       toast.error(err.message || "Failed to create company");
