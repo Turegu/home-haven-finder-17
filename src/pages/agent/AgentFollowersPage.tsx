@@ -58,7 +58,9 @@ const AgentFollowersPage = () => {
     const userIds = data.map((f) => f.user_id);
     const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, phone, show_phone").in("user_id", userIds);
     const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
-    setFollowers(data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined })));
+    const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
+    const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
+    setFollowers(data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined, email: emailMap.get(f.user_id) || undefined })));
     setLoading(false);
   };
 
