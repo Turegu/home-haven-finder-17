@@ -226,9 +226,8 @@ const AgentProfilePage = () => {
       if (pattern.join(",") === newPattern.join(",")) {
         try {
           const { error } = await supabase
-            .from("company_pattern_codes")
-            .update({ pattern_code: newPattern.join(",") })
-            .eq("company_id", companyId!);
+            .from("agent_pattern_codes")
+            .upsert({ agent_id: agent!.id, pattern_code: newPattern.join(",") }, { onConflict: "agent_id" });
           if (error) throw error;
           setCurrentPatternCode(newPattern.join(","));
           toast.success("Pattern lock updated!");
