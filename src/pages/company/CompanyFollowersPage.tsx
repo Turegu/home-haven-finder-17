@@ -283,6 +283,9 @@ const CompanyFollowersPage = () => {
           </Table>
         </div>
 
+        {/* Announcement History */}
+        <AnnouncementHistory companyId={companyId} />
+
         {/* Announcement Dialog */}
         <Dialog open={announcementOpen} onOpenChange={setAnnouncementOpen}>
           <DialogContent className="sm:max-w-lg">
