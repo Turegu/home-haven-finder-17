@@ -438,6 +438,7 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
 };
 
 const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<ProjectFilters>({ status: 'all', minPrice: '', maxPrice: '' });
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -446,7 +447,7 @@ const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
     setLoading(true);
     let query = supabase
       .from('projects')
-      .select('id, title, location, min_price, currency, images, developer, min_units, completion_date, project_status, companies(logo_url)')
+      .select('*, companies(name, logo_url, phone, whatsapp), agents(name, avatar_url, phone, whatsapp)')
       .eq('company_id', companyId)
       .eq('status', 'active')
       .limit(50);
@@ -456,13 +457,7 @@ const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
     if (filters.maxPrice) query = query.lte('min_price', Number(filters.maxPrice));
 
     const { data } = await query.order('created_at', { ascending: false });
-    setProjects((data || []).map((p: any) => ({
-      id: p.id, title: p.title, location: p.location || 'N/A',
-      priceFrom: p.min_price ?? 0, currency: p.currency ?? 'USD',
-      image: p.images?.[0] || '/placeholder.svg', developer: p.developer || '',
-      developerLogo: p.companies?.logo_url || '', units: p.min_units ?? 0,
-      completionDate: p.completion_date || 'TBA',
-    })));
+    setProjects(data || []);
     setLoading(false);
   }, [companyId, filters]);
 
@@ -476,9 +471,85 @@ const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
       ) : projects.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground text-sm">No projects match the selected filters.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {projects.map((project) => (
-            <FeaturedProjectCard key={project.id} project={project} />
+        <div className="space-y-4">
+          {projects.map((p) => {
+            const loc = p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || 'N/A';
+            return (
+              <Link key={p.id} to={`/projects/${p.id}`} className="block bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group">
+                <div className="flex flex-col sm:flex-row">
+                  <div className="relative w-full sm:w-[240px] h-[180px] shrink-0 overflow-hidden">
+                    <img src={p.images?.[0] || '/placeholder.svg'} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    {p.project_status && (
+                      <span className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px] font-bold uppercase px-2.5 py-1 rounded">{p.project_status}</span>
+                    )}
+                  </div>
+                  <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">{p.title}</h3>
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                        <span className="truncate">{loc}</span>
+                      </div>
+                      <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
+                        <span>{p.project_type || 'residential'}</span>
+                        <span>·</span>
+                        <span>{p.min_units ?? 0} {t('projects.units')}</span>
+                      </div>
+                      {p.description && (
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{p.description.replace(/[#*_~`>]/g, '').slice(0, 180)}</p>
+                      )}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-border flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {p.companies?.logo_url && <img src={p.companies.logo_url} alt="" className="h-6 w-auto object-contain" />}
+                        <span className="text-xs text-muted-foreground">{p.developer || p.companies?.name || ''}</span>
+                      </div>
+                      {p.min_price != null && (
+                        <span className="text-sm font-semibold text-primary">{t('projects.startingFrom')} {p.currency ?? 'USD'} {Number(p.min_price).toLocaleString()}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+};
+
+const CompanyEventsTab = ({ companyId }: { companyId: string }) => {
+  const { t } = useTranslation();
+  const [events, setEvents] = useState<EventResult[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from('events')
+        .select('*, companies:company_id(name, logo_url), agents:agent_id(name, avatar_url)')
+        .eq('company_id', companyId)
+        .eq('status', 'active')
+        .order('event_date', { ascending: true })
+        .limit(50);
+      setEvents((data ?? []) as unknown as EventResult[]);
+      setLoading(false);
+    };
+    fetch();
+  }, [companyId]);
+
+  return (
+    <>
+      {loading ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">Loading events...</div>
+      ) : events.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground text-sm">{t('companyDetail.noEventsFound')}</div>
+      ) : (
+        <div className="space-y-4">
+          {events.map((event) => (
+            <EventListCard key={event.id} event={event} />
           ))}
         </div>
       )}
