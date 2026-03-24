@@ -72,6 +72,19 @@ const AgentFollowersPage = () => {
       if (error) throw error;
       if (followers.length > 0 && ann) {
         await supabase.from("user_announcements").insert(followers.map((f) => ({ announcement_id: ann.id, user_id: f.user_id })));
+        // Create user_notifications
+        const notifications = followers.map((f) => ({
+          user_id: f.user_id,
+          title: announcementTitle,
+          message: announcementMessage,
+          notification_type: "announcement",
+          source_company_id: companyId,
+        }));
+        await supabase.from("user_notifications").insert(notifications);
+        // Send email notifications
+        supabase.functions.invoke("send-announcement-emails", {
+          body: { announcement_id: ann.id },
+        }).catch((err) => console.error("Email send error:", err));
       }
       toast.success(`Sent to ${followers.length} followers!`);
       setAnnouncementOpen(false); setAnnouncementTitle(""); setAnnouncementMessage("");

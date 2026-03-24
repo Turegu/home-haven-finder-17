@@ -164,6 +164,11 @@ const CompanyFollowersPage = () => {
           source_company_id: companyId,
         }));
         await supabase.from("user_notifications").insert(notifications);
+
+        // Send email notifications to all followers
+        supabase.functions.invoke("send-announcement-emails", {
+          body: { announcement_id: announcement.id },
+        }).catch((err) => console.error("Email send error:", err));
       }
 
       toast.success(`Announcement sent to ${followers.length} followers!`);
