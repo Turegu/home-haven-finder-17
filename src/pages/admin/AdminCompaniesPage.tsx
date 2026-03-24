@@ -418,7 +418,8 @@ const AdminCompaniesPage = () => {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))
+                  );
+                })
               )}
             </TableBody>
           </Table>
