@@ -8,7 +8,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Rocket } from "lucide-react";
+import { Rocket, FlaskConical } from "lucide-react";
+import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";
 
 interface BoostProfileDialogProps {
   open: boolean;
@@ -16,13 +17,11 @@ interface BoostProfileDialogProps {
   profileId: string;
   profileName: string;
   profileType: "company" | "agent";
-  /** The entity whose balance is used */
   balanceSource: "company" | "agent";
   balanceSourceId: string;
   currentClassification: string;
   boostEndDate: string | null;
   onBoosted: () => void;
-  /** When true, admin boosts without deducting credits */
   isAdminBoost?: boolean;
 }
 
@@ -41,6 +40,7 @@ const BoostProfileDialog = ({
   const [selected, setSelected] = useState("");
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const { isTestMode } = useTestMode();
 
   const isBoosted = currentClassification === "boosted" && boostEndDate && new Date(boostEndDate) > new Date();
 
@@ -56,14 +56,14 @@ const BoostProfileDialog = ({
       const map: Record<string, number> = {};
       (settings || []).forEach(s => { map[s.setting_key] = parseInt(s.setting_value) || 0; });
 
+      const dUnit = isTestMode ? "min" : "mo";
       const opts: BoostOption[] = [
-        { key: "3m", label: `3 Months — ${map[`${prefix}_3_months_credits`] || 20} Credits`, months: 3, credits: map[`${prefix}_3_months_credits`] || 20 },
-        { key: "6m", label: `6 Months — ${map[`${prefix}_6_months_credits`] || 35} Credits`, months: 6, credits: map[`${prefix}_6_months_credits`] || 35 },
-        { key: "12m", label: `12 Months — ${map[`${prefix}_12_months_credits`] || 60} Credits`, months: 12, credits: map[`${prefix}_12_months_credits`] || 60 },
+        { key: "3m", label: `3 ${isTestMode ? "Minutes" : "Months"} — ${map[`${prefix}_3_months_credits`] || 20} Credits`, months: 3, credits: map[`${prefix}_3_months_credits`] || 20 },
+        { key: "6m", label: `6 ${isTestMode ? "Minutes" : "Months"} — ${map[`${prefix}_6_months_credits`] || 35} Credits`, months: 6, credits: map[`${prefix}_6_months_credits`] || 35 },
+        { key: "12m", label: `12 ${isTestMode ? "Minutes" : "Months"} — ${map[`${prefix}_12_months_credits`] || 60} Credits`, months: 12, credits: map[`${prefix}_12_months_credits`] || 60 },
       ];
       setOptions(opts);
 
-      // Fetch balance (skip for admin boost)
       if (isAdminBoost) {
         setBalance(Infinity);
       } else if (balanceSource === "company") {
@@ -76,7 +76,7 @@ const BoostProfileDialog = ({
     };
     load();
     setSelected("");
-  }, [open, balanceSourceId, balanceSource, profileType]);
+  }, [open, balanceSourceId, balanceSource, profileType, isTestMode]);
 
   const handleBoost = async () => {
     const opt = options.find(o => o.key === selected);
@@ -87,17 +87,15 @@ const BoostProfileDialog = ({
     }
     setLoading(true);
     try {
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + opt.months);
+      const endDate = getTestAwareEndDate(opt.months, isTestMode);
 
       const tableName = profileType === "company" ? "companies" : "agents";
       const { error: updateErr } = await supabase
         .from(tableName)
-        .update({ profile_classification: "boosted", boost_end_date: endDate.toISOString() } as any)
+        .update({ profile_classification: "boosted", boost_end_date: endDate } as any)
         .eq("id", profileId);
       if (updateErr) throw updateErr;
 
-      // Deduct balance (skip for admin boost)
       if (!isAdminBoost) {
         if (balanceSource === "company") {
           const { error } = await supabase.from("companies").update({ credit_balance: balance - opt.credits }).eq("id", balanceSourceId);
@@ -107,19 +105,18 @@ const BoostProfileDialog = ({
           if (error) throw error;
         }
 
-        // Log transaction
         await supabase.from("credit_transactions").insert({
           company_id: profileType === "company" ? profileId : balanceSourceId,
           agent_id: profileType === "agent" ? profileId : null,
           amount: -opt.credits,
           transaction_type: "spend",
-          description: `Profile boost (${opt.months} months) — ${profileType}`,
+          description: `Profile boost (${getTestAwareDurationLabel(opt.months, isTestMode)}) — ${profileType}`,
           listing_type: profileType,
           listing_id: profileId,
         });
       }
 
-      toast.success(`${profileName} profile boosted for ${opt.months} months!`);
+      toast.success(`${profileName} profile boosted for ${getTestAwareDurationLabel(opt.months, isTestMode)}!`);
       onBoosted();
       onOpenChange(false);
     } catch {
@@ -147,6 +144,15 @@ const BoostProfileDialog = ({
           {isBoosted && (
             <div className="text-xs text-primary bg-accent rounded px-3 py-2 border border-border">
               Currently boosted until {new Date(boostEndDate!).toLocaleDateString()}. Boosting again will extend from today.
+            </div>
+          )}
+
+          {isTestMode && (
+            <div className="flex items-center gap-2 rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-3">
+              <FlaskConical className="h-4 w-4 text-orange-500" />
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-400">
+                Test Mode — durations are in minutes
+              </span>
             </div>
           )}
 

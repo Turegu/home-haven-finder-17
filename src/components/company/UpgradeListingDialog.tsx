@@ -8,7 +8,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowUpCircle } from "lucide-react";
+import { ArrowUpCircle, FlaskConical } from "lucide-react";
+import { useTestMode, getTestAwareDurationLabel } from "@/hooks/useTestMode";
 
 interface UpgradeListingDialogProps {
   open: boolean;
@@ -26,6 +27,7 @@ interface UpgradeOption {
   label: string;
   classification: string;
   credits: number;
+  months: number;
 }
 
 const UpgradeListingDialog = ({
@@ -35,6 +37,7 @@ const UpgradeListingDialog = ({
   const [selected, setSelected] = useState("");
   const [balance, setBalance] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const { isTestMode } = useTestMode();
 
   useEffect(() => {
     if (!open) return;
@@ -45,11 +48,13 @@ const UpgradeListingDialog = ({
       const map: Record<string, number> = {};
       (settings || []).forEach(s => { map[s.setting_key] = parseInt(s.setting_value) || 0; });
 
+      const dLabel = (m: number) => isTestMode ? `${m} min` : `${m} month${m !== 1 ? "s" : ""}`;
+
       const opts: UpgradeOption[] = [
-        { key: "premium_1", label: `Premium - 1 month - ${map.premium_1_month_credits || 20} Credits`, classification: "premium", credits: map.premium_1_month_credits || 20 },
-        { key: "premium_3", label: `Premium - 3 months - ${map.premium_3_months_credits || 50} Credits`, classification: "premium", credits: map.premium_3_months_credits || 50 },
-        { key: "featured_1", label: `Featured - 1 month - ${map.featured_1_month_credits || 10} Credits`, classification: "featured", credits: map.featured_1_month_credits || 10 },
-        { key: "featured_3", label: `Featured - 3 months - ${map.featured_3_months_credits || 25} Credits`, classification: "featured", credits: map.featured_3_months_credits || 25 },
+        { key: "premium_1", label: `Premium - ${dLabel(1)} - ${map.premium_1_month_credits || 20} Credits`, classification: "premium", credits: map.premium_1_month_credits || 20, months: 1 },
+        { key: "premium_3", label: `Premium - ${dLabel(3)} - ${map.premium_3_months_credits || 50} Credits`, classification: "premium", credits: map.premium_3_months_credits || 50, months: 3 },
+        { key: "featured_1", label: `Featured - ${dLabel(1)} - ${map.featured_1_month_credits || 10} Credits`, classification: "featured", credits: map.featured_1_month_credits || 10, months: 1 },
+        { key: "featured_3", label: `Featured - ${dLabel(3)} - ${map.featured_3_months_credits || 25} Credits`, classification: "featured", credits: map.featured_3_months_credits || 25, months: 3 },
       ];
       setOptions(opts);
 
@@ -58,7 +63,7 @@ const UpgradeListingDialog = ({
     };
     load();
     setSelected("");
-  }, [open, companyId]);
+  }, [open, companyId, isTestMode]);
 
   const handleUpgrade = async () => {
     const opt = options.find(o => o.key === selected);
@@ -83,12 +88,11 @@ const UpgradeListingDialog = ({
         .eq("id", companyId);
       if (creditErr) throw creditErr;
 
-      // Log transaction
       await supabase.from("credit_transactions").insert({
         company_id: companyId,
         amount: -opt.credits,
         transaction_type: "spend",
-        description: `Upgrade to ${opt.classification} (${opt.key.includes("3") ? "3 months" : "1 month"})`,
+        description: `Upgrade to ${opt.classification} (${getTestAwareDurationLabel(opt.months, isTestMode)})`,
         listing_type: listingType,
         listing_id: listingId,
       });
@@ -122,6 +126,16 @@ const UpgradeListingDialog = ({
               Currently: {currentClassification.charAt(0).toUpperCase() + currentClassification.slice(1)}
             </p>
           )}
+
+          {isTestMode && (
+            <div className="flex items-center gap-2 rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-3">
+              <FlaskConical className="h-4 w-4 text-orange-500" />
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-400">
+                Test Mode — durations are in minutes
+              </span>
+            </div>
+          )}
+
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">Upgrade Type</label>
             <Select value={selected} onValueChange={setSelected}>

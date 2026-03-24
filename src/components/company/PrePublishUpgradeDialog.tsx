@@ -5,13 +5,14 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Crown, Star, ArrowRight, Sparkles, Clock } from "lucide-react";
+import { Crown, Star, ArrowRight, Sparkles, Clock, FlaskConical } from "lucide-react";
+import { useTestMode } from "@/hooks/useTestMode";
 
 interface PrePublishUpgradeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   companyId: string;
-  listingId: string | null; // null for new listings (not yet saved)
+  listingId: string | null;
   listingTitle: string;
   listingType: "property" | "project" | "event";
   onPublish: (classification?: string) => void;
@@ -35,6 +36,7 @@ const PrePublishUpgradeDialog = ({
   const [balance, setBalance] = useState<number>(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { isTestMode } = useTestMode();
 
   useEffect(() => {
     if (!open) return;
@@ -45,11 +47,13 @@ const PrePublishUpgradeDialog = ({
       const map: Record<string, number> = {};
       (settings || []).forEach(s => { map[s.setting_key] = parseInt(s.setting_value) || 0; });
 
+      const dLabel = (m: number) => isTestMode ? `${m} minute${m !== 1 ? "s" : ""}` : `${m} month${m !== 1 ? "s" : ""}`;
+
       const opts: UpgradeOption[] = [
-        { key: "featured_1", label: "Featured", duration: "1 month", classification: "featured", credits: map.featured_1_month_credits || 10, icon: Star, color: "text-teal-600", badgeColor: "bg-teal-50 border-teal-200" },
-        { key: "featured_3", label: "Featured", duration: "3 months", classification: "featured", credits: map.featured_3_months_credits || 25, icon: Star, color: "text-teal-600", badgeColor: "bg-teal-50 border-teal-200" },
-        { key: "premium_1", label: "Premium", duration: "1 month", classification: "premium", credits: map.premium_1_month_credits || 20, icon: Crown, color: "text-purple-600", badgeColor: "bg-purple-50 border-purple-200" },
-        { key: "premium_3", label: "Premium", duration: "3 months", classification: "premium", credits: map.premium_3_months_credits || 50, icon: Crown, color: "text-purple-600", badgeColor: "bg-purple-50 border-purple-200" },
+        { key: "featured_1", label: "Featured", duration: dLabel(1), classification: "featured", credits: map.featured_1_month_credits || 10, icon: Star, color: "text-teal-600", badgeColor: "bg-teal-50 border-teal-200" },
+        { key: "featured_3", label: "Featured", duration: dLabel(3), classification: "featured", credits: map.featured_3_months_credits || 25, icon: Star, color: "text-teal-600", badgeColor: "bg-teal-50 border-teal-200" },
+        { key: "premium_1", label: "Premium", duration: dLabel(1), classification: "premium", credits: map.premium_1_month_credits || 20, icon: Crown, color: "text-purple-600", badgeColor: "bg-purple-50 border-purple-200" },
+        { key: "premium_3", label: "Premium", duration: dLabel(3), classification: "premium", credits: map.premium_3_months_credits || 50, icon: Crown, color: "text-purple-600", badgeColor: "bg-purple-50 border-purple-200" },
       ];
       setOptions(opts);
 
@@ -58,7 +62,7 @@ const PrePublishUpgradeDialog = ({
     };
     load();
     setSelected(null);
-  }, [open, companyId]);
+  }, [open, companyId, isTestMode]);
 
   const handleUpgradeAndPublish = async () => {
     const opt = options.find(o => o.key === selected);
@@ -69,14 +73,12 @@ const PrePublishUpgradeDialog = ({
     }
     setLoading(true);
     try {
-      // Deduct credits
       const { error: creditErr } = await supabase
         .from("companies")
         .update({ credit_balance: balance - opt.credits })
         .eq("id", companyId);
       if (creditErr) throw creditErr;
 
-      // If listing already exists, update classification directly
       if (listingId) {
         const tableName = listingType === "property" ? "properties" : listingType === "project" ? "projects" : "events";
         const { error: updateErr } = await supabase
@@ -123,7 +125,15 @@ const PrePublishUpgradeDialog = ({
             Publishing: <span className="font-medium text-foreground">{listingTitle || "Untitled"}</span>
           </p>
 
-          {/* Upgrade options grid */}
+          {isTestMode && (
+            <div className="flex items-center gap-2 rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-2">
+              <FlaskConical className="h-3.5 w-3.5 text-orange-500" />
+              <span className="text-xs font-medium text-orange-700 dark:text-orange-400">
+                Test Mode — durations in minutes
+              </span>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-2">
             {options.map((opt) => {
               const Icon = opt.icon;
@@ -160,7 +170,6 @@ const PrePublishUpgradeDialog = ({
             })}
           </div>
 
-          {/* Balance */}
           <div className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3">
             <span className="text-muted-foreground">Your Credit Balance</span>
             <span className="font-bold text-foreground">{balance} Credits</span>
