@@ -506,26 +506,26 @@ const CompanyProfilePage = () => {
                   {currentPatternCode ? "Pattern lock is active. You'll need to draw it when logging in." : "No pattern lock set. You can log in with credentials only."}
                 </p>
               </div>
-              {currentPatternCode && (
-                <Switch
-                  checked={!!currentPatternCode}
-                  onCheckedChange={async (checked) => {
-                    if (!checked && company) {
-                      try {
-                        const { error } = await supabase
-                          .from("company_pattern_codes")
-                          .delete()
-                          .eq("company_id", company.id);
-                        if (error) throw error;
-                        setCurrentPatternCode("");
-                        toast.success("Pattern lock disabled");
-                      } catch (err: any) {
-                        toast.error(err.message || "Failed to disable pattern");
-                      }
+              <Switch
+                checked={!!currentPatternCode}
+                onCheckedChange={async (checked) => {
+                  if (checked) {
+                    openPatternDialog();
+                  } else if (company) {
+                    try {
+                      const { error } = await supabase
+                        .from("company_pattern_codes")
+                        .delete()
+                        .eq("company_id", company.id);
+                      if (error) throw error;
+                      setCurrentPatternCode("");
+                      toast.success("Pattern lock disabled");
+                    } catch (err: any) {
+                      toast.error(err.message || "Failed to disable pattern");
                     }
-                  }}
-                />
-              )}
+                  }
+                }}
+              />
             </div>
             <Button type="button" variant="outline" onClick={openPatternDialog}>
               <Grid3X3 className="h-4 w-4 mr-2" /> {currentPatternCode ? "Change Pattern Lock" : "Set Pattern Lock"}
