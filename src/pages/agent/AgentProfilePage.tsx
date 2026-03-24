@@ -142,11 +142,11 @@ const AgentProfilePage = () => {
           avatar_url: data.avatar_url || "",
         });
 
-        // Fetch pattern
+        // Fetch agent's own pattern
         const { data: patternData } = await supabase
-          .from("company_pattern_codes")
+          .from("agent_pattern_codes")
           .select("pattern_code")
-          .eq("company_id", data.company_id)
+          .eq("agent_id", data.id)
           .maybeSingle();
         if (patternData) setCurrentPatternCode(patternData.pattern_code);
       }
@@ -226,9 +226,8 @@ const AgentProfilePage = () => {
       if (pattern.join(",") === newPattern.join(",")) {
         try {
           const { error } = await supabase
-            .from("company_pattern_codes")
-            .update({ pattern_code: newPattern.join(",") })
-            .eq("company_id", companyId!);
+            .from("agent_pattern_codes")
+            .upsert({ agent_id: agent!.id, pattern_code: newPattern.join(",") }, { onConflict: "agent_id" });
           if (error) throw error;
           setCurrentPatternCode(newPattern.join(","));
           toast.success("Pattern lock updated!");

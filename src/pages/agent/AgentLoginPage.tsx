@@ -60,34 +60,19 @@ const AgentLoginPage = () => {
       return;
     }
 
-    // Check company-specific pattern for the agent's company
-    const { data: patternData } = await supabase
-      .from("company_pattern_codes")
+    // Check agent-specific pattern
+    const { data: agentPatternData } = await supabase
+      .from("agent_pattern_codes")
       .select("pattern_code")
-      .eq("company_id", agent.company_id)
+      .eq("agent_id", agent.id)
       .limit(1)
       .maybeSingle();
 
-    if (patternData && patternData.pattern_code) {
-      setSavedPattern(patternData.pattern_code);
+    if (agentPatternData && agentPatternData.pattern_code) {
+      setSavedPattern(agentPatternData.pattern_code);
       setPendingRedirect("/agent");
       setStep("pattern");
-      toast.info("Please draw the company pattern to continue.");
-      return;
-    }
-
-    // Fallback to global company pattern setting
-    const { data: adminData } = await supabase
-      .from("admin_settings")
-      .select("setting_value")
-      .eq("setting_key", "company_pattern_code")
-      .limit(1);
-
-    if (adminData?.[0]) {
-      setSavedPattern((adminData[0] as any).setting_value);
-      setPendingRedirect("/agent");
-      setStep("pattern");
-      toast.info("Please draw the company pattern to continue.");
+      toast.info("Please draw your pattern to continue.");
       return;
     }
 
