@@ -91,7 +91,7 @@ const AgentsPage = () => {
 
       const { data: agentData } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url)")
+        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url, is_verified)")
         .eq("status", "active");
       setAgents((agentData ?? []) as unknown as AgentRow[]);
 
