@@ -805,7 +805,7 @@ const PropertyDetailPage = () => {
                         <Building className="h-10 w-10 text-muted-foreground" />
                       </div>
                     )}
-                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors">{property.agentName || 'Loading...'}</h3>
+                    <h3 className="font-bold text-foreground text-lg group-hover:text-primary transition-colors flex items-center justify-center gap-1">{property.agentName || 'Loading...'}{companyVerified && <VerifiedBadge size="sm" />}</h3>
                     {property.agentDesignation && (
                       <p className="text-sm text-muted-foreground">{property.agentDesignation}</p>
                     )}
