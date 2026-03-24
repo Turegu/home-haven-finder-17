@@ -97,7 +97,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
           email: email.trim(),
           phone: phone.trim() || null,
           message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-          inbox_type: `${recipientType}_inquiry`,
+          inbox_type: 'inquiry',
         } as any);
       }
 
