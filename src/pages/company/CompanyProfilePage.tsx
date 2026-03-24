@@ -28,13 +28,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
 
-const companyTypes = [
-  { value: "real_estate_agency", label: "Real Estate Agency" },
-  { value: "developer", label: "Developer" },
-  { value: "brokerage", label: "Brokerage" },
-  { value: "property_management", label: "Property Management" },
-  { value: "consulting", label: "Consulting" },
-];
+import { companyTypes } from "@/data/companyTypes";
 
 import { allLanguages } from "@/data/languages";
 const languageOptions = allLanguages;
