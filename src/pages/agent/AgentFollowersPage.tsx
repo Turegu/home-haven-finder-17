@@ -88,7 +88,7 @@ const AgentFollowersPage = () => {
         }).catch((err) => console.error("Email send error:", err));
       }
       toast.success(`Sent to ${followers.length} followers!`);
-      setAnnouncementOpen(false); setAnnouncementTitle(""); setAnnouncementMessage("");
+      setAnnouncementOpen(false); setAnnouncementTitle(""); setAnnouncementMessage(""); setAnnouncementType("general"); setSelectedEventId("");
     } catch (err: any) { toast.error(err.message); } finally { setSending(false); }
   };
 
