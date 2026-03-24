@@ -308,7 +308,7 @@ const AdminCompaniesPage = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSorted.map((company) => (
+                filteredAndSorted.map((company, idx) => (
                   <TableRow key={company.id} className="hover:bg-muted/30">
                     <TableCell>
                       <Checkbox
@@ -316,6 +316,7 @@ const AdminCompaniesPage = () => {
                         onCheckedChange={() => toggleSelect(company.id)}
                       />
                     </TableCell>
+                    <TableCell className="text-xs text-muted-foreground font-medium">{idx + 1}</TableCell>
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                       {format(new Date(company.created_at), "dd/MM/yyyy")}
                     </TableCell>
