@@ -245,7 +245,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleRecall} className="bg-orange-500 hover:bg-orange-600">
+            <AlertDialogAction onClick={handleRecall} className="bg-amber-500 hover:bg-amber-600">
               Recall
             </AlertDialogAction>
           </AlertDialogFooter>
