@@ -154,7 +154,6 @@ const AgentDetailPage = () => {
                     <div className="flex items-center gap-12">
                       <div className="flex items-center gap-1.5">
                         <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
-                        {agent.companies?.is_verified && <VerifiedBadge />}
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
