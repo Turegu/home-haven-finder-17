@@ -18,10 +18,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, differenceInDays, differenceInSeconds } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import UpgradeMembershipDialog from "@/components/admin/UpgradeMembershipDialog";
 import AddCreditsDialog from "@/components/admin/AddCreditsDialog";
+import { useTestMode } from "@/hooks/useTestMode";
 
 type Company = Tables<"companies">;
 
