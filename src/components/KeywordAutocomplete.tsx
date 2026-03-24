@@ -89,13 +89,14 @@ export default function KeywordAutocomplete({
     // 1. Properties
     if (config.properties > 0) {
       dbPromises.push(
-        supabase
-          .from('properties')
-          .select('id, title, property_type, town, province')
-          .eq('status', 'active')
-          .ilike('title', `%${query}%`)
-          .limit(config.properties)
-          .then(({ data }) => {
+        Promise.resolve(
+          supabase
+            .from('properties')
+            .select('id, title, property_type, town, province')
+            .eq('status', 'active')
+            .ilike('title', `%${query}%`)
+            .limit(config.properties)
+        ).then(({ data }) => {
             if (data) {
               data.forEach((p) => {
                 results.push({
