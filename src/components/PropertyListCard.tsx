@@ -374,6 +374,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
         agentId={property.agentId || null}
         companyName={property.agentId ? property.agentName : property.companyName}
         companyLogo={property.agentLogo}
+        agentAvatar={property.agentId ? property.agentAvatar : null}
       />
     </Link>
   );

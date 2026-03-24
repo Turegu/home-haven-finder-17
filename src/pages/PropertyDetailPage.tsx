@@ -950,6 +950,7 @@ const PropertyDetailPage = () => {
         agentId={realAgentId}
         companyName={realAgentId ? property.agentName : property.agentCompany}
         companyLogo={property.companyLogo}
+        agentAvatar={realAgentId ? property.agentLogo : null}
       />
 
       <ReportPropertyDialog
