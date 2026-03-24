@@ -340,6 +340,7 @@ const AdminListingTable = ({
                   onCheckedChange={toggleAll}
                 />
               </th>
+              <th className="p-3 text-left font-semibold text-foreground w-12">#</th>
               {columns.map((col) => (
                 <th key={col.key} className="p-3 text-left font-semibold text-foreground whitespace-nowrap">
                   {col.label}
