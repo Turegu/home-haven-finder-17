@@ -76,6 +76,21 @@ const AgentLoginPage = () => {
       return;
     }
 
+    // Fallback to global company pattern setting
+    const { data: adminData } = await supabase
+      .from("admin_settings")
+      .select("setting_value")
+      .eq("setting_key", "company_pattern_code")
+      .limit(1);
+
+    if (adminData?.[0]) {
+      setSavedPattern((adminData[0] as any).setting_value);
+      setPendingRedirect("/agent");
+      setStep("pattern");
+      toast.info("Please draw the company pattern to continue.");
+      return;
+    }
+
     toast.success("Welcome to your Agent Dashboard!");
     navigate("/agent");
   };
