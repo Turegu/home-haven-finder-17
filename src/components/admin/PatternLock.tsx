@@ -155,58 +155,83 @@ const PatternLock = ({ onPatternComplete, error = false, disabled = false }: Pat
     return segments;
   };
 
-  return (
-    <div
-      ref={containerRef}
-      className="relative w-[240px] h-[240px] mx-auto select-none touch-none"
-      onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
-      onTouchStart={(e) => {
-        e.preventDefault();
-        handleStart(e.touches[0].clientX, e.touches[0].clientY);
-      }}
-    >
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
-        {getLineSegments().map((seg, i) => (
-          <line
-            key={i}
-            x1={seg.x1} y1={seg.y1} x2={seg.x2} y2={seg.y2}
-            stroke={error ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'}
-            strokeWidth="3"
-            strokeLinecap="round"
+  if (isLockedOut) {
+    return (
+      <div className="w-[240px] h-[240px] mx-auto flex flex-col items-center justify-center gap-3 text-center">
+        <ShieldAlert className="h-12 w-12 text-destructive" />
+        <p className="text-sm font-semibold text-destructive">Too many failed attempts</p>
+        <p className="text-xs text-muted-foreground">
+          Please wait <span className="font-bold text-foreground">{countdown}s</span> before trying again
+        </p>
+        <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden mt-1">
+          <div
+            className="h-full bg-destructive rounded-full transition-all duration-1000"
+            style={{ width: `${(countdown / LOCKOUT_SECONDS) * 100}%` }}
           />
-        ))}
-      </svg>
+        </div>
+      </div>
+    );
+  }
 
-      <div className="grid grid-cols-3 gap-0 w-full h-full" dir="ltr">
-        {Array.from({ length: DOT_COUNT }).map((_, i) => {
-          const isSelected = selectedDots.includes(i);
-          return (
-            <div key={i} className="flex items-center justify-center">
-              <div
-                ref={(el) => { dotRefs.current[i] = el; }}
-                className={cn(
-                  "w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-150",
-                  isSelected
-                    ? error
-                      ? "border-destructive bg-destructive/10"
-                      : "border-primary bg-primary/10"
-                    : "border-muted-foreground/30 bg-transparent"
-                )}
-              >
+  return (
+    <div className="relative">
+      {failedAttempts > 0 && failedAttempts < MAX_ATTEMPTS && (
+        <p className="text-xs text-center text-muted-foreground mb-2">
+          {MAX_ATTEMPTS - failedAttempts} attempt{MAX_ATTEMPTS - failedAttempts !== 1 ? 's' : ''} remaining
+        </p>
+      )}
+      <div
+        ref={containerRef}
+        className="relative w-[240px] h-[240px] mx-auto select-none touch-none"
+        onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          handleStart(e.touches[0].clientX, e.touches[0].clientY);
+        }}
+      >
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
+          {getLineSegments().map((seg, i) => (
+            <line
+              key={i}
+              x1={seg.x1} y1={seg.y1} x2={seg.x2} y2={seg.y2}
+              stroke={error ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'}
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+          ))}
+        </svg>
+
+        <div className="grid grid-cols-3 gap-0 w-full h-full" dir="ltr">
+          {Array.from({ length: DOT_COUNT }).map((_, i) => {
+            const isSelected = selectedDots.includes(i);
+            return (
+              <div key={i} className="flex items-center justify-center">
                 <div
+                  ref={(el) => { dotRefs.current[i] = el; }}
                   className={cn(
-                    "w-4 h-4 rounded-full transition-all duration-150",
+                    "w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-150",
                     isSelected
                       ? error
-                        ? "bg-destructive scale-100"
-                        : "bg-primary scale-100"
-                      : "bg-muted-foreground/40 scale-75"
+                        ? "border-destructive bg-destructive/10"
+                        : "border-primary bg-primary/10"
+                      : "border-muted-foreground/30 bg-transparent"
                   )}
-                />
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 rounded-full transition-all duration-150",
+                      isSelected
+                        ? error
+                          ? "bg-destructive scale-100"
+                          : "bg-primary scale-100"
+                        : "bg-muted-foreground/40 scale-75"
+                    )}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
