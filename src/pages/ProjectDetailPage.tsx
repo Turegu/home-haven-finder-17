@@ -48,7 +48,7 @@ const ProjectDetailPage = () => {
       setLoading(true);
       const { data } = await supabase
         .from('projects')
-        .select('*, agents(id, name, designation, avatar_url, languages, companies(id, name, logo_url)), companies(id, name, logo_url)')
+        .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
         .eq('id', id)
         .maybeSingle();
       if (data) {
