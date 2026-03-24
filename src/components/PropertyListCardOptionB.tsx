@@ -172,7 +172,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               alt={property.agentName}
               className="h-10 w-auto max-w-[80px] rounded object-contain"
             />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{property.agentName}</span>
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-1">{property.agentName}</span>
           </div>
 
           <div className="pr-24">
