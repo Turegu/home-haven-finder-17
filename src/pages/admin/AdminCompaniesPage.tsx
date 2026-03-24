@@ -239,6 +239,12 @@ const AdminCompaniesPage = () => {
                             <ArrowUpCircle className="h-4 w-4 mr-2" /> Change Membership
                           </DropdownMenuItem>
                           
+                          <DropdownMenuItem onClick={() => handleToggleVerified(company)}>
+                            {company.is_verified
+                              ? <><ShieldOff className="h-4 w-4 mr-2" /> Remove Verified</>
+                              : <><BadgeCheck className="h-4 w-4 mr-2" /> Mark as Verified</>
+                            }
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
                             <Coins className="h-4 w-4 mr-2" /> Add Points
                           </DropdownMenuItem>
