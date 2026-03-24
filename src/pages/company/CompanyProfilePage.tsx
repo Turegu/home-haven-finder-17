@@ -197,7 +197,7 @@ const CompanyProfilePage = () => {
         .from("companies")
         .update({
           name: form.name.trim(),
-          company_type: (form.company_type as any) || null,
+          company_types: form.company_types.length > 0 ? form.company_types : null,
           service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : null,
           languages: form.languages.length > 0 ? form.languages : null,
           registration_number: form.registration_number || null,
