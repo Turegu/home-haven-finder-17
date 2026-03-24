@@ -97,24 +97,20 @@ const AgentsPage = () => {
       setAgents(agentData as unknown as AgentRow[]);
 
       // Fire count queries in parallel
-      const countPromises: Promise<any>[] = [];
-
       const agentIds = agentData.map((a: any) => a.id);
       const compIds = compData.map(c => c.id);
 
-      if (agentIds.length > 0) {
-        countPromises.push(
-          supabase.from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds)
-        );
-      }
-      if (compIds.length > 0) {
-        countPromises.push(
-          supabase.from("agents").select("company_id").eq("status", "active").in("company_id", compIds),
-          supabase.from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", compIds),
-        );
-      }
-
-      const countResults = await Promise.all(countPromises);
+      const [agentPropsRes, compAgentsRes, compPropsRes] = await Promise.all([
+        agentIds.length > 0
+          ? supabase.from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds)
+          : Promise.resolve({ data: [] }),
+        compIds.length > 0
+          ? supabase.from("agents").select("company_id").eq("status", "active").in("company_id", compIds)
+          : Promise.resolve({ data: [] }),
+        compIds.length > 0
+          ? supabase.from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", compIds)
+          : Promise.resolve({ data: [] }),
+      ]);
       let resultIdx = 0;
 
       if (agentIds.length > 0) {
