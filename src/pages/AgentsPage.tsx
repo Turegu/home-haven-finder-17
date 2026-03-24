@@ -350,7 +350,7 @@ const AgentsPage = () => {
                         <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                             {agent.name}
                           </h3>
-                          {agent.companies?.is_verified && <BadgeCheck className="h-3.5 w-3.5 text-blue-500 shrink-0" />}
+                          {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
                           {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>

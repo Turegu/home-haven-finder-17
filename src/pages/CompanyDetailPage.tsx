@@ -186,7 +186,7 @@ const CompanyDetailPage = () => {
                     <div className="flex items-center gap-12">
                       <div className="flex items-center gap-1.5">
                         <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
-                        {company.is_verified && <BadgeCheck className="h-5 w-5 text-blue-500 shrink-0" />}
+                        {company.is_verified && <VerifiedBadge />}
                       </div>
                       <FollowButton type="company" targetId={company.id} />
                     </div>
