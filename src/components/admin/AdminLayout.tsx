@@ -4,8 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle, FlaskConical
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { useTestMode } from "@/hooks/useTestMode";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const sidebarItems = [
@@ -40,6 +43,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userEmail, setUserEmail] = useState<string>("");
+  const { isTestMode, toggleTestMode } = useTestMode();
 
   // Use getSession (reads from memory) instead of getUser (network call)
   useEffect(() => {
@@ -135,6 +139,22 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           </button>
           <span className="text-sm font-semibold text-foreground lg:hidden">Admin Panel</span>
           <div className="flex items-center gap-3 ml-auto">
+            {/* Test Mode Toggle */}
+            <div className="flex items-center gap-2">
+              <FlaskConical className={`h-4 w-4 ${isTestMode ? "text-orange-500" : "text-muted-foreground"}`} />
+              <span className={`text-xs font-medium hidden md:block ${isTestMode ? "text-orange-600" : "text-muted-foreground"}`}>
+                Test
+              </span>
+              <Switch
+                checked={isTestMode}
+                onCheckedChange={(val) => {
+                  toggleTestMode(val);
+                  toast.success(val ? "Test Mode ON — durations are now in minutes" : "Test Mode OFF — durations are back to months");
+                }}
+                className="data-[state=checked]:bg-orange-500"
+              />
+            </div>
+            <div className="h-5 w-px bg-border hidden sm:block" />
             <span className="text-sm text-muted-foreground hidden sm:block">{userEmail}</span>
             <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-semibold text-sm">
@@ -143,6 +163,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             </div>
           </div>
         </header>
+
+        {/* Floating Test Mode Badge */}
+        {isTestMode && (
+          <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg animate-pulse">
+            <FlaskConical className="h-4 w-4" />
+            <span className="text-sm font-bold">TEST MODE — Months → Minutes</span>
+          </div>
+        )}
 
         {/* Content */}
         <main className="flex-1 p-4 md:p-6">

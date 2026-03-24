@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowUpCircle, FlaskConical } from "lucide-react";
-import { addMonths, addMinutes, format } from "date-fns";
+import { format } from "date-fns";
+import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";
 
 interface UpgradeMembershipDialogProps {
   open: boolean;
@@ -48,8 +46,7 @@ const UpgradeMembershipDialog = ({
   const [selectedPackage, setSelectedPackage] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("");
   const [loading, setLoading] = useState(false);
-  const [testMode, setTestMode] = useState(false);
-  const [testMinutes, setTestMinutes] = useState(5);
+  const { isTestMode } = useTestMode();
 
   useEffect(() => {
     if (!open) return;
@@ -63,14 +60,12 @@ const UpgradeMembershipDialog = ({
     load();
     setSelectedPackage("");
     setSelectedDuration("");
-    setTestMode(false);
-    setTestMinutes(5);
   }, [open]);
 
   const getPrice = () => {
     const pkg = packages.find(p => p.package_type === selectedPackage);
-    if (!pkg || (!selectedDuration && !testMode)) return null;
-    if (testMode) return 0;
+    if (!pkg || !selectedDuration) return null;
+    if (isTestMode) return 0;
     switch (selectedDuration) {
       case "1": return pkg.monthly_price;
       case "3": return pkg.quarterly_price;
@@ -84,8 +79,7 @@ const UpgradeMembershipDialog = ({
 
   const handleChange = async () => {
     if (!selectedPackage) return;
-    if (!isToBasic && !testMode && !selectedDuration) return;
-    if (testMode && testMinutes < 1) return;
+    if (!isToBasic && !selectedDuration) return;
 
     setLoading(true);
     try {
@@ -93,11 +87,9 @@ const UpgradeMembershipDialog = ({
 
       if (isToBasic) {
         newEndDate = null;
-      } else if (testMode) {
-        newEndDate = addMinutes(new Date(), testMinutes).toISOString();
       } else {
         const months = DURATIONS.find(d => d.key === selectedDuration)!.months;
-        newEndDate = addMonths(new Date(), months).toISOString();
+        newEndDate = getTestAwareEndDate(months, isTestMode);
       }
 
       const { error } = await supabase.rpc("admin_change_membership", {
@@ -110,11 +102,9 @@ const UpgradeMembershipDialog = ({
 
       const durationLabel = isToBasic
         ? "(downgraded)"
-        : testMode
-          ? `${testMinutes} minute(s) (test)`
-          : `${DURATIONS.find(d => d.key === selectedDuration)!.months} month(s)`;
+        : getTestAwareDurationLabel(DURATIONS.find(d => d.key === selectedDuration)!.months, isTestMode);
 
-      toast.success(`${companyName} changed to ${selectedPackage} ${durationLabel}`);
+      toast.success(`${companyName} changed to ${selectedPackage} — ${durationLabel}`);
       onUpgraded();
       onOpenChange(false);
     } catch {
@@ -125,7 +115,7 @@ const UpgradeMembershipDialog = ({
   };
 
   const price = getPrice();
-  const canSubmit = selectedPackage && (isToBasic || testMode ? testMinutes >= 1 : !!selectedDuration);
+  const canSubmit = selectedPackage && (isToBasic || !!selectedDuration);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -165,56 +155,34 @@ const UpgradeMembershipDialog = ({
 
           {!isToBasic && (
             <>
-              {/* Test Mode Toggle */}
-              <div className="flex items-center justify-between rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-3">
-                <div className="flex items-center gap-2">
+              {isTestMode && (
+                <div className="flex items-center gap-2 rounded-lg border border-dashed border-orange-300 bg-orange-50 dark:bg-orange-950/20 p-3">
                   <FlaskConical className="h-4 w-4 text-orange-500" />
-                  <Label htmlFor="test-mode" className="text-sm font-medium text-orange-700 dark:text-orange-400">
-                    Test Mode (Minutes)
-                  </Label>
-                </div>
-                <Switch
-                  id="test-mode"
-                  checked={testMode}
-                  onCheckedChange={setTestMode}
-                />
-              </div>
-
-              {testMode ? (
-                <div>
-                  <label className="text-sm font-medium text-orange-600 mb-1 block">Duration in Minutes</label>
-                  <Input
-                    type="number"
-                    min={1}
-                    max={1440}
-                    value={testMinutes}
-                    onChange={(e) => setTestMinutes(Number(e.target.value))}
-                    className="border-orange-300"
-                    placeholder="Enter minutes"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Expires at: {format(addMinutes(new Date(), testMinutes), "hh:mm a, dd MMM yyyy")}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <label className="text-sm font-medium text-primary mb-1 block">Duration</label>
-                  <Select value={selectedDuration} onValueChange={setSelectedDuration}>
-                    <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
-                    <SelectContent>
-                      {DURATIONS.map(d => (
-                        <SelectItem key={d.key} value={d.key}>{d.label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <span className="text-sm font-medium text-orange-700 dark:text-orange-400">
+                    Test Mode Active — durations are in minutes
+                  </span>
                 </div>
               )}
+
+              <div>
+                <label className="text-sm font-medium text-primary mb-1 block">Duration</label>
+                <Select value={selectedDuration} onValueChange={setSelectedDuration}>
+                  <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
+                  <SelectContent>
+                    {DURATIONS.map(d => (
+                      <SelectItem key={d.key} value={d.key}>
+                        {isTestMode ? `${d.months} Minute${d.months !== 1 ? "s" : ""}` : d.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               {price !== null && (
                 <div className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3">
                   <span className="text-muted-foreground">Package Price</span>
                   <span className="font-bold text-foreground">
-                    {testMode ? "Free (Test)" : `$${price}`}
+                    {isTestMode ? "Free (Test)" : `$${price}`}
                   </span>
                 </div>
               )}
@@ -232,7 +200,7 @@ const UpgradeMembershipDialog = ({
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={handleChange} disabled={!canSubmit || loading} variant={isToBasic ? "destructive" : "default"}>
-            {loading ? "Processing..." : isToBasic ? "Downgrade to Basic" : testMode ? "Change (Test)" : "Change Package"}
+            {loading ? "Processing..." : isToBasic ? "Downgrade to Basic" : isTestMode ? "Change (Test)" : "Change Package"}
           </Button>
         </DialogFooter>
       </DialogContent>
