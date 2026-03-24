@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { ShieldAlert } from 'lucide-react';
+
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_SECONDS = 60;
 
 interface PatternLockProps {
   onPatternComplete: (pattern: number[]) => void;
