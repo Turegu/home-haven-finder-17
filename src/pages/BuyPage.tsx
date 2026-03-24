@@ -30,6 +30,7 @@ import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { usePropertySearch, type PropertySearchParams } from '@/hooks/usePropertySearch';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { trackImpressions } from '@/hooks/useListingAnalytics';
+import { useStickySidebarOffset } from '@/hooks/useStickySidebarOffset';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
@@ -69,6 +70,8 @@ const BuyPage = () => {
   const [rentDuration, setRentDuration] = useState<string[]>([]);
   const [moreFilters, setMoreFilters] = useState<PropertyMoreFilters>(emptyMoreFilters);
   const [saveSearchOpen, setSaveSearchOpen] = useState(false);
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const sidebarTopOffset = useStickySidebarOffset(searchBarRef);
 
   // Search params that trigger the query (committed on Search click)
   const [committedParams, setCommittedParams] = useState<PropertySearchParams>({
@@ -285,7 +288,7 @@ const BuyPage = () => {
       <Header />
 
       {/* Search Bar + Filters */}
-      <div className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
+      <div ref={searchBarRef} className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           {/* Search row */}
           <div className="flex flex-wrap items-center gap-2">
@@ -552,7 +555,7 @@ const BuyPage = () => {
             </div>
 
             <div className="hidden lg:block w-[225px] shrink-0">
-              <div className="sticky top-[200px]">
+              <div className="sticky" style={{ top: `${sidebarTopOffset}px` }}>
                 <BannerDisplay pageName={isRent ? 'rent' : 'buy'} bannerType="vertical" className="" />
                 <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
               </div>
