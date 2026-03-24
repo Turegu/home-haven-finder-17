@@ -30,7 +30,7 @@ interface Suggestion {
   id: string;
   text: string;
   subtext?: string;
-  type: 'property' | 'project' | 'place';
+  type: 'property' | 'project' | 'event' | 'place';
 }
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
