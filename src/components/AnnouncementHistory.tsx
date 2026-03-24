@@ -87,6 +87,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
         .update({ title: editTitle.trim(), message: editMessage.trim() })
         .eq("title", editAnn.title)
         .eq("message", editAnn.message)
+        .eq("notification_type", "announcement")
         .eq("source_company_id", companyId!);
       toast.success("Announcement updated");
       setEditOpen(false);
