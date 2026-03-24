@@ -90,7 +90,7 @@ const AgentInboxPage = () => {
                   <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
                     <TableCell className="font-medium">{item.full_name}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{format(new Date(item.created_at), "dd/MM/yyyy")}</TableCell>
                     <TableCell><Badge variant="secondary" className={item.is_seen ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}>{item.is_seen ? "Seen" : "New"}</Badge></TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}><Eye className="h-4 w-4" /></Button>

@@ -527,7 +527,7 @@ const Header = () => {
                   onClick={() => setOpenDropdown(openDropdown === 'user' ? null : 'user')}
                 >
                   <User className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground max-w-[120px] truncate">{currentUser.displayName}</span>
+                  <span className="text-sm font-medium text-foreground max-w-[120px] truncate">{t('nav.myAccount')}</span>
                   <ChevronDown className="h-3 w-3 text-muted-foreground" />
                 </button>
                 {openDropdown === 'user' && (
