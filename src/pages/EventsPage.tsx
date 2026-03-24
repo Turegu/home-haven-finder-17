@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,6 +18,7 @@ import EventGridCard from '@/components/EventGridCard';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useEventSearch, type EventSearchParams } from '@/hooks/useEventSearch';
 import KeywordAutocomplete from '@/components/KeywordAutocomplete';
+import { useStickySidebarOffset } from '@/hooks/useStickySidebarOffset';
 
 const EventsPage = () => {
   const { t } = useTranslation();
@@ -38,6 +39,8 @@ const EventsPage = () => {
     neighborhood: searchParams.get('neighborhood') || undefined,
   });
   const [keyword, setKeyword] = useState('');
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const sidebarTopOffset = useStickySidebarOffset(searchBarRef);
 
   // Reset all filters when navigating to /events (e.g. clicking nav link)
   useEffect(() => {
@@ -99,7 +102,7 @@ const EventsPage = () => {
       <Header />
 
       {/* Search Bar */}
-      <div className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
+      <div ref={searchBarRef} className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
@@ -345,7 +348,7 @@ const EventsPage = () => {
 
             {/* Vertical Sidebar Banner */}
             <div className="hidden lg:block w-[225px] shrink-0">
-              <div className="sticky top-[200px]">
+              <div className="sticky" style={{ top: `${sidebarTopOffset}px` }}>
                 <BannerDisplay pageName="events" bannerType="vertical" />
               </div>
             </div>

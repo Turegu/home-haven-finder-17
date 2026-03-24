@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
@@ -32,6 +32,7 @@ import { SelectedFilterBadges } from '@/components/SearchFilters';
 import SaveSearchDialog from '@/components/SaveSearchDialog';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import { useProjectSearch, type ProjectSearchParams, type ProjectResult } from '@/hooks/useProjectSearch';
+import { useStickySidebarOffset } from '@/hooks/useStickySidebarOffset';
 import horizontalBannerPlaceholder from '@/assets/banners/horizontal-banner-placeholder.jpg';
 import horizontalBannerPlaceholder2 from '@/assets/banners/horizontal-banner-placeholder-2.jpg';
 import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placeholder.jpg';
@@ -72,6 +73,8 @@ const ProjectsPage = () => {
   const [amenitySearch, setAmenitySearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [saveSearchOpen, setSaveSearchOpen] = useState(false);
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const sidebarTopOffset = useStickySidebarOffset(searchBarRef);
 
   const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
 
@@ -171,7 +174,7 @@ const ProjectsPage = () => {
       <Header />
 
       {/* Search Bar + Filters */}
-      <div className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
+      <div ref={searchBarRef} className="sticky top-[64px] lg:top-[104px] z-40 bg-background border-b border-border">
         <div className="container mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center gap-2">
             <LocationPicker value={location} onChange={setLocation} compact />
@@ -594,7 +597,7 @@ const ProjectsPage = () => {
             </div>
 
             <div className="hidden lg:block w-[225px] shrink-0">
-              <div className="sticky top-[200px]">
+              <div className="sticky" style={{ top: `${sidebarTopOffset}px` }}>
                 <BannerDisplay pageName="projects" bannerType="vertical" className="" />
                 <img src={verticalBannerPlaceholder} alt="Advertisement" className="w-full h-auto rounded-lg object-cover" />
               </div>
