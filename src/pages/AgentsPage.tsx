@@ -288,7 +288,7 @@ const AgentsPage = () => {
                     <div className="flex items-center gap-4 mt-3 text-sm">
                       <span>
                         <span className="font-semibold text-primary">{counts.agents}</span>
-                        <span className="text-muted-foreground ms-1">{t('companyDetail.team')}</span>
+                        <span className="text-muted-foreground ms-1">{t('nav.agents')}</span>
                       </span>
                       <span className="text-border">·</span>
                       <span>
