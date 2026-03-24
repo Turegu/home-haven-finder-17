@@ -29,7 +29,7 @@ interface AgentData {
     id: string;
     name: string;
     logo_url: string | null;
-    company_type: string | null;
+    company_types: string[] | null;
     cover_url: string | null;
     is_verified: boolean;
   } | null;
