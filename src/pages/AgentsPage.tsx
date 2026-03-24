@@ -24,6 +24,7 @@ interface CompanyRow {
   neighbourhood: string | null;
   profile_classification?: string;
   boost_end_date?: string | null;
+  is_verified?: boolean;
 }
 
 interface AgentRow {
