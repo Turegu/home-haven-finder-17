@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { AuthPromptProvider } from "@/hooks/useAuthPrompt";
 import { useDirection } from "@/hooks/useDirection";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
