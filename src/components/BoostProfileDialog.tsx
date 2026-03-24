@@ -56,7 +56,7 @@ const BoostProfileDialog = ({
       const map: Record<string, number> = {};
       (settings || []).forEach(s => { map[s.setting_key] = parseInt(s.setting_value) || 0; });
 
-      const dUnit = isTestMode ? "min" : "mo";
+      
       const opts: BoostOption[] = [
         { key: "3m", label: `3 ${isTestMode ? "Minutes" : "Months"} — ${map[`${prefix}_3_months_credits`] || 20} Credits`, months: 3, credits: map[`${prefix}_3_months_credits`] || 20 },
         { key: "6m", label: `6 ${isTestMode ? "Minutes" : "Months"} — ${map[`${prefix}_6_months_credits`] || 35} Credits`, months: 6, credits: map[`${prefix}_6_months_credits`] || 35 },
