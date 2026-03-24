@@ -77,8 +77,7 @@ const Footer = () => {
               <li><Link to="/terms" className="hover:text-white transition-colors">{t('footer.termsOfService')}</Link></li>
               <li><Link to="/privacy" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</Link></li>
               <li><Link to="/admin/login" className="hover:text-primary transition-colors">{t('footer.adminPanel')}</Link></li>
-              <li><Link to="/company/login" className="hover:text-primary transition-colors">{t('footer.companyDashboard')}</Link></li>
-              <li><Link to="/agent/login" className="hover:text-primary transition-colors">{t('footer.agentPortal')}</Link></li>
+              <li><Link to="/agent/login" className="hover:text-primary transition-colors">{t('footer.companyDashboard')} / {t('footer.agentPortal')}</Link></li>
             </ul>
           </div>
         </div>
