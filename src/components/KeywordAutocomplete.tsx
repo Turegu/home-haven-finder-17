@@ -19,7 +19,7 @@ export interface AutocompleteSearchConfig {
 interface KeywordAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string, type: 'property' | 'project' | 'place') => void;
+  onSelect?: (value: string, type: 'property' | 'project' | 'event' | 'place') => void;
   onEnter?: () => void;
   placeholder?: string;
   className?: string;
