@@ -20,6 +20,10 @@ export interface Property {
   listingType: 'buy' | 'rent';
   rentDuration?: string | null;
   advertisingTags?: string[];
+  contactPhone?: string | null;
+  contactWhatsapp?: string | null;
+  companyId?: string | null;
+  agentId?: string | null;
 }
 
 export interface Project {

@@ -76,7 +76,7 @@ export function usePropertySearch(params: PropertySearchParams) {
     queryFn: async () => {
       let query = supabase
         .from("properties")
-        .select("*, agents(name, avatar_url), companies(name, logo_url)", { count: "exact" })
+        .select("*, agents(name, avatar_url, phone, whatsapp), companies(name, logo_url, phone, whatsapp)", { count: "exact" })
         .eq("status", "active")
         .eq("property_purpose", params.propertyPurpose === "rent" ? "rent" : "buy");
 
