@@ -211,7 +211,10 @@ const AgentDetailPage = () => {
                 </div>
                 <div className="min-w-0">
                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{t('detail.company')}</p>
-                   <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{agent.companies.name}</h3>
+                   <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate flex items-center gap-1.5">
+                     {agent.companies.name}
+                     {agent.companies.is_verified && <VerifiedBadge />}
+                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {formatCompanyTypes(agent.companies.company_types)}
                   </p>
