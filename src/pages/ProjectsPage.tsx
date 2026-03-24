@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, lazy } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import AiPropertyAgent from '@/components/AiPropertyAgent';
+import KeywordAutocomplete from '@/components/KeywordAutocomplete';
 import { Link, useSearchParams } from 'react-router-dom';
 import { turkishIncludes } from '@/lib/utils';
 import {
