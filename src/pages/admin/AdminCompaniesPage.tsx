@@ -18,14 +18,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, differenceInDays, differenceInSeconds } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import UpgradeMembershipDialog from "@/components/admin/UpgradeMembershipDialog";
 import AddCreditsDialog from "@/components/admin/AddCreditsDialog";
+import { useTestMode } from "@/hooks/useTestMode";
 
 type Company = Tables<"companies">;
 
-type SortOption = "newest" | "oldest" | "most_properties" | "most_agents" | "most_projects";
+type SortOption = "newest" | "oldest" | "most_properties" | "most_agents" | "most_projects" | "expiry_soonest";
 
 const MEMBERSHIP_TIERS = ["basic", "lite", "plus", "pro"] as const;
 
@@ -38,6 +39,7 @@ const MEMBERSHIP_COLORS: Record<string, string> = {
 
 const AdminCompaniesPage = () => {
   const navigate = useNavigate();
+  const { isTestMode } = useTestMode();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -129,6 +131,11 @@ const AdminCompaniesPage = () => {
           return (agentCounts[b.id] || 0) - (agentCounts[a.id] || 0);
         case "most_projects":
           return (projectCounts[b.id] || 0) - (projectCounts[a.id] || 0);
+        case "expiry_soonest": {
+          const aEnd = a.package_end_date ? new Date(a.package_end_date).getTime() : Infinity;
+          const bEnd = b.package_end_date ? new Date(b.package_end_date).getTime() : Infinity;
+          return aEnd - bEnd;
+        }
         default:
           return 0;
       }
@@ -176,6 +183,17 @@ const AdminCompaniesPage = () => {
 
   const membershipColor = (m: string) => MEMBERSHIP_COLORS[m] || MEMBERSHIP_COLORS.basic;
 
+  const isExpiringSoon = (company: Company): boolean => {
+    if (!company.package_end_date || company.membership === "basic") return false;
+    const now = new Date();
+    const end = new Date(company.package_end_date);
+    if (end <= now) return false;
+    if (isTestMode) {
+      return differenceInSeconds(end, now) <= 15;
+    }
+    return differenceInDays(end, now) <= 7;
+  };
+
   // Summary counts per tier
   const tierCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -215,6 +233,7 @@ const AdminCompaniesPage = () => {
                 <SelectItem value="most_properties">Most Properties</SelectItem>
                 <SelectItem value="most_agents">Most Agents</SelectItem>
                 <SelectItem value="most_projects">Most Projects</SelectItem>
+                <SelectItem value="expiry_soonest">Expiry Soonest</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -308,8 +327,10 @@ const AdminCompaniesPage = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSorted.map((company, idx) => (
-                  <TableRow key={company.id} className="hover:bg-muted/30">
+                filteredAndSorted.map((company, idx) => {
+                  const expiring = isExpiringSoon(company);
+                  return (
+                  <TableRow key={company.id} className={`hover:bg-muted/30 ${expiring ? "bg-destructive/10" : ""}`}>
                     <TableCell>
                       <Checkbox
                         checked={selected.includes(company.id)}
@@ -331,10 +352,19 @@ const AdminCompaniesPage = () => {
                         {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {company.package_end_date
-                        ? format(new Date(company.package_end_date), "dd/MM/yyyy")
-                        : "—"}
+                    <TableCell className="text-sm whitespace-nowrap">
+                      {company.package_end_date ? (
+                        <div className="flex items-center gap-1.5">
+                          <span className={expiring ? "text-destructive font-semibold" : "text-muted-foreground"}>
+                            {format(new Date(company.package_end_date), "dd/MM/yyyy")}
+                          </span>
+                          {expiring && (
+                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                              Expiring Soon
+                            </Badge>
+                          )}
+                        </div>
+                      ) : "—"}
                     </TableCell>
                     <TableCell className="text-center">
                       <span className="text-sm font-semibold text-foreground">{propertyCounts[company.id] || 0}</span>
@@ -388,7 +418,8 @@ const AdminCompaniesPage = () => {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))
+                  );
+                })
               )}
             </TableBody>
           </Table>
