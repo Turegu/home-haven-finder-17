@@ -143,9 +143,8 @@ const AgentsPage = () => {
     return true;
   }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
-  const typeLabel = (t: string | null) => {
-    if (!t) return 'Real Estate Company';
-    return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeLabel = (types: string[] | null) => {
+    return formatCompanyTypes(types);
   };
 
   return (
