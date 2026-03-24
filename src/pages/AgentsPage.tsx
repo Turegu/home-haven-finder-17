@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
-import { MapPin, Search, Home, Globe, Rocket, Building2 } from 'lucide-react';
+import { MapPin, Search, Home, Globe, Rocket, Building2, BadgeCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BannerDisplay from '@/components/BannerDisplay';
@@ -24,6 +24,7 @@ interface CompanyRow {
   neighbourhood: string | null;
   profile_classification?: string;
   boost_end_date?: string | null;
+  is_verified?: boolean;
 }
 
 interface AgentRow {
@@ -36,7 +37,7 @@ interface AgentRow {
   service_areas: string[] | null;
   profile_classification?: string;
   boost_end_date?: string | null;
-  companies: { name: string; logo_url: string | null } | null;
+  companies: { name: string; logo_url: string | null; is_verified?: boolean } | null;
 }
 
 const isBoosted = (cls?: string, endDate?: string | null) =>
@@ -84,13 +85,13 @@ const AgentsPage = () => {
 
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
       const { data: agentData } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url)")
+        .select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url, is_verified)")
         .eq("status", "active");
       setAgents((agentData ?? []) as unknown as AgentRow[]);
 
@@ -274,6 +275,7 @@ const AgentsPage = () => {
                       <h3 className="text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                         {company.name}
                       </h3>
+                      {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
@@ -341,9 +343,10 @@ const AgentsPage = () => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
+                        <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                             {agent.name}
                           </h3>
+                          {agent.companies?.is_verified && <BadgeCheck className="h-3.5 w-3.5 text-blue-500 shrink-0" />}
                           {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>

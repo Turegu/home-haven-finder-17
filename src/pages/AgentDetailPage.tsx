@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
+import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home, BadgeCheck } from 'lucide-react';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -31,6 +31,7 @@ interface AgentData {
     logo_url: string | null;
     company_type: string | null;
     cover_url: string | null;
+    is_verified: boolean;
   } | null;
 }
 
@@ -47,7 +48,7 @@ const AgentDetailPage = () => {
     const fetchAgent = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_type, cover_url)")
+        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_type, cover_url, is_verified)")
         .eq("id", id)
         .maybeSingle();
       const agentData = data as unknown as AgentData | null;
@@ -149,7 +150,10 @@ const AgentDetailPage = () => {
                 <div className="flex-1 min-w-0">
                   <div>
                     <div className="flex items-center gap-12">
-                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                      <div className="flex items-center gap-1.5">
+                        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                        {agent.companies?.is_verified && <BadgeCheck className="h-5 w-5 text-blue-500 shrink-0" />}
+                      </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
                     <p className="text-sm text-muted-foreground">{agent.designation}</p>

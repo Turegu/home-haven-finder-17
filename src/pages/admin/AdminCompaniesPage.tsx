@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
@@ -85,6 +85,17 @@ const AdminCompaniesPage = () => {
     } else {
       toast.success(`${selected.length} company(ies) deleted`);
       setSelected([]);
+      fetchCompanies();
+    }
+  };
+
+  const handleToggleVerified = async (company: Company) => {
+    const newValue = !company.is_verified;
+    const { error } = await supabase.from("companies").update({ is_verified: newValue }).eq("id", company.id);
+    if (error) {
+      toast.error("Failed to update verification status");
+    } else {
+      toast.success(`${company.name} ${newValue ? "verified" : "unverified"}`);
       fetchCompanies();
     }
   };
@@ -197,7 +208,12 @@ const AdminCompaniesPage = () => {
                         {company.membership}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-medium text-foreground">{company.name}</TableCell>
+                    <TableCell className="font-medium text-foreground">
+                      <div className="flex items-center gap-1.5">
+                        {company.name}
+                        {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                       {company.package_end_date
                         ? `${company.membership.toUpperCase()} - ${format(new Date(company.package_end_date), "dd/MM/yyyy")}`
@@ -223,6 +239,12 @@ const AdminCompaniesPage = () => {
                             <ArrowUpCircle className="h-4 w-4 mr-2" /> Change Membership
                           </DropdownMenuItem>
                           
+                          <DropdownMenuItem onClick={() => handleToggleVerified(company)}>
+                            {company.is_verified
+                              ? <><ShieldOff className="h-4 w-4 mr-2" /> Remove Verified</>
+                              : <><BadgeCheck className="h-4 w-4 mr-2" /> Mark as Verified</>
+                            }
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
                             <Coins className="h-4 w-4 mr-2" /> Add Points
                           </DropdownMenuItem>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
+import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home, BadgeCheck } from 'lucide-react';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -27,6 +27,7 @@ interface CompanyData {
   phone: string | null;
   whatsapp: string | null;
   pin_location: string | null;
+  is_verified: boolean;
 }
 
 interface AgentData {
@@ -51,7 +52,7 @@ const CompanyDetailPage = () => {
     const fetchCompany = async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location")
+        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location, is_verified")
         .eq("id", id)
         .maybeSingle();
       setCompany(data as CompanyData | null);
@@ -182,7 +183,10 @@ const CompanyDetailPage = () => {
                 <div className="flex-1 min-w-0">
                   <div>
                     <div className="flex items-center gap-12">
-                      <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
+                      <div className="flex items-center gap-1.5">
+                        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{company.name}</h1>
+                        {company.is_verified && <BadgeCheck className="h-5 w-5 text-blue-500 shrink-0" />}
+                      </div>
                       <FollowButton type="company" targetId={company.id} />
                     </div>
                     <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
