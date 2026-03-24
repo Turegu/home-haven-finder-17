@@ -165,10 +165,13 @@ const CompanyProfilePage = () => {
         // Fetch current pattern
         const { data: patternData } = await supabase
           .from("company_pattern_codes")
-          .select("pattern_code")
+          .select("pattern_code, is_active")
           .eq("company_id", data.id)
           .maybeSingle();
-        if (patternData) setCurrentPatternCode(patternData.pattern_code);
+        if (patternData) {
+          setCurrentPatternCode(patternData.pattern_code);
+          setPatternActive(patternData.is_active ?? true);
+        }
       }
       setLoading(false);
     };

@@ -147,10 +147,13 @@ const AgentProfilePage = () => {
         // Fetch agent's own pattern
         const { data: patternData } = await supabase
           .from("agent_pattern_codes")
-          .select("pattern_code")
+          .select("pattern_code, is_active")
           .eq("agent_id", data.id)
           .maybeSingle();
-        if (patternData) setCurrentPatternCode(patternData.pattern_code);
+        if (patternData) {
+          setCurrentPatternCode(patternData.pattern_code);
+          setPatternActive(patternData.is_active ?? true);
+        }
       }
       setLoading(false);
     };
