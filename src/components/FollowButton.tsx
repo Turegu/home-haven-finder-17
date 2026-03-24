@@ -58,8 +58,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
   const handleToggle = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error(t('detail.followSignIn'));
-      navigate('/user/login');
+      window.dispatchEvent(new Event('auth-prompt-open'));
       return;
     }
 
