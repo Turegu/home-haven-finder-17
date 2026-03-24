@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Search, MapPin, Home } from 'lucide-react';
+import { X, MapPin, Home } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/mapConstants';
