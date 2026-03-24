@@ -64,7 +64,7 @@ export function useComparedPropertyIds() {
 
 export async function toggleSaveProperty(propertyId: string, queryClient?: ReturnType<typeof useQueryClient>): Promise<boolean | null> {
   const uid = await getCurrentUserId();
-  if (!uid) { toast.error('Please sign in first.'); return null; }
+  if (!uid) { window.dispatchEvent(new Event('auth-prompt-open')); return null; }
 
   const { data: existing } = await supabase
     .from('saved_properties')
