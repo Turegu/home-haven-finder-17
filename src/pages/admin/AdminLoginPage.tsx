@@ -56,15 +56,20 @@ const AdminLoginPage = () => {
         localStorage.removeItem("turegu_admin_email");
       }
 
-      // Fetch admin pattern
-      const { data: patternData } = await supabase
+      // Fetch admin pattern and active status
+      const { data: patternSettings } = await supabase
         .from("admin_settings")
-        .select("setting_value")
-        .eq("setting_key", "admin_pattern_code")
-        .limit(1);
+        .select("setting_key, setting_value")
+        .in("setting_key", ["admin_pattern_code", "admin_pattern_active"]);
 
-      if (patternData?.[0] && (patternData[0] as any).setting_value) {
-        setSavedPattern((patternData[0] as any).setting_value);
+      const settingsMap: Record<string, string> = {};
+      (patternSettings || []).forEach((s: any) => { settingsMap[s.setting_key] = s.setting_value; });
+
+      const patternCode = settingsMap.admin_pattern_code || "";
+      const patternIsActive = settingsMap.admin_pattern_active !== "false"; // default true if not set
+
+      if (patternCode && patternIsActive) {
+        setSavedPattern(patternCode);
         setStep("pattern");
         toast.info("Please draw the admin pattern to continue.");
       } else {

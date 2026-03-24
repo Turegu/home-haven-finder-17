@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Phone, MessageCircle, Mail, Lock, Info, MapPin, Globe, BarChart3, Bot } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
 import type { AnalyticsPhase } from "@/hooks/useAnalyticsPhase";
@@ -23,6 +24,7 @@ const AdminSettingsPage = () => {
   const [analyticsPhase, setAnalyticsPhase] = useState<AnalyticsPhase>("phase1");
   const [aiSearchEnabled, setAiSearchEnabled] = useState(true);
   const [adminEmail, setAdminEmail] = useState("");
+  const [patternActive, setPatternActive] = useState(true);
 
 
   // Pattern
@@ -45,6 +47,7 @@ const AdminSettingsPage = () => {
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setAiSearchEnabled(map.ai_search_enabled !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
+        setPatternActive(map.admin_pattern_active !== 'false');
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -249,6 +252,38 @@ const AdminSettingsPage = () => {
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Lock className="h-5 w-5" /> Pattern Lock
           </h2>
+
+          {/* Pattern Login Toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4">
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                Pattern Login is {patternActive ? "Active" : "Inactive"}
+              </p>
+              {!currentPattern && (
+                <p className="text-xs text-muted-foreground mt-0.5">Set a pattern first to activate</p>
+              )}
+            </div>
+            <Switch
+              checked={patternActive}
+              disabled={!currentPattern}
+              onCheckedChange={async (val) => {
+                setPatternActive(val);
+                // Upsert the setting
+                const { data: existing } = await supabase
+                  .from("admin_settings")
+                  .select("id")
+                  .eq("setting_key", "admin_pattern_active")
+                  .maybeSingle();
+                if (existing) {
+                  await supabase.from("admin_settings").update({ setting_value: String(val) }).eq("setting_key", "admin_pattern_active");
+                } else {
+                  await supabase.from("admin_settings").insert({ setting_key: "admin_pattern_active", setting_value: String(val) });
+                }
+                toast({ title: val ? "Pattern login activated" : "Pattern login deactivated" });
+              }}
+            />
+          </div>
+
           <p className="text-sm text-muted-foreground">
             {currentPattern ? "A pattern is currently set." : "No pattern set yet."}
           </p>
