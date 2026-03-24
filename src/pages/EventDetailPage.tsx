@@ -433,9 +433,9 @@ const EventDetailPage = () => {
           images: event.images,
           listingId: event.listingId,
         }}
-        companyId={realCompanyId}
+        companyId={realAgentId ? null : realCompanyId}
         agentId={realAgentId}
-        companyName={event.agentCompany || event.organizer}
+        companyName={realAgentId ? event.agentName : (event.agentCompany || event.organizer)}
         listingType="event"
       />
 

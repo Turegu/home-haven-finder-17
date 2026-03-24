@@ -512,9 +512,9 @@ const ProjectDetailPage = () => {
           images: project.images,
           listingId: project.listingId,
         }}
-        companyId={realCompanyId}
+        companyId={realAgentId ? null : realCompanyId}
         agentId={realAgentId}
-        companyName={project.agentCompany}
+        companyName={realAgentId ? project.agentName : project.agentCompany}
         listingType="project"
         projectUnits={projectUnits}
       />
