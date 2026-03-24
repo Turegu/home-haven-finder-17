@@ -31,6 +31,7 @@ interface AgentData {
     logo_url: string | null;
     company_type: string | null;
     cover_url: string | null;
+    is_verified: boolean;
   } | null;
 }
 
