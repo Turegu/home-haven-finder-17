@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
+import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
