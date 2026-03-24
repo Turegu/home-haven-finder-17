@@ -120,6 +120,7 @@ const AgentLoginPage = () => {
 
     if (adminData?.[0]) {
       setSavedPattern((adminData[0] as any).setting_value);
+      setPendingRedirect("/company");
       setStep("pattern");
       toast.info("Please draw the pattern to continue.");
       return;
