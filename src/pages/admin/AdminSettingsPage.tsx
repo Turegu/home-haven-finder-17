@@ -232,10 +232,10 @@ const AdminSettingsPage = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border">
-              <Info className="h-4 w-4 mt-0.5 shrink-0" />
-              <div className="space-y-1">
+          <div className="space-y-2 text-sm">
+            <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border">
+              <Info className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+              <div className="space-y-1 text-foreground">
                 <p><strong>Phase 1:</strong> Shows qualitative tiers only (e.g. "Growing Interest", "Building Momentum"). Low numbers hidden behind "Analyzing Market Data..."</p>
                 <p><strong>Phase 2:</strong> Shows tiers + masked stats. Numbers below thresholds display as "Initial Exposure Phase" instead of raw counts.</p>
                 <p><strong>Phase 3:</strong> Full raw numbers, breakdown by channel (WhatsApp/Call/Email), and conversion funnel chart.</p>
