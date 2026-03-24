@@ -10,9 +10,10 @@ import { cn } from '@/lib/utils';
 const LIBRARIES: ('places')[] = ['places'];
 
 export interface AutocompleteSearchConfig {
-  properties?: number;  // max property results (default 3)
-  projects?: number;    // max project results (default 0)
-  places?: number;      // max Google Places results (default 4)
+  properties?: number;
+  projects?: number;
+  events?: number;
+  places?: number;
 }
 
 interface KeywordAutocompleteProps {
