@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
-import FeaturedProjectCard from '@/components/FeaturedProjectCard';
+import ProjectListCard from '@/components/ProjectListCard';
 import FollowButton from '@/components/FollowButton';
 
 interface AgentData {
@@ -379,7 +379,7 @@ const AgentProjectsTab = ({ agentId }: { agentId: string }) => {
     setLoading(true);
     let query = supabase
       .from('projects')
-      .select('id, title, location, min_price, currency, images, developer, min_units, completion_date, project_status, companies(logo_url)')
+      .select('*, companies(name, logo_url, phone, whatsapp), agents(name, avatar_url, phone, whatsapp)')
       .eq('agent_id', agentId)
       .eq('status', 'active')
       .limit(50);
@@ -389,13 +389,7 @@ const AgentProjectsTab = ({ agentId }: { agentId: string }) => {
     if (filters.maxPrice) query = query.lte('min_price', Number(filters.maxPrice));
 
     const { data } = await query.order('created_at', { ascending: false });
-    setProjects((data || []).map((p: any) => ({
-      id: p.id, title: p.title, location: p.location || 'N/A',
-      priceFrom: p.min_price ?? 0, currency: p.currency ?? 'USD',
-      image: p.images?.[0] || '/placeholder.svg', developer: p.developer || '',
-      developerLogo: p.companies?.logo_url || '', units: p.min_units ?? 0,
-      completionDate: p.completion_date || 'TBA',
-    })));
+    setProjects(data || []);
     setLoading(false);
   }, [agentId, filters]);
 
@@ -409,9 +403,9 @@ const AgentProjectsTab = ({ agentId }: { agentId: string }) => {
       ) : projects.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground text-sm">No projects match the selected filters.</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {projects.map((project) => (
-            <FeaturedProjectCard key={project.id} project={project} />
+        <div className="space-y-6">
+          {projects.map((p) => (
+            <ProjectListCard key={p.id} project={p} />
           ))}
         </div>
       )}
