@@ -115,13 +115,14 @@ export default function KeywordAutocomplete({
     // 2. Projects
     if (config.projects > 0) {
       dbPromises.push(
-        supabase
-          .from('projects')
-          .select('id, title, project_type, town, province, developer')
-          .eq('status', 'active')
-          .ilike('title', `%${query}%`)
-          .limit(config.projects)
-          .then(({ data }) => {
+        Promise.resolve(
+          supabase
+            .from('projects')
+            .select('id, title, project_type, town, province, developer')
+            .eq('status', 'active')
+            .ilike('title', `%${query}%`)
+            .limit(config.projects)
+        ).then(({ data }) => {
             if (data) {
               data.forEach((p) => {
                 results.push({
