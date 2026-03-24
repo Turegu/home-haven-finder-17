@@ -352,10 +352,19 @@ const AdminCompaniesPage = () => {
                         {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {company.package_end_date
-                        ? format(new Date(company.package_end_date), "dd/MM/yyyy")
-                        : "—"}
+                    <TableCell className="text-sm whitespace-nowrap">
+                      {company.package_end_date ? (
+                        <div className="flex items-center gap-1.5">
+                          <span className={expiring ? "text-destructive font-semibold" : "text-muted-foreground"}>
+                            {format(new Date(company.package_end_date), "dd/MM/yyyy")}
+                          </span>
+                          {expiring && (
+                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                              Expiring Soon
+                            </Badge>
+                          )}
+                        </div>
+                      ) : "—"}
                     </TableCell>
                     <TableCell className="text-center">
                       <span className="text-sm font-semibold text-foreground">{propertyCounts[company.id] || 0}</span>
