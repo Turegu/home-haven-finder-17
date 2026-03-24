@@ -76,6 +76,7 @@ const AdminLocationsPage = lazy(() => import("./pages/admin/AdminLocationsPage.t
 const AdminEmailPreviewPage = lazy(() => import("./pages/admin/AdminEmailPreviewPage.tsx"));
 const AdminReportsPage = lazy(() => import("./pages/admin/AdminReportsPage.tsx"));
 const AdminFeaturedManagementPage = lazy(() => import("./pages/admin/AdminFeaturedManagementPage.tsx"));
+const AdminCompanyEditPage = lazy(() => import("./pages/admin/AdminCompanyEditPage.tsx"));
 
 // Company pages
 const CompanyLoginPage = lazy(() => import("./pages/company/CompanyLoginPage.tsx"));
@@ -184,6 +185,7 @@ const App = () => {
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/companies" element={<AdminCompaniesPage />} />
             <Route path="/admin/companies/new" element={<AdminCreateCompanyPage />} />
+            <Route path="/admin/companies/:id/edit" element={<AdminCompanyEditPage />} />
             <Route path="/admin/memberships" element={<AdminMembershipsPage />} />
             <Route path="/admin/properties" element={<AdminPropertiesPage />} />
             <Route path="/admin/projects" element={<AdminProjectsPage />} />
