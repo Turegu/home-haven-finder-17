@@ -20,7 +20,7 @@ const VerifiedBadge = ({ size = "md" }: VerifiedBadgeProps) => {
           <BadgeCheck className={`${iconSize} text-blue-500 shrink-0 cursor-help`} />
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-[200px] text-center">
-          <p className="text-xs">Verified company — identity and credentials confirmed by the platform.</p>
+          <p className="text-xs">Verified</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
