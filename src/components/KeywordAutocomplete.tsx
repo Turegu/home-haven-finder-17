@@ -207,7 +207,7 @@ export default function KeywordAutocomplete({
     setSuggestions(results);
     setIsOpen(results.length > 0);
     setActiveIndex(-1);
-  }, [allowedCountry, config.properties, config.projects, config.places]);
+  }, [allowedCountry, config.properties, config.projects, config.events, config.places]);
 
   const handleInputChange = (val: string) => {
     onChange(val);
