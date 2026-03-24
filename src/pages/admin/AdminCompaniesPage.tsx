@@ -208,7 +208,12 @@ const AdminCompaniesPage = () => {
                         {company.membership}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-medium text-foreground">{company.name}</TableCell>
+                    <TableCell className="font-medium text-foreground">
+                      <div className="flex items-center gap-1.5">
+                        {company.name}
+                        {company.is_verified && <BadgeCheck className="h-4 w-4 text-blue-500 shrink-0" />}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                       {company.package_end_date
                         ? `${company.membership.toUpperCase()} - ${format(new Date(company.package_end_date), "dd/MM/yyyy")}`
