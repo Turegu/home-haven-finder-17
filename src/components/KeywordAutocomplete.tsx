@@ -2,9 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, MapPin, Home } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
+import { useJsApiLoader } from '@react-google-maps/api';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/mapConstants';
 import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 import { cn } from '@/lib/utils';
+
+const LIBRARIES: ('places')[] = ['places'];
 
 interface KeywordAutocompleteProps {
   value: string;
@@ -20,45 +23,6 @@ interface Suggestion {
   text: string;
   subtext?: string;
   type: 'property' | 'place';
-}
-
-let autocompleteService: google.maps.places.AutocompleteService | null = null;
-
-function getAutocompleteService(): google.maps.places.AutocompleteService | null {
-  if (autocompleteService) return autocompleteService;
-  if (typeof google !== 'undefined' && google.maps?.places) {
-    autocompleteService = new google.maps.places.AutocompleteService();
-    return autocompleteService;
-  }
-  return null;
-}
-
-// Load google maps with places library if not already loaded
-let placesLibLoaded = false;
-function ensurePlacesLib() {
-  if (placesLibLoaded) return;
-  if (typeof google !== 'undefined' && google.maps?.places) {
-    placesLibLoaded = true;
-    return;
-  }
-  // Check if google maps script exists and add places library
-  const existing = document.querySelector('script[src*="maps.googleapis.com"]');
-  if (existing) {
-    const src = existing.getAttribute('src') || '';
-    if (!src.includes('places')) {
-      // Need to load places library separately
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=__placesReady`;
-      (window as any).__placesReady = () => { placesLibLoaded = true; };
-      // Don't double-load if already loaded
-      if (typeof google !== 'undefined' && google.maps) {
-        // Try loading just the places library via importLibrary
-        google.maps.importLibrary?.('places').then(() => { placesLibLoaded = true; }).catch(() => {});
-      }
-    } else {
-      placesLibLoaded = true;
-    }
-  }
 }
 
 export default function KeywordAutocomplete({
