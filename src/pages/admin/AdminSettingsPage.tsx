@@ -47,6 +47,7 @@ const AdminSettingsPage = () => {
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setAiSearchEnabled(map.ai_search_enabled !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
+        setPatternActive(map.admin_pattern_active !== 'false');
       }
 
       const { data: { user } } = await supabase.auth.getUser();
