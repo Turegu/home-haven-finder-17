@@ -37,7 +37,7 @@ interface AgentRow {
   service_areas: string[] | null;
   profile_classification?: string;
   boost_end_date?: string | null;
-  companies: { name: string; logo_url: string | null } | null;
+  companies: { name: string; logo_url: string | null; is_verified?: boolean } | null;
 }
 
 const isBoosted = (cls?: string, endDate?: string | null) =>
