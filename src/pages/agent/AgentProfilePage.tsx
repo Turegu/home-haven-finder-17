@@ -142,11 +142,11 @@ const AgentProfilePage = () => {
           avatar_url: data.avatar_url || "",
         });
 
-        // Fetch pattern
+        // Fetch agent's own pattern
         const { data: patternData } = await supabase
-          .from("company_pattern_codes")
+          .from("agent_pattern_codes")
           .select("pattern_code")
-          .eq("company_id", data.company_id)
+          .eq("agent_id", data.id)
           .maybeSingle();
         if (patternData) setCurrentPatternCode(patternData.pattern_code);
       }
