@@ -34,16 +34,16 @@ const AdminDashboardPage = () => {
   }, []);
 
   const summaryCards = [
-    { label: "Properties", count: 0, icon: Home, gradient: "from-sky-500 to-blue-600", iconBg: "bg-white/20" },
-    { label: "Projects", count: 0, icon: FolderKanban, gradient: "from-amber-500 to-orange-600", iconBg: "bg-white/20" },
-    { label: "Events", count: 0, icon: CalendarDays, gradient: "from-teal-500 to-emerald-600", iconBg: "bg-white/20" },
+    { label: "Properties", count: 0, icon: Home, bg: "bg-sky-50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800", iconColor: "text-sky-600 dark:text-sky-400", barBg: "bg-sky-200 dark:bg-sky-800", barFill: "bg-sky-500" },
+    { label: "Projects", count: 0, icon: FolderKanban, bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800", iconColor: "text-amber-600 dark:text-amber-400", barBg: "bg-amber-200 dark:bg-amber-800", barFill: "bg-amber-500" },
+    { label: "Events", count: 0, icon: CalendarDays, bg: "bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800", iconColor: "text-teal-600 dark:text-teal-400", barBg: "bg-teal-200 dark:bg-teal-800", barFill: "bg-teal-500" },
   ];
 
   const membershipCards = [
-    { label: "Basic", count: stats.basicCompanies, icon: Briefcase, gradient: "from-slate-500 to-slate-700", accent: "bg-slate-600" },
-    { label: "Lite", count: stats.liteCompanies, icon: Zap, gradient: "from-violet-500 to-purple-700", accent: "bg-violet-600" },
-    { label: "Plus", count: stats.plusCompanies, icon: Star, gradient: "from-amber-500 to-orange-600", accent: "bg-amber-600" },
-    { label: "Pro", count: stats.proCompanies, icon: Crown, gradient: "from-teal-500 to-emerald-700", accent: "bg-teal-600" },
+    { label: "Basic", count: stats.basicCompanies, icon: Briefcase, bg: "bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-700", iconColor: "text-slate-500", barBg: "bg-slate-500" },
+    { label: "Lite", count: stats.liteCompanies, icon: Zap, bg: "bg-violet-50 dark:bg-violet-950/30 border-violet-200 dark:border-violet-800", iconColor: "text-violet-500", barBg: "bg-violet-500" },
+    { label: "Plus", count: stats.plusCompanies, icon: Star, bg: "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800", iconColor: "text-amber-500", barBg: "bg-amber-500" },
+    { label: "Pro", count: stats.proCompanies, icon: Crown, bg: "bg-teal-50 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800", iconColor: "text-teal-500", barBg: "bg-teal-500" },
   ];
 
   return (
