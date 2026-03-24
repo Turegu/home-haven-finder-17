@@ -880,7 +880,11 @@ const PropertyDetailPage = () => {
               )}
 
               <div className="flex items-center justify-center gap-0 border-t border-border pt-3">
-                <button onClick={() => { trackInquiryClick(id!, 'property', 'call'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => {
+                  trackInquiryClick(id!, 'property', 'call');
+                  if (contactPhone) window.open(`tel:${contactPhone}`, '_self');
+                  else toast.error('No phone number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <Phone className="h-4 w-4" />
                   {t('property.call')}
                 </button>
@@ -890,7 +894,13 @@ const PropertyDetailPage = () => {
                   {t('property.email')}
                 </button>
                 <div className="w-px h-6 bg-border" />
-                <button onClick={() => { trackInquiryClick(id!, 'property', 'whatsapp'); }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
+                <button onClick={() => {
+                  trackInquiryClick(id!, 'property', 'whatsapp');
+                  if (contactWhatsapp) {
+                    const cleaned = contactWhatsapp.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${cleaned}?text=Hi, I am interested in your property: ${encodeURIComponent(property.title)}`, '_blank');
+                  } else toast.error('No WhatsApp number available');
+                }} className="flex-1 flex items-center justify-center gap-1.5 text-primary hover:bg-secondary py-2.5 rounded-lg text-sm">
                   <MessageCircle className="h-4 w-4" />
                   {t('property.whatsApp')}
                 </button>
