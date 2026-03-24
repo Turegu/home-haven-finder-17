@@ -232,9 +232,10 @@ const AgentProfilePage = () => {
         try {
           const { error } = await supabase
             .from("agent_pattern_codes")
-            .upsert({ agent_id: agent!.id, pattern_code: newPattern.join(",") }, { onConflict: "agent_id" });
+            .upsert({ agent_id: agent!.id, pattern_code: newPattern.join(","), is_active: true }, { onConflict: "agent_id" });
           if (error) throw error;
           setCurrentPatternCode(newPattern.join(","));
+          setPatternActive(true);
           toast.success("Pattern lock updated!");
           setPatternDialogOpen(false);
         } catch (err: any) {
