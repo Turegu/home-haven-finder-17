@@ -105,6 +105,7 @@ const AgentLoginPage = () => {
 
     if (patternData && patternData.pattern_code) {
       setSavedPattern(patternData.pattern_code);
+      setPendingRedirect("/company");
       setStep("pattern");
       toast.info("Please draw your company pattern to continue.");
       return;
