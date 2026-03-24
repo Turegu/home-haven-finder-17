@@ -233,6 +233,7 @@ const AdminCompaniesPage = () => {
                 <SelectItem value="most_properties">Most Properties</SelectItem>
                 <SelectItem value="most_agents">Most Agents</SelectItem>
                 <SelectItem value="most_projects">Most Projects</SelectItem>
+                <SelectItem value="expiry_soonest">Expiry Soonest</SelectItem>
               </SelectContent>
             </Select>
           </div>
