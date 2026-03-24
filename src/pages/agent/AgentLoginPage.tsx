@@ -11,6 +11,7 @@ import PatternLock from "@/components/admin/PatternLock";
 
 type LoginMode = "agent" | "company";
 type LoginStep = "credentials" | "pattern";
+type PendingRedirect = "/agent" | "/company";
 
 const AgentLoginPage = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const AgentLoginPage = () => {
   const [forgotEmail, setForgotEmail] = useState("");
   const [patternError, setPatternError] = useState(false);
   const [savedPattern, setSavedPattern] = useState("");
+  const [pendingRedirect, setPendingRedirect] = useState<PendingRedirect>("/agent");
 
   const storageKey = mode === "agent" ? "turegu_agent_email" : "turegu_company_email";
 
@@ -41,7 +43,7 @@ const AgentLoginPage = () => {
   const handleAgentLogin = async (userId: string) => {
     const { data: agent, error: agentError } = await supabase
       .from("agents")
-      .select("id, status")
+      .select("id, status, company_id")
       .eq("user_id", userId)
       .limit(1)
       .maybeSingle();
@@ -55,6 +57,22 @@ const AgentLoginPage = () => {
     if (agent.status !== "active") {
       await supabase.auth.signOut();
       toast.error("Your agent account is not active yet. Contact your company admin.");
+      return;
+    }
+
+    // Check company-specific pattern for the agent's company
+    const { data: patternData } = await supabase
+      .from("company_pattern_codes")
+      .select("pattern_code")
+      .eq("company_id", agent.company_id)
+      .limit(1)
+      .maybeSingle();
+
+    if (patternData && patternData.pattern_code) {
+      setSavedPattern(patternData.pattern_code);
+      setPendingRedirect("/agent");
+      setStep("pattern");
+      toast.info("Please draw the company pattern to continue.");
       return;
     }
 
@@ -87,6 +105,7 @@ const AgentLoginPage = () => {
 
     if (patternData && patternData.pattern_code) {
       setSavedPattern(patternData.pattern_code);
+      setPendingRedirect("/company");
       setStep("pattern");
       toast.info("Please draw your company pattern to continue.");
       return;
@@ -101,6 +120,7 @@ const AgentLoginPage = () => {
 
     if (adminData?.[0]) {
       setSavedPattern((adminData[0] as any).setting_value);
+      setPendingRedirect("/company");
       setStep("pattern");
       toast.info("Please draw the pattern to continue.");
       return;
@@ -139,8 +159,9 @@ const AgentLoginPage = () => {
     const patternStr = pattern.join(",");
     if (patternStr === savedPattern) {
       setPatternError(false);
-      toast.success("Welcome to your Company Dashboard!");
-      navigate("/company");
+      const welcomeMsg = pendingRedirect === "/agent" ? "Welcome to your Agent Dashboard!" : "Welcome to your Company Dashboard!";
+      toast.success(welcomeMsg);
+      navigate(pendingRedirect);
     } else {
       setPatternError(true);
       toast.error("Wrong pattern. Try again.");
