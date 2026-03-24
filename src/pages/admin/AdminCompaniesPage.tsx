@@ -26,7 +26,7 @@ import { useTestMode } from "@/hooks/useTestMode";
 
 type Company = Tables<"companies">;
 
-type SortOption = "newest" | "oldest" | "most_properties" | "most_agents" | "most_projects";
+type SortOption = "newest" | "oldest" | "most_properties" | "most_agents" | "most_projects" | "expiry_soonest";
 
 const MEMBERSHIP_TIERS = ["basic", "lite", "plus", "pro"] as const;
 
