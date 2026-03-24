@@ -182,7 +182,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-orange-500 hover:text-orange-600"
+                    className="h-8 w-8 text-amber-500 hover:text-amber-600"
                     onClick={() => setRecallId(ann.id)}
                     title="Recall from users"
                   >
