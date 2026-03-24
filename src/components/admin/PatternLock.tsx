@@ -95,6 +95,19 @@ const PatternLock = ({ onPatternComplete, error = false, disabled = false }: Pat
     }
   }, [isDrawing, disabled, selectedDots, getDotAtPosition]);
 
+  // Track failed attempts when error prop changes to true
+  useEffect(() => {
+    if (error) {
+      setFailedAttempts(prev => {
+        const next = prev + 1;
+        if (next >= MAX_ATTEMPTS) {
+          setLockoutUntil(Date.now() + LOCKOUT_SECONDS * 1000);
+        }
+        return next;
+      });
+    }
+  }, [error]);
+
   const handleEnd = useCallback(() => {
     if (!isDrawing) return;
     setIsDrawing(false);
