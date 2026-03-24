@@ -17,7 +17,7 @@ import FollowButton from '@/components/FollowButton';
 interface CompanyData {
   id: string;
   name: string;
-  company_type: string | null;
+  company_types: string[] | null;
   logo_url: string | null;
   cover_url: string | null;
   languages: string[] | null;
