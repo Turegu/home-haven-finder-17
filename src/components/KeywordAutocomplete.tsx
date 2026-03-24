@@ -195,33 +195,68 @@ export default function KeywordAutocomplete({
         </button>
       )}
 
-      {isOpen && suggestions.length > 0 && (
-        <div className="absolute top-full start-0 end-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-[320px] overflow-y-auto">
-          {suggestions.map((s, i) => (
-            <button
-              key={s.id}
-              className={cn(
-                "w-full flex items-start gap-2.5 px-3 py-2.5 text-start hover:bg-muted transition-colors text-sm",
-                i === activeIndex && "bg-muted"
-              )}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleSelect(s)}
-            >
-              {s.type === 'property' ? (
-                <Home className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-              ) : (
-                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-              )}
-              <div className="min-w-0">
-                <p className="font-medium text-foreground truncate">{s.text}</p>
-                {s.subtext && (
-                  <p className="text-xs text-muted-foreground truncate">{s.subtext}</p>
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
+      {isOpen && suggestions.length > 0 && (() => {
+        const propertySuggestions = suggestions.filter(s => s.type === 'property');
+        const placeSuggestions = suggestions.filter(s => s.type === 'place');
+        let flatIndex = -1;
+        return (
+          <div className="absolute top-full start-0 end-0 mt-1 bg-popover border border-border rounded-lg shadow-lg z-50 max-h-[320px] overflow-y-auto">
+            {propertySuggestions.length > 0 && (
+              <>
+                <p className="px-3 pt-2 pb-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Listings</p>
+                {propertySuggestions.map((s) => {
+                  flatIndex++;
+                  const idx = flatIndex;
+                  return (
+                    <button
+                      key={s.id}
+                      className={cn(
+                        "w-full flex items-start gap-2.5 px-3 py-2 text-start hover:bg-muted transition-colors text-sm",
+                        idx === activeIndex && "bg-muted"
+                      )}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleSelect(s)}
+                    >
+                      <Home className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate">{s.text}</p>
+                        {s.subtext && <p className="text-xs text-muted-foreground truncate">{s.subtext}</p>}
+                      </div>
+                    </button>
+                  );
+                })}
+              </>
+            )}
+            {placeSuggestions.length > 0 && (
+              <>
+                {propertySuggestions.length > 0 && <div className="border-t border-border" />}
+                <p className="px-3 pt-2 pb-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Places</p>
+                {placeSuggestions.map((s) => {
+                  flatIndex++;
+                  const idx = flatIndex;
+                  return (
+                    <button
+                      key={s.id}
+                      className={cn(
+                        "w-full flex items-start gap-2.5 px-3 py-2 text-start hover:bg-muted transition-colors text-sm",
+                        idx === activeIndex && "bg-muted"
+                      )}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleSelect(s)}
+                    >
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate">{s.text}</p>
+                        {s.subtext && <p className="text-xs text-muted-foreground truncate">{s.subtext}</p>}
+                      </div>
+                    </button>
+                  );
+                })}
+              </>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }
