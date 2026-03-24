@@ -211,7 +211,7 @@ const AdminFeaturedManagementPage = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+                <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
                   <Info className="h-4 w-4 mt-0.5 shrink-0" />
                   <span>These costs are deducted from the company's or agent's credit balance when they boost their profile. Changes take effect immediately for new boosts.</span>
                 </div>

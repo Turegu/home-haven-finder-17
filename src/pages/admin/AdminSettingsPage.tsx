@@ -167,7 +167,7 @@ const AdminSettingsPage = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+          <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
             <span>When disabled, the floating AI agent button will be hidden on the homepage, Buy, Rent, and Projects pages.</span>
           </div>
@@ -192,7 +192,7 @@ const AdminSettingsPage = () => {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+          <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
             <span>Google Maps provides satellite imagery and Street View. Leaflet uses free OpenStreetMap tiles with no API costs.</span>
           </div>
@@ -204,7 +204,7 @@ const AdminSettingsPage = () => {
             <Label>Current Admin Email</Label>
             <Input value={adminEmail} disabled className="bg-muted" />
           </div>
-          <div className="flex items-start gap-2 p-3 rounded-md bg-accent border border-border text-muted-foreground text-sm">
+          <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
             <span>Changing the admin email requires a secure verification process (OTP). This feature is planned for a future update.</span>
           </div>
