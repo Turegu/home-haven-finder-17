@@ -27,6 +27,7 @@ interface CompanyData {
   phone: string | null;
   whatsapp: string | null;
   pin_location: string | null;
+  is_verified: boolean;
 }
 
 interface AgentData {
