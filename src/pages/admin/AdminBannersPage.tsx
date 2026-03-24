@@ -52,6 +52,12 @@ const POSITION_OPTIONS = [
   { value: 4, label: "4th" },
 ];
 
+const DURATION_OPTIONS = [
+  { value: 1, label: "1 Month" },
+  { value: 3, label: "3 Months" },
+  { value: 6, label: "6 Months" },
+];
+
 const emptyForm = {
   name: "",
   page_name: "buy",
@@ -59,8 +65,7 @@ const emptyForm = {
   page_position: 1,
   link_url: "",
   banner_text: "",
-  start_date: "",
-  end_date: "",
+  duration_months: 1,
 };
 
 const AdminBannersPage = () => {
