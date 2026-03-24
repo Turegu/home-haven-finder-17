@@ -298,6 +298,16 @@ const AgentDetailPage = () => {
       </div>
 
       <Footer />
+
+      <ContactProfileDialog
+        open={profileEmailOpen}
+        onOpenChange={setProfileEmailOpen}
+        recipientName={agent.name}
+        recipientLogo={agent.avatar_url}
+        companyId={null}
+        agentId={agent.id}
+        recipientType="agent"
+      />
     </div>
   );
 };

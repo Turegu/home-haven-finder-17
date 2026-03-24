@@ -363,6 +363,16 @@ const CompanyDetailPage = () => {
       </div>
 
       <Footer />
+
+      <ContactProfileDialog
+        open={profileEmailOpen}
+        onOpenChange={setProfileEmailOpen}
+        recipientName={company.name}
+        recipientLogo={company.logo_url}
+        companyId={company.id}
+        agentId={null}
+        recipientType="company"
+      />
     </div>
   );
 };
