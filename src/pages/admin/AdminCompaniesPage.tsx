@@ -131,6 +131,11 @@ const AdminCompaniesPage = () => {
           return (agentCounts[b.id] || 0) - (agentCounts[a.id] || 0);
         case "most_projects":
           return (projectCounts[b.id] || 0) - (projectCounts[a.id] || 0);
+        case "expiry_soonest": {
+          const aEnd = a.package_end_date ? new Date(a.package_end_date).getTime() : Infinity;
+          const bEnd = b.package_end_date ? new Date(b.package_end_date).getTime() : Infinity;
+          return aEnd - bEnd;
+        }
         default:
           return 0;
       }
