@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home, BadgeCheck } from 'lucide-react';
+import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -17,7 +18,7 @@ import FollowButton from '@/components/FollowButton';
 interface CompanyData {
   id: string;
   name: string;
-  company_type: string | null;
+  company_types: string[] | null;
   logo_url: string | null;
   cover_url: string | null;
   languages: string[] | null;
@@ -52,7 +53,7 @@ const CompanyDetailPage = () => {
     const fetchCompany = async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location, is_verified")
+        .select("id, name, company_types, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location, is_verified")
         .eq("id", id)
         .maybeSingle();
       setCompany(data as CompanyData | null);
@@ -81,9 +82,8 @@ const CompanyDetailPage = () => {
     fetchCompany();
   }, [id]);
 
-  const typeLabel = (tp: string | null) => {
-    if (!tp) return t('detail.realEstateCompany');
-    return tp.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeLabel = (types: string[] | null) => {
+    return formatCompanyTypes(types);
   };
 
   const handleMapClick = () => {
@@ -189,7 +189,7 @@ const CompanyDetailPage = () => {
                       </div>
                       <FollowButton type="company" targetId={company.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{typeLabel(company.company_type)}</p>
+                    <p className="text-sm text-muted-foreground">{typeLabel(company.company_types)}</p>
                   </div>
 
                   {/* Stats */}

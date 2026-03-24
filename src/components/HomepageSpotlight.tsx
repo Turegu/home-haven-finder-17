@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Building2, User, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { formatCompanyTypes } from "@/data/companyTypes";
 
 interface SpotlightCompany {
   id: string;
   name: string;
   logo_url: string | null;
-  company_type: string | null;
+  company_types: string[] | null;
   profile_classification: string;
   boost_end_date: string | null;
 }
@@ -24,12 +25,12 @@ interface SpotlightAgent {
 }
 
 const sampleCompanies: SpotlightCompany[] = [
-  { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c2", name: "Gulf Estates International", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c4", name: "Anatolia Homes", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "developer", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c5", name: "Prestige Living Co.", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
-  { id: "sample-c6", name: "Golden Gate Realty", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_type: "real_estate_agency", profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c1", name: "Prime Realty Group", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c2", name: "Gulf Estates International", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_types: ["developer"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c3", name: "Bosphorus Properties", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c4", name: "Anatolia Homes", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_types: ["developer"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c5", name: "Prestige Living Co.", logo_url: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
+  { id: "sample-c6", name: "Golden Gate Realty", logo_url: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=120&h=120&fit=crop", company_types: ["real_estate_agency"], profile_classification: "boosted", boost_end_date: new Date(Date.now() + 90 * 86400000).toISOString() },
 ];
 
 const sampleAgents: SpotlightAgent[] = [
@@ -142,7 +143,7 @@ export const TopCompaniesSpotlight = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("companies")
-        .select("id, name, logo_url, company_type, profile_classification, boost_end_date")
+        .select("id, name, logo_url, company_types, profile_classification, boost_end_date")
         .eq("is_verified", true)
         .eq("profile_classification", "boosted")
         .limit(50);
@@ -209,7 +210,7 @@ export const TopCompaniesSpotlight = () => {
               <div className="px-3 py-3 border-t border-border text-center bg-secondary/50">
                 <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">
-                  {c.company_type?.replace(/_/g, " ") || "Real Estate"}
+                  {formatCompanyTypes(c.company_types)}
                 </p>
               </div>
             </div>

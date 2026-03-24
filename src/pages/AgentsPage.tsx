@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
+import { formatCompanyTypes } from '@/data/companyTypes';
 import { MapPin, Search, Home, Globe, Rocket, Building2, BadgeCheck } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,7 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface CompanyRow {
   id: string;
   name: string;
-  company_type: string | null;
+  company_types: string[] | null;
   logo_url: string | null;
   cover_url: string | null;
   languages: string[] | null;
@@ -85,7 +86,7 @@ const AgentsPage = () => {
 
       const { data: compData } = await supabase
         .from("companies")
-        .select("id, name, company_type, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified")
+        .select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified")
         .eq("is_verified", true);
       setCompanies((compData ?? []) as CompanyRow[]);
 
@@ -143,9 +144,8 @@ const AgentsPage = () => {
     return true;
   }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
-  const typeLabel = (t: string | null) => {
-    if (!t) return 'Real Estate Company';
-    return t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeLabel = (types: string[] | null) => {
+    return formatCompanyTypes(types);
   };
 
   return (
@@ -277,7 +277,7 @@ const AgentsPage = () => {
                       {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
-                      {typeLabel(company.company_type)}
+                      {typeLabel(company.company_types)}
                     </p>
 
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">

@@ -13,17 +13,9 @@ import { toast } from "sonner";
 import { ImageIcon, RotateCcw, Save } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import type { Database } from "@/integrations/supabase/types";
+import { companyTypes } from "@/data/companyTypes";
 
-type CompanyType = Database["public"]["Enums"]["company_type"];
 type MembershipType = Database["public"]["Enums"]["membership_type"];
-
-const companyTypes: { value: CompanyType; label: string }[] = [
-  { value: "real_estate_agency", label: "Real Estate Agency" },
-  { value: "developer", label: "Developer" },
-  { value: "brokerage", label: "Brokerage" },
-  { value: "property_management", label: "Property Management" },
-  { value: "consulting", label: "Consulting" },
-];
 
 const languageOptions = ["English", "Arabic", "Turkish", "Russian", "German", "French", "Italian"];
 const packageOptions: { value: MembershipType; label: string }[] = [
@@ -41,7 +33,7 @@ const AdminCreateCompanyPage = () => {
 
   const [form, setForm] = useState({
     name: "",
-    company_type: "" as CompanyType | "",
+    company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
@@ -63,7 +55,7 @@ const AdminCreateCompanyPage = () => {
 
   const handleReset = () => {
     setForm({
-      name: "", company_type: "", service_areas: "", languages: [],
+      name: "", company_types: [], service_areas: "", languages: [],
       registration_number: "", about: "", email: "", phone: "", whatsapp: "",
       membership: "basic", duration: "", province: "", town: "",
       neighbourhood: "", pin_location: "",
@@ -86,7 +78,7 @@ const AdminCreateCompanyPage = () => {
         email: form.email.trim(),
         phone: form.phone || null,
         whatsapp: form.whatsapp || null,
-        company_type: form.company_type || null,
+        company_types: form.company_types.length > 0 ? form.company_types : null,
         service_areas: form.service_areas ? form.service_areas.split(",").map(s => s.trim()) : null,
         languages: form.languages.length > 0 ? form.languages : null,
         registration_number: form.registration_number || null,
@@ -154,16 +146,29 @@ const AdminCreateCompanyPage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-primary font-semibold">Company Type</Label>
-              <Select value={form.company_type} onValueChange={(v) => updateField("company_type", v)}>
-                <SelectTrigger className="bg-secondary/30">
-                  <SelectValue placeholder="Select Company Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {companyTypes.map(t => (
-                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {companyTypes.map(ct => (
+                  <button
+                    key={ct.value}
+                    type="button"
+                    onClick={() => {
+                      setForm(prev => ({
+                        ...prev,
+                        company_types: prev.company_types.includes(ct.value)
+                          ? prev.company_types.filter(v => v !== ct.value)
+                          : [...prev.company_types, ct.value],
+                      }));
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      form.company_types.includes(ct.value)
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                    }`}
+                  >
+                    {ct.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="space-y-2">
               <Label className="text-primary font-semibold">Service Areas</Label>

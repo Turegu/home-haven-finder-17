@@ -28,13 +28,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
 
-const companyTypes = [
-  { value: "real_estate_agency", label: "Real Estate Agency" },
-  { value: "developer", label: "Developer" },
-  { value: "brokerage", label: "Brokerage" },
-  { value: "property_management", label: "Property Management" },
-  { value: "consulting", label: "Consulting" },
-];
+import { companyTypes } from "@/data/companyTypes";
 
 import { allLanguages } from "@/data/languages";
 const languageOptions = allLanguages;
@@ -107,7 +101,7 @@ const CompanyProfilePage = () => {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    company_type: "" as string,
+    company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
@@ -153,7 +147,7 @@ const CompanyProfilePage = () => {
         setCompany(data);
         setForm({
           name: data.name || "",
-          company_type: data.company_type || "",
+          company_types: (data as any).company_types || [],
           service_areas: data.service_areas?.join(", ") || "",
           languages: data.languages || [],
           registration_number: data.registration_number || "",
@@ -203,7 +197,7 @@ const CompanyProfilePage = () => {
         .from("companies")
         .update({
           name: form.name.trim(),
-          company_type: (form.company_type as any) || null,
+          company_types: form.company_types.length > 0 ? form.company_types : null,
           service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : null,
           languages: form.languages.length > 0 ? form.languages : null,
           registration_number: form.registration_number || null,
@@ -400,14 +394,29 @@ const CompanyProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Company Type</Label>
-              <Select value={form.company_type} onValueChange={(v) => updateField("company_type", v)}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select type" /></SelectTrigger>
-                <SelectContent>
-                  {companyTypes.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {companyTypes.map((ct) => (
+                  <button
+                    key={ct.value}
+                    type="button"
+                    onClick={() => {
+                      setForm(prev => ({
+                        ...prev,
+                        company_types: prev.company_types.includes(ct.value)
+                          ? prev.company_types.filter(v => v !== ct.value)
+                          : [...prev.company_types, ct.value],
+                      }));
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      form.company_types.includes(ct.value)
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                    }`}
+                  >
+                    {ct.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Service Areas</Label>

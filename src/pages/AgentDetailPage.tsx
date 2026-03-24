@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home, BadgeCheck } from 'lucide-react';
+import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -29,7 +30,7 @@ interface AgentData {
     id: string;
     name: string;
     logo_url: string | null;
-    company_type: string | null;
+    company_types: string[] | null;
     cover_url: string | null;
     is_verified: boolean;
   } | null;
@@ -48,7 +49,7 @@ const AgentDetailPage = () => {
     const fetchAgent = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_type, cover_url, is_verified)")
+        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_types, cover_url, is_verified)")
         .eq("id", id)
         .maybeSingle();
       const agentData = data as unknown as AgentData | null;
@@ -212,7 +213,7 @@ const AgentDetailPage = () => {
                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{t('detail.company')}</p>
                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">{agent.companies.name}</h3>
                   <p className="text-xs text-muted-foreground">
-                    {agent.companies.company_type?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Real Estate Company'}
+                    {formatCompanyTypes(agent.companies.company_types)}
                   </p>
                 </div>
               </Link>
