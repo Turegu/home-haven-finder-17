@@ -201,7 +201,7 @@ interface GoogleListingMapViewProps {
 }
 
 const GoogleListingMapView = ({ listings, className = '', focusListingId = null, selectedProvince, selectedDistrict }: GoogleListingMapViewProps) => {
-  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY });
+  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: ['places'] });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const boundaryRef = useRef<google.maps.Polygon[]>([]);

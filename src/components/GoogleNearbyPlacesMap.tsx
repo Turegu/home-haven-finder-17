@@ -161,7 +161,7 @@ function mapElementToPlace(el: any, lat: number, lng: number, categoryKey: strin
 }
 
 const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNearbyPlacesMapProps) => {
-  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY });
+  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: ['places'] });
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [places, setPlaces] = useState<Record<string, NearbyPlace[]>>({});
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
