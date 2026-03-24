@@ -6,10 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, Eye, EyeOff } from "lucide-react";
+import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck } from "lucide-react";
+import PatternLock from "@/components/admin/PatternLock";
+
+type LoginMode = "agent" | "company";
+type LoginStep = "credentials" | "pattern";
 
 const AgentLoginPage = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<LoginMode>("agent");
+  const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,14 +23,92 @@ const AgentLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
+  const [patternError, setPatternError] = useState(false);
+  const [savedPattern, setSavedPattern] = useState("");
+
+  const storageKey = mode === "agent" ? "turegu_agent_email" : "turegu_company_email";
 
   useEffect(() => {
-    const remembered = localStorage.getItem("turegu_agent_email");
+    const remembered = localStorage.getItem(storageKey);
     if (remembered) {
       setEmail(remembered);
       setRememberMe(true);
+    } else {
+      if (!rememberMe) setEmail("");
     }
-  }, []);
+  }, [mode]);
+
+  const handleAgentLogin = async (userId: string) => {
+    const { data: agent, error: agentError } = await supabase
+      .from("agents")
+      .select("id, status")
+      .eq("user_id", userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (agentError) throw agentError;
+    if (!agent) {
+      await supabase.auth.signOut();
+      toast.error("No agent account found for this email.");
+      return;
+    }
+    if (agent.status !== "active") {
+      await supabase.auth.signOut();
+      toast.error("Your agent account is not active yet. Contact your company admin.");
+      return;
+    }
+
+    toast.success("Welcome to your Agent Dashboard!");
+    navigate("/agent");
+  };
+
+  const handleCompanyLogin = async (userId: string) => {
+    const { data: company, error: companyError } = await supabase
+      .from("companies")
+      .select("id")
+      .eq("owner_user_id", userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (companyError) throw companyError;
+    if (!company) {
+      await supabase.auth.signOut();
+      toast.error("No company account found for this email.");
+      return;
+    }
+
+    // Check company-specific pattern
+    const { data: patternData } = await supabase
+      .from("company_pattern_codes")
+      .select("pattern_code")
+      .eq("company_id", company.id)
+      .limit(1)
+      .maybeSingle();
+
+    if (patternData && patternData.pattern_code) {
+      setSavedPattern(patternData.pattern_code);
+      setStep("pattern");
+      toast.info("Please draw your company pattern to continue.");
+      return;
+    }
+
+    // Fallback to admin_settings pattern
+    const { data: adminData } = await supabase
+      .from("admin_settings")
+      .select("setting_value")
+      .eq("setting_key", "company_pattern_code")
+      .limit(1);
+
+    if (adminData?.[0]) {
+      setSavedPattern((adminData[0] as any).setting_value);
+      setStep("pattern");
+      toast.info("Please draw the pattern to continue.");
+      return;
+    }
+
+    toast.success("Welcome to your Company Dashboard!");
+    navigate("/company");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,40 +117,41 @@ const AgentLoginPage = () => {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      const { data: agent, error: agentError } = await supabase
-        .from("agents")
-        .select("id, status")
-        .eq("user_id", data.user.id)
-        .limit(1)
-        .maybeSingle();
-
-      if (agentError) throw agentError;
-
-      if (!agent) {
-        await supabase.auth.signOut();
-        toast.error("No agent account found for this email.");
-        return;
-      }
-
-      if (agent.status !== "active") {
-        await supabase.auth.signOut();
-        toast.error("Your agent account is not active yet. Contact your company admin.");
-        return;
-      }
-
       if (rememberMe) {
-        localStorage.setItem("turegu_agent_email", email);
+        localStorage.setItem(storageKey, email);
       } else {
-        localStorage.removeItem("turegu_agent_email");
+        localStorage.removeItem(storageKey);
       }
 
-      toast.success("Welcome to your Agent Dashboard!");
-      navigate("/agent");
+      if (mode === "agent") {
+        await handleAgentLogin(data.user.id);
+      } else {
+        await handleCompanyLogin(data.user.id);
+      }
     } catch (err: any) {
       toast.error(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePatternComplete = (pattern: number[]) => {
+    const patternStr = pattern.join(",");
+    if (patternStr === savedPattern) {
+      setPatternError(false);
+      toast.success("Welcome to your Company Dashboard!");
+      navigate("/company");
+    } else {
+      setPatternError(true);
+      toast.error("Wrong pattern. Try again.");
+      setTimeout(() => setPatternError(false), 800);
+    }
+  };
+
+  const handlePatternBack = async () => {
+    await supabase.auth.signOut();
+    setStep("credentials");
+    setSavedPattern("");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -87,22 +172,75 @@ const AgentLoginPage = () => {
     }
   };
 
+  const switchMode = (newMode: LoginMode) => {
+    setMode(newMode);
+    setStep("credentials");
+    setShowForgot(false);
+    setSavedPattern("");
+  };
+
   return (
     <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4" dir="ltr">
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl shadow-lg border border-border p-8">
-          <div className="text-center mb-8">
+          {/* Logo */}
+          <div className="text-center mb-6">
             <Link to="/" className="text-2xl font-bold text-primary">turegu</Link>
-            <h1 className="text-xl font-bold text-foreground mt-4">
-              {showForgot ? "Reset Password" : "Agent Login"}
+          </div>
+
+          {/* Mode toggle tabs */}
+          {step === "credentials" && !showForgot && (
+            <div className="flex rounded-lg bg-muted p-1 mb-6">
+              <button
+                type="button"
+                onClick={() => switchMode("agent")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all ${
+                  mode === "agent"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <UserCheck className="h-4 w-4" />
+                Agent
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode("company")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-medium transition-all ${
+                  mode === "company"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Building2 className="h-4 w-4" />
+                Company
+              </button>
+            </div>
+          )}
+
+          {/* Header text */}
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-bold text-foreground">
+              {showForgot
+                ? "Reset Password"
+                : step === "pattern"
+                ? "Pattern Unlock"
+                : mode === "agent"
+                ? "Agent Login"
+                : "Company Login"}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {showForgot
                 ? "Enter your email to receive a reset link"
-                : "Sign in to your agent dashboard"}
+                : step === "pattern"
+                ? "Draw your company pattern to continue"
+                : mode === "agent"
+                ? "Sign in to your agent dashboard"
+                : "Sign in to your company dashboard"}
             </p>
           </div>
 
+          {/* Forgot password form */}
           {showForgot ? (
             <form onSubmit={handleForgotPassword} className="space-y-5">
               <div className="space-y-2">
@@ -110,7 +248,7 @@ const AgentLoginPage = () => {
                 <Input
                   id="forgot-email"
                   type="email"
-                  placeholder="agent@example.com"
+                  placeholder="email@example.com"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   required
@@ -128,6 +266,21 @@ const AgentLoginPage = () => {
                 ← Back to login
               </button>
             </form>
+          ) : step === "pattern" ? (
+            <div className="space-y-6">
+              <PatternLock onPatternComplete={handlePatternComplete} error={patternError} />
+              <p className="text-center text-xs text-muted-foreground">
+                <Lock className="inline h-3 w-3 mr-1" />
+                Connect at least 3 dots to unlock
+              </p>
+              <button
+                type="button"
+                onClick={handlePatternBack}
+                className="text-sm text-primary hover:underline w-full text-center block"
+              >
+                ← Back to login
+              </button>
+            </div>
           ) : (
             <>
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -136,7 +289,7 @@ const AgentLoginPage = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="agent@example.com"
+                    placeholder="email@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -192,12 +345,9 @@ const AgentLoginPage = () => {
                 </Button>
               </form>
 
-              <div className="flex items-center justify-between mt-6">
-                <Link to="/company/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-                  Company Login →
-                </Link>
+              <div className="flex items-center justify-center mt-6">
                 <Link to="/" className="text-sm text-primary hover:underline">
-                  Back to Home
+                  Login as Buyer
                 </Link>
               </div>
             </>
