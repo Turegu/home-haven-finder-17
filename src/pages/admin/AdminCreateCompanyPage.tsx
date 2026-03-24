@@ -33,7 +33,7 @@ const AdminCreateCompanyPage = () => {
 
   const [form, setForm] = useState({
     name: "",
-    company_type: "" as CompanyType | "",
+    company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
