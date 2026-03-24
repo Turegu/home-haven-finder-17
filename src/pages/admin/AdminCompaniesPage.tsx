@@ -183,6 +183,17 @@ const AdminCompaniesPage = () => {
 
   const membershipColor = (m: string) => MEMBERSHIP_COLORS[m] || MEMBERSHIP_COLORS.basic;
 
+  const isExpiringSoon = (company: Company): boolean => {
+    if (!company.package_end_date || company.membership === "basic") return false;
+    const now = new Date();
+    const end = new Date(company.package_end_date);
+    if (end <= now) return false;
+    if (isTestMode) {
+      return differenceInSeconds(end, now) <= 15;
+    }
+    return differenceInDays(end, now) <= 7;
+  };
+
   // Summary counts per tier
   const tierCounts = useMemo(() => {
     const counts: Record<string, number> = {};
