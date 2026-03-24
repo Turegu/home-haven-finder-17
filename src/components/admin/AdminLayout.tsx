@@ -43,6 +43,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userEmail, setUserEmail] = useState<string>("");
+  const { isTestMode, toggleTestMode } = useTestMode();
 
   // Use getSession (reads from memory) instead of getUser (network call)
   useEffect(() => {
