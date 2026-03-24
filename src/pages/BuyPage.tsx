@@ -288,7 +288,16 @@ const BuyPage = () => {
             <LocationPicker value={location} onChange={setLocation} compact />
             <KeywordAutocomplete
               value={keyword}
-              onChange={setKeyword}
+              onChange={(val) => {
+                setKeyword(val);
+                if (val === '' && keyword.trim()) {
+                  // Auto-search when clearing keyword to reset results
+                  setTimeout(() => {
+                    setCommittedParams(prev => ({ ...prev, keyword: undefined, page: 1 }));
+                    setCurrentPage(1);
+                  }, 0);
+                }
+              }}
               onEnter={handleSearch}
               className="flex-1 min-w-[140px] sm:min-w-[200px]"
             />
