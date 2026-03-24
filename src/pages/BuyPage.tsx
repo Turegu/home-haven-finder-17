@@ -291,7 +291,6 @@ const BuyPage = () => {
               onChange={(val) => {
                 setKeyword(val);
                 if (val === '' && keyword.trim()) {
-                  // Auto-search when clearing keyword to reset results
                   setTimeout(() => {
                     setCommittedParams(prev => ({ ...prev, keyword: undefined, page: 1 }));
                     setCurrentPage(1);
@@ -300,6 +299,7 @@ const BuyPage = () => {
               }}
               onEnter={handleSearch}
               className="flex-1 min-w-[140px] sm:min-w-[200px]"
+              searchConfig={{ properties: 5, projects: 0, places: 10 }}
             />
             <PropertyTypeDropdown selected={propertyTypes} onChange={setPropertyTypes} />
             <PriceDropdown minPrice={minPrice} maxPrice={maxPrice} onChange={(min, max) => { setMinPrice(min); setMaxPrice(max); }} />

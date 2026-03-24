@@ -83,12 +83,13 @@ const HeroSearch = () => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <LocationPicker value={location} onChange={setLocation} compact />
-              <KeywordAutocomplete
-                value={keyword}
-                onChange={setKeyword}
-                onEnter={handleSearch}
-                className="flex-1"
-              />
+            <KeywordAutocomplete
+              value={keyword}
+              onChange={setKeyword}
+              onEnter={handleSearch}
+              className="flex-1"
+              searchConfig={{ properties: 5, projects: 5, places: 10 }}
+            />
             </div>
             <Button className="h-10 px-6 font-semibold shrink-0" onClick={handleSearch}>
               <Search className="h-4 w-4 me-1.5" />
