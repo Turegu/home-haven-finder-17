@@ -174,6 +174,7 @@ const PropertyDetailPage = () => {
         }));
         setRealAgentId(p.agents?.id || null);
         setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
+        setCompanyVerified(p.companies?.is_verified || p.agents?.companies?.is_verified || false);
         setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
 
         // Fetch similar properties
