@@ -81,9 +81,8 @@ const CompanyDetailPage = () => {
     fetchCompany();
   }, [id]);
 
-  const typeLabel = (tp: string | null) => {
-    if (!tp) return t('detail.realEstateCompany');
-    return tp.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeLabel = (types: string[] | null) => {
+    return formatCompanyTypes(types);
   };
 
   const handleMapClick = () => {
