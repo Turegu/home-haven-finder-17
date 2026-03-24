@@ -435,7 +435,8 @@ const CompanyProfilePage = () => {
         {/* ─── About Us ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="About Us" />
-          <Textarea value={form.about} onChange={(e) => updateField("about", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
+          <Textarea value={form.about} onChange={(e) => { if (e.target.value.length <= 1000) updateField("about", e.target.value); }} className="bg-secondary/50 min-h-[120px]" maxLength={1000} />
+          <p className="text-xs text-muted-foreground text-right mt-1">{(form.about || "").length}/1000</p>
         </section>
 
         {/* ─── Contact ─── */}

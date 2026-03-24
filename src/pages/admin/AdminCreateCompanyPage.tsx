@@ -227,9 +227,11 @@ const AdminCreateCompanyPage = () => {
           <Textarea
             placeholder="Write about the company..."
             value={form.about}
-            onChange={(e) => updateField("about", e.target.value)}
+            onChange={(e) => { if (e.target.value.length <= 1000) updateField("about", e.target.value); }}
             className="bg-secondary/30 min-h-[120px]"
+            maxLength={1000}
           />
+          <p className="text-xs text-muted-foreground text-right mt-1">{form.about.length}/1000</p>
         </div>
 
         {/* Contact */}

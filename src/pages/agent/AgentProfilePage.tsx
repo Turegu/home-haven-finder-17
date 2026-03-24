@@ -347,7 +347,8 @@ const AgentProfilePage = () => {
         {/* ─── About ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="About" />
-          <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[100px]" />
+          <Textarea value={form.description} onChange={(e) => { if (e.target.value.length <= 1000) updateField("description", e.target.value); }} className="bg-secondary/50 min-h-[100px]" maxLength={1000} />
+          <p className="text-xs text-muted-foreground text-right mt-1">{form.description.length}/1000</p>
         </section>
 
         {/* ─── Skills ─── */}
