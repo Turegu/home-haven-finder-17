@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
+import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
@@ -44,6 +45,7 @@ const AgentDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
+  const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -183,9 +185,9 @@ const AgentDetailPage = () => {
                         <Phone className="h-3 w-3" /> {t('property.call')}
                       </a>
                     )}
-                    <a href={`mailto:${agent.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                    <button onClick={() => setProfileEmailOpen(true)} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
                       <Mail className="h-3 w-3" /> {t('property.email')}
-                    </a>
+                    </button>
                     <a href={`https://wa.me/${agent.whatsapp || agent.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
                       <MessageCircle className="h-3 w-3" /> {t('property.whatsApp')}
                     </a>
@@ -296,6 +298,16 @@ const AgentDetailPage = () => {
       </div>
 
       <Footer />
+
+      <ContactProfileDialog
+        open={profileEmailOpen}
+        onOpenChange={setProfileEmailOpen}
+        recipientName={agent.name}
+        recipientLogo={agent.avatar_url}
+        companyId={null}
+        agentId={agent.id}
+        recipientType="agent"
+      />
     </div>
   );
 };

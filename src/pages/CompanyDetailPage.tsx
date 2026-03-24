@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
+import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
@@ -50,6 +51,7 @@ const CompanyDetailPage = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ agents: 0, buy: 0, rent: 0, projects: 0, events: 0 });
+  const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -219,9 +221,9 @@ const CompanyDetailPage = () => {
                         <Phone className="h-3 w-3" /> {t('companyDetail.call')}
                       </a>
                     )}
-                    <a href={`mailto:${company.email}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                    <button onClick={() => setProfileEmailOpen(true)} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
                       <Mail className="h-3 w-3" /> {t('companyDetail.email')}
-                    </a>
+                    </button>
                     <a href={`https://wa.me/${company.whatsapp || company.phone || ''}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs bg-[hsl(142,70%,40%)]/10 hover:bg-[hsl(142,70%,40%)]/20 text-[hsl(142,70%,40%)] px-3 py-1.5 rounded-full transition-colors">
                       <MessageCircle className="h-3 w-3" /> {t('companyDetail.whatsApp')}
                     </a>
@@ -361,6 +363,16 @@ const CompanyDetailPage = () => {
       </div>
 
       <Footer />
+
+      <ContactProfileDialog
+        open={profileEmailOpen}
+        onOpenChange={setProfileEmailOpen}
+        recipientName={company.name}
+        recipientLogo={company.logo_url}
+        companyId={company.id}
+        agentId={null}
+        recipientType="company"
+      />
     </div>
   );
 };
