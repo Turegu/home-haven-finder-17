@@ -4,8 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle, FlaskConical
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { useTestMode } from "@/hooks/useTestMode";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const sidebarItems = [
