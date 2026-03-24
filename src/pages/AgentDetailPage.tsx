@@ -303,7 +303,7 @@ const AgentDetailPage = () => {
         open={profileEmailOpen}
         onOpenChange={setProfileEmailOpen}
         recipientName={agent.name}
-        recipientLogo={agent.avatar_url}
+        recipientLogo={agent.companies?.logo_url || agent.avatar_url}
         companyId={null}
         agentId={agent.id}
         recipientType="agent"
