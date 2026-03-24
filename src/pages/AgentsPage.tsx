@@ -257,9 +257,7 @@ const AgentsPage = () => {
                   }`}>
 
                   {/* Left: Logo area */}
-                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-4 ${
-                    boosted ? 'bg-primary/5' : 'bg-card'
-                  }`}>
+                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-4 bg-white dark:bg-card`}>
                     {company.logo_url ? (
                       <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
