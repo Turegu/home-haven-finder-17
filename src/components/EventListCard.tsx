@@ -85,7 +85,7 @@ const EventListCard = memo(({ event, onLocationClick }: EventListCardProps) => {
           {companyLogo && (
             <div className="absolute top-3 right-3 flex-col items-center gap-1 hidden md:flex">
               <img src={companyLogo} alt={companyName} className="h-10 w-auto max-w-[80px] rounded-lg object-contain" />
-              <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{companyName}</span>
+              <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-1">{companyName}</span>
             </div>
           )}
           <div className="pr-24">

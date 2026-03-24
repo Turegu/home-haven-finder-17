@@ -226,7 +226,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
               alt={property.agentName}
               className="h-10 w-16 rounded object-cover border border-border shadow-sm"
             />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-2">{property.agentName}</span>
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[70px] line-clamp-1">{property.agentName}</span>
           </div>
 
           <div className="pr-24">

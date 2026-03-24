@@ -255,7 +255,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
               alt={property.companyName}
               className="h-10 w-auto max-w-[80px] rounded object-contain"
             />
-            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-2">{property.companyName}</span>
+            <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-1">{property.companyName}</span>
           </div>
 
           <div className="pr-24">
