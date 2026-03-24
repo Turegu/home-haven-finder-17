@@ -265,9 +265,12 @@ const EventsPage = () => {
             <span className="ms-3 text-muted-foreground">{t('event.loadingEvents')}</span>
           </div>
         ) : allEvents.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-lg font-medium text-foreground mb-2">{t('event.noEventsFound')}</p>
-            <p className="text-muted-foreground">{t('event.tryAdjusting')}</p>
+          <div className="text-center py-24">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+              <CalendarDays className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <p className="text-lg font-semibold text-foreground mb-1">{t('event.noEventsFound')}</p>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">{t('event.tryAdjusting')}</p>
           </div>
         ) : (
           <div className="flex gap-6">
