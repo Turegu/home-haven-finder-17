@@ -114,6 +114,7 @@ const AgentFollowersPage = () => {
               <TableRow className="bg-muted/50">
                 <TableHead className="w-16">sNo</TableHead>
                 <TableHead>Follower Name</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Followed On</TableHead>
               </TableRow>
