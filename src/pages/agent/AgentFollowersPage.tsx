@@ -18,6 +18,7 @@ interface Follower {
   user_id: string;
   created_at: string;
   profile?: { display_name: string | null; phone: string | null; show_phone: boolean; user_id: string };
+  email?: string;
 }
 
 const AgentFollowersPage = () => {
@@ -57,7 +58,9 @@ const AgentFollowersPage = () => {
     const userIds = data.map((f) => f.user_id);
     const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, phone, show_phone").in("user_id", userIds);
     const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
-    setFollowers(data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined })));
+    const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
+    const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
+    setFollowers(data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined, email: emailMap.get(f.user_id) || undefined })));
     setLoading(false);
   };
 
@@ -69,6 +72,19 @@ const AgentFollowersPage = () => {
       if (error) throw error;
       if (followers.length > 0 && ann) {
         await supabase.from("user_announcements").insert(followers.map((f) => ({ announcement_id: ann.id, user_id: f.user_id })));
+        // Create user_notifications
+        const notifications = followers.map((f) => ({
+          user_id: f.user_id,
+          title: announcementTitle,
+          message: announcementMessage,
+          notification_type: "announcement",
+          source_company_id: companyId,
+        }));
+        await supabase.from("user_notifications").insert(notifications);
+        // Send email notifications
+        supabase.functions.invoke("send-announcement-emails", {
+          body: { announcement_id: ann.id },
+        }).catch((err) => console.error("Email send error:", err));
       }
       toast.success(`Sent to ${followers.length} followers!`);
       setAnnouncementOpen(false); setAnnouncementTitle(""); setAnnouncementMessage("");
@@ -111,15 +127,16 @@ const AgentFollowersPage = () => {
               <TableRow className="bg-muted/50">
                 <TableHead className="w-16">sNo</TableHead>
                 <TableHead>Follower Name</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Followed On</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-16">
+                <TableRow><TableCell colSpan={5} className="text-center py-16">
                   <div className="flex flex-col items-center gap-2">
                     <Users className="h-12 w-12 text-muted-foreground/40" />
                     <p className="text-muted-foreground font-medium">No Followers Found</p>
@@ -129,6 +146,7 @@ const AgentFollowersPage = () => {
                 <TableRow key={f.id}>
                   <TableCell className="font-medium">{idx + 1}</TableCell>
                   <TableCell>{f.profile?.display_name || "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{f.email || "—"}</TableCell>
                   <TableCell>{f.profile?.show_phone && f.profile?.phone ? f.profile.phone : <span className="text-muted-foreground/50">Hidden</span>}</TableCell>
                   <TableCell className="text-muted-foreground">{new Date(f.created_at).toLocaleDateString()}</TableCell>
                 </TableRow>

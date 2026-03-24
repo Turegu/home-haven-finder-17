@@ -97,9 +97,14 @@ const CompanyFollowersPage = () => {
       (profiles || []).map((p) => [p.user_id, p])
     );
 
+    // Fetch emails via security definer function
+    const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
+    const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
+
     const enriched: Follower[] = data.map((f) => ({
       ...f,
       profile: profileMap.get(f.user_id) || undefined,
+      email: emailMap.get(f.user_id) || undefined,
     }));
 
     setFollowers(enriched);
@@ -159,6 +164,11 @@ const CompanyFollowersPage = () => {
           source_company_id: companyId,
         }));
         await supabase.from("user_notifications").insert(notifications);
+
+        // Send email notifications to all followers
+        supabase.functions.invoke("send-announcement-emails", {
+          body: { announcement_id: announcement.id },
+        }).catch((err) => console.error("Email send error:", err));
       }
 
       toast.success(`Announcement sent to ${followers.length} followers!`);
@@ -257,7 +267,7 @@ const CompanyFollowersPage = () => {
                   <TableRow key={f.id}>
                     <TableCell className="font-medium">{idx + 1}</TableCell>
                     <TableCell>{f.profile?.display_name || "—"}</TableCell>
-                    <TableCell className="text-muted-foreground">{"—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{f.email || "—"}</TableCell>
                     <TableCell>
                       {f.profile?.show_phone && f.profile?.phone
                         ? f.profile.phone
