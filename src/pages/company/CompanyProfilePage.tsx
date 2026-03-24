@@ -394,14 +394,29 @@ const CompanyProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Company Type</Label>
-              <Select value={form.company_type} onValueChange={(v) => updateField("company_type", v)}>
-                <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select type" /></SelectTrigger>
-                <SelectContent>
-                  {companyTypes.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {companyTypes.map((ct) => (
+                  <button
+                    key={ct.value}
+                    type="button"
+                    onClick={() => {
+                      setForm(prev => ({
+                        ...prev,
+                        company_types: prev.company_types.includes(ct.value)
+                          ? prev.company_types.filter(v => v !== ct.value)
+                          : [...prev.company_types, ct.value],
+                      }));
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      form.company_types.includes(ct.value)
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                    }`}
+                  >
+                    {ct.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Service Areas</Label>
