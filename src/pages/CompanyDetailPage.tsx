@@ -7,7 +7,7 @@ import { formatCompanyTypes } from '@/data/companyTypes';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
+
 import { supabase } from '@/integrations/supabase/client';
 import CompanyOfficeMap from '@/components/company/CompanyOfficeMap';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
