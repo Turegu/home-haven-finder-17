@@ -121,7 +121,7 @@ export default function KeywordAutocomplete({
           });
         });
       }
-    } catch (e) {
+    } catch {
       // silently fail
     }
 
