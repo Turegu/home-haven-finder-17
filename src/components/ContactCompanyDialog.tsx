@@ -232,7 +232,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             {listingType === 'property' && (
               <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mt-1.5">
                 <span className="flex items-center gap-1"><Building className="h-3 w-3" /> {property.type}</span>
-                {property.floorLevel && <span className="flex items-center gap-1">≡ {property.floorLevel}</span>}
+                {property.floorLevel && property.floorLevel !== '—' && property.floorLevel !== '-' && <span className="flex items-center gap-1">≡ {property.floorLevel}</span>}
                 <span className="flex items-center gap-1"><Maximize className="h-3 w-3" /> {property.area} {property.areaUnit}</span>
                 <span className="flex items-center gap-1"><Bath className="h-3 w-3" /> {property.bathrooms}</span>
                 <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" /> {property.rooms || property.bedrooms}</span>
