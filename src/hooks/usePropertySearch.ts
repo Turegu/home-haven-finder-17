@@ -59,10 +59,14 @@ export interface PropertyResult {
   agents?: {
     name: string;
     avatar_url: string | null;
+    phone: string | null;
+    whatsapp: string | null;
   } | null;
   companies?: {
     name: string;
     logo_url: string | null;
+    phone: string | null;
+    whatsapp: string | null;
   } | null;
 }
 
