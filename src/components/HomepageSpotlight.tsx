@@ -8,7 +8,7 @@ interface SpotlightCompany {
   id: string;
   name: string;
   logo_url: string | null;
-  company_type: string | null;
+  company_types: string[] | null;
   profile_classification: string;
   boost_end_date: string | null;
 }
