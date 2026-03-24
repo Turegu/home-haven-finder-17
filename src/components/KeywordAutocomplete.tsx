@@ -80,7 +80,7 @@ export default function KeywordAutocomplete({
         .select('id, title, property_type, town, province')
         .eq('status', 'active')
         .ilike('title', `%${query}%`)
-        .limit(5);
+        .limit(3);
 
       if (data) {
         data.forEach((p) => {
