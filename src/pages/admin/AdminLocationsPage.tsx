@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Upload, Search, Trash2, MapPin, ChevronRight, Settings, Plus, X, Check, ChevronsUpDown } from "lucide-react";
+import { Upload, Search, Trash2, MapPin, ChevronRight, Settings, Plus, X, Check, ChevronsUpDown, Pencil } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -59,49 +59,26 @@ interface LocationSetting {
 const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (country: string) => void }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-
-  const filtered = search
-    ? COUNTRIES.filter(c => turkishIncludes(c, search))
-    : COUNTRIES;
+  const filtered = search ? COUNTRIES.filter(c => turkishIncludes(c, search)) : COUNTRIES;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-between mt-1 font-normal"
-        >
-          {value || "Select a country..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between mt-1 font-normal">
+          {value || "Select a country..."}<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <div className="p-2 border-b border-border">
-          <Input
-            placeholder="Search country..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-8"
-          />
+          <Input placeholder="Search country..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8" />
         </div>
         <ScrollArea className="h-[200px]">
           <div className="p-1">
-            {filtered.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">No country found.</p>
-            )}
+            {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No country found.</p>}
             {filtered.map(country => (
-              <button
-                key={country}
-                onClick={() => { onSelect(country); setOpen(false); setSearch(""); }}
-                className={cn(
-                  "flex items-center gap-2 w-full rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground",
-                  value === country && "bg-accent text-accent-foreground"
-                )}
-              >
-                <Check className={cn("h-4 w-4", value === country ? "opacity-100" : "opacity-0")} />
-                {country}
+              <button key={country} onClick={() => { onSelect(country); setOpen(false); setSearch(""); }}
+                className={cn("flex items-center gap-2 w-full rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground", value === country && "bg-accent text-accent-foreground")}>
+                <Check className={cn("h-4 w-4", value === country ? "opacity-100" : "opacity-0")} />{country}
               </button>
             ))}
           </div>
@@ -112,10 +89,8 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
 };
 
 export default function AdminLocationsPage() {
-  const [provinces, setProvinces] = useState<string[]>([]);
-  const [provinceArMap, setProvinceArMap] = useState<Record<string, string>>({});
-  const [districtArMap, setDistrictArMap] = useState<Record<string, string>>({});
-  const [districts, setDistricts] = useState<string[]>([]);
+  const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
+  const [districts, setDistricts] = useState<{ name: string; ar: string }[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
@@ -130,56 +105,45 @@ export default function AdminLocationsPage() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newEntry, setNewEntry] = useState({ province: "", province_ar: "", district: "", district_ar: "", neighborhood: "", neighborhood_ar: "" });
 
+  // Edit states
+  const [editingDistrict, setEditingDistrict] = useState<string | null>(null);
+  const [editDistrictName, setEditDistrictName] = useState("");
+  const [editDistrictAr, setEditDistrictAr] = useState("");
+  const [editingNeighborhood, setEditingNeighborhood] = useState<string | null>(null);
+  const [editNeighborhoodName, setEditNeighborhoodName] = useState("");
+  const [editNeighborhoodAr, setEditNeighborhoodAr] = useState("");
+
+  // Add district/neighborhood inline
+  const [showAddDistrict, setShowAddDistrict] = useState(false);
+  const [newDistrictName, setNewDistrictName] = useState("");
+  const [newDistrictAr, setNewDistrictAr] = useState("");
+  const [showAddNeighborhood, setShowAddNeighborhood] = useState(false);
+  const [newNeighborhoodName, setNewNeighborhoodName] = useState("");
+  const [newNeighborhoodAr, setNewNeighborhoodAr] = useState("");
+
+  // Use RPC for fast province loading
   const loadProvinces = useCallback(async () => {
     setLoading(true);
-    let allData: any[] = [];
-    let from = 0;
-    const pageSize = 1000;
-    while (true) {
-      const { data, count } = await supabase
-        .from("locations")
-        .select("province, province_ar", { count: from === 0 ? "exact" : undefined })
-        .eq("status", "active")
-        .range(from, from + pageSize - 1);
-      if (!data || data.length === 0) break;
-      if (from === 0 && count) setTotalCount(count);
-      allData.push(...data);
-      if (data.length < pageSize) break;
-      from += pageSize;
-    }
-    const uniqueMap = new Map<string, string>();
-    allData.forEach((d: any) => { if (!uniqueMap.has(d.province)) uniqueMap.set(d.province, d.province_ar || ""); });
-    const sorted = [...uniqueMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-    setProvinces(sorted.map(([p]) => p));
-    setProvinceArMap(Object.fromEntries(sorted));
+    const [{ data: provData }, { count }] = await Promise.all([
+      supabase.rpc("get_distinct_provinces"),
+      supabase.from("locations").select("id", { count: "exact", head: true }).eq("status", "active"),
+    ]);
+    if (provData) setProvinces((provData as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
+    if (count != null) setTotalCount(count);
     setLoading(false);
   }, []);
 
+  // Use RPC for fast district loading
   const loadDistricts = useCallback(async (province: string) => {
-    const { data } = await supabase
-      .from("locations")
-      .select("district, district_ar")
-      .eq("province", province)
-      .eq("status", "active");
-
-    if (data) {
-      const uniqueMap = new Map<string, string>();
-      data.forEach((d: any) => { if (!uniqueMap.has(d.district)) uniqueMap.set(d.district, d.district_ar || ""); });
-      const sorted = [...uniqueMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-      setDistricts(sorted.map(([d]) => d));
-      setDistrictArMap(Object.fromEntries(sorted));
-    }
+    const { data } = await supabase.rpc("get_distinct_districts", { p_province: province });
+    if (data) setDistricts((data as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
   }, []);
 
   const loadNeighborhoods = useCallback(async (province: string, district: string) => {
     const { data } = await supabase
-      .from("locations")
-      .select("*")
-      .eq("province", province)
-      .eq("district", district)
-      .eq("status", "active")
+      .from("locations").select("*")
+      .eq("province", province).eq("district", district).eq("status", "active")
       .order("neighborhood");
-
     if (data) setNeighborhoods(data as Location[]);
   }, []);
 
@@ -191,35 +155,20 @@ export default function AdminLocationsPage() {
   useEffect(() => { loadProvinces(); loadSettings(); }, [loadProvinces, loadSettings]);
 
   useEffect(() => {
-    if (selectedProvince) {
-      setSelectedDistrict(null);
-      setNeighborhoods([]);
-      loadDistricts(selectedProvince);
-    }
+    if (selectedProvince) { setSelectedDistrict(null); setNeighborhoods([]); loadDistricts(selectedProvince); }
   }, [selectedProvince, loadDistricts]);
 
   useEffect(() => {
-    if (selectedProvince && selectedDistrict) {
-      loadNeighborhoods(selectedProvince, selectedDistrict);
-    }
+    if (selectedProvince && selectedDistrict) loadNeighborhoods(selectedProvince, selectedDistrict);
   }, [selectedProvince, selectedDistrict, loadNeighborhoods]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     setLoading(true);
     const q = searchQuery.trim();
-    const { data } = await supabase
-      .from("locations")
-      .select("*")
-      .eq("status", "active")
-      .or(`province.ilike.%${q}%,district.ilike.%${q}%,neighborhood.ilike.%${q}%`)
-      .limit(100);
-
-    if (data) {
-      setNeighborhoods(data as Location[]);
-      setSelectedProvince(null);
-      setSelectedDistrict(null);
-    }
+    const { data } = await supabase.from("locations").select("*").eq("status", "active")
+      .or(`province.ilike.%${q}%,district.ilike.%${q}%,neighborhood.ilike.%${q}%`).limit(100);
+    if (data) { setNeighborhoods(data as Location[]); setSelectedProvince(null); setSelectedDistrict(null); }
     setLoading(false);
   };
 
@@ -235,9 +184,7 @@ export default function AdminLocationsPage() {
     const { error } = await supabase.from("locations").delete().eq("province", province).eq("district", district);
     if (error) { toast.error("Delete failed"); return; }
     toast.success(`Deleted all in ${district}`);
-    setSelectedDistrict(null);
-    setNeighborhoods([]);
-    loadDistricts(province);
+    setSelectedDistrict(null); setNeighborhoods([]); loadDistricts(province);
   };
 
   const handleDeleteProvince = async (province: string) => {
@@ -245,11 +192,68 @@ export default function AdminLocationsPage() {
     const { error } = await supabase.from("locations").delete().eq("province", province);
     if (error) { toast.error("Delete failed"); return; }
     toast.success(`Deleted all in ${province}`);
-    setSelectedProvince(null);
-    setSelectedDistrict(null);
-    setNeighborhoods([]);
-    setDistricts([]);
-    loadProvinces();
+    setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); setDistricts([]); loadProvinces();
+  };
+
+  // Edit district: rename all rows matching old district name in province
+  const handleSaveDistrictEdit = async (oldName: string) => {
+    if (!editDistrictName.trim()) { toast.error("District name required"); return; }
+    const { error } = await supabase.from("locations")
+      .update({ district: editDistrictName.trim(), district_ar: editDistrictAr.trim() || null })
+      .eq("province", selectedProvince!).eq("district", oldName);
+    if (error) { toast.error(error.message); return; }
+    toast.success("District updated");
+    setEditingDistrict(null);
+    loadDistricts(selectedProvince!);
+  };
+
+  // Add new district (creates one placeholder neighborhood row)
+  const handleAddDistrict = async () => {
+    if (!newDistrictName.trim()) { toast.error("District name required"); return; }
+    const province = provinces.find(p => p.name === selectedProvince);
+    const { error } = await supabase.from("locations").insert({
+      province: selectedProvince!,
+      province_ar: province?.ar || null,
+      district: newDistrictName.trim(),
+      district_ar: newDistrictAr.trim() || null,
+      neighborhood: "(default)",
+      neighborhood_ar: null,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("District added");
+    setShowAddDistrict(false); setNewDistrictName(""); setNewDistrictAr("");
+    loadDistricts(selectedProvince!);
+  };
+
+  // Edit neighborhood
+  const handleSaveNeighborhoodEdit = async (id: string) => {
+    if (!editNeighborhoodName.trim()) { toast.error("Neighborhood name required"); return; }
+    const { error } = await supabase.from("locations")
+      .update({ neighborhood: editNeighborhoodName.trim(), neighborhood_ar: editNeighborhoodAr.trim() || null })
+      .eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Neighborhood updated");
+    setEditingNeighborhood(null);
+    loadNeighborhoods(selectedProvince!, selectedDistrict!);
+  };
+
+  // Add neighborhood
+  const handleAddNeighborhood = async () => {
+    if (!newNeighborhoodName.trim()) { toast.error("Neighborhood name required"); return; }
+    const province = provinces.find(p => p.name === selectedProvince);
+    const district = districts.find(d => d.name === selectedDistrict);
+    const { error } = await supabase.from("locations").insert({
+      province: selectedProvince!,
+      province_ar: province?.ar || null,
+      district: selectedDistrict!,
+      district_ar: district?.ar || null,
+      neighborhood: newNeighborhoodName.trim(),
+      neighborhood_ar: newNeighborhoodAr.trim() || null,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Neighborhood added");
+    setShowAddNeighborhood(false); setNewNeighborhoodName(""); setNewNeighborhoodAr("");
+    loadNeighborhoods(selectedProvince!, selectedDistrict!);
   };
 
   const handleUpdateSetting = async (key: string, value: string) => {
@@ -261,23 +265,16 @@ export default function AdminLocationsPage() {
   const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (evt) => {
       const wb = XLSX.read(evt.target?.result, { type: "binary" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json<any>(ws, { header: 1 });
-
-      // Skip header row
       const data = rows.slice(1).filter((r: any[]) => r[0] && r[2] && r[4]).map((r: any[]) => ({
-        province: String(r[0] || "").trim(),
-        province_ar: String(r[1] || "").trim(),
-        district: String(r[2] || "").trim(),
-        district_ar: String(r[3] || "").trim(),
-        neighborhood: String(r[4] || "").trim(),
-        neighborhood_ar: String(r[5] || "").trim(),
+        province: String(r[0] || "").trim(), province_ar: String(r[1] || "").trim(),
+        district: String(r[2] || "").trim(), district_ar: String(r[3] || "").trim(),
+        neighborhood: String(r[4] || "").trim(), neighborhood_ar: String(r[5] || "").trim(),
       }));
-
       setUploadPreview(data);
       toast.info(`Parsed ${data.length} locations from Excel`);
     };
@@ -288,39 +285,25 @@ export default function AdminLocationsPage() {
   const handleConfirmUpload = async (mode: "replace" | "merge") => {
     if (!uploadPreview) return;
     setUploading(true);
-
     try {
       if (mode === "replace") {
-        // Delete all existing
         await supabase.from("locations").delete().neq("id", "00000000-0000-0000-0000-000000000000");
       }
-
-      // Insert in batches of 500
       const batchSize = 500;
       for (let i = 0; i < uploadPreview.length; i += batchSize) {
         const batch = uploadPreview.slice(i, i + batchSize);
         const { error } = await supabase.from("locations").insert(batch);
         if (error) { toast.error(`Batch ${Math.floor(i / batchSize) + 1} failed: ${error.message}`); setUploading(false); return; }
       }
-
       toast.success(`Imported ${uploadPreview.length} locations`);
-      setUploadPreview(null);
-      setShowUpload(false);
-      setSelectedProvince(null);
-      setSelectedDistrict(null);
-      setNeighborhoods([]);
-      loadProvinces();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-
+      setUploadPreview(null); setShowUpload(false); setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); loadProvinces();
+    } catch (err: any) { toast.error(err.message); }
     setUploading(false);
   };
 
   const handleAddEntry = async () => {
     if (!newEntry.province || !newEntry.district || !newEntry.neighborhood) {
-      toast.error("Province, District, and Neighborhood are required");
-      return;
+      toast.error("Province, District, and Neighborhood are required"); return;
     }
     const { error } = await supabase.from("locations").insert([newEntry]);
     if (error) { toast.error(error.message); return; }
@@ -364,16 +347,9 @@ export default function AdminLocationsPage() {
 
         {/* Search */}
         <div className="flex gap-2">
-          <Input
-            placeholder="Search provinces, districts, neighborhoods..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            className="max-w-md"
-          />
-          <Button variant="outline" onClick={handleSearch}>
-            <Search className="h-4 w-4" />
-          </Button>
+          <Input placeholder="Search provinces, districts, neighborhoods..." value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} className="max-w-md" />
+          <Button variant="outline" onClick={handleSearch}><Search className="h-4 w-4" /></Button>
           {(selectedProvince || searchQuery) && (
             <Button variant="ghost" size="sm" onClick={() => { setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); setSearchQuery(""); }}>
               <X className="h-4 w-4 mr-1" /> Reset
@@ -383,43 +359,33 @@ export default function AdminLocationsPage() {
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <button onClick={() => { setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground">
-            All Provinces
-          </button>
+          <button onClick={() => { setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground">All Provinces</button>
           {selectedProvince && (
-            <>
-              <ChevronRight className="h-3.5 w-3.5" />
-              <button onClick={() => { setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground text-primary font-medium">
-                {selectedProvince}
-              </button>
-            </>
+            <><ChevronRight className="h-3.5 w-3.5" />
+              <button onClick={() => { setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground text-primary font-medium">{selectedProvince}</button></>
           )}
           {selectedDistrict && (
-            <>
-              <ChevronRight className="h-3.5 w-3.5" />
-              <span className="text-primary font-medium">{selectedDistrict}</span>
-            </>
+            <><ChevronRight className="h-3.5 w-3.5" /><span className="text-primary font-medium">{selectedDistrict}</span></>
           )}
         </div>
 
         {/* Content */}
         <div className="bg-card rounded-lg border border-border">
-          {!selectedProvince && neighborhoods.length === 0 ? (
+          {loading && !selectedProvince ? (
+            <div className="flex items-center justify-center py-16 text-muted-foreground">Loading provinces...</div>
+          ) : !selectedProvince && neighborhoods.length === 0 ? (
             /* Province list */
             <ScrollArea className="h-[500px]">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 p-4">
-                {provinces.filter(p => !searchQuery || turkishIncludes(p, searchQuery)).map((province) => (
-                  <button
-                    key={province}
-                    onClick={() => setSelectedProvince(province)}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group"
-                  >
+                {provinces.filter(p => !searchQuery || turkishIncludes(p.name, searchQuery)).map((province) => (
+                  <button key={province.name} onClick={() => setSelectedProvince(province.name)}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group">
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-foreground">{province}</span>
-                      {provinceArMap[province] && <span className="text-xs text-muted-foreground" dir="rtl">{provinceArMap[province]}</span>}
+                      <span className="text-sm font-medium text-foreground">{province.name}</span>
+                      {province.ar && <span className="text-xs text-muted-foreground" dir="rtl">{province.ar}</span>}
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={(e) => { e.stopPropagation(); handleDeleteProvince(province); }} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
+                      <button onClick={(e) => { e.stopPropagation(); handleDeleteProvince(province.name); }} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -429,92 +395,168 @@ export default function AdminLocationsPage() {
               </div>
             </ScrollArea>
           ) : selectedProvince && !selectedDistrict && neighborhoods.length === 0 ? (
-            /* District list */
-            <ScrollArea className="h-[500px]">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 p-4">
-                {districts.map((district) => (
-                  <button
-                    key={district}
-                    onClick={() => setSelectedDistrict(district)}
-                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group"
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-foreground">{district}</span>
-                      {districtArMap[district] && <span className="text-xs text-muted-foreground" dir="rtl">{districtArMap[district]}</span>}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button onClick={(e) => { e.stopPropagation(); handleDeleteDistrict(selectedProvince, district); }} className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </button>
-                ))}
+            /* District list with edit/add */
+            <div>
+              <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                <span className="text-sm font-medium text-muted-foreground">{districts.length} Districts in {selectedProvince}</span>
+                <Button size="sm" variant="outline" onClick={() => setShowAddDistrict(true)}>
+                  <Plus className="h-3.5 w-3.5 mr-1" /> Add District
+                </Button>
               </div>
-            </ScrollArea>
-          ) : (
-            /* Neighborhood table */
-            <ScrollArea className="h-[500px]">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Province</TableHead>
-                    <TableHead>District</TableHead>
-                    <TableHead>Neighborhood</TableHead>
-                    <TableHead>Neighborhood (AR)</TableHead>
-                    <TableHead className="w-16"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {neighborhoods.map((loc) => (
-                    <TableRow key={loc.id}>
-                      <TableCell className="text-sm">{loc.province}</TableCell>
-                      <TableCell className="text-sm">{loc.district}</TableCell>
-                      <TableCell className="text-sm font-medium">{loc.neighborhood}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground" dir="rtl">{loc.neighborhood_ar}</TableCell>
-                      <TableCell>
-                        <button onClick={() => handleDeleteNeighborhood(loc.id)} className="text-destructive hover:text-destructive/80 p-1">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </TableCell>
-                    </TableRow>
+
+              {/* Add district inline form */}
+              {showAddDistrict && (
+                <div className="mx-4 mt-2 p-3 border border-border rounded-lg bg-muted/30 flex flex-col sm:flex-row gap-2 items-end">
+                  <div className="flex-1">
+                    <Label className="text-xs">District Name</Label>
+                    <Input value={newDistrictName} onChange={e => setNewDistrictName(e.target.value)} placeholder="e.g. Alanya" className="h-8 text-sm" />
+                  </div>
+                  <div className="flex-1">
+                    <Label className="text-xs">Arabic Name</Label>
+                    <Input value={newDistrictAr} onChange={e => setNewDistrictAr(e.target.value)} placeholder="ألانيا" dir="rtl" className="h-8 text-sm" />
+                  </div>
+                  <div className="flex gap-1">
+                    <Button size="sm" className="h-8" onClick={handleAddDistrict}><Check className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="ghost" className="h-8" onClick={() => { setShowAddDistrict(false); setNewDistrictName(""); setNewDistrictAr(""); }}><X className="h-3.5 w-3.5" /></Button>
+                  </div>
+                </div>
+              )}
+
+              <ScrollArea className="h-[460px]">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 p-4">
+                  {districts.map((district) => (
+                    editingDistrict === district.name ? (
+                      <div key={district.name} className="p-3 rounded-lg border border-primary bg-muted/30 space-y-2">
+                        <Input value={editDistrictName} onChange={e => setEditDistrictName(e.target.value)} className="h-7 text-sm" placeholder="District name" />
+                        <Input value={editDistrictAr} onChange={e => setEditDistrictAr(e.target.value)} className="h-7 text-sm" placeholder="Arabic" dir="rtl" />
+                        <div className="flex gap-1">
+                          <Button size="sm" className="h-7 text-xs flex-1" onClick={() => handleSaveDistrictEdit(district.name)}><Check className="h-3 w-3 mr-1" />Save</Button>
+                          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingDistrict(null)}><X className="h-3 w-3" /></Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button key={district.name} onClick={() => setSelectedDistrict(district.name)}
+                        className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left group">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-foreground">{district.name}</span>
+                          {district.ar && <span className="text-xs text-muted-foreground" dir="rtl">{district.ar}</span>}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button onClick={(e) => { e.stopPropagation(); setEditingDistrict(district.name); setEditDistrictName(district.name); setEditDistrictAr(district.ar || ""); }}
+                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground p-1">
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); handleDeleteDistrict(selectedProvince, district.name); }}
+                            className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 p-1">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </button>
+                    )
                   ))}
-                  {neighborhoods.length === 0 && (
+                </div>
+              </ScrollArea>
+            </div>
+          ) : (
+            /* Neighborhood table with edit/add */
+            <div>
+              <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                <span className="text-sm font-medium text-muted-foreground">{neighborhoods.length} Neighborhoods in {selectedDistrict}</span>
+                {selectedProvince && selectedDistrict && (
+                  <Button size="sm" variant="outline" onClick={() => setShowAddNeighborhood(true)}>
+                    <Plus className="h-3.5 w-3.5 mr-1" /> Add Neighborhood
+                  </Button>
+                )}
+              </div>
+
+              {showAddNeighborhood && (
+                <div className="mx-4 mt-2 p-3 border border-border rounded-lg bg-muted/30 flex flex-col sm:flex-row gap-2 items-end">
+                  <div className="flex-1">
+                    <Label className="text-xs">Neighborhood Name</Label>
+                    <Input value={newNeighborhoodName} onChange={e => setNewNeighborhoodName(e.target.value)} placeholder="e.g. Kestel" className="h-8 text-sm" />
+                  </div>
+                  <div className="flex-1">
+                    <Label className="text-xs">Arabic Name</Label>
+                    <Input value={newNeighborhoodAr} onChange={e => setNewNeighborhoodAr(e.target.value)} placeholder="كستل" dir="rtl" className="h-8 text-sm" />
+                  </div>
+                  <div className="flex gap-1">
+                    <Button size="sm" className="h-8" onClick={handleAddNeighborhood}><Check className="h-3.5 w-3.5" /></Button>
+                    <Button size="sm" variant="ghost" className="h-8" onClick={() => { setShowAddNeighborhood(false); setNewNeighborhoodName(""); setNewNeighborhoodAr(""); }}><X className="h-3.5 w-3.5" /></Button>
+                  </div>
+                </div>
+              )}
+
+              <ScrollArea className="h-[460px]">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">No locations found</TableCell>
+                      {!selectedProvince && <TableHead>Province</TableHead>}
+                      {!selectedDistrict && <TableHead>District</TableHead>}
+                      <TableHead>Neighborhood</TableHead>
+                      <TableHead>Neighborhood (AR)</TableHead>
+                      <TableHead className="w-24">Actions</TableHead>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </ScrollArea>
+                  </TableHeader>
+                  <TableBody>
+                    {neighborhoods.map((loc) => (
+                      editingNeighborhood === loc.id ? (
+                        <TableRow key={loc.id}>
+                          {!selectedProvince && <TableCell className="text-sm">{loc.province}</TableCell>}
+                          {!selectedDistrict && <TableCell className="text-sm">{loc.district}</TableCell>}
+                          <TableCell>
+                            <Input value={editNeighborhoodName} onChange={e => setEditNeighborhoodName(e.target.value)} className="h-7 text-sm" />
+                          </TableCell>
+                          <TableCell>
+                            <Input value={editNeighborhoodAr} onChange={e => setEditNeighborhoodAr(e.target.value)} className="h-7 text-sm" dir="rtl" />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleSaveNeighborhoodEdit(loc.id)}><Check className="h-3.5 w-3.5 text-primary" /></Button>
+                              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditingNeighborhood(null)}><X className="h-3.5 w-3.5" /></Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        <TableRow key={loc.id}>
+                          {!selectedProvince && <TableCell className="text-sm">{loc.province}</TableCell>}
+                          {!selectedDistrict && <TableCell className="text-sm">{loc.district}</TableCell>}
+                          <TableCell className="text-sm font-medium">{loc.neighborhood}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground" dir="rtl">{loc.neighborhood_ar}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <button onClick={() => { setEditingNeighborhood(loc.id); setEditNeighborhoodName(loc.neighborhood); setEditNeighborhoodAr(loc.neighborhood_ar || ""); }}
+                                className="text-muted-foreground hover:text-foreground p-1"><Pencil className="h-3.5 w-3.5" /></button>
+                              <button onClick={() => handleDeleteNeighborhood(loc.id)} className="text-destructive hover:text-destructive/80 p-1"><Trash2 className="h-3.5 w-3.5" /></button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    ))}
+                    {neighborhoods.length === 0 && (
+                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No locations found</TableCell></TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </div>
           )}
         </div>
 
         {/* Settings Dialog */}
         <Dialog open={showSettings} onOpenChange={setShowSettings}>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Location Settings</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Location Settings</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div>
                 <Label>Allowed Country (restricts keyword search)</Label>
-                <CountryCombobox
-                  value={allowedCountry}
-                  onSelect={(country) => handleUpdateSetting("allowed_country", country)}
-                />
+                <CountryCombobox value={allowedCountry} onSelect={(country) => handleUpdateSetting("allowed_country", country)} />
                 <p className="text-xs text-muted-foreground mt-1">Keywords from search will be restricted to this country</p>
               </div>
               <div>
                 <Label>Max Keyword Suggestions</Label>
                 <div className="flex gap-2 mt-1">
-                  <Input
-                    defaultValue={maxSuggestions}
-                    id="max_suggestions"
-                    type="number"
-                    min={1}
-                    max={50}
-                  />
+                  <Input defaultValue={maxSuggestions} id="max_suggestions" type="number" min={1} max={50} />
                   <Button size="sm" onClick={() => {
                     const v = (document.getElementById("max_suggestions") as HTMLInputElement)?.value;
                     if (v) handleUpdateSetting("max_keyword_suggestions", v);
@@ -528,15 +570,12 @@ export default function AdminLocationsPage() {
         {/* Upload Excel Dialog */}
         <Dialog open={showUpload} onOpenChange={(o) => { setShowUpload(o); if (!o) setUploadPreview(null); }}>
           <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Import Locations from Excel</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Import Locations from Excel</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Excel format: <Badge variant="outline">Province</Badge> <Badge variant="outline">Province(ar)</Badge> <Badge variant="outline">District</Badge> <Badge variant="outline">District(ar)</Badge> <Badge variant="outline">Neighborhood</Badge> <Badge variant="outline">Neighborhood(ar)</Badge>
               </p>
               <Input type="file" accept=".xlsx,.xls" onChange={handleExcelUpload} />
-
               {uploadPreview && (
                 <>
                   <div className="rounded border border-border p-3 bg-muted/50">
@@ -590,44 +629,22 @@ export default function AdminLocationsPage() {
         {/* Add Location Dialog */}
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Location</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Add Location</DialogTitle></DialogHeader>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Province</Label>
-                  <Input value={newEntry.province} onChange={e => setNewEntry({ ...newEntry, province: e.target.value })} placeholder="e.g. Antalya" />
-                </div>
-                <div>
-                  <Label>Province (Arabic)</Label>
-                  <Input value={newEntry.province_ar} onChange={e => setNewEntry({ ...newEntry, province_ar: e.target.value })} placeholder="أنطاليا" dir="rtl" />
-                </div>
+                <div><Label>Province</Label><Input value={newEntry.province} onChange={e => setNewEntry({ ...newEntry, province: e.target.value })} placeholder="e.g. Antalya" /></div>
+                <div><Label>Province (Arabic)</Label><Input value={newEntry.province_ar} onChange={e => setNewEntry({ ...newEntry, province_ar: e.target.value })} placeholder="أنطاليا" dir="rtl" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>District / Town</Label>
-                  <Input value={newEntry.district} onChange={e => setNewEntry({ ...newEntry, district: e.target.value })} placeholder="e.g. Alanya" />
-                </div>
-                <div>
-                  <Label>District (Arabic)</Label>
-                  <Input value={newEntry.district_ar} onChange={e => setNewEntry({ ...newEntry, district_ar: e.target.value })} placeholder="ألانيا" dir="rtl" />
-                </div>
+                <div><Label>District / Town</Label><Input value={newEntry.district} onChange={e => setNewEntry({ ...newEntry, district: e.target.value })} placeholder="e.g. Alanya" /></div>
+                <div><Label>District (Arabic)</Label><Input value={newEntry.district_ar} onChange={e => setNewEntry({ ...newEntry, district_ar: e.target.value })} placeholder="ألانيا" dir="rtl" /></div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Neighborhood</Label>
-                  <Input value={newEntry.neighborhood} onChange={e => setNewEntry({ ...newEntry, neighborhood: e.target.value })} placeholder="e.g. Kestel" />
-                </div>
-                <div>
-                  <Label>Neighborhood (Arabic)</Label>
-                  <Input value={newEntry.neighborhood_ar} onChange={e => setNewEntry({ ...newEntry, neighborhood_ar: e.target.value })} placeholder="كستل" dir="rtl" />
-                </div>
+                <div><Label>Neighborhood</Label><Input value={newEntry.neighborhood} onChange={e => setNewEntry({ ...newEntry, neighborhood: e.target.value })} placeholder="e.g. Kestel" /></div>
+                <div><Label>Neighborhood (Arabic)</Label><Input value={newEntry.neighborhood_ar} onChange={e => setNewEntry({ ...newEntry, neighborhood_ar: e.target.value })} placeholder="كستل" dir="rtl" /></div>
               </div>
             </div>
-            <DialogFooter>
-              <Button onClick={handleAddEntry}>Add Location</Button>
-            </DialogFooter>
+            <DialogFooter><Button onClick={handleAddEntry}>Add Location</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
