@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, Pencil, Search, ImageIcon, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";
 
 interface Banner {
   id: string;
@@ -51,6 +52,12 @@ const POSITION_OPTIONS = [
   { value: 4, label: "4th" },
 ];
 
+const DURATION_OPTIONS = [
+  { value: 1, label: "1 Month" },
+  { value: 3, label: "3 Months" },
+  { value: 6, label: "6 Months" },
+];
+
 const emptyForm = {
   name: "",
   page_name: "buy",
@@ -58,11 +65,11 @@ const emptyForm = {
   page_position: 1,
   link_url: "",
   banner_text: "",
-  start_date: "",
-  end_date: "",
+  duration_months: 1,
 };
 
 const AdminBannersPage = () => {
+  const { isTestMode } = useTestMode();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -96,6 +103,14 @@ const AdminBannersPage = () => {
 
   const openEdit = (banner: Banner) => {
     setEditing(banner);
+    // Try to infer duration from start/end dates, default to 1
+    let duration_months = 1;
+    if (banner.start_date && banner.end_date) {
+      const diffMs = new Date(banner.end_date).getTime() - new Date(banner.start_date).getTime();
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      if (diffDays > 150) duration_months = 6;
+      else if (diffDays > 60) duration_months = 3;
+    }
     setForm({
       name: banner.name,
       page_name: banner.page_name,
@@ -103,8 +118,7 @@ const AdminBannersPage = () => {
       page_position: banner.page_position,
       link_url: banner.link_url || "",
       banner_text: banner.banner_text || "",
-      start_date: banner.start_date ? banner.start_date.slice(0, 10) : "",
-      end_date: banner.end_date ? banner.end_date.slice(0, 10) : "",
+      duration_months,
     });
     setImageFile(null);
     setImagePreview(banner.image_url);
@@ -141,6 +155,10 @@ const AdminBannersPage = () => {
       image_url = urlData.publicUrl;
     }
 
+    const now = new Date();
+    const start_date = now.toISOString();
+    const end_date = getTestAwareEndDate(form.duration_months, isTestMode);
+
     const payload = {
       name: form.name,
       page_name: form.page_name,
@@ -149,8 +167,8 @@ const AdminBannersPage = () => {
       link_url: form.link_url || null,
       banner_text: form.banner_text || null,
       image_url,
-      start_date: form.start_date || null,
-      end_date: form.end_date || null,
+      start_date,
+      end_date,
     };
 
     if (editing) {
@@ -314,15 +332,18 @@ const AdminBannersPage = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Start Display Date</Label>
-                <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
-              </div>
-              <div>
-                <Label>End Display Date</Label>
-                <Input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
-              </div>
+            <div>
+              <Label>Duration {isTestMode && <span className="text-xs text-amber-500 ml-1">(minutes in test mode)</span>}</Label>
+              <Select value={String(form.duration_months)} onValueChange={(v) => setForm({ ...form, duration_months: Number(v) })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DURATION_OPTIONS.map((d) => (
+                    <SelectItem key={d.value} value={String(d.value)}>
+                      {getTestAwareDurationLabel(d.value, isTestMode)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
