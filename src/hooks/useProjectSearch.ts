@@ -67,7 +67,7 @@ export function useProjectSearch(params: ProjectSearchParams) {
         p_district: params.district || null,
         p_neighborhood: params.neighborhood || null,
         p_keyword: params.keyword?.trim() || null,
-        p_unit_types: params.unitTypes && params.unitTypes.length > 0 ? params.unitTypes : null,
+        p_unit_types: params.unitTypes && params.unitTypes.length > 0 ? params.unitTypes.map(t => t.toLowerCase()) : null,
         p_min_price: params.minPrice ? Number(params.minPrice) : null,
         p_max_price: params.maxPrice ? Number(params.maxPrice) : null,
         p_min_area: params.minArea ? Number(params.minArea) : null,

@@ -129,9 +129,9 @@ export function usePropertySearch(params: PropertySearchParams) {
       // More filters
       const mf = params.moreFilters;
       if (mf) {
-        if (mf.floorLevels.length > 0) query = query.in("floor_level", mf.floorLevels);
-        if (mf.furniture.length > 0) query = query.in("furniture", mf.furniture);
-        if (mf.propertyAges.length > 0) query = query.in("property_age", mf.propertyAges);
+        if (mf.floorLevels.length > 0) query = query.in("floor_level", mf.floorLevels.map(v => v.toLowerCase()));
+        if (mf.furniture.length > 0) query = query.in("furniture", mf.furniture.map(v => v.toLowerCase()));
+        if (mf.propertyAges.length > 0) query = query.in("property_age", mf.propertyAges.map(v => v.toLowerCase()));
         if (mf.parkingSpaces.length > 0) query = query.in("parking_spaces", mf.parkingSpaces.map(Number));
         if (mf.interiorAmenities.length > 0) {
           query = query.overlaps("interior_amenities", mf.interiorAmenities);
