@@ -322,6 +322,14 @@ const CompanyAgentEditPage = () => {
                 <Input value={form.name} onChange={(e) => { updateField("name", e.target.value); clearFieldError("name"); }} className={`bg-secondary/50 ${fieldErrors.name ? "border-destructive" : ""}`} placeholder="Enter Agent Name" />
                 {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
               </div>
+              <ArabicTranslateField
+                label="Agent Name (Arabic)"
+                value={form.name_ar}
+                onChange={(v) => updateField("name_ar", v)}
+                sourceText={form.name}
+                fieldType="name"
+                maxLength={100}
+              />
               <div className="space-y-2" data-field="designation">
                 <Label className="text-foreground font-medium">Agent Designation *</Label>
                 <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder="Enter Agent Designation" />
