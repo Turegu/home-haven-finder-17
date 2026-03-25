@@ -258,7 +258,7 @@ const CompanyAgentEditPage = () => {
       description: form.description || null,
       description_ar: form.description_ar || null,
       description_fr: form.description_fr || null,
-      service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      service_areas: form.service_areas.length > 0 ? form.service_areas : [],
       languages: form.languages,
       registration_number: form.registration_number || null,
       avatar_url: avatarUrl || null,
