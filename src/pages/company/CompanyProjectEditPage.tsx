@@ -256,7 +256,7 @@ const CompanyProjectEditPage = () => {
   const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
-    title: "", title_ar: "", tagline: "", description: "", description_ar: "", developer: "",
+    title: "", title_ar: "", title_fr: "", tagline: "", description: "", description_ar: "", description_fr: "", developer: "",
     project_type: "residential", min_price: "", max_price: "",
     currency: "USD", min_units: "", max_units: "",
     min_area: "", max_area: "", area_unit: "m²",
