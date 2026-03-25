@@ -159,6 +159,7 @@ const CompanyProfilePage = () => {
           registration_number: data.registration_number || "",
           about: data.about || "",
           about_ar: (data as any).about_ar || "",
+          about_fr: (data as any).about_fr || "",
           email: data.email || "",
           phone: data.phone || "",
           whatsapp: data.whatsapp || "",
