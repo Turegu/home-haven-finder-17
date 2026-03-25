@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
@@ -34,15 +35,15 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
 }
 
 function MultiSelectLanguages({
-  selected, onToggle
-}: { selected: string[]; onToggle: (lang: string) => void }) {
+  selected, onToggle, label
+}: { selected: string[]; onToggle: (lang: string) => void; label: string }) {
   const [search, setSearch] = useState("");
   const filtered = search ? languageOptions.filter(l => turkishIncludes(l, search)) : languageOptions;
 
   return (
     <div className="space-y-2">
       <Label className="text-foreground font-medium flex items-center gap-1.5">
-        <Globe className="h-3.5 w-3.5 text-muted-foreground" /> Languages Spoken
+        <Globe className="h-3.5 w-3.5 text-muted-foreground" /> {label}
       </Label>
       <Popover>
         <PopoverTrigger asChild>
@@ -86,6 +87,7 @@ function MultiSelectLanguages({
 
 const CompanyAgentEditPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams();
   const isEdit = id && id !== "new";
   const [loading, setLoading] = useState(false);
@@ -177,34 +179,31 @@ const CompanyAgentEditPage = () => {
     e.preventDefault();
     if (!companyId) { toast.error("Company not found"); return; }
     if (!isEdit && !membershipLimits.canCreate("agents")) {
-      toast.error(`Your ${membershipLimits.membership} membership does not allow more agents. Please upgrade.`);
+      toast.error(t("companyDashboard.noUpgradeAllowed", { membership: membershipLimits.membership }));
       return;
     }
 
-    // Inline validation
     const errors: Record<string, string> = {};
-    if (!form.name.trim()) errors.name = "Agent name is required";
-    if (!form.email.trim()) errors.email = "Email is required";
+    if (!form.name.trim()) errors.name = t("companyDashboard.agentName") + " required";
+    if (!form.email.trim()) errors.email = t("companyDashboard.email") + " required";
     else if (!validateEmail(form.email.trim())) errors.email = "Please enter a valid email address";
-    if (!form.designation.trim()) errors.designation = "Designation is required";
-    if (!form.phone.trim()) errors.phone = "Phone is required";
-    if (!form.whatsapp.trim()) errors.whatsapp = "WhatsApp number is required";
-    if (!form.service_areas.trim()) errors.service_areas = "Service areas are required";
-    if (form.languages.length === 0) errors.languages = "At least one language is required";
-    if (!form.registration_number.trim()) errors.registration_number = "Registration number is required";
-    if (!form.description.trim()) errors.description = "Description is required";
+    if (!form.designation.trim()) errors.designation = t("companyDashboard.agentDesignation") + " required";
+    if (!form.phone.trim()) errors.phone = t("companyDashboard.phone") + " required";
+    if (!form.whatsapp.trim()) errors.whatsapp = t("companyDashboard.whatsapp") + " required";
+    if (!form.service_areas.trim()) errors.service_areas = t("companyDashboard.serviceAreas") + " required";
+    if (form.languages.length === 0) errors.languages = t("companyDashboard.languagesSpoken") + " required";
+    if (!form.registration_number.trim()) errors.registration_number = t("companyDashboard.registrationNumber") + " required";
+    if (!form.description.trim()) errors.description = t("companyDashboard.description") + " required";
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       const firstKey = Object.keys(errors)[0];
       toast.error(errors[firstKey]);
-      // Scroll to first error
       const el = document.querySelector(`[data-field="${firstKey}"]`);
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
-    // Check email uniqueness (only for new agents)
     if (!isEdit) {
       const { data: existingAgent } = await supabase
         .from("agents")
@@ -282,12 +281,12 @@ const CompanyAgentEditPage = () => {
 
   return (
     <CompanyLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Agent" : "New Agent"}</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? t("companyDashboard.edit") + " " + t("companyDashboard.agents") : t("companyDashboard.createNewAgent")}</h1>
 
       <form onSubmit={handleSubmit} className="max-w-4xl space-y-6 pb-10">
         {/* ─── Profile Photo ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Profile Photo" />
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title={t("companyDashboard.profilePhoto")} />
           <div className="flex items-center gap-4">
             {avatarUrl ? (
               <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
@@ -304,42 +303,42 @@ const CompanyAgentEditPage = () => {
             )}
             <div>
               <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground inline-flex items-center">
-                <Upload className="h-4 w-4 mr-2" />Upload Photo
+                <Upload className="h-4 w-4 mr-2" />{t("companyDashboard.uploadPhoto")}
                 <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
               </label>
-              <p className="text-xs text-muted-foreground mt-1">Rectangular photo recommended</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("companyDashboard.rectangularRecommended")}</p>
             </div>
           </div>
         </section>
 
         {/* ─── Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<UserCircle className="h-4 w-4" />} title="Description & Information" />
+          <SectionHeader icon={<UserCircle className="h-4 w-4" />} title={t("companyDashboard.descriptionInfo")} />
           <div className="space-y-5">
             <LanguageContentTabs
               fields={[
                 {
                   key: "name",
-                  label: "Agent Name",
+                  label: t("companyDashboard.agentName"),
                   value_en: form.name,
                   value_ar: form.name_ar,
                   onChange_en: (v) => { updateField("name", v); clearFieldError("name"); },
                   onChange_ar: (v) => updateField("name_ar", v),
                   maxLength: 100,
-                  placeholder_en: "Enter Agent Name",
+                  placeholder_en: t("companyDashboard.agentName"),
                   required: true,
                   error: fieldErrors.name,
                   fieldType: "name",
                 },
                 {
                   key: "description",
-                  label: "Description",
+                  label: t("companyDashboard.description"),
                   value_en: form.description,
                   value_ar: form.description_ar,
                   onChange_en: (v) => { updateField("description", v); clearFieldError("description"); },
                   onChange_ar: (v) => updateField("description_ar", v),
                   multiline: true,
-                  placeholder_en: "Write Agent Description",
+                  placeholder_en: t("companyDashboard.description"),
                   required: true,
                   error: fieldErrors.description,
                   fieldType: "description",
@@ -349,27 +348,27 @@ const CompanyAgentEditPage = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2" data-field="designation">
-                <Label className="text-foreground font-medium">Agent Designation *</Label>
-                <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder="Enter Agent Designation" />
+                <Label className="text-foreground font-medium">{t("companyDashboard.agentDesignation")} *</Label>
+                <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder={t("companyDashboard.agentDesignation")} />
                 {fieldErrors.designation && <p className="text-xs text-destructive">{fieldErrors.designation}</p>}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2" data-field="service_areas">
-                <Label className="text-foreground font-medium">Service Areas *</Label>
+                <Label className="text-foreground font-medium">{t("companyDashboard.serviceAreas")} *</Label>
                 <Input value={form.service_areas} onChange={(e) => { updateField("service_areas", e.target.value); clearFieldError("service_areas"); }} className={`bg-secondary/50 ${fieldErrors.service_areas ? "border-destructive" : ""}`} placeholder="Area 1, Area 2, ..." />
                 {fieldErrors.service_areas && <p className="text-xs text-destructive">{fieldErrors.service_areas}</p>}
               </div>
               <div data-field="languages">
-                <MultiSelectLanguages selected={form.languages} onToggle={(lang) => { toggleLanguage(lang); clearFieldError("languages"); }} />
+                <MultiSelectLanguages selected={form.languages} onToggle={(lang) => { toggleLanguage(lang); clearFieldError("languages"); }} label={t("companyDashboard.languagesSpoken")} />
                 {fieldErrors.languages && <p className="text-xs text-destructive">{fieldErrors.languages}</p>}
               </div>
             </div>
 
             <div className="space-y-2" data-field="registration_number">
-              <Label className="text-foreground font-medium">Registration Number *</Label>
-              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder="Registration Number" />
+              <Label className="text-foreground font-medium">{t("companyDashboard.registrationNumber")} *</Label>
+              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder={t("companyDashboard.registrationNumber")} />
               {fieldErrors.registration_number && <p className="text-xs text-destructive">{fieldErrors.registration_number}</p>}
             </div>
           </div>
@@ -377,45 +376,46 @@ const CompanyAgentEditPage = () => {
 
         {/* ─── Contact ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Phone className="h-4 w-4" />} title="Contact Information" />
+          <SectionHeader icon={<Phone className="h-4 w-4" />} title={t("companyDashboard.contactInfo")} />
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2" data-field="email">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email *
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.email")} *
                 </Label>
                 <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
                 {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
-                {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">Email cannot be changed after account creation</p>}
+                {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">{t("companyDashboard.emailCannotChange")}</p>}
                 {!isEdit && !fieldErrors.email && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Mail className="h-3 w-3" /> An invitation email will be sent to this address
+                    <Mail className="h-3 w-3" /> {t("companyDashboard.invitationEmailSent")}
                   </p>
                 )}
               </div>
               <div className="space-y-2" data-field="phone">
-                <Label className="text-foreground font-medium">Phone *</Label>
-                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+90 555 123 4567" />
+                <Label className="text-foreground font-medium flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.phone")} *
+                </Label>
+                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" />
                 {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2" data-field="whatsapp">
-                <Label className="text-foreground font-medium">WhatsApp Number *</Label>
-                <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+90 555 123 4567" />
-                {fieldErrors.whatsapp && <p className="text-xs text-destructive">{fieldErrors.whatsapp}</p>}
-              </div>
+            <div className="space-y-2" data-field="whatsapp">
+              <Label className="text-foreground font-medium flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.whatsapp")} *
+              </Label>
+              <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" />
+              {fieldErrors.whatsapp && <p className="text-xs text-destructive">{fieldErrors.whatsapp}</p>}
             </div>
           </div>
         </section>
 
-        {/* Submit */}
-        <div className="flex items-center gap-3">
-          <Button type="submit" disabled={loading} className="px-8">
-            {!isEdit && <Mail className="h-4 w-4 mr-2" />}
-            {loading ? "Saving..." : isEdit ? "Update" : "Create & Send Invite"}
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={() => navigate("/company/agents")}>{t("companyDashboard.cancel")}</Button>
+          <Button type="submit" disabled={loading}>
+            <Save className="h-4 w-4 mr-2" />
+            {loading ? t("companyDashboard.saving") : isEdit ? t("companyDashboard.save") : t("companyDashboard.createAndSendInvite")}
           </Button>
-          <Button type="button" variant="outline" onClick={() => navigate("/company/agents")}>Cancel</Button>
         </div>
       </form>
     </CompanyLayout>

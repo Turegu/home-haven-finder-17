@@ -120,7 +120,7 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
           size="sm"
           onClick={handleTranslateAll}
           disabled={translating || !hasContent}
-          className="gap-1.5 text-xs h-8 border-primary/30 text-primary hover:bg-primary/5"
+          className="gap-1.5 text-xs h-8 border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
         >
           {translating ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />

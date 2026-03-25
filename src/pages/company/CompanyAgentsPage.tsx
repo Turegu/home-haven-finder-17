@@ -89,7 +89,7 @@ const CompanyAgentsPage = () => {
   );
 
   const handleDelete = async (agentId: string) => {
-    if (!confirm("Delete this agent?")) return;
+    if (!confirm(t("companyDashboard.confirmDelete"))) return;
     const { error } = await supabase.from("agents").delete().eq("id", agentId);
     if (error) toast.error("Delete failed");
     else { toast.success("Agent deleted"); fetchAgents(); }
@@ -103,14 +103,12 @@ const CompanyAgentsPage = () => {
 
     setSharingCredits(true);
     try {
-      // Deduct from company
       const { error: compErr } = await supabase
         .from("companies")
         .update({ credit_balance: companyCredits - amount })
         .eq("id", companyId!);
       if (compErr) throw compErr;
 
-      // Add to agent
       const { error: agentErr } = await supabase
         .from("agents")
         .update({ credit_balance: creditDialog.agent.credit_balance + amount })
@@ -150,15 +148,15 @@ const CompanyAgentsPage = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search By Name Or Email" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+          <Input placeholder={t("companyDashboard.searchByNameOrEmail")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="whitespace-nowrap">Sort By Date</span>
+          <span className="whitespace-nowrap">{t("companyDashboard.sortByDate")}</span>
           <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
             <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest to Oldest</SelectItem>
-              <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="newest">{t("companyDashboard.newestToOldest")}</SelectItem>
+              <SelectItem value="oldest">{t("companyDashboard.oldestToNewest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -166,39 +164,39 @@ const CompanyAgentsPage = () => {
           <Button
             onClick={() => {
               if (!canCreate("agents")) {
-                toast.error(`Your ${membership} membership does not allow more agents. Please upgrade.`);
+                toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
                 return;
               }
               navigate("/company/agents/new");
             }}
           >
-            <Plus className="h-4 w-4 mr-2" /> Create New Agent
+            <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewAgent")}
           </Button>
         </div>
       </div>
 
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="px-6 py-4 border-b border-border">
-          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Agents</h2>
+          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">{t("companyDashboard.agents")}</h2>
         </div>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/5">
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Agent</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Email</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Phone Number</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Credits</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.creationDate")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.agents")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.credits")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.status")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell></TableRow>
               ) : filtered.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">No agents found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noData")}</TableCell></TableRow>
               ) : (
                 filtered.map((agent) => (
                   <TableRow key={agent.id} className="hover:bg-muted/30">
@@ -211,7 +209,7 @@ const CompanyAgentsPage = () => {
                     <TableCell className="text-sm font-semibold text-primary">{agent.credit_balance}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(agent.status)} variant="secondary">
-                        {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                        {agent.status === "active" ? t("companyDashboard.active") : agent.status === "inactive" ? t("companyDashboard.inactive") : agent.status === "pending" ? t("common.pending") : agent.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -221,16 +219,16 @@ const CompanyAgentsPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => navigate(`/company/agents/${agent.id}/edit`)}>
-                            <Pencil className="h-4 w-4 mr-2" /> Edit
+                            <Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
-                            <Coins className="h-4 w-4 mr-2" /> Share Credits
+                            <Coins className="h-4 w-4 mr-2" /> {t("companyDashboard.shareCredits")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setBoostAgent(agent)}>
-                            <Rocket className="h-4 w-4 mr-2" /> Boost Profile
+                            <Rocket className="h-4 w-4 mr-2" /> {t("companyDashboard.boostProfile")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" /> Delete
+                            <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -247,22 +245,22 @@ const CompanyAgentsPage = () => {
       <Dialog open={creditDialog.open} onOpenChange={(open) => setCreditDialog({ open, agent: open ? creditDialog.agent : null })}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Share Credits with {creditDialog.agent?.name}</DialogTitle>
+            <DialogTitle>{t("companyDashboard.shareCredits")} - {creditDialog.agent?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
-              Your company balance: <span className="font-semibold text-primary">{companyCredits}</span> credits
+              {t("companyDashboard.yourCompanyBalance")}: <span className="font-semibold text-primary">{companyCredits}</span> {t("companyDashboard.credits")}
             </p>
             <p className="text-sm text-muted-foreground">
-              Agent's current balance: <span className="font-semibold">{creditDialog.agent?.credit_balance || 0}</span> credits
+              {t("companyDashboard.agentCurrentBalance")}: <span className="font-semibold">{creditDialog.agent?.credit_balance || 0}</span> {t("companyDashboard.credits")}
             </p>
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Amount to share</Label>
+              <Label className="text-foreground font-medium">{t("companyDashboard.amountToShare")}</Label>
               <Input
                 type="number"
                 value={creditAmount}
                 onChange={(e) => setCreditAmount(e.target.value)}
-                placeholder="Enter amount"
+                placeholder={t("companyDashboard.enterAmount")}
                 min="1"
                 max={companyCredits}
                 className="bg-secondary/50"
@@ -270,9 +268,9 @@ const CompanyAgentsPage = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreditDialog({ open: false, agent: null })}>Cancel</Button>
+            <Button variant="outline" onClick={() => setCreditDialog({ open: false, agent: null })}>{t("companyDashboard.cancel")}</Button>
             <Button onClick={handleShareCredits} disabled={sharingCredits}>
-              <Coins className="h-4 w-4 mr-2" /> {sharingCredits ? "Sharing..." : "Share Credits"}
+              <Coins className="h-4 w-4 mr-2" /> {sharingCredits ? t("companyDashboard.sharingCredits") : t("companyDashboard.shareCredits")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -116,7 +116,7 @@ const CompanyEventsPage = () => {
   const handleDeactivate = async (evt: EventRow) => {
     const newStatus = evt.status === "active" ? "inactive" : "active";
     if (newStatus === "active" && !canCreate("events")) {
-      toast.error(`Your ${membership} membership does not allow more active events. Please upgrade.`);
+      toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
       return;
     }
     const { error } = await supabase.from("events").update({ status: newStatus }).eq("id", evt.id);
@@ -133,7 +133,7 @@ const CompanyEventsPage = () => {
     }
   };
 
-  const formatType = (t: string) => t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatType = (val: string) => val.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const maxEvents = limits?.max_events || 1;
   const usagePercent = Math.min(100, (usage.events / maxEvents) * 100);
@@ -148,8 +148,8 @@ const CompanyEventsPage = () => {
       <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-medium text-muted-foreground">Events Used: {usage.events} / {maxEvents} ({membership.charAt(0).toUpperCase() + membership.slice(1)})</span>
-            <span className="text-xs text-muted-foreground">{remainingSlots("events")} remaining</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("companyDashboard.eventsUsed", { used: usage.events, max: maxEvents, membership: membership.charAt(0).toUpperCase() + membership.slice(1) })}</span>
+            <span className="text-xs text-muted-foreground">{remainingSlots("events")} {t("companyDashboard.remaining")}</span>
           </div>
           <Progress value={usagePercent} className="h-2" />
         </div>
@@ -159,48 +159,48 @@ const CompanyEventsPage = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-primary/10 p-2"><LayoutList className="h-4 w-4 text-primary" /></div>
-          <div><p className="text-xs text-muted-foreground">Total</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.total")}</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-emerald-100 p-2"><CheckCircle className="h-4 w-4 text-emerald-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Active</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.active")}</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-red-100 p-2"><XCircle className="h-4 w-4 text-red-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Inactive</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.inactive")}</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-amber-100 p-2"><FileText className="h-4 w-4 text-amber-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Draft</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.draft")}</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search By Name Or ID" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
+          <Input placeholder={t("companyDashboard.searchByNameOrId")} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="whitespace-nowrap">Sort By Date</span>
+          <span className="whitespace-nowrap">{t("companyDashboard.sortByDate")}</span>
           <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
             <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest to Oldest</SelectItem>
-              <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="newest">{t("companyDashboard.newestToOldest")}</SelectItem>
+              <SelectItem value="oldest">{t("companyDashboard.oldestToNewest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="flex items-center gap-2 ml-auto">
           {selected.length > 0 && (
             <Button variant="destructive" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4 mr-2" /> Delete ({selected.length})
+              <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
             </Button>
           )}
           <Button onClick={() => {
-            if (!canCreate("events")) { toast.error(`Your ${membership} membership does not allow more events. Please upgrade.`); return; }
+            if (!canCreate("events")) { toast.error(t("companyDashboard.noUpgradeAllowed", { membership })); return; }
             navigate("/company/events/new");
           }}>
-            <Plus className="h-4 w-4 mr-2" /> Create New Event
+            <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewEvent")}
           </Button>
         </div>
       </div>
@@ -209,41 +209,41 @@ const CompanyEventsPage = () => {
       <div className="bg-card rounded-xl border border-border p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Event Type</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("companyDashboard.eventType")}</label>
             <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
-              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder={t("companyDashboard.allTypes")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {eventTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+                <SelectItem value="all">{t("companyDashboard.allTypes")}</SelectItem>
+                {eventTypes.map((et) => (<SelectItem key={et} value={et}>{formatType(et)}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Entry Type</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("companyDashboard.entryType")}</label>
             <Select value={filterEntry} onValueChange={(v) => { setFilterEntry(v); setPage(1); }}>
-              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder={t("companyDashboard.all")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {entryTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+                <SelectItem value="all">{t("companyDashboard.all")}</SelectItem>
+                {entryTypes.map((et) => (<SelectItem key={et} value={et}>{formatType(et)}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Status</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("companyDashboard.status")}</label>
             <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
-              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder={t("companyDashboard.all")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="all">{t("companyDashboard.all")}</SelectItem>
+                <SelectItem value="active">{t("companyDashboard.active")}</SelectItem>
+                <SelectItem value="inactive">{t("companyDashboard.inactive")}</SelectItem>
+                <SelectItem value="draft">{t("companyDashboard.draft")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground mb-2">Showing {paginated.length} of {filtered.length} event(s)</p>
+      <p className="text-xs text-muted-foreground mb-2">{t("companyDashboard.showing", { count: paginated.length, total: filtered.length })}</p>
 
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
@@ -251,21 +251,21 @@ const CompanyEventsPage = () => {
             <TableHeader>
               <TableRow className="bg-primary/5">
                 <TableHead className="w-10"><Checkbox checked={paginated.length > 0 && selected.length === paginated.length} onCheckedChange={toggleAll} /></TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">ID</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Assigned Agent</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.id")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.creationDate")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.type")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.title")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.assignedAgent")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.location")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.status")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell></TableRow>
               ) : paginated.length === 0 ? (
-                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">No events found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={9} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noData")}</TableCell></TableRow>
               ) : (
                 paginated.map((evt) => (
                   <TableRow key={evt.id} className="hover:bg-muted/30">
@@ -278,7 +278,7 @@ const CompanyEventsPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{evt.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(evt.status)} variant="secondary">
-                        {evt.status === "draft" ? "Unpublished" : evt.status.charAt(0).toUpperCase() + evt.status.slice(1)}
+                        {evt.status === "draft" ? t("companyDashboard.unpublished") : evt.status === "active" ? t("companyDashboard.active") : t("companyDashboard.inactive")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -287,9 +287,9 @@ const CompanyEventsPage = () => {
                           <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => navigate(`/events/${evt.id}`)}><Eye className="h-4 w-4 mr-2" /> View</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate(`/company/events/${evt.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeactivate(evt)}><Ban className="h-4 w-4 mr-2" /> {evt.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/events/${evt.id}`)}><Eye className="h-4 w-4 mr-2" /> {t("companyDashboard.view")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/company/events/${evt.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeactivate(evt)}><Ban className="h-4 w-4 mr-2" /> {evt.status === "active" ? t("companyDashboard.deactivate") : t("companyDashboard.activate")}</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
