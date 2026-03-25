@@ -68,7 +68,7 @@ async function fetchEvents(params: EventSearchParams) {
       query = query.in("id", ["00000000-0000-0000-0000-000000000000"]);
     }
   }
-  if (eventType && eventType !== 'All') query = query.eq('event_type', eventType);
+  if (eventType && eventType !== 'All') query = query.ilike('event_type', eventType);
   if (dateFrom) query = query.gte('event_date', dateFrom);
   if (dateTo) query = query.lte('event_date', dateTo);
 
