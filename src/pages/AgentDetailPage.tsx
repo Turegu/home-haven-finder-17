@@ -181,7 +181,7 @@ const AgentDetailPage = () => {
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{getDesignationLabel(agent.designation, lang)}</p>
+                    <p className="text-sm text-muted-foreground">{getTranslatedLabel(dbDesignations, agent.designation, lang)}</p>
                   </div>
 
                   {/* Stats */}
