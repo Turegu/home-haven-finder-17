@@ -34,6 +34,7 @@ interface LanguageContentTabsProps {
 const LANGS = [
   { code: "en", label: "English", dir: "ltr" as const, langName: "English" },
   { code: "ar", label: "العربية", dir: "rtl" as const, langName: "Arabic" },
+  { code: "fr", label: "Français", dir: "ltr" as const, langName: "French" },
 ];
 
 const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) => {
