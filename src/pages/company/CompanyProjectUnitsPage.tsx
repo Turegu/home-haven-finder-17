@@ -259,7 +259,7 @@ const CompanyProjectUnitsPage = () => {
                 <Input value={form.unit_name} onChange={(e) => updateField("unit_name", e.target.value)} className="bg-secondary/50" />
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Unit Type</Label>
+                <Label className="font-medium">{t("units.unitType")}</Label>
                 <Select value={form.unit_type} onValueChange={(v) => updateField("unit_type", v)}>
                   <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
                   <SelectContent>{unitTypes.map((t) => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}</SelectContent>
