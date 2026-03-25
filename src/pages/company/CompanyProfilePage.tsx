@@ -21,6 +21,7 @@ import {
   MapPin, FileText, Globe, ChevronDown, Search, Grid3X3, Rocket
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import PatternLock from "@/components/admin/PatternLock";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
 import type { Tables } from "@/integrations/supabase/types";
