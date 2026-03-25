@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
