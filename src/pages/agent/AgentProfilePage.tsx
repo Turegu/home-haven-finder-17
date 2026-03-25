@@ -41,18 +41,22 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
 function MultiSelectLanguages({
   selected, onToggle
 }: { selected: string[]; onToggle: (lang: string) => void }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
-  const filtered = search ? languageOptions.filter(l => turkishIncludes(l, search)) : languageOptions;
+  const tLang = (lang: string) => t(`languageNames.${lang}`, lang);
+  const filtered = search
+    ? languageOptions.filter((l) => turkishIncludes(l, search) || turkishIncludes(tLang(l), search))
+    : languageOptions;
 
   return (
     <div className="space-y-2">
       <Label className="text-foreground font-medium flex items-center gap-1.5">
-        <Globe className="h-3.5 w-3.5 text-muted-foreground" /> Languages
+        <Globe className="h-3.5 w-3.5 text-muted-foreground" /> {t("filters.languages")}
       </Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between bg-secondary/50 font-normal text-sm">
-            <span className="truncate">{selected.length ? `${selected.length} selected` : "Select languages..."}</span>
+            <span className="truncate">{selected.length ? `${selected.length} ${t("filters.selected")}` : t("filters.languages")}</span>
             <ChevronDown className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
           </Button>
         </PopoverTrigger>
@@ -60,26 +64,37 @@ function MultiSelectLanguages({
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input placeholder="Search…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+              <Input placeholder={t("common.searchLanguages")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
             </div>
           </div>
-          <ScrollArea>
-            <div className="p-2 space-y-1">
-              {filtered.map((lang) => (
-                <label key={lang} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
-                  <Checkbox checked={selected.includes(lang)} onCheckedChange={() => onToggle(lang)} />
-                  <span>{lang}</span>
-                </label>
-              ))}
-            </div>
-          </ScrollArea>
+          <div
+            className="max-h-[320px] overflow-y-scroll p-2 pe-1 space-y-1"
+            style={{ scrollbarGutter: 'stable' }}
+            onWheel={(e) => {
+              const el = e.currentTarget;
+              if (el.scrollHeight <= el.clientHeight) return;
+              e.preventDefault();
+              e.stopPropagation();
+              el.scrollTop += e.deltaY;
+            }}
+          >
+            {filtered.map((lang) => (
+              <label key={lang} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent cursor-pointer text-sm">
+                <Checkbox checked={selected.includes(lang)} onCheckedChange={() => onToggle(lang)} />
+                <span>{tLang(lang)}</span>
+              </label>
+            ))}
+            {filtered.length === 0 && (
+              <p className="text-xs text-muted-foreground px-2 py-3 text-center">{t("common.noLanguagesFound")}</p>
+            )}
+          </div>
         </PopoverContent>
       </Popover>
       {selected.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-1">
           {selected.map((s) => (
             <Badge key={s} variant="secondary" className="text-xs gap-1 pr-1">
-              {s}
+              {tLang(s)}
               <button type="button" onClick={() => onToggle(s)} className="hover:text-destructive"><X className="h-3 w-3" /></button>
             </Badge>
           ))}
