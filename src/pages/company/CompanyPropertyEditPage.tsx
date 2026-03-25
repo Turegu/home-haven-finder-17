@@ -66,8 +66,10 @@ const CompanyPropertyEditPage = () => {
   const [form, setForm] = useState({
     title: "",
     title_ar: "",
+    title_fr: "",
     description: "",
     description_ar: "",
+    description_fr: "",
     contract_type: "residential_sale",
     property_purpose: "buy",
     property_classification: "residential",
