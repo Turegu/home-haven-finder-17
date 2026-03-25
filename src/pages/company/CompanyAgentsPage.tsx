@@ -39,6 +39,7 @@ interface Agent {
   created_at: string;
   profile_classification: string;
   boost_end_date: string | null;
+  downgraded_at: string | null;
 }
 
 const CompanyAgentsPage = () => {
