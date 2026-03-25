@@ -99,20 +99,8 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
 
       <aside className={`fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-card border-r border-border flex flex-col transition-transform lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between mb-3">
-            <Link to="/company" className="text-xl font-bold text-primary">turegu</Link>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleLanguage}
-                className="text-muted-foreground hover:text-primary transition-colors"
-                title={i18n.language === 'ar' ? 'English' : 'العربية'}
-              >
-                <Globe className="h-4 w-4" />
-              </button>
-              <Link to="/" className="text-muted-foreground hover:text-primary transition-colors" title={t("dashboard.backToHomepage")}>
-                <Home className="h-4 w-4" />
-              </Link>
-            </div>
+          <div className="mb-3">
+            <DashboardSidebarHeader brandPath="/company" />
           </div>
           <div className="flex items-center gap-3">
             {companyLogo ? (
