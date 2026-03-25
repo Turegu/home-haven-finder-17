@@ -354,7 +354,7 @@ const CompanyProjectUnitsPage = () => {
 
             {/* Amenities */}
             <div className="space-y-2">
-              <Label className="font-medium">Amenities</Label>
+              <Label className="font-medium">{t("units.amenities")}</Label>
               <AmenitiesPickerDialog
                 interiorOptions={interiorAmenities}
                 exteriorOptions={exteriorAmenities}
