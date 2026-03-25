@@ -292,17 +292,25 @@ const CompanyPropertiesPage = () => {
               <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
             </Button>
           )}
-          <Button
-            onClick={() => {
-              if (!canCreate("properties")) {
-                toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
-                return;
-              }
-              navigate("/company/properties/new");
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewProperty")}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    disabled={!canCreate("properties")}
+                    onClick={() => navigate("/company/properties/new")}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewProperty")}
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {!canCreate("properties") && (
+                <TooltipContent>
+                  <p>{t("companyDashboard.limitReached", { type: t("companyDashboard.propertiesManagement") })}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
