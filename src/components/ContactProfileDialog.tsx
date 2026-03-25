@@ -99,9 +99,24 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
           message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
           inbox_type: 'inquiry',
         } as any);
+
+        // Send email notification (fire-and-forget)
+        supabase.functions.invoke('send-inquiry-notification', {
+          body: {
+            sender_name: fullName.trim(),
+            sender_email: email.trim(),
+            sender_phone: phone.trim() || undefined,
+            preferred_contact: preferredContact,
+            message: `[${topic.trim()}]\n\n${message.trim()}`,
+            agent_id: agentId || undefined,
+            company_id: inboxCompanyId,
+            listing_type: 'profile',
+          },
+        }).catch(console.error);
       }
 
-      setSent(true);
+      toast.success('Message sent successfully');
+      onOpenChange(false);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
