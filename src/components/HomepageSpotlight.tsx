@@ -214,7 +214,7 @@ export const TopCompaniesSpotlight = () => {
               <div className="px-3 py-3 border-t border-border text-center bg-secondary/50">
                 <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">
-                  {formatCompanyTypes(c.company_types, i18n?.language)}
+                  {formatCompanyTypesFromDb(dbCTypes, c.company_types, i18n?.language)}
                 </p>
               </div>
             </div>

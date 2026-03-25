@@ -204,8 +204,8 @@ const AdminCompanyEditPage = () => {
                 <Select value={form.company_types[0] || ""} onValueChange={(v) => setForm(prev => ({ ...prev, company_types: [v] }))}>
                   <SelectTrigger className="bg-secondary/30"><SelectValue placeholder="Select Company Type" /></SelectTrigger>
                   <SelectContent>
-                    {companyTypes.map(ct => (
-                      <SelectItem key={ct.value} value={ct.value}>{ct.label}</SelectItem>
+                    {dbCompanyTypes.map(ct => (
+                      <SelectItem key={ct.title} value={ct.title}>{ct.title}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
