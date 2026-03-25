@@ -203,11 +203,13 @@ const CompanyProfilePage = () => {
         .from("companies")
         .update({
           name: form.name.trim(),
+          name_ar: form.name_ar || null,
           company_types: form.company_types.length > 0 ? form.company_types : null,
           service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : null,
           languages: form.languages.length > 0 ? form.languages : null,
           registration_number: form.registration_number || null,
           about: form.about || null,
+          about_ar: form.about_ar || null,
           email: form.email.trim(),
           phone: form.phone || null,
           whatsapp: form.whatsapp || null,
