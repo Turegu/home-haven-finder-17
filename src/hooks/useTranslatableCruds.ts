@@ -149,9 +149,7 @@ export function getTranslatedLabel(
     return legacy.en;
   }
 
-  if (lang !== "en") return prettifyFallback(value);
-
-  return found.title;
+  return prettifyFallback(value);
 }
 
 /** Format company types array to display string */
