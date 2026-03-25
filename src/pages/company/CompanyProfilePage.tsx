@@ -28,7 +28,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
 
-import { companyTypes } from "@/data/companyTypes";
+import { useCompanyTypes, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 
 import { allLanguages } from "@/data/languages";
 import { useTranslation } from "react-i18next";
