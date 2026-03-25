@@ -1,0 +1,1 @@
+ALTER TABLE public.agents ADD COLUMN IF NOT EXISTS designation_ar text, ADD COLUMN IF NOT EXISTS designation_fr text;

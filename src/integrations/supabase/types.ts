@@ -152,6 +152,8 @@ export type Database = {
           description_ar: string | null
           description_fr: string | null
           designation: string | null
+          designation_ar: string | null
+          designation_fr: string | null
           email: string
           id: string
           languages: string[] | null
@@ -177,6 +179,8 @@ export type Database = {
           description_ar?: string | null
           description_fr?: string | null
           designation?: string | null
+          designation_ar?: string | null
+          designation_fr?: string | null
           email: string
           id?: string
           languages?: string[] | null
@@ -202,6 +206,8 @@ export type Database = {
           description_ar?: string | null
           description_fr?: string | null
           designation?: string | null
+          designation_ar?: string | null
+          designation_fr?: string | null
           email?: string
           id?: string
           languages?: string[] | null

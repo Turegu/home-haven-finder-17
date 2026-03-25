@@ -69,7 +69,7 @@ const AgentDetailPage = () => {
     const fetchAgent = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, name_ar, name_fr, designation, avatar_url, description, description_ar, description_fr, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, name_ar, logo_url, company_types, cover_url, is_verified)")
+        .select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, description, description_ar, description_fr, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, name_ar, logo_url, company_types, cover_url, is_verified)")
         .eq("id", id)
         .maybeSingle();
       const agentData = data as unknown as AgentData | null;
@@ -178,7 +178,7 @@ const AgentDetailPage = () => {
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                    <p className="text-sm text-muted-foreground">{getLocalizedName(agent.designation || '', (agent as any).designation_ar, (agent as any).designation_fr)}</p>
                   </div>
 
                   {/* Stats */}
@@ -237,7 +237,7 @@ const AgentDetailPage = () => {
                      {agent.companies.is_verified && <VerifiedBadge />}
                    </h3>
                   <p className="text-xs text-muted-foreground">
-                    {formatCompanyTypes(agent.companies.company_types)}
+                    {formatCompanyTypes(agent.companies.company_types, lang)}
                   </p>
                 </div>
               </Link>

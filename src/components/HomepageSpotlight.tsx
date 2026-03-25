@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRight, Building2, User, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -48,6 +49,7 @@ function pickRandom<T>(arr: T[], count: number): T[] {
 }
 
 export const TopAgentsSpotlight = () => {
+  const { i18n } = useTranslation();
   const { data: dbAgents } = useQuery({
     queryKey: ["spotlight-agents"],
     queryFn: async () => {
@@ -138,6 +140,7 @@ export const TopAgentsSpotlight = () => {
 };
 
 export const TopCompaniesSpotlight = () => {
+  const { i18n } = useTranslation();
   const { data: dbCompanies } = useQuery({
     queryKey: ["spotlight-companies"],
     queryFn: async () => {
@@ -210,7 +213,7 @@ export const TopCompaniesSpotlight = () => {
               <div className="px-3 py-3 border-t border-border text-center bg-secondary/50">
                 <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">{c.name}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5 capitalize">
-                  {formatCompanyTypes(c.company_types)}
+                  {formatCompanyTypes(c.company_types, i18n?.language)}
                 </p>
               </div>
             </div>

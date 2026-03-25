@@ -98,7 +98,7 @@ const parsePinLocation = (value: unknown): { lat: number; lng: number } | null =
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatArea } = useAreaUnit();
   const isMobile = useIsMobile();
   useTrackPageView(id, 'property');
@@ -124,7 +124,7 @@ const PropertyDetailPage = () => {
     const fetchProperty = async () => {
       const { data } = await supabase
         .from("properties")
-        .select("*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
+        .select("*, agents(id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
         .eq("id", id)
         .maybeSingle();
       if (data) {
@@ -167,9 +167,9 @@ const PropertyDetailPage = () => {
           ],
           videoLink: p.video_link || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
           view360Link: p.view_360_link || 'https://my.matterport.com/show/?m=SxQL3iGyvPk',
-          agentName: p.agents?.name || '',
+          agentName: i18n.language === 'ar' && p.agents?.name_ar ? p.agents.name_ar : i18n.language === 'fr' && p.agents?.name_fr ? p.agents.name_fr : p.agents?.name || '',
           agentLogo: p.agents?.avatar_url || '',
-          agentDesignation: p.agents?.designation || null,
+          agentDesignation: i18n.language === 'ar' && p.agents?.designation_ar ? p.agents.designation_ar : i18n.language === 'fr' && p.agents?.designation_fr ? p.agents.designation_fr : p.agents?.designation || null,
           agentLanguages: p.agents?.languages || [],
           agentCompany: p.companies?.name || p.agents?.companies?.name || '',
           companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,

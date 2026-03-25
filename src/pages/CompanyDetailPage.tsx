@@ -45,7 +45,7 @@ interface AgentData {
 
 const CompanyDetailPage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [companyAgents, setCompanyAgents] = useState<AgentData[]>([]);
   const [activeTab, setActiveTab] = useState('properties');
@@ -65,7 +65,7 @@ const CompanyDetailPage = () => {
 
       if (data) {
         const { data: agts } = await supabase
-          .from("agents").select("id, name, designation, avatar_url, languages")
+          .from("agents").select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages")
           .eq("company_id", data.id).eq("status", "active");
         setCompanyAgents((agts ?? []) as AgentData[]);
 
@@ -88,7 +88,7 @@ const CompanyDetailPage = () => {
   }, [id]);
 
   const typeLabel = (types: string[] | null) => {
-    return formatCompanyTypes(types);
+    return formatCompanyTypes(types, i18n.language);
   };
 
   const handleMapClick = () => {
@@ -346,8 +346,8 @@ const CompanyDetailPage = () => {
                       <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold ring-2 ring-border">{agent.name.charAt(0)}</div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{agent.name}</h4>
-                      <p className="text-sm text-muted-foreground">{agent.designation}</p>
+                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && (agent as any).name_ar ? (agent as any).name_ar : i18n.language === 'fr' && (agent as any).name_fr ? (agent as any).name_fr : agent.name}</h4>
+                      <p className="text-sm text-muted-foreground">{i18n.language === 'ar' && (agent as any).designation_ar ? (agent as any).designation_ar : i18n.language === 'fr' && (agent as any).designation_fr ? (agent as any).designation_fr : agent.designation}</p>
                       {agent.languages && <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).join(', ')}</p>}
                     </div>
                   </Link>
