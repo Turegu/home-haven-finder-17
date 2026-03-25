@@ -451,6 +451,17 @@ const CompanyProfilePage = () => {
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="About Us" />
           <Textarea value={form.about} onChange={(e) => { if (e.target.value.length <= 1000) updateField("about", e.target.value); }} className="bg-secondary/50 min-h-[120px]" maxLength={1000} />
           <p className="text-xs text-muted-foreground text-right mt-1">{(form.about || "").length}/1000</p>
+          <div className="mt-4">
+            <ArabicTranslateField
+              label="About Us (Arabic)"
+              value={form.about_ar}
+              onChange={(v) => updateField("about_ar", v)}
+              sourceText={form.about}
+              fieldType="description"
+              multiline
+              maxLength={1000}
+            />
+          </div>
         </section>
 
         {/* ─── Contact ─── */}
