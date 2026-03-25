@@ -117,7 +117,8 @@ export default function LanguageSearchDropdown({
 
         {/* List */}
         <div
-          className="overflow-y-auto max-h-[320px] p-1.5 space-y-0.5"
+          className="max-h-[320px] overflow-y-scroll p-1.5 pe-1 space-y-0.5"
+          style={{ scrollbarGutter: 'stable' }}
           onWheel={(e) => {
             const el = e.currentTarget;
             if (el.scrollHeight <= el.clientHeight) return;
