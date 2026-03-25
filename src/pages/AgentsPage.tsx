@@ -374,7 +374,11 @@ const AgentsPage = () => {
                         {company.name}
                       </h3>
                       {company.is_verified && <VerifiedBadge size="sm" />}
-                      {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
+                      {boosted && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                          Top Company
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
                       {typeLabel(company.company_types)}
