@@ -467,6 +467,11 @@ const MortgageBanksPage = () => {
         </div>
       </div>
 
+      {/* Bottom Banner */}
+      <div className="container mx-auto px-4 pb-8">
+        <BannerDisplay pageName="banks" bannerType="horizontal" className="" />
+      </div>
+
       <Footer />
     </div>
   );
