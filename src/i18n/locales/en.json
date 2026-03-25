@@ -338,7 +338,9 @@
     "loadingMap": "Loading map...",
     "searchLanguages": "Search languages...",
     "noLanguagesFound": "No languages found",
-    "autoTranslateNote": "Auto-translate for speed, or enter your own text in any language for maximum precision."
+    "autoTranslateNote": "Auto-translate for speed, or enter your own text in any language for maximum precision.",
+    "add": "Add",
+    "noServiceAreas": "No service areas selected. Select a province and optionally a district, then click Add."
   },
   "detail": {
     "about": "About",

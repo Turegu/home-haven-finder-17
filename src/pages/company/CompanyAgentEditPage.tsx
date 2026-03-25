@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import {
   Save, Upload, X, Mail, ImageIcon, UserCircle, Phone, FileText,
   Globe, ChevronDown, Search, Briefcase
@@ -125,7 +126,7 @@ const CompanyAgentEditPage = () => {
     description: "",
     description_ar: "",
     description_fr: "",
-    service_areas: "",
+    service_areas: [] as string[],
     languages: [] as string[],
     registration_number: "",
   });
@@ -171,7 +172,7 @@ const CompanyAgentEditPage = () => {
         description: d.description || "",
         description_ar: d.description_ar || "",
         description_fr: d.description_fr || "",
-        service_areas: (d.service_areas || []).join(", "),
+        service_areas: d.service_areas || [],
         languages: d.languages || [],
         registration_number: d.registration_number || "",
       });
@@ -214,7 +215,7 @@ const CompanyAgentEditPage = () => {
     if (!form.designation.trim()) errors.designation = t("companyDashboard.agentDesignation") + " required";
     if (!form.phone.trim()) errors.phone = t("companyDashboard.phone") + " required";
     if (!form.whatsapp.trim()) errors.whatsapp = t("companyDashboard.whatsapp") + " required";
-    if (!form.service_areas.trim()) errors.service_areas = t("companyDashboard.serviceAreas") + " required";
+    if (form.service_areas.length === 0) errors.service_areas = t("companyDashboard.serviceAreas") + " required";
     if (form.languages.length === 0) errors.languages = t("companyDashboard.languagesSpoken") + " required";
     if (!form.registration_number.trim()) errors.registration_number = t("companyDashboard.registrationNumber") + " required";
     if (!form.description.trim()) errors.description = t("companyDashboard.description") + " required";
@@ -258,7 +259,7 @@ const CompanyAgentEditPage = () => {
       description: form.description || null,
       description_ar: form.description_ar || null,
       description_fr: form.description_fr || null,
-      service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()).filter(Boolean) : [],
+      service_areas: form.service_areas.length > 0 ? form.service_areas : [],
       languages: form.languages,
       registration_number: form.registration_number || null,
       avatar_url: avatarUrl || null,
@@ -401,10 +402,15 @@ const CompanyAgentEditPage = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2" data-field="service_areas">
-                <Label className="text-foreground font-medium">{t("companyDashboard.serviceAreas")} *</Label>
-                <Input value={form.service_areas} onChange={(e) => { updateField("service_areas", e.target.value); clearFieldError("service_areas"); }} className={`bg-secondary/50 ${fieldErrors.service_areas ? "border-destructive" : ""}`} placeholder="Area 1, Area 2, ..." />
-                {fieldErrors.service_areas && <p className="text-xs text-destructive">{fieldErrors.service_areas}</p>}
+              <div data-field="service_areas">
+                <ServiceAreaPicker
+                  selected={form.service_areas}
+                  onChange={(areas) => { updateField("service_areas", areas); clearFieldError("service_areas"); }}
+                  label={t("companyDashboard.serviceAreas")}
+                  required
+                  error={fieldErrors.service_areas}
+                  onClearError={() => clearFieldError("service_areas")}
+                />
               </div>
               <div data-field="languages">
                 <MultiSelectLanguages selected={form.languages} onToggle={(lang) => { toggleLanguage(lang); clearFieldError("languages"); }} label={t("companyDashboard.languagesSpoken")} />

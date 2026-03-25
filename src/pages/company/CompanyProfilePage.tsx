@@ -21,6 +21,7 @@ import {
   MapPin, FileText, Globe, ChevronDown, Search, Grid3X3, Rocket
 } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
+import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import PatternLock from "@/components/admin/PatternLock";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
 import type { Tables } from "@/integrations/supabase/types";
@@ -120,7 +121,7 @@ const CompanyProfilePage = () => {
     name_ar: "",
     name_fr: "",
     company_types: [] as string[],
-    service_areas: "",
+    service_areas: [] as string[],
     languages: [] as string[],
     registration_number: "",
     about: "",
@@ -171,7 +172,7 @@ const CompanyProfilePage = () => {
           name_ar: (data as any).name_ar || "",
           name_fr: (data as any).name_fr || "",
           company_types: (data as any).company_types || [],
-          service_areas: data.service_areas?.join(", ") || "",
+          service_areas: data.service_areas || [],
           languages: data.languages || [],
           registration_number: data.registration_number || "",
           about: data.about || "",
@@ -228,7 +229,7 @@ const CompanyProfilePage = () => {
           name_ar: form.name_ar || null,
           name_fr: form.name_fr || null,
           company_types: form.company_types.length > 0 ? form.company_types : null,
-          service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : null,
+          service_areas: form.service_areas.length > 0 ? form.service_areas : null,
           languages: form.languages.length > 0 ? form.languages : null,
           registration_number: form.registration_number || null,
           about: form.about || null,
@@ -477,10 +478,11 @@ const CompanyProfilePage = () => {
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Service Areas</Label>
-                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
-              </div>
+              <ServiceAreaPicker
+                selected={form.service_areas}
+                onChange={(areas) => updateField("service_areas", areas)}
+                label={t("companyDashboard.serviceAreas")}
+              />
               <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Registration Number</Label>

@@ -20,6 +20,7 @@ import {
   FileText, Globe, ChevronDown, Search, Grid3X3, Briefcase, Rocket
 } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
 import { agentDesignations } from "@/data/designations";
 
@@ -118,7 +119,7 @@ const AgentProfilePage = () => {
     whatsapp: "",
     description: "",
     registration_number: "",
-    service_areas: "",
+    service_areas: [] as string[],
     languages: [] as string[],
     avatar_url: "",
   });
@@ -157,7 +158,7 @@ const AgentProfilePage = () => {
           whatsapp: data.whatsapp || "",
           description: data.description || "",
           registration_number: data.registration_number || "",
-          service_areas: data.service_areas?.join(", ") || "",
+          service_areas: data.service_areas || [],
           languages: data.languages || [],
           avatar_url: data.avatar_url || "",
         });
@@ -203,7 +204,7 @@ const AgentProfilePage = () => {
           whatsapp: form.whatsapp || null,
           description: form.description || null,
           registration_number: form.registration_number || null,
-          service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : [],
+          service_areas: form.service_areas.length > 0 ? form.service_areas : [],
           languages: form.languages.length > 0 ? form.languages : [],
           avatar_url: form.avatar_url || null,
         })
@@ -385,10 +386,11 @@ const AgentProfilePage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<Briefcase className="h-4 w-4" />} title="Skills & Languages" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Service Areas</Label>
-              <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
-            </div>
+            <ServiceAreaPicker
+              selected={form.service_areas}
+              onChange={(areas) => updateField("service_areas", areas)}
+              label="Service Areas"
+            />
             <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
           </div>
         </section>
