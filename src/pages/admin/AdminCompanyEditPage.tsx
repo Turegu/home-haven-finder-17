@@ -215,6 +215,9 @@ const AdminCompanyEditPage = () => {
         <div>
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">About Us</h2>
           <Textarea value={form.about} onChange={(e) => updateField("about", e.target.value)} className="bg-secondary/30 min-h-[120px]" />
+          <div className="mt-4">
+            <ArabicTranslateField label="About Us (Arabic)" value={form.about_ar} onChange={(v) => updateField("about_ar", v)} sourceText={form.about} fieldType="description" multiline maxLength={1000} />
+          </div>
         </div>
 
         {/* Contact */}
