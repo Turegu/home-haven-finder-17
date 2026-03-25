@@ -179,7 +179,7 @@ const AgentDetailPage = () => {
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{getLocalizedName(agent.designation || '', (agent as any).designation_ar, (agent as any).designation_fr)}</p>
+                    <p className="text-sm text-muted-foreground">{getDesignationLabel(agent.designation, lang)}</p>
                   </div>
 
                   {/* Stats */}
