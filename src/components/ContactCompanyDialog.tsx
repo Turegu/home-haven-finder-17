@@ -170,7 +170,6 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       window.setTimeout(() => {
         onOpenChange(false);
       }, 1200);
-      setTimeout(() => onOpenChange(false), 1500);
 
       void supabase.functions
         .invoke('send-inquiry-notification', {
