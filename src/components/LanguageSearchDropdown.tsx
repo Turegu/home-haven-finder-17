@@ -140,7 +140,7 @@ export default function LanguageSearchDropdown({
 
           {/* Rest of world languages */}
           {filteredRest.map((lang) => (
-            <LangRow key={lang} lang={lang} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
+            <LangRow key={lang} lang={lang} displayLabel={tLang(lang)} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
           ))}
 
           {filteredPriority.length === 0 && filteredRest.length === 0 && (
