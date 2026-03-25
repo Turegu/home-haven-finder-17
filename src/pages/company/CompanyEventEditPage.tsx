@@ -157,7 +157,9 @@ const CompanyEventEditPage = () => {
       const d = data as any;
       setForm({
         title: d.title || "",
+        title_ar: d.title_ar || "",
         description: d.description || "",
+        description_ar: d.description_ar || "",
         event_type: d.event_type || "open_house",
         event_date: d.event_date ? new Date(d.event_date).toISOString().slice(0, 16) : "",
         event_end_date: d.event_end_date ? new Date(d.event_end_date).toISOString().slice(0, 16) : "",
