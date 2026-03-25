@@ -154,6 +154,7 @@ export type Database = {
           designation: string | null
           designation_ar: string | null
           designation_fr: string | null
+          downgraded_at: string | null
           email: string
           id: string
           languages: string[] | null
@@ -181,6 +182,7 @@ export type Database = {
           designation?: string | null
           designation_ar?: string | null
           designation_fr?: string | null
+          downgraded_at?: string | null
           email: string
           id?: string
           languages?: string[] | null
@@ -208,6 +210,7 @@ export type Database = {
           designation?: string | null
           designation_ar?: string | null
           designation_fr?: string | null
+          downgraded_at?: string | null
           email?: string
           id?: string
           languages?: string[] | null
