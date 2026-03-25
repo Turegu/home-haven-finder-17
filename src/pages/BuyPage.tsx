@@ -78,7 +78,7 @@ const BuyPage = () => {
     propertyPurpose: isRent ? 'rent' : 'buy',
     sortBy: 'newest',
     page: 1,
-    pageSize: 21,
+    pageSize: 20,
   });
 
   // Reset all filters when navigating to /buy or /rent without search params (clean nav click)
@@ -102,7 +102,7 @@ const BuyPage = () => {
         propertyPurpose: isRent ? 'rent' : 'buy',
         sortBy: 'newest',
         page: 1,
-        pageSize: viewMode === 'grid' ? 15 : 21,
+        pageSize: viewMode === 'grid' ? 15 : 20,
       });
     } else {
       // Sync from URL params (coming from HeroSearch)
@@ -135,7 +135,7 @@ const BuyPage = () => {
         moreFilters: emptyMoreFilters,
         sortBy: 'newest',
         page: 1,
-        pageSize: viewMode === 'grid' ? 15 : 21,
+        pageSize: viewMode === 'grid' ? 15 : 20,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -152,7 +152,7 @@ const BuyPage = () => {
   const totalCount = data?.total ?? 0;
 
   const GRID_ITEMS = 15;
-  const LIST_ITEMS = 21;
+  const LIST_ITEMS = 20;
   const itemsPerPage = viewMode === 'grid' ? GRID_ITEMS : LIST_ITEMS;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
 
@@ -375,7 +375,7 @@ const BuyPage = () => {
           {!location.province ? (
             <span className="text-foreground font-medium">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</span>
           ) : (
-            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 21 }); }} className="hover:text-foreground transition-colors">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</button>
+            <button onClick={() => { setLocation({}); setKeyword(''); setPropertyTypes([]); setMinPrice(''); setMaxPrice(''); setMinArea(''); setMaxArea(''); setRooms([]); setBathrooms([]); setRentDuration([]); setMoreFilters(emptyMoreFilters); setCurrentPage(1); setCommittedParams({ propertyPurpose: isRent ? 'rent' : 'buy', sortBy, page: 1, pageSize: viewMode === 'grid' ? 15 : 20 }); }} className="hover:text-foreground transition-colors">{isRent ? t('buyPage.forRent') : t('buyPage.forSale')}</button>
           )}
           {location.province && (
             <>

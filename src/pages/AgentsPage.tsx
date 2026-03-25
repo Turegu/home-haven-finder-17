@@ -47,6 +47,8 @@ function PaginatedCardGrid<T extends { id: string }>({
   }
 
   let bannerPosition = 0;
+  // If 4 or fewer rows, show banner after 2nd row; otherwise every 4 rows
+  const bannerInterval = rows.length <= 4 ? 2 : BANNER_EVERY_ROWS;
 
   return (
     <>
@@ -56,7 +58,7 @@ function PaginatedCardGrid<T extends { id: string }>({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {row.map((item) => renderCard(item))}
             </div>
-            {(rowIdx + 1) % BANNER_EVERY_ROWS === 0 && rowIdx < rows.length - 1 && (
+            {(rowIdx + 1) % bannerInterval === 0 && rowIdx < rows.length - 1 && (
               <div className="my-5">
                 <BannerDisplay pageName={bannerPageName} bannerType="horizontal" position={++bannerPosition} />
               </div>
@@ -357,7 +359,7 @@ const AgentsPage = () => {
                   {/* Left: Logo area */}
                   <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-4 bg-white dark:bg-card`}>
                     {company.logo_url ? (
-                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                      <img src={company.logo_url} alt={company.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
                         {company.name.charAt(0)}
@@ -427,7 +429,7 @@ const AgentsPage = () => {
                   }`}>
 
                   {/* Left: Avatar */}
-                  <div className={`w-28 sm:w-32 shrink-0 border-r border-border overflow-hidden max-h-[180px] ${
+                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border overflow-hidden ${
                     boosted ? 'bg-primary/5' : 'bg-muted'
                   }`}>
                     {agent.avatar_url ? (
