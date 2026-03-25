@@ -15,11 +15,12 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
   useEffect(() => {
     if (!companyId) return;
     const fetch = async () => {
+      const statusFilter = tableName === "agents" ? "inactive" : "deactivated";
       const { data, count: total } = await supabase
         .from(tableName)
         .select("downgraded_at", { count: "exact" })
         .eq("company_id", companyId)
-        .eq("status", "deactivated")
+        .eq("status", statusFilter)
         .not("downgraded_at", "is", null)
         .order("downgraded_at", { ascending: true })
         .limit(1);
