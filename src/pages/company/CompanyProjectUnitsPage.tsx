@@ -277,9 +277,9 @@ const CompanyProjectUnitsPage = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">No Of Bathrooms</Label>
+                <Label className="font-medium">{t("units.noOfBathrooms")}</Label>
                 <Select value={form.bathrooms} onValueChange={(v) => updateField("bathrooms", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select bathrooms" /></SelectTrigger>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("units.selectBathrooms")} /></SelectTrigger>
                   <SelectContent>
                     {(filterOpts["bathrooms"] || []).map(b => (
                       <SelectItem key={b} value={b}>{b}</SelectItem>
