@@ -222,7 +222,7 @@ const CompanyProjectUnitsPage = () => {
                   <span className="font-medium text-foreground col-span-2">{unit.unit_name}</span>
                   <span className="capitalize text-muted-foreground">{unit.unit_type}</span>
                   <span className="text-muted-foreground">{unit.rooms || "—"}</span>
-                  <span className="text-muted-foreground">{unit.bathrooms ?? "—"} bath</span>
+                  <span className="text-muted-foreground">{unit.bathrooms ?? "—"} {t("units.bath")}</span>
                   <span className="text-muted-foreground">{unit.price ? `${unit.currency} ${unit.price.toLocaleString()}` : "—"}</span>
                   <span className="text-muted-foreground">{unit.area ? `${unit.area} ${unit.area_unit}` : "—"}</span>
                   <div>
