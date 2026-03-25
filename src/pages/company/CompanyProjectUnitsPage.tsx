@@ -84,7 +84,7 @@ const CompanyProjectUnitsPage = () => {
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: true });
-    if (error) toast.error("Failed to load units");
+    if (error) toast.error(t("units.loadFailed"));
     else setUnits(data || []);
     setLoading(false);
   };
