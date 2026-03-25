@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useFieldValidation } from "@/hooks/useFieldValidation";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";

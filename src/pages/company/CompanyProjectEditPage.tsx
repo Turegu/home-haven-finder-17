@@ -578,7 +578,8 @@ const CompanyProjectEditPage = () => {
     }
 
     const payload: any = {
-      title: form.title.trim(), description: form.description || null,
+      title: form.title.trim(), title_ar: form.title_ar || null,
+      description: form.description || null, description_ar: form.description_ar || null,
       tagline: form.tagline || null, developer: form.developer || null,
       project_type: form.project_type,
       min_price: form.min_price ? parseFloat(form.min_price) : null,
