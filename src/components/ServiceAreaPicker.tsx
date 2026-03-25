@@ -153,7 +153,7 @@ const ServiceAreaPicker = ({
 
       {selected.length === 0 && (
         <p className="text-xs text-muted-foreground italic">
-          {t("companyDashboard.noServiceAreas", "No service areas selected. Select a province and optionally a district, then click Add.")}
+          {t("common.noServiceAreas")}
         </p>
       )}
 
