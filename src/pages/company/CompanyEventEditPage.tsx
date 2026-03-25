@@ -318,21 +318,33 @@ const CompanyEventEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2" data-field="title">
-                <Label className="text-foreground font-medium">Event Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required placeholder="Event Title" maxLength={60} />
-                <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
-              </div>
-              <ArabicTranslateField
-                label="Event Name (Arabic)"
-                value={form.title_ar}
-                onChange={(v) => updateField("title_ar", v)}
-                sourceText={form.title}
-                fieldType="name"
-                maxLength={60}
-              />
-            </div>
+            <LanguageContentTabs
+              fields={[
+                {
+                  key: "title",
+                  label: "Event Name",
+                  value_en: form.title,
+                  value_ar: form.title_ar,
+                  onChange_en: (v) => { if (v.length <= 60) updateField("title", v); },
+                  onChange_ar: (v) => updateField("title_ar", v),
+                  maxLength: 60,
+                  required: true,
+                  fieldType: "name",
+                },
+                {
+                  key: "description",
+                  label: "Event Description",
+                  value_en: form.description,
+                  value_ar: form.description_ar,
+                  onChange_en: (v) => updateField("description", v),
+                  onChange_ar: (v) => updateField("description_ar", v),
+                  multiline: true,
+                  fieldType: "description",
+                  textareaId: "event-desc",
+                  renderAbove_en: <RichTextToolbar onAction={applyRichText} />,
+                },
+              ]}
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
@@ -357,20 +369,6 @@ const CompanyEventEditPage = () => {
                 </Select>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Event Description</Label>
-              <RichTextToolbar onAction={applyRichText} />
-              <Textarea id="event-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
-            </div>
-            <ArabicTranslateField
-              label="Event Description (Arabic)"
-              value={form.description_ar}
-              onChange={(v) => updateField("description_ar", v)}
-              sourceText={form.description}
-              fieldType="description"
-              multiline
-            />
           </div>
         </section>
 
