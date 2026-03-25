@@ -153,10 +153,10 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
           const value = getFieldValue(field, activeTab);
           const onChange = getFieldOnChange(field, activeTab);
           const placeholder = isAr
-            ? field.placeholder_ar || (field.multiline ? "النص بالعربية..." : "الاسم بالعربية...")
+            ? field.placeholder_ar || (field.multiline ? "اكتب الوصف هنا أو استخدم زر الترجمة التلقائية أعلاه..." : "الاسم بالعربية...")
             : activeTab === "fr"
-            ? field.placeholder_fr || (field.multiline ? "Texte en français..." : "Nom en français...")
-            : field.placeholder_en || "";
+            ? field.placeholder_fr || (field.multiline ? "Tapez votre description ici ou utilisez le bouton de traduction automatique ci-dessus..." : "Nom en français...")
+            : field.placeholder_en || (field.multiline ? "Type your description here or use the auto-translate button above..." : "");
 
           return (
             <div key={field.key} className="space-y-2" data-field={field.key}>
