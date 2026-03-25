@@ -101,7 +101,8 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
         } as any);
       }
 
-      setSent(true);
+      toast.success('Message sent successfully');
+      onOpenChange(false);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {

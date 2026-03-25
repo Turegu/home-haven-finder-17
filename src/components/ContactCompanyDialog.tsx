@@ -162,7 +162,8 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         await supabase.from('company_inbox').insert(inboxData);
       }
 
-      setSent(true);
+      toast.success('Message sent successfully');
+      onOpenChange(false);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
