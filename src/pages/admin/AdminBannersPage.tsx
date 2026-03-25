@@ -43,6 +43,8 @@ const PAGE_OPTIONS = [
   { value: "events", label: "Events" },
   { value: "event-detail", label: "Event Detail" },
   { value: "agents", label: "Agents" },
+  { value: "property-request", label: "Property Request" },
+  { value: "banks", label: "Mortgage Banks" },
 ];
 
 const POSITION_OPTIONS = [

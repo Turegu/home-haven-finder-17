@@ -102,11 +102,6 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
               <Star className="h-4 w-4 text-white" />
             </span>
           )}
-          {property.advertisingTags?.[0] && (
-            <span className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full flex items-center gap-1`}>
-              <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
-            </span>
-          )}
           {property.agentLogo && (
             <img src={property.agentLogo} alt={property.companyName} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
           )}

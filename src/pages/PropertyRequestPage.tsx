@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BannerDisplay from '@/components/BannerDisplay';
 import { supabase } from '@/integrations/supabase/client';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import AmenitiesPickerDialog from '@/components/company/AmenitiesPickerDialog';

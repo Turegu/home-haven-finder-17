@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BannerDisplay from "@/components/BannerDisplay";
 import { Link } from "react-router-dom";
 import {
   ExternalLink, Landmark, Search, Calculator,
