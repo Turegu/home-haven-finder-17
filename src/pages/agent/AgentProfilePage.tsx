@@ -105,7 +105,7 @@ function MultiSelectLanguages({
 }
 
 const AgentProfilePage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
