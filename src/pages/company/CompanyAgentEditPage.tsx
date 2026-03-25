@@ -235,6 +235,7 @@ const CompanyAgentEditPage = () => {
       whatsapp: form.whatsapp || null,
       description: form.description || null,
       description_ar: form.description_ar || null,
+      description_fr: form.description_fr || null,
       service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()).filter(Boolean) : [],
       languages: form.languages,
       registration_number: form.registration_number || null,
