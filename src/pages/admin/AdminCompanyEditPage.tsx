@@ -124,6 +124,7 @@ const AdminCompanyEditPage = () => {
         registration_number: form.registration_number || null,
         about: form.about || null,
         about_ar: form.about_ar || null,
+        about_fr: form.about_fr || null,
         membership: form.membership,
         province: form.province || null,
         town: form.town || null,
