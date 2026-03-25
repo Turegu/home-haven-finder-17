@@ -473,7 +473,7 @@ const AgentsPage = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{loc(agent.designation || '', (agent as any).designation_ar, (agent as any).designation_fr)}</p>
                       </div>
                       {agent.companies?.logo_url ? (
                         <img src={agent.companies.logo_url} alt={agent.companies.name ?? ''} className="w-12 h-12 rounded-lg object-contain border border-border bg-card p-0.5 shrink-0" />

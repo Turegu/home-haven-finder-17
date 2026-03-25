@@ -237,7 +237,7 @@ const AgentDetailPage = () => {
                      {agent.companies.is_verified && <VerifiedBadge />}
                    </h3>
                   <p className="text-xs text-muted-foreground">
-                    {formatCompanyTypes(agent.companies.company_types)}
+                    {formatCompanyTypes(agent.companies.company_types, lang)}
                   </p>
                 </div>
               </Link>
