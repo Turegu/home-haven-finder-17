@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
@@ -18,6 +18,7 @@ import ProjectListCard from '@/components/ProjectListCard';
 import EventListCard from '@/components/EventListCard';
 import FollowButton from '@/components/FollowButton';
 import type { EventResult } from '@/hooks/useEventSearch';
+import { useLocalizedLanguages, useLocalizedServiceAreas } from '@/hooks/useLocalizedProfileContent';
 
 interface CompanyData {
   id: string;
@@ -100,12 +101,15 @@ const CompanyDetailPage = () => {
   };
 
   // Combine company + agent languages (deduplicated)
-  const allLanguages = (() => {
+  const allLanguages = useMemo(() => {
     const set = new Set<string>();
-    company?.languages?.forEach(l => set.add(l));
-    companyAgents.forEach(a => a.languages?.forEach(l => set.add(l)));
+    company?.languages?.forEach((l) => set.add(l));
+    companyAgents.forEach((a) => a.languages?.forEach((l) => set.add(l)));
     return Array.from(set).sort();
-  })();
+  }, [company?.languages, companyAgents]);
+
+  const localizedLanguages = useLocalizedLanguages(allLanguages);
+  const localizedServiceAreas = useLocalizedServiceAreas(company?.service_areas);
 
   const tabs = [
     { key: 'properties', label: t('companyDetail.properties'), icon: Home },
@@ -268,24 +272,24 @@ const CompanyDetailPage = () => {
           {/* Sidebar */}
           <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
             {/* Languages we speak */}
-            {allLanguages.length > 0 && (
+            {localizedLanguages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                   <Globe className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
                   {t('companyDetail.languagesWeSpeak')}
                 </h3>
-                <ExpandablePillList items={allLanguages} maxVisible={6} />
+                <ExpandablePillList items={localizedLanguages} maxVisible={6} />
               </div>
             )}
 
             {/* Service areas */}
-            {company.service_areas && company.service_areas.length > 0 && (
+            {localizedServiceAreas.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                   <MapPin className="h-3.5 w-3.5 inline-block me-1.5 -mt-0.5" />
                   {t('companyDetail.serviceAreas')}
                 </h3>
-                <ExpandablePillList items={company.service_areas} maxVisible={6} />
+                <ExpandablePillList items={localizedServiceAreas} maxVisible={6} />
               </div>
             )}
 
