@@ -34,6 +34,7 @@ function StatCard({ icon: Icon, label, value, subtext, iconColor }: {
 }
 
 function Phase1Display({ stats }: { stats: ListingStats }) {
+  const { t } = useTranslation();
   const tier = getPerformanceTier(stats);
 
   return (

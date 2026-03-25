@@ -28,6 +28,7 @@ export default function AmenitiesPickerDialog({
   onToggleExterior,
   trigger,
 }: AmenitiesPickerDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<string>('exterior');
@@ -151,6 +152,7 @@ function AmenityGrid({
   onToggle: (v: string) => void;
   type: 'exterior' | 'interior';
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="overflow-y-auto max-h-[40vh] -mx-1 px-1"

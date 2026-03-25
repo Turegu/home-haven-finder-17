@@ -7,9 +7,8 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 const BlogDetailPage = () => {
-  const { t } = useTranslation();
-  const { slug } = useParams();
   const { t, i18n } = useTranslation();
+  const { slug } = useParams();
   const [blog, setBlog] = useState<any>(null);
   const [translation, setTranslation] = useState<any>(null);
   const [loading, setLoading] = useState(true);

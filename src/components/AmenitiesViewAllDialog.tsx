@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import {
   TreePine, Lamp, Flower2, Fence, Sofa, Waves, Dumbbell, ShieldCheck,
@@ -16,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useTranslation } from "react-i18next";
+
 
 type IconComponent = typeof TreePine;
 
@@ -142,6 +143,7 @@ interface AmenitiesViewAllDialogProps {
 }
 
 export default function AmenitiesViewAllDialog({ type, options, selected, onToggle, trigger }: AmenitiesViewAllDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 

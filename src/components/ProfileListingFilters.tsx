@@ -1,14 +1,10 @@
-import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
-import { useTranslation } from "react-i18next";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { useTranslation } from "react-i18next";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 interface ProfileListingFiltersProps {
@@ -32,6 +28,7 @@ const INITIAL_FILTERS: ProfileFilters = {
 };
 
 const ProfileListingFilters = ({ onFiltersChange }: ProfileListingFiltersProps) => {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<ProfileFilters>(INITIAL_FILTERS);
   const { options } = useFilterOptions("property");
 

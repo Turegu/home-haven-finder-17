@@ -10,8 +10,8 @@ import {
   Home, BarChart3, Trophy, ThumbsUp, ThumbsDown, Star, Plane
 } from "lucide-react";
 import { toast } from "sonner";
-import {
 import { useTranslation } from "react-i18next";
+import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
   Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell
 } from "recharts";
