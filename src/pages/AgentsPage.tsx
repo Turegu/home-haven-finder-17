@@ -127,6 +127,8 @@ interface AgentRow {
   name_ar: string | null;
   name_fr: string | null;
   designation: string | null;
+  designation_ar: string | null;
+  designation_fr: string | null;
   avatar_url: string | null;
   company_id: string;
   languages: string[] | null;
@@ -359,7 +361,7 @@ const AgentsPage = () => {
             renderCard={(company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
-              const speaksLangs = company.languages?.join(', ');
+              
               const boosted = isBoosted(company.profile_classification, company.boost_end_date);
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
@@ -422,7 +424,7 @@ const AgentsPage = () => {
                     <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
                       <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span className="text-muted-foreground">{t('filters.speaks')}:</span>
-                      <span className="text-foreground font-medium truncate">{speaksLangs || '—'}</span>
+                      <span className="text-foreground font-medium truncate">{company.languages?.map(l => t(`languageNames.${l}`, l)).join(', ') || '—'}</span>
                     </div>
                   </div>
                 </Link>
@@ -473,7 +475,7 @@ const AgentsPage = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{loc(agent.designation || '', (agent as any).designation_ar, (agent as any).designation_fr)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{loc(agent.designation || '', agent.designation_ar, agent.designation_fr)}</p>
                       </div>
                       {agent.companies?.logo_url ? (
                         <img src={agent.companies.logo_url} alt={agent.companies.name ?? ''} className="w-12 h-12 rounded-lg object-contain border border-border bg-card p-0.5 shrink-0" />
@@ -486,7 +488,7 @@ const AgentsPage = () => {
 
                     <p className="text-xs text-muted-foreground mt-2">
                       <span>{t('filters.languages')}: </span>
-                      <span className="text-foreground font-medium">{agent.languages?.join(', ') || '—'}</span>
+                      <span className="text-foreground font-medium">{agent.languages?.map(l => t(`languageNames.${l}`, l)).join(', ') || '—'}</span>
                     </p>
 
                     <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 text-sm">
