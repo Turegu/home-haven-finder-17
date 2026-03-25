@@ -125,7 +125,7 @@ const CompanyAgentEditPage = () => {
     description: "",
     description_ar: "",
     description_fr: "",
-    service_areas: "",
+    service_areas: [] as string[],
     languages: [] as string[],
     registration_number: "",
   });
