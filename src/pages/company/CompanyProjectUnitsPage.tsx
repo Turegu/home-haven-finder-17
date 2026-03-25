@@ -255,7 +255,7 @@ const CompanyProjectUnitsPage = () => {
           <div className="space-y-5 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="font-medium">Unit Name *</Label>
+                <Label className="font-medium">{t("units.unitName")} *</Label>
                 <Input value={form.unit_name} onChange={(e) => updateField("unit_name", e.target.value)} className="bg-secondary/50" />
               </div>
               <div className="space-y-2">
