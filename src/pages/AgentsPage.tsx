@@ -424,7 +424,7 @@ const AgentsPage = () => {
                     <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-1.5 text-sm">
                       <Globe className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                       <span className="text-muted-foreground">{t('filters.speaks')}:</span>
-                      <span className="text-foreground font-medium truncate">{speaksLangs || '—'}</span>
+                      <span className="text-foreground font-medium truncate">{company.languages?.map(l => t(`languageNames.${l}`, l)).join(', ') || '—'}</span>
                     </div>
                   </div>
                 </Link>
