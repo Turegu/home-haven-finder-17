@@ -183,7 +183,7 @@ const AgentsPage = () => {
       const [cmsRes, compRes, agentRes] = await Promise.all([
         supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1),
         supabase.from("companies").select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified"),
-        supabase.from("agents").select("id, name, name_ar, name_fr, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, name_ar, logo_url, is_verified)").eq("status", "active"),
+        supabase.from("agents").select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, name_ar, logo_url, is_verified)").eq("status", "active"),
       ]);
 
       if (cmsRes.data?.[0]) {
