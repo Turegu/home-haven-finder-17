@@ -114,7 +114,10 @@
     "languages": "Languages",
     "noCompaniesFound": "No companies found.",
     "noAgentsFound": "No agents found.",
-    "saveSearch": "Save Search"
+    "saveSearch": "Save Search",
+    "topCompany": "Top Company",
+    "topAgent": "Top Agent",
+    "headOfficeNotSet": "Head office location not set"
   },
   "home": {
     "featuredProjects": "Featured Projects",

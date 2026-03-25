@@ -376,7 +376,7 @@ const AgentsPage = () => {
                       {company.is_verified && <VerifiedBadge size="sm" />}
                       {boosted && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                          Top Company
+                          {t('filters.topCompany')}
                         </span>
                       )}
                     </div>
@@ -386,7 +386,7 @@ const AgentsPage = () => {
 
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
                       <Home className="h-3.5 w-3.5 text-accent shrink-0" />
-                      <span className="truncate">{headOffice || 'Head office location not set'}</span>
+                      <span className="truncate">{headOffice || t('filters.headOfficeNotSet')}</span>
                     </div>
 
                     <div className="flex items-center gap-4 mt-3 text-sm">
@@ -456,7 +456,7 @@ const AgentsPage = () => {
                           {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
                           {boosted && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                              Top Agent
+                              {t('filters.topAgent')}
                             </span>
                           )}
                         </div>
