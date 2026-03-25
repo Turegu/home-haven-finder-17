@@ -361,7 +361,7 @@ const AgentsPage = () => {
             renderCard={(company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
-              const speaksLangs = company.languages?.join(', ');
+              
               const boosted = isBoosted(company.profile_classification, company.boost_end_date);
               return (
                 <Link key={company.id} to={`/company/${company.id}`}
