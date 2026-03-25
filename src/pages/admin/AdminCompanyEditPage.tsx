@@ -69,6 +69,7 @@ const AdminCompanyEditPage = () => {
       setForm({
         name: data.name || "",
         name_ar: (data as any).name_ar || "",
+        name_fr: (data as any).name_fr || "",
         company_types: (data.company_types as string[]) || [],
         service_areas: (data.service_areas as string[] || []).join(", "),
         languages: (data.languages as string[]) || [],
