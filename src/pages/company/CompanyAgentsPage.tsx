@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
+import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
