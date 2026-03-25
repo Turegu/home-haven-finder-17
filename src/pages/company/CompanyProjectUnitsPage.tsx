@@ -180,7 +180,7 @@ const CompanyProjectUnitsPage = () => {
       }
       fetchUnits();
     } catch (err: any) {
-      toast.error(err.message || "Save failed");
+      toast.error(err.message || t("units.saveFailed"));
     } finally { setSaving(false); }
   };
 
