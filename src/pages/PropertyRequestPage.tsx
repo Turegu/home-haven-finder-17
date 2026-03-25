@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { toast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import BannerDisplay from '@/components/BannerDisplay';
 import { supabase } from '@/integrations/supabase/client';
 import { useFilterOptions } from '@/hooks/useFilterOptions';
 import AmenitiesPickerDialog from '@/components/company/AmenitiesPickerDialog';
@@ -379,6 +380,11 @@ const PropertyRequestPage = () => {
             {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Submitting...</> : 'Submit Request'}
           </Button>
         </div>
+      </div>
+
+      {/* Bottom Banner */}
+      <div className="container mx-auto px-4 pb-8">
+        <BannerDisplay pageName="property-request" bannerType="horizontal" className="" />
       </div>
 
       <Footer />

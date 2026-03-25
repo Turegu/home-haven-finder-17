@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BannerDisplay from "@/components/BannerDisplay";
 import { Link } from "react-router-dom";
 import {
   ExternalLink, Landmark, Search, Calculator,
@@ -465,6 +466,11 @@ const MortgageBanksPage = () => {
             </>
           )}
         </div>
+      </div>
+
+      {/* Bottom Banner */}
+      <div className="container mx-auto px-4 pb-8">
+        <BannerDisplay pageName="banks" bannerType="horizontal" className="" />
       </div>
 
       <Footer />

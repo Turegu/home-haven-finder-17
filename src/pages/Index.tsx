@@ -107,7 +107,7 @@ const Index = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from('projects')
-        .select('id, title, location, min_price, currency, images, developer, min_units, completion_date, companies(logo_url)')
+        .select('id, title, location, min_price, currency, images, developer, min_units, completion_date, advertising_tags, companies(logo_url)')
         .eq('status', 'active')
         .eq('display_on_homepage', true)
         .limit(12);
@@ -122,6 +122,7 @@ const Index = () => {
         developerLogo: p.companies?.logo_url || '',
         units: p.min_units ?? 0,
         completionDate: p.completion_date || 'TBA',
+        advertisingTags: p.advertising_tags ?? [],
       }));
     },
   });

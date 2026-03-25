@@ -102,24 +102,26 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
               <Star className="h-4 w-4 text-white" />
             </span>
           )}
-          {property.advertisingTags?.[0] && (
-            <span className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full flex items-center gap-1`}>
-              <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
-            </span>
-          )}
           {property.agentLogo && (
             <img src={property.agentLogo} alt={property.companyName} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
           )}
         </div>
 
-        {/* Top-right: actions */}
-        <div className="absolute top-3 right-3 flex gap-1.5 z-10">
-          <button onClick={handleCompare} className={`p-1.5 rounded-full transition-colors shadow-sm backdrop-blur ${isComparedLocal ? 'bg-primary text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white'}`} aria-label="Compare">
-            <Layers className="h-4 w-4" />
-          </button>
-          <button onClick={handleFavorite} className={`p-1.5 rounded-full transition-colors shadow-sm backdrop-blur ${isFavorited ? 'bg-primary text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white'}`} aria-label="Favorite">
-            <Heart className="h-4 w-4" fill={isFavorited ? 'currentColor' : 'none'} />
-          </button>
+        {/* Top-right: actions + tag */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-10">
+          <div className="flex gap-1.5">
+            <button onClick={handleCompare} className={`p-1.5 rounded-full transition-colors shadow-sm backdrop-blur ${isComparedLocal ? 'bg-primary text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white'}`} aria-label="Compare">
+              <Layers className="h-4 w-4" />
+            </button>
+            <button onClick={handleFavorite} className={`p-1.5 rounded-full transition-colors shadow-sm backdrop-blur ${isFavorited ? 'bg-primary text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white'}`} aria-label="Favorite">
+              <Heart className="h-4 w-4" fill={isFavorited ? 'currentColor' : 'none'} />
+            </button>
+          </div>
+          {property.advertisingTags?.[0] && (
+            <span className={`${tagColorMap[property.advertisingTags[0]] || 'bg-orange-500'} text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full flex items-center gap-1`}>
+              <Tag className="h-3 w-3" /> {property.advertisingTags[0]}
+            </span>
+          )}
         </div>
 
         {/* Bottom overlaid content */}

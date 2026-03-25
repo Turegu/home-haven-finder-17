@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import { formatCompanyTypes } from '@/data/companyTypes';
-import { MapPin, Search, Home, Globe, Rocket, Building2 } from 'lucide-react';
+import { MapPin, Search, Home, Globe, Rocket, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -12,6 +12,96 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LanguageSearchDropdown from '@/components/LanguageSearchDropdown';
 import { supabase } from '@/integrations/supabase/client';
+
+const ROWS_PER_PAGE = 12; // 4 rows x 3 cols
+const COLS = 3;
+const BANNER_EVERY_ROWS = 4; // insert banner every 4 rows
+
+function PaginatedCardGrid<T extends { id: string }>({
+  items,
+  renderCard,
+  emptyMessage,
+  bannerPageName,
+}: {
+  items: T[];
+  renderCard: (item: T) => ReactNode;
+  emptyMessage: string;
+  bannerPageName: string;
+}) {
+  const [page, setPage] = useState(1);
+
+  // Reset page when items change
+  useEffect(() => { setPage(1); }, [items.length]);
+
+  const totalPages = Math.ceil(items.length / ROWS_PER_PAGE);
+  const pageItems = items.slice((page - 1) * ROWS_PER_PAGE, page * ROWS_PER_PAGE);
+
+  if (items.length === 0) {
+    return <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{emptyMessage}</div>;
+  }
+
+  // Split into rows of COLS, insert banner after every BANNER_EVERY_ROWS rows
+  const rows: T[][] = [];
+  for (let i = 0; i < pageItems.length; i += COLS) {
+    rows.push(pageItems.slice(i, i + COLS));
+  }
+
+  let bannerPosition = 0;
+
+  return (
+    <>
+      <div className="space-y-5">
+        {rows.map((row, rowIdx) => (
+          <div key={rowIdx}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {row.map((item) => renderCard(item))}
+            </div>
+            {(rowIdx + 1) % BANNER_EVERY_ROWS === 0 && rowIdx < rows.length - 1 && (
+              <div className="my-5">
+                <BannerDisplay pageName={bannerPageName} bannerType="horizontal" position={++bannerPosition} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-8">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            disabled={page === 1}
+            onClick={() => { setPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Button
+              key={p}
+              variant={p === page ? 'default' : 'outline'}
+              size="icon"
+              className="h-9 w-9"
+              onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            >
+              {p}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            disabled={page === totalPages}
+            onClick={() => { setPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+    </>
+  );
+}
 
 interface CompanyRow {
   id: string;
@@ -249,8 +339,9 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredCompanies.map((company) => {
+          <PaginatedCardGrid
+            items={filteredCompanies}
+            renderCard={(company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
               const speaksLangs = company.languages?.join(', ');
@@ -317,14 +408,14 @@ const AgentsPage = () => {
                   </div>
                 </Link>
               );
-            })}
-            {filteredCompanies.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noCompaniesFound')}</div>
-            )}
-          </div>
+            }}
+            emptyMessage={t('filters.noCompaniesFound')}
+            bannerPageName="agents"
+          />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredAgents.map((agent) => {
+          <PaginatedCardGrid
+            items={filteredAgents}
+            renderCard={(agent) => {
               const ac = agentCounts[agent.id] || { buy: 0, rent: 0 };
               const boosted = isBoosted(agent.profile_classification, agent.boost_end_date);
               return (
@@ -386,14 +477,11 @@ const AgentsPage = () => {
                   </div>
                 </Link>
               );
-            })}
-            {filteredAgents.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noAgentsFound')}</div>
-            )}
-          </div>
+            }}
+            emptyMessage={t('filters.noAgentsFound')}
+            bannerPageName="agents"
+          />
         )}
-
-        <BannerDisplay pageName="agents" bannerType="horizontal" className="mt-8" />
       </div>
 
       <Footer />
