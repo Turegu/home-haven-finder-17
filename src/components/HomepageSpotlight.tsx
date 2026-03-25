@@ -140,6 +140,7 @@ export const TopAgentsSpotlight = () => {
 };
 
 export const TopCompaniesSpotlight = () => {
+  const { i18n } = useTranslation();
   const { data: dbCompanies } = useQuery({
     queryKey: ["spotlight-companies"],
     queryFn: async () => {
