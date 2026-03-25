@@ -28,6 +28,7 @@ import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
 import { useAnalyticsPhase } from "@/hooks/useAnalyticsPhase";
+import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 
 interface Property {
   id: string;
@@ -216,6 +217,8 @@ const CompanyPropertiesPage = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.propertiesManagement")}</h1>
       </div>
+
+      <DowngradedListingsBanner companyId={companyId} tableName="properties" />
 
       {/* Membership Usage */}
       {maxProps > 0 ? (

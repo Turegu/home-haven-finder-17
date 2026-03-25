@@ -22,6 +22,7 @@ import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, Layers, Ban, LayoutLis
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 
 interface Project {
   id: string;
@@ -137,6 +138,8 @@ const CompanyProjectsPage = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.projectsManagement")}</h1>
       </div>
+
+      <DowngradedListingsBanner companyId={companyId} tableName="projects" />
 
       {/* Membership Usage */}
       <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">

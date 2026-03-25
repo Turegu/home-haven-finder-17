@@ -124,12 +124,28 @@ export default function AdminLocationsPage() {
   // Use RPC for fast province loading
   const loadProvinces = useCallback(async () => {
     setLoading(true);
-    const [{ data: provData }, { count }] = await Promise.all([
+    const [rpcResult, countResult] = await Promise.all([
       supabase.rpc("get_distinct_provinces"),
       supabase.from("locations").select("id", { count: "exact", head: true }).eq("status", "active"),
     ]);
-    if (provData) setProvinces((provData as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
-    if (count != null) setTotalCount(count);
+    if (rpcResult.error) {
+      console.error("Failed to load provinces:", rpcResult.error);
+      // Fallback: get distinct provinces via direct query
+      const { data: fallback } = await supabase
+        .from("locations")
+        .select("province, province_ar")
+        .eq("status", "active")
+        .limit(1000);
+      if (fallback) {
+        const uniqueMap = new Map<string, string>();
+        fallback.forEach((l: any) => uniqueMap.set(l.province, l.province_ar || ""));
+        const uniqueProvs = Array.from(uniqueMap.entries()).map(([name, ar]) => ({ name, ar }));
+        setProvinces(uniqueProvs.sort((a, b) => a.name.localeCompare(b.name)));
+      }
+    } else if (rpcResult.data) {
+      setProvinces((rpcResult.data as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
+    }
+    if (countResult.count != null) setTotalCount(countResult.count);
     setLoading(false);
   }, []);
 

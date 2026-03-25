@@ -86,15 +86,26 @@ const AdminBlogEditPage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const path = `${crypto.randomUUID()}.${ext}`;
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `blogs/${crypto.randomUUID()}.${ext}`;
 
-    const { error } = await supabase.storage.from("blog-images").upload(path, file);
-    if (error) {
-      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
-    } else {
+      const { error: uploadError } = await supabase.storage.from("blog-images").upload(path, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+      if (uploadError) {
+        console.error("Blog image upload error:", uploadError);
+        toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+        setUploading(false);
+        return;
+      }
       const { data: { publicUrl } } = supabase.storage.from("blog-images").getPublicUrl(path);
       setImageUrl(publicUrl);
+      toast({ title: "Image uploaded successfully" });
+    } catch (err: any) {
+      console.error("Blog image upload exception:", err);
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
     }
     setUploading(false);
   };
