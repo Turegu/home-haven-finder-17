@@ -759,6 +759,36 @@ export type Database = {
           },
         ]
       }
+      company_types: {
+        Row: {
+          created_at: string
+          id: string
+          sort_order: number
+          status: string
+          title: string
+          translations: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          title: string
+          translations?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          translations?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       credit_transactions: {
         Row: {
           agent_id: string | null
@@ -839,6 +869,36 @@ export type Database = {
           sort_order?: number
           status?: string
           symbol?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      designations: {
+        Row: {
+          created_at: string
+          id: string
+          sort_order: number
+          status: string
+          title: string
+          translations: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          title: string
+          translations?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          translations?: Json
           updated_at?: string
         }
         Relationships: []
