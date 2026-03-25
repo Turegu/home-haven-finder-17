@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import type { Property } from '@/data/mockProperties';
+import { useTranslation } from "react-i18next";
 
 interface Props {
   property: Property;
@@ -22,6 +23,7 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
   useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
 
   const nextImage = (e: React.MouseEvent) => {
+  const { t } = useTranslation();
     e.preventDefault();
     e.stopPropagation();
     setCurrentImage((prev) => (prev + 1) % property.images.length);

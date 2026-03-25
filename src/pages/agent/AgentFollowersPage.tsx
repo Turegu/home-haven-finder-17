@@ -111,13 +111,13 @@ const AgentFollowersPage = () => {
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search by name..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+            <Input placeholder={t("agentDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
           </div>
           <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "newest" | "oldest")}>
             <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest to Oldest</SelectItem>
-              <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="newest">{t("agentDashboard.newestToOldest")}</SelectItem>
+              <SelectItem value="oldest">{t("agentDashboard.oldestToNewest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -127,10 +127,10 @@ const AgentFollowersPage = () => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="w-16">sNo</TableHead>
-                <TableHead>Follower Name</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>{t("agentDashboard.followerName")}</TableHead>
+                <TableHead>{t("admin.email")}</TableHead>
                 <TableHead>Phone</TableHead>
-                <TableHead>Followed On</TableHead>
+                <TableHead>{t("agentDashboard.followedOn")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -140,7 +140,7 @@ const AgentFollowersPage = () => {
                 <TableRow><TableCell colSpan={5} className="text-center py-16">
                   <div className="flex flex-col items-center gap-2">
                     <Users className="h-12 w-12 text-muted-foreground/40" />
-                    <p className="text-muted-foreground font-medium">No Followers Found</p>
+                    <p className="text-muted-foreground font-medium">{t("agentDashboard.noFollowersFound")}</p>
                   </div>
                 </TableCell></TableRow>
               ) : filtered.map((f, idx) => (

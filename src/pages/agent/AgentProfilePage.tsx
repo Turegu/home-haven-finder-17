@@ -23,6 +23,7 @@ import PatternLock from "@/components/admin/PatternLock";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
 
 import { allLanguages } from "@/data/languages";
+import { useTranslation } from "react-i18next";
 const languageOptions = allLanguages;
 
 function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
@@ -88,6 +89,7 @@ function MultiSelectLanguages({
 }
 
 const AgentProfilePage = () => {
+  const { t } = useTranslation();
   const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -258,12 +260,12 @@ const AgentProfilePage = () => {
   };
 
   if (loading) {
-    return <AgentLayout><div className="flex items-center justify-center py-20 text-muted-foreground">Loading...</div></AgentLayout>;
+    return <AgentLayout><div className="flex items-center justify-center py-20 text-muted-foreground">{t("agentDashboard.loading")}</div></AgentLayout>;
   }
 
   return (
     <AgentLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Profile Settings</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("agentDashboard.profileSettings")}</h1>
       <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
 
         {/* ─── Photo ─── */}
@@ -299,7 +301,7 @@ const AgentProfilePage = () => {
               <Button variant="outline" size="sm" disabled={uploadingAvatar} onClick={() => document.getElementById("avatar-upload")?.click()}>
                 <Upload className="h-3 w-3 mr-1" /> {uploadingAvatar ? "Uploading..." : "Upload Photo"}
               </Button>
-              <p className="text-xs text-muted-foreground mt-1">Rectangular photo recommended</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("agentDashboard.rectangularRecommended")}</p>
             </div>
           </div>
         </section>

@@ -92,7 +92,7 @@ const AgentDashboardPage = () => {
   if (loading) {
     return (
       <AgentLayout>
-        <div className="flex items-center justify-center py-20 text-muted-foreground">Loading dashboard...</div>
+        <div className="flex items-center justify-center py-20 text-muted-foreground">{t("agentDashboard.loadingDashboard")}</div>
       </AgentLayout>
     );
   }

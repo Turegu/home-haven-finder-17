@@ -11,12 +11,14 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 import { toggleSaveProperty, toggleCompareProperty, checkIfSaved, checkIfCompared } from '@/hooks/usePropertyActions';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { useTranslation } from "react-i18next";
 
 interface PropertyListCardProps {
   property: Property;
 }
 
 const PropertyListCard = ({ property }: PropertyListCardProps) => {
+  const { t } = useTranslation();
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [isCompared, setIsCompared] = useState(false);
@@ -103,7 +105,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={prevImage}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Previous image"
+                  aria-label={t("property.previousImage")}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -114,7 +116,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={nextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity lg:hidden"
-                  aria-label="Next image"
+                  aria-label={t("property.nextImage")}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -125,7 +127,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={handleCompare}
                   className={`p-1.5 rounded-full transition-colors ${isCompared ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
-                  aria-label="Compare"
+                  aria-label={t("property.compareThis")}
                 >
                   <Layers className="h-3.5 w-3.5" />
                 </button>
@@ -170,7 +172,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={nextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Next image"
+                  aria-label={t("property.nextImage")}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -181,7 +183,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={handleCompare}
                   className={`p-1.5 rounded-full transition-colors ${isCompared ? 'bg-primary text-primary-foreground' : 'bg-foreground/40 hover:bg-foreground/60 text-white'}`}
-                  aria-label="Compare"
+                  aria-label={t("property.compareThis")}
                 >
                   <Layers className="h-3.5 w-3.5" />
                 </button>

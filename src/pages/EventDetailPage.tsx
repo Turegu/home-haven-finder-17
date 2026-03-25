@@ -188,7 +188,7 @@ const EventDetailPage = () => {
           </div>
         )}
         {!pinLocation && activeTab === 'location' && (
-          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">Location coordinates are unavailable.</div>
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">{t("property.locationUnavailable")}</div>
         )}
 
         {/* Street View — mounted once */}
@@ -198,7 +198,7 @@ const EventDetailPage = () => {
           </div>
         )}
         {!pinLocation && activeTab === 'street' && (
-          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">Location coordinates are unavailable.</div>
+          <div className="h-full flex items-center justify-center text-muted-foreground text-sm">{t("property.locationUnavailable")}</div>
         )}
 
         {/* Video */}
@@ -207,7 +207,7 @@ const EventDetailPage = () => {
             <iframe src={event.videoLink.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')} className="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title="Event Video" />
           ) : (
             <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
-              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />No video available.</div>
+              <div className="text-center"><Video className="h-10 w-10 mx-auto mb-2 opacity-40" />{t("property.noVideo")}</div>
             </div>
           )}
         </div>

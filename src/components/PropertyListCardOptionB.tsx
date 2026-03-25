@@ -10,12 +10,14 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Property } from '@/data/mockProperties';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { useTranslation } from "react-i18next";
 
 interface PropertyListCardProps {
   property: Property;
 }
 
 const PropertyListCard = ({ property }: PropertyListCardProps) => {
+  const { t } = useTranslation();
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const { formatArea } = useAreaUnit();
@@ -82,7 +84,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={prevImage}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Previous image"
+                  aria-label={t("property.previousImage")}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -116,7 +118,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={nextImage}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground/40 hover:bg-foreground/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  aria-label="Next image"
+                  aria-label={t("property.nextImage")}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </button>
@@ -127,7 +129,7 @@ const PropertyListCard = ({ property }: PropertyListCardProps) => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
                   className="bg-foreground/40 hover:bg-foreground/60 text-white p-1.5 rounded-full transition-colors"
-                  aria-label="Compare"
+                  aria-label={t("property.compareThis")}
                 >
                   <Layers className="h-3.5 w-3.5" />
                 </button>

@@ -8,6 +8,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { EventResult } from '@/hooks/useEventSearch';
+import { useTranslation } from "react-i18next";
 
 interface EventListCardProps {
   event: EventResult;
@@ -15,6 +16,7 @@ interface EventListCardProps {
 }
 
 const formatDate = (dateStr: string | null) => {
+  const { t } = useTranslation();
   if (!dateStr) return 'TBA';
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };

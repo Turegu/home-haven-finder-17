@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from "react-i18next";
 
 type IconComponent = typeof TreePine;
 
@@ -204,7 +205,7 @@ export default function AmenitiesViewAllDialog({ type, options, selected, onTogg
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {filtered.length === 0 && (
-                <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+                <p className="col-span-full text-sm text-muted-foreground text-center py-8">{t("filters.noAmenitiesFoundDialog")}</p>
               )}
               {filtered.map((opt) => {
                 const IconComp = getIcon(opt, type);

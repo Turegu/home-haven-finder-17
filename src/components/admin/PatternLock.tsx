@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { ShieldAlert } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 60;
@@ -15,6 +16,7 @@ const DOT_COUNT = 9;
 
 
 const PatternLock = ({ onPatternComplete, error = false, disabled = false }: PatternLockProps) => {
+  const { t } = useTranslation();
   const [selectedDots, setSelectedDots] = useState<number[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
@@ -159,7 +161,7 @@ const PatternLock = ({ onPatternComplete, error = false, disabled = false }: Pat
     return (
       <div className="w-[240px] h-[240px] mx-auto flex flex-col items-center justify-center gap-3 text-center">
         <ShieldAlert className="h-12 w-12 text-destructive" />
-        <p className="text-sm font-semibold text-destructive">Too many failed attempts</p>
+        <p className="text-sm font-semibold text-destructive">{t("admin.tooManyAttempts")}</p>
         <p className="text-xs text-muted-foreground">
           Please wait <span className="font-bold text-foreground">{countdown}s</span> before trying again
         </p>

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Plus, Search, Pencil, Trash2, Power, ArrowUpDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface Faq {
   id: string;
@@ -27,6 +28,7 @@ const AdminFaqsPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const { toast } = useToast();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const fetchFaqs = async () => {
@@ -37,7 +39,7 @@ const AdminFaqsPage = () => {
       .order("sort_order", { ascending: true });
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
       setLoading(false);
       return;
     }
@@ -64,20 +66,20 @@ const AdminFaqsPage = () => {
   const toggleStatus = async (faq: Faq) => {
     const newStatus = faq.status === "active" ? "inactive" : "active";
     const { error } = await supabase.from("faqs").update({ status: newStatus }).eq("id", faq.id);
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: `FAQ ${newStatus}` }); fetchFaqs(); }
+    if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
+    else { toast({ title: newStatus === "active" ? t("admin.faqActivated") : t("admin.faqDeactivated") }); fetchFaqs(); }
   };
 
   const deleteFaq = async (faq: Faq) => {
-    if (!confirm("Delete this FAQ permanently?")) return;
+    if (!confirm(t("admin.deleteFaqConfirm"))) return;
     const { error } = await supabase.from("faqs").delete().eq("id", faq.id);
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "FAQ deleted" }); fetchFaqs(); }
+    if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
+    else { toast({ title: t("admin.faqDeleted") }); fetchFaqs(); }
   };
 
   const updateOrder = async (faq: Faq, newOrder: number) => {
     const { error } = await supabase.from("faqs").update({ sort_order: newOrder }).eq("id", faq.id);
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     else fetchFaqs();
   };
 
@@ -89,19 +91,19 @@ const AdminFaqsPage = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <h1 className="text-2xl font-bold text-foreground">FAQs</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.faqs")}</h1>
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search..."
+                placeholder={t("admin.search")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-9 w-[220px]"
               />
             </div>
             <Button onClick={() => navigate("/admin/faqs/new")} size="sm">
-              <Plus className="h-4 w-4 mr-2" /> Add FAQ
+              <Plus className="h-4 w-4 mr-2" /> {t("admin.addFaq")}
             </Button>
           </div>
         </div>
@@ -110,10 +112,10 @@ const AdminFaqsPage = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead className="w-[60px]">Order</TableHead>
-                <TableHead>Question (EN)</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead className="w-[60px]">{t("admin.orderCol")}</TableHead>
+                <TableHead>{t("admin.questionEN")}</TableHead>
+                <TableHead>{t("admin.status")}</TableHead>
+                <TableHead className="text-right">{t("admin.action")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -124,7 +126,7 @@ const AdminFaqsPage = () => {
                   <TableCell colSpan={4} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Search className="h-10 w-10" />
-                      <p className="font-medium">No FAQs Found</p>
+                      <p className="font-medium">{t("admin.noFaqsFound")}</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -160,13 +162,13 @@ const AdminFaqsPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => navigate(`/admin/faqs/${faq.id}`)}>
-                          <Pencil className="h-4 w-4 mr-2" /> Edit
+                          <Pencil className="h-4 w-4 mr-2" /> {t("admin.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggleStatus(faq)}>
-                          <Power className="h-4 w-4 mr-2" /> {faq.status === "active" ? "Deactivate" : "Activate"}
+                          <Power className="h-4 w-4 mr-2" /> {faq.status === "active" ? t("admin.deactivate") : t("admin.activate")}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => deleteFaq(faq)} className="text-destructive focus:text-destructive">
-                          <Trash2 className="h-4 w-4 mr-2" /> Delete
+                          <Trash2 className="h-4 w-4 mr-2" /> {t("admin.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

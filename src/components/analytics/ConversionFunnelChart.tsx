@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import type { ListingStats } from '@/hooks/useListingStats';
+import { useTranslation } from "react-i18next";
 
 interface ConversionFunnelChartProps {
   stats: ListingStats;
@@ -8,6 +9,7 @@ interface ConversionFunnelChartProps {
 }
 
 const ConversionFunnelChart = ({ stats, title }: ConversionFunnelChartProps) => {
+  const { t } = useTranslation();
   const data = useMemo(() => [
     { name: 'Impressions', value: stats.impressions, color: 'hsl(var(--primary))' },
     { name: 'Page Views', value: stats.views, color: 'hsl(210, 70%, 55%)' },
@@ -24,7 +26,7 @@ const ConversionFunnelChart = ({ stats, title }: ConversionFunnelChartProps) => 
   return (
     <div className="rounded-lg border border-border bg-card p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-semibold text-foreground text-sm">Conversion Funnel</h4>
+        <h4 className="font-semibold text-foreground text-sm">{t("analytics.conversionFunnel")}</h4>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span>View Rate: <strong className="text-foreground">{conversionRates.viewRate}%</strong></span>
           <span>Inquiry Rate: <strong className="text-foreground">{conversionRates.inquiryRate}%</strong></span>

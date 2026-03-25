@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminListingTable, { ListingItem } from "@/components/admin/AdminListingTable";
 import { FolderKanban } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const AdminProjectsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialCompanyFilter = searchParams.get("company") || undefined;
@@ -66,10 +68,10 @@ const AdminProjectsPage = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <FolderKanban className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Projects Management</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.projectsManagement")}</h1>
         </div>
         {isLoading ? (
-          <p className="text-muted-foreground">Loading projects...</p>
+          <p className="text-muted-foreground">{t("admin.loadingProjects")}</p>
         ) : (
           <AdminListingTable
             tableName="projects"

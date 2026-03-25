@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
+import { useTranslation } from "react-i18next";
 
 interface AmenitiesPickerDialogProps {
   interiorOptions: string[];
@@ -162,7 +163,7 @@ function AmenityGrid({
     >
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {items.length === 0 && (
-          <p className="col-span-full text-sm text-muted-foreground text-center py-8">No amenities found</p>
+          <p className="col-span-full text-sm text-muted-foreground text-center py-8">{t("companyDashboard.noAmenitiesFound")}</p>
         )}
         {items.map((opt) => {
           const IconComp = getIcon(opt, type);

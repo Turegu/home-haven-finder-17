@@ -14,6 +14,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { History, Pencil, Undo2, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Announcement {
   id: string;
@@ -35,6 +36,7 @@ const typeLabels: Record<string, string> = {
 };
 
 const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
+  const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -145,7 +147,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
       </h2>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading...</p>
+        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       ) : (
         <div className="space-y-3">
           {announcements.map((ann) => (
@@ -175,7 +177,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => handleEdit(ann)}
-                    title="Edit"
+                    title={t("companyDashboard.editAnnouncement")}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -184,7 +186,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
                     size="icon"
                     className="h-8 w-8 text-amber-500 hover:text-amber-600"
                     onClick={() => setRecallId(ann.id)}
-                    title="Recall from users"
+                    title={t("companyDashboard.recallAnnouncement")}
                   >
                     <Undo2 className="h-4 w-4" />
                   </Button>
@@ -193,7 +195,7 @@ const AnnouncementHistory = ({ companyId }: AnnouncementHistoryProps) => {
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
                     onClick={() => setDeleteId(ann.id)}
-                    title="Delete permanently"
+                    title={t("companyDashboard.deleteAnnouncement")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

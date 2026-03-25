@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/mapConstants';
+import { useTranslation } from "react-i18next";
 
 interface NearbyPlace {
   id: string;
@@ -161,6 +162,7 @@ function mapElementToPlace(el: any, lat: number, lng: number, categoryKey: strin
 }
 
 const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNearbyPlacesMapProps) => {
+  const { t } = useTranslation();
   const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: ['places'] });
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [places, setPlaces] = useState<Record<string, NearbyPlace[]>>({});
@@ -258,7 +260,7 @@ const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNear
   if (!isLoaded) {
     return (
       <div className={`${embedded ? 'h-full' : ''} flex items-center justify-center bg-muted rounded-xl`}>
-        <div className="text-muted-foreground text-sm">Loading map...</div>
+        <div className="text-muted-foreground text-sm">{t("common.loadingMap")}</div>
       </div>
     );
   }

@@ -79,7 +79,7 @@ const UserLoginPage = () => {
           {/* Header */}
           <div className="text-center pt-1">
             <Link to="/" className="text-2xl font-bold text-primary">turegu</Link>
-            <p className="text-muted-foreground mt-1 text-xs">Turkey's Real Estate Guide</p>
+            <p className="text-muted-foreground mt-1 text-xs">{t("auth.turkeyRealEstateGuide")}</p>
           </div>
 
           {/* Google */}
@@ -112,7 +112,7 @@ const UserLoginPage = () => {
             <div className="flex items-center justify-between text-xs">
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="rounded border-border" />
-                <span className="text-muted-foreground">Remember me</span>
+                <span className="text-muted-foreground">{t("auth.rememberMe")}</span>
               </label>
               <Link to="/forgot-password" className="text-primary hover:underline">{t('auth.forgotPassword')}</Link>
             </div>

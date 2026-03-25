@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import aiAgentIcon from "@/assets/ai-agent-icon.png";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 interface AiPick {
   score: number;
@@ -42,6 +43,7 @@ const SUGGESTIONS = [
 ];
 
 const AiPropertyAgent = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -118,8 +120,8 @@ const AiPropertyAgent = () => {
   };
 
   const tierBadge = (cls: string | null) => {
-    if (cls === "premium") return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-400/90 text-yellow-900">PREMIUM</span>;
-    if (cls === "featured") return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/90 text-primary-foreground">FEATURED</span>;
+    if (cls === "premium") return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-400/90 text-yellow-900">{t("ai.premium")}</span>;
+    if (cls === "featured") return <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/90 text-primary-foreground">{t("ai.featured")}</span>;
     return null;
   };
 
@@ -145,7 +147,7 @@ const AiPropertyAgent = () => {
         ) : (
           <>
             <img src={aiAgentIcon} alt="AI Agent" className="h-10 w-10 rounded-full object-cover border-2 border-primary-foreground/30" />
-            <span className="text-sm font-semibold hidden sm:inline">Ask AI Agent</span>
+            <span className="text-sm font-semibold hidden sm:inline">{t("ai.askAiAgent")}</span>
           </>
         )}
       </button>
@@ -160,7 +162,7 @@ const AiPropertyAgent = () => {
           <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center gap-3">
             <img src={aiAgentIcon} alt="AI Agent" className="h-11 w-11 rounded-full object-cover border-2 border-primary-foreground/30 bg-primary-foreground/10" />
             <div>
-              <h3 className="font-semibold text-sm">AI Property Agent</h3>
+              <h3 className="font-semibold text-sm">{t("ai.aiPropertyAgent")}</h3>
               <p className="text-xs opacity-80">Describe your dream property</p>
             </div>
           </div>

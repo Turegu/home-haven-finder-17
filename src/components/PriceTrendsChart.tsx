@@ -4,6 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePriceTrends, useNeighbourhoodsInTown, CurrentPropertyData } from "@/hooks/useMarketTrends";
+import { useTranslation } from "react-i18next";
 
 interface PriceTrendsChartProps {
   province: string | null;
@@ -15,6 +16,7 @@ interface PriceTrendsChartProps {
 }
 
 const PriceTrendsChart = ({ province, town, neighbourhood, currency = "USD", areaUnit = "m²", currentProperty }: PriceTrendsChartProps) => {
+  const { t } = useTranslation();
   const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(neighbourhood);
   const { data: neighbourhoods } = useNeighbourhoodsInTown(province, town);
 

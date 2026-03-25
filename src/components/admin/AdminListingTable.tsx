@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import {
+import { useTranslation } from "react-i18next";
   Search, MoreVertical, Eye, RefreshCw, Ban, Monitor, Trash2,
   ChevronLeft, ChevronRight, Home, CheckCircle, XCircle, LayoutList,
   Briefcase, Zap, Star, Crown, MapPin,
@@ -68,6 +69,7 @@ const MEMBERSHIP_COLORS: Record<string, string> = {
 const AdminListingTable = ({
   tableName, queryKey, items, columns, renderCell, onView, initialCompanyFilter,
 }: AdminListingTableProps) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
@@ -223,7 +225,7 @@ const AdminListingTable = ({
             <LayoutList className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Total</p>
+            <p className="text-xs text-muted-foreground">{t("admin.total")}</p>
             <p className="text-lg font-bold text-foreground">{stats.total}</p>
           </div>
         </div>
@@ -232,7 +234,7 @@ const AdminListingTable = ({
             <CheckCircle className="h-4 w-4 text-green-700" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Active</p>
+            <p className="text-xs text-muted-foreground">{t("admin.active")}</p>
             <p className="text-lg font-bold text-green-700">{stats.active}</p>
           </div>
         </div>
@@ -241,7 +243,7 @@ const AdminListingTable = ({
             <XCircle className="h-4 w-4 text-red-700" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">Deactivated</p>
+            <p className="text-xs text-muted-foreground">{t("admin.deactivated")}</p>
             <p className="text-lg font-bold text-red-700">{stats.deactivated}</p>
           </div>
         </div>
@@ -270,7 +272,7 @@ const AdminListingTable = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by Title, ID, or Company"
+              placeholder={t("admin.searchByTitleIdCompany")}
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="pl-9 w-60"
@@ -279,7 +281,7 @@ const AdminListingTable = ({
           <div className="relative">
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by Province, City, Area"
+              placeholder={t("admin.searchByLocation")}
               value={locationSearch}
               onChange={(e) => { setLocationSearch(e.target.value); setPage(1); }}
               className="pl-9 w-56"

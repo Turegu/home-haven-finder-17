@@ -16,6 +16,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 type CrudCategory = "property_types" | "project_types" | "project_statuses" | "interior_amenities" | "exterior_amenities";
 
@@ -36,6 +37,7 @@ const TABS: { key: CrudCategory; label: string }[] = [
 ];
 
 const AdminCrudsPage = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<CrudCategory>("property_types");
   const [items, setItems] = useState<CrudItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -72,33 +74,33 @@ const AdminCrudsPage = () => {
   };
 
   const handleSave = async () => {
-    if (!formTitle.trim()) { toast.error("Title is required"); return; }
+    if (!formTitle.trim()) { toast.error(t("admin.titleRequired")); return; }
     const payload: any = { title: formTitle.trim(), status: formStatus };
 
     if (editItem) {
       const { error } = await supabase.from(activeTab).update(payload).eq("id", editItem.id);
       if (error) toast.error(error.message);
-      else { toast.success("Updated"); setDialogOpen(false); fetchItems(); }
+      else { toast.success(t("admin.update")); setDialogOpen(false); fetchItems(); }
     } else {
       const { error } = await supabase.from(activeTab).insert(payload);
       if (error) toast.error(error.message);
-      else { toast.success("Created"); setDialogOpen(false); fetchItems(); }
+      else { toast.success(t("admin.create")); setDialogOpen(false); fetchItems(); }
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this item?")) return;
+    if (!confirm(t("companyDashboard.confirmDelete"))) return;
     const { error } = await supabase.from(activeTab).delete().eq("id", id);
     if (error) toast.error(error.message);
-    else { toast.success("Deleted"); fetchItems(); }
+    else { toast.success(t("admin.delete")); fetchItems(); }
   };
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">CRUDs Management</h1>
-          <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />Create</Button>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.crudsManagement")}</h1>
+          <Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" />{t("admin.create")}</Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CrudCategory)}>
@@ -114,17 +116,17 @@ const AdminCrudsPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-24">Actions</TableHead>
+                      <TableHead>{t("admin.title")}</TableHead>
+                      <TableHead>{t("admin.created")}</TableHead>
+                      <TableHead>{t("admin.status")}</TableHead>
+                      <TableHead className="w-24">{t("admin.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">{t("admin.loading")}</TableCell></TableRow>
                     ) : items.length === 0 ? (
-                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No items yet</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">{t("common.noData")}</TableCell></TableRow>
                     ) : items.map((item) => (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.title}</TableCell>
@@ -157,20 +159,20 @@ const AdminCrudsPage = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Title</Label>
-              <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="Enter title" />
+              <Label>{t("admin.title")}</Label>
+              <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder={t("admin.title")} />
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>{t("admin.status")}</Label>
               <Select value={formStatus} onValueChange={setFormStatus}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="active">{t("admin.active")}</SelectItem>
+                  <SelectItem value="inactive">{t("admin.inactive")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={handleSave} className="w-full">{editItem ? "Update" : "Create"}</Button>
+            <Button onClick={handleSave} className="w-full">{editItem ? t("admin.update") : t("admin.create")}</Button>
           </div>
         </DialogContent>
       </Dialog>
