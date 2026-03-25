@@ -257,7 +257,7 @@ const AgentsPage = () => {
   }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
   const typeLabel = (types: string[] | null) => {
-    return formatCompanyTypes(types);
+    return formatCompanyTypes(types, lang);
   };
 
   return (
