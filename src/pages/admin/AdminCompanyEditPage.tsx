@@ -200,23 +200,14 @@ const AdminCompanyEditPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-primary font-semibold">Company Type</Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {companyTypes.map(ct => (
-                    <button key={ct.value} type="button"
-                      onClick={() => setForm(prev => ({
-                        ...prev,
-                        company_types: prev.company_types.includes(ct.value)
-                          ? prev.company_types.filter(v => v !== ct.value)
-                          : [...prev.company_types, ct.value],
-                      }))}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                        form.company_types.includes(ct.value)
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
-                      }`}
-                    >{ct.label}</button>
-                  ))}
-                </div>
+                <Select value={form.company_types[0] || ""} onValueChange={(v) => setForm(prev => ({ ...prev, company_types: [v] }))}>
+                  <SelectTrigger className="bg-secondary/30"><SelectValue placeholder="Select Company Type" /></SelectTrigger>
+                  <SelectContent>
+                    {companyTypes.map(ct => (
+                      <SelectItem key={ct.value} value={ct.value}>{ct.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label className="text-primary font-semibold">Service Areas</Label>
