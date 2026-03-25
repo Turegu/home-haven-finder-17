@@ -157,7 +157,7 @@ const AgentProfilePage = () => {
           whatsapp: data.whatsapp || "",
           description: data.description || "",
           registration_number: data.registration_number || "",
-          service_areas: data.service_areas?.join(", ") || "",
+          service_areas: data.service_areas || [],
           languages: data.languages || [],
           avatar_url: data.avatar_url || "",
         });
