@@ -1299,5 +1299,37 @@
       "aiAnalysis": "AI comparison & investment analysis",
       "galleryTools": "Interactive gallery & viewing tools"
     }
+  },
+  "units": {
+    "projectUnits": "Project Units",
+    "addUnit": "Add Unit",
+    "editUnit": "Edit Unit",
+    "unitName": "Unit Name",
+    "unitType": "Unit Type",
+    "noOfRooms": "No Of Rooms",
+    "noOfBathrooms": "No Of Bathrooms",
+    "carParking": "Car Parking",
+    "unitPrice": "Unit Price",
+    "unitArea": "Area",
+    "unitImages": "Unit Images",
+    "floorPlansLayouts": "Floor Plans / Layouts",
+    "amenities": "Amenities",
+    "noUnitsYet": "No units yet. Click \"Add Unit\" to create one.",
+    "unitNameRequired": "Unit name is required",
+    "unitSaved": "Unit saved! You can now add payment plans below.",
+    "unitUpdated": "Unit updated!",
+    "unitDeleted": "Unit deleted",
+    "deleteFailed": "Delete failed",
+    "saveFailed": "Save failed",
+    "loadFailed": "Failed to load units",
+    "saving": "Saving...",
+    "saveAndContinue": "Save & Continue",
+    "updateUnit": "Update Unit",
+    "saveAndAddPayment": "Save & Add Payment Plan",
+    "selectRooms": "Select rooms",
+    "selectBathrooms": "Select bathrooms",
+    "selectParking": "Select parking",
+    "browse": "Browse",
+    "bath": "bath"
   }
 }
