@@ -54,8 +54,11 @@ const CompanyAgentsPage = () => {
   const [creditDialog, setCreditDialog] = useState<{ open: boolean; agent: Agent | null }>({ open: false, agent: null });
   const [creditAmount, setCreditAmount] = useState("");
   const [sharingCredits, setSharingCredits] = useState(false);
-  const { canCreate, membership } = useMembershipLimits(companyId);
+  const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
   const [boostAgent, setBoostAgent] = useState<Agent | null>(null);
+  const atLimit = !canCreate("agents");
+  const maxAgents = limits?.max_agents || 1;
+  const usagePercent = Math.min(100, (usage.agents / maxAgents) * 100);
 
   useEffect(() => {
     const init = async () => {
