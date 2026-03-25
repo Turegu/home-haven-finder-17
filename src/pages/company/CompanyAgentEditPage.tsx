@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { agentDesignations } from "@/data/designations";
+import { useDesignations, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useNavigate, useParams } from "react-router-dom";
