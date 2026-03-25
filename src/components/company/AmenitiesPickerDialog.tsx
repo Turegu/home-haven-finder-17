@@ -152,6 +152,7 @@ function AmenityGrid({
   onToggle: (v: string) => void;
   type: 'exterior' | 'interior';
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="overflow-y-auto max-h-[40vh] -mx-1 px-1"
