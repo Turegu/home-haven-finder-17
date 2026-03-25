@@ -886,6 +886,7 @@ export type Database = {
           description_ar: string | null
           description_fr: string | null
           display_on_homepage: boolean
+          downgraded_at: string | null
           entry_type: string
           event_date: string | null
           event_end_date: string | null
@@ -918,6 +919,7 @@ export type Database = {
           description_ar?: string | null
           description_fr?: string | null
           display_on_homepage?: boolean
+          downgraded_at?: string | null
           entry_type?: string
           event_date?: string | null
           event_end_date?: string | null
@@ -950,6 +952,7 @@ export type Database = {
           description_ar?: string | null
           description_fr?: string | null
           display_on_homepage?: boolean
+          downgraded_at?: string | null
           entry_type?: string
           event_date?: string | null
           event_end_date?: string | null
@@ -1683,6 +1686,7 @@ export type Database = {
           developer: string | null
           developer_logo_url: string | null
           display_on_homepage: boolean
+          downgraded_at: string | null
           exterior_amenities: string[] | null
           id: string
           images: string[] | null
@@ -1728,6 +1732,7 @@ export type Database = {
           developer?: string | null
           developer_logo_url?: string | null
           display_on_homepage?: boolean
+          downgraded_at?: string | null
           exterior_amenities?: string[] | null
           id?: string
           images?: string[] | null
@@ -1773,6 +1778,7 @@ export type Database = {
           developer?: string | null
           developer_logo_url?: string | null
           display_on_homepage?: boolean
+          downgraded_at?: string | null
           exterior_amenities?: string[] | null
           id?: string
           images?: string[] | null
@@ -1836,6 +1842,7 @@ export type Database = {
           description_ar: string | null
           description_fr: string | null
           display_on_homepage: boolean
+          downgraded_at: string | null
           exterior_amenities: string[] | null
           floor_level: string | null
           furniture: string | null
@@ -1884,6 +1891,7 @@ export type Database = {
           description_ar?: string | null
           description_fr?: string | null
           display_on_homepage?: boolean
+          downgraded_at?: string | null
           exterior_amenities?: string[] | null
           floor_level?: string | null
           furniture?: string | null
@@ -1932,6 +1940,7 @@ export type Database = {
           description_ar?: string | null
           description_fr?: string | null
           display_on_homepage?: boolean
+          downgraded_at?: string | null
           exterior_amenities?: string[] | null
           floor_level?: string | null
           furniture?: string | null
