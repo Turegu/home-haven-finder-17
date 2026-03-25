@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { text, fieldType } = await req.json();
+    const { text, fieldType, targetLanguage } = await req.json();
     if (!text || typeof text !== "string" || !text.trim()) {
       return new Response(JSON.stringify({ error: "Text is required" }), {
         status: 400,
@@ -17,14 +17,16 @@ serve(async (req) => {
       });
     }
 
+    const target = targetLanguage || "Arabic";
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const systemPrompt = fieldType === "name"
-      ? "You are a professional translator. Translate the given company or person name to Arabic. For brand names, transliterate them phonetically into Arabic script. Return ONLY the Arabic translation, nothing else."
-      : "You are a professional translator specializing in real estate content. Translate the given text to Arabic accurately, preserving the meaning and tone. For technical real estate terms, use the standard Arabic equivalents. Return ONLY the Arabic translation, nothing else.";
+      ? `You are a professional translator. Translate the given company or person name to ${target}. For brand names, transliterate them phonetically into the target language script if applicable. Return ONLY the translated text, nothing else.`
+      : `You are a professional translator specializing in real estate content. Translate the given text to ${target} accurately, preserving the meaning and tone. For technical real estate terms, use the standard equivalents in ${target}. Return ONLY the translated text, nothing else.`;
 
-    const response = await fetch("https://api.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
