@@ -124,6 +124,8 @@ interface CompanyRow {
 interface AgentRow {
   id: string;
   name: string;
+  name_ar: string | null;
+  name_fr: string | null;
   designation: string | null;
   avatar_url: string | null;
   company_id: string;
@@ -131,7 +133,7 @@ interface AgentRow {
   service_areas: string[] | null;
   profile_classification?: string;
   boost_end_date?: string | null;
-  companies: { name: string; logo_url: string | null; is_verified?: boolean } | null;
+  companies: { name: string; name_ar: string | null; logo_url: string | null; is_verified?: boolean } | null;
 }
 
 const isBoosted = (cls?: string, endDate?: string | null) =>
