@@ -70,12 +70,7 @@ const CompanyLayout = ({ children }: CompanyLayoutProps) => {
     toast.success(t("companyDashboard.logout"));
   };
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'ar' ? 'en' : 'ar';
-    i18n.changeLanguage(newLang);
-    document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = newLang;
-  };
+  // Language toggle removed - now handled by DashboardSidebarHeader
 
   const renderLink = (link: typeof settingsLink) => {
     const isActive = location.pathname === link.path;
