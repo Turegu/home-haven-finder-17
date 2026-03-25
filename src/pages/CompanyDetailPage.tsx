@@ -90,7 +90,7 @@ const CompanyDetailPage = () => {
   }, [id]);
 
   const typeLabel = (types: string[] | null) => {
-    return formatCompanyTypes(types, i18n.language);
+    return formatCompanyTypesFromDb(dbCompanyTypes, types, i18n.language);
   };
 
   const handleMapClick = () => {
