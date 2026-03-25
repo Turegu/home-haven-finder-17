@@ -1036,6 +1036,8 @@
     "noDataFound": "لا توجد بيانات",
     "received": "تم الاستلام",
     "requestDetails": "التفاصيل",
+    "propertyRequestsLocked": "طلبات العقارات متاحة لخطط بلس وبرو",
+    "propertyRequestsUpgrade": "قم بترقية خطتك لاستقبال طلبات العقارات من المشترين.",
     "phone": "الهاتف",
     "followersCount": "{{count}} مستخدم مسجل يتابع شركتك",
     "sendAnnouncement": "إرسال إعلان جماعي",

@@ -1036,6 +1036,8 @@
     "noDataFound": "No Data Found",
     "received": "Received",
     "requestDetails": "Details",
+    "propertyRequestsLocked": "Property Requests is a Plus & Pro feature",
+    "propertyRequestsUpgrade": "Upgrade your plan to receive property requests from buyers.",
     "phone": "Phone",
     "followersCount": "{{count}} registered user(s) following your company",
     "sendAnnouncement": "Send Mass Announcement",
