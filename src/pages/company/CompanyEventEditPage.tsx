@@ -250,7 +250,9 @@ const CompanyEventEditPage = () => {
 
     const payload: any = {
       title: form.title.trim(),
+      title_ar: form.title_ar || null,
       description: form.description || null,
+      description_ar: form.description_ar || null,
       event_type: form.event_type,
       event_date: form.event_date ? new Date(form.event_date).toISOString() : null,
       event_end_date: form.event_end_date ? new Date(form.event_end_date).toISOString() : null,
