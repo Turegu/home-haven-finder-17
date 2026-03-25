@@ -387,9 +387,9 @@ const CompanyProjectUnitsPage = () => {
             )}
 
             <div className="flex justify-end gap-3 pt-2">
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>{t("companyDashboard.cancel")}</Button>
               <Button onClick={handleSubmitUnit} disabled={saving}>
-                {saving ? (editingUnitId ? "Saving..." : "Save & Continue") : (editingUnitId ? "Update Unit" : "Save & Add Payment Plan")}
+                {saving ? (editingUnitId ? t("units.saving") : t("units.saveAndContinue")) : (editingUnitId ? t("units.updateUnit") : t("units.saveAndAddPayment"))}
               </Button>
             </div>
           </div>
