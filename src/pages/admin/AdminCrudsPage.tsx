@@ -4,36 +4,49 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, Pencil } from "lucide-react";
+import { Plus, Trash2, Pencil, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
-type CrudCategory = "property_types" | "project_types" | "project_statuses" | "interior_amenities" | "exterior_amenities";
+type CrudCategory = "property_types" | "project_types" | "project_statuses" | "interior_amenities" | "exterior_amenities" | "designations" | "company_types";
 
 interface CrudItem {
   id: string;
   title?: string;
   status: string;
   sort_order?: number;
+  translations?: Record<string, string>;
   created_at: string;
 }
 
-const TABS: { key: CrudCategory; label: string }[] = [
+const TRANSLATION_LANGUAGES = [
+  { code: "ar", label: "Arabic", dir: "rtl" },
+  { code: "fr", label: "French", dir: "ltr" },
+  { code: "tr", label: "Turkish", dir: "ltr" },
+  { code: "ru", label: "Russian", dir: "ltr" },
+  { code: "de", label: "German", dir: "ltr" },
+  { code: "fa", label: "Farsi", dir: "rtl" },
+];
+
+const TABS: { key: CrudCategory; label: string; hasTranslations?: boolean }[] = [
   { key: "property_types", label: "Property Types" },
   { key: "project_types", label: "Project Types" },
   { key: "project_statuses", label: "Project Status" },
   { key: "interior_amenities", label: "Interior Amenities" },
   { key: "exterior_amenities", label: "Exterior Amenities" },
+  { key: "designations", label: "Agent Designations", hasTranslations: true },
+  { key: "company_types", label: "Company Types", hasTranslations: true },
 ];
 
 const AdminCrudsPage = () => {
@@ -45,6 +58,11 @@ const AdminCrudsPage = () => {
   const [editItem, setEditItem] = useState<CrudItem | null>(null);
   const [formTitle, setFormTitle] = useState("");
   const [formStatus, setFormStatus] = useState("active");
+  const [formTranslations, setFormTranslations] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+
+  const currentTabConfig = TABS.find(t => t.key === activeTab);
+  const hasTranslations = currentTabConfig?.hasTranslations || false;
 
   const fetchItems = async () => {
     setLoading(true);
@@ -63,6 +81,7 @@ const AdminCrudsPage = () => {
     setEditItem(null);
     setFormTitle("");
     setFormStatus("active");
+    setFormTranslations({});
     setDialogOpen(true);
   };
 
@@ -70,22 +89,31 @@ const AdminCrudsPage = () => {
     setEditItem(item);
     setFormTitle(item.title || "");
     setFormStatus(item.status);
+    setFormTranslations(item.translations ? { ...item.translations } : {});
     setDialogOpen(true);
   };
 
   const handleSave = async () => {
     if (!formTitle.trim()) { toast.error(t("admin.titleRequired")); return; }
+    setSaving(true);
+
     const payload: any = { title: formTitle.trim(), status: formStatus };
+    if (hasTranslations) {
+      payload.translations = formTranslations;
+    }
 
     if (editItem) {
       const { error } = await supabase.from(activeTab).update(payload).eq("id", editItem.id);
       if (error) toast.error(error.message);
       else { toast.success(t("admin.update")); setDialogOpen(false); fetchItems(); }
     } else {
+      const maxOrder = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
+      payload.sort_order = maxOrder;
       const { error } = await supabase.from(activeTab).insert(payload);
       if (error) toast.error(error.message);
       else { toast.success(t("admin.create")); setDialogOpen(false); fetchItems(); }
     }
+    setSaving(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -116,30 +144,42 @@ const AdminCrudsPage = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead>#</TableHead>
                       <TableHead>{t("admin.title")}</TableHead>
-                      <TableHead>{t("admin.created")}</TableHead>
+                      {tab.hasTranslations && <TableHead>Translations</TableHead>}
                       <TableHead>{t("admin.status")}</TableHead>
                       <TableHead className="w-24">{t("admin.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">{t("admin.loading")}</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={tab.hasTranslations ? 5 : 4} className="text-center py-8 text-muted-foreground">{t("admin.loading")}</TableCell></TableRow>
                     ) : items.length === 0 ? (
-                      <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">{t("common.noData")}</TableCell></TableRow>
-                    ) : items.map((item) => (
+                      <TableRow><TableCell colSpan={tab.hasTranslations ? 5 : 4} className="text-center py-8 text-muted-foreground">{t("common.noData")}</TableCell></TableRow>
+                    ) : items.map((item, idx) => (
                       <TableRow key={item.id}>
+                        <TableCell className="text-muted-foreground text-sm">{idx + 1}</TableCell>
                         <TableCell className="font-medium">{item.title}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{new Date(item.created_at).toLocaleDateString()}</TableCell>
+                        {tab.hasTranslations && (
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {item.translations && Object.entries(item.translations).filter(([, v]) => v).map(([code, val]) => (
+                                <Badge key={code} variant="outline" className="text-[10px] gap-1">
+                                  <span className="font-semibold uppercase">{code}</span> {val}
+                                </Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                        )}
                         <TableCell>
-                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${item.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                          <Badge variant={item.status === "active" ? "default" : "secondary"} className="text-xs">
                             {item.status === "active" ? "Active" : "Inactive"}
-                          </span>
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => openEdit(item)}><Pencil className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(item)}><Pencil className="h-3.5 w-3.5" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -153,17 +193,17 @@ const AdminCrudsPage = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editItem ? "Edit" : "Create"} {TABS.find(t => t.key === activeTab)?.label.replace(/s$/, "")}</DialogTitle>
+            <DialogTitle>{editItem ? "Edit" : "Create"} {currentTabConfig?.label.replace(/s$/, "")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label>{t("admin.title")}</Label>
-              <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder={t("admin.title")} />
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">English Title</Label>
+              <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="Enter title in English" />
             </div>
-            <div>
-              <Label>{t("admin.status")}</Label>
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">{t("admin.status")}</Label>
               <Select value={formStatus} onValueChange={setFormStatus}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -172,8 +212,39 @@ const AdminCrudsPage = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button onClick={handleSave} className="w-full">{editItem ? t("admin.update") : t("admin.create")}</Button>
+
+            {hasTranslations && (
+              <Tabs defaultValue="ar" className="w-full">
+                <div className="flex items-center gap-2 mb-2">
+                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Translations</span>
+                </div>
+                <TabsList className="flex flex-wrap h-auto gap-1">
+                  {TRANSLATION_LANGUAGES.map((lang) => (
+                    <TabsTrigger key={lang.code} value={lang.code} className="text-xs">
+                      {lang.label}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                {TRANSLATION_LANGUAGES.map((lang) => (
+                  <TabsContent key={lang.code} value={lang.code}>
+                    <Input
+                      value={formTranslations[lang.code] || ""}
+                      onChange={(e) => setFormTranslations(prev => ({ ...prev, [lang.code]: e.target.value }))}
+                      placeholder={`${lang.label} translation`}
+                      dir={lang.dir}
+                    />
+                  </TabsContent>
+                ))}
+              </Tabs>
+            )}
           </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDialogOpen(false)}>{t("admin.cancel")}</Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? t("admin.saving") : editItem ? t("admin.update") : t("admin.create")}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </AdminLayout>
