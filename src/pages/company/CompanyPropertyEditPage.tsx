@@ -431,6 +431,14 @@ const CompanyPropertyEditPage = () => {
               <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
               <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 {t("companyDashboard.characters")}</p>
             </div>
+            <ArabicTranslateField
+              label={t("companyDashboard.propertyTitle") + " (Arabic)"}
+              value={form.title_ar}
+              onChange={(v) => updateField("title_ar", v)}
+              sourceText={form.title}
+              fieldType="name"
+              maxLength={60}
+            />
             <div className="space-y-2">
               <Label className="text-foreground font-medium">{ t("companyDashboard.propertyDescription") }</Label>
               <RichTextToolbar
@@ -454,6 +462,14 @@ const CompanyPropertyEditPage = () => {
               />
               <Textarea id="prop-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
+            <ArabicTranslateField
+              label={t("companyDashboard.propertyDescription") + " (Arabic)"}
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 
