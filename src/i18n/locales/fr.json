@@ -1036,6 +1036,8 @@
     "noDataFound": "Aucune donnée trouvée",
     "received": "Reçu",
     "requestDetails": "Détails",
+    "propertyRequestsLocked": "Les demandes de propriété sont une fonctionnalité Plus & Pro",
+    "propertyRequestsUpgrade": "Mettez à niveau votre plan pour recevoir les demandes des acheteurs.",
     "phone": "Téléphone",
     "followersCount": "{{count}} utilisateur(s) enregistré(s) suivant votre entreprise",
     "sendAnnouncement": "Envoyer une annonce massive",

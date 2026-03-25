@@ -9,8 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Eye, Mail } from "lucide-react";
-import { toast } from "sonner";
+import { Search, Eye, Mail, MessageSquare, Home, Lock } from "lucide-react";
 import { format } from "date-fns";
 
 const AgentInboxPage = () => {
@@ -22,6 +21,7 @@ const AgentInboxPage = () => {
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [agentId, setAgentId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<any>(null);
+  const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -32,6 +32,13 @@ const AgentInboxPage = () => {
         setCompanyId(agent.company_id);
         setAgentId(agent.id);
         fetchItems(agent.company_id, agent.id);
+
+        // Check membership feature
+        const { data: company } = await supabase.from("companies").select("membership").eq("id", agent.company_id).maybeSingle();
+        if (company) {
+          const { data: pkg } = await supabase.from("membership_packages").select("has_property_requests").eq("package_type", company.membership).maybeSingle();
+          setHasPropertyRequests(pkg?.has_property_requests ?? false);
+        }
       }
     };
     init();
@@ -54,15 +61,25 @@ const AgentInboxPage = () => {
     }
   };
 
+  const showPropertyRequestTab = hasPropertyRequests === true;
+
   return (
     <AgentLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t("agentDashboard.inbox")}</h1>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
-          <TabsTrigger value="property_request">{t("companyDashboard.propertyRequests")}</TabsTrigger>
-          <TabsTrigger value="inquiry">{t("companyDashboard.inquiry")}</TabsTrigger>
-          <TabsTrigger value="message">{t("companyDashboard.message")}</TabsTrigger>
+          {showPropertyRequestTab && (
+            <TabsTrigger value="property_request" className="gap-2">
+              <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="inquiry" className="gap-2">
+            <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
+          </TabsTrigger>
+          <TabsTrigger value="message" className="gap-2">
+            <Mail className="h-4 w-4" /> {t("companyDashboard.message")}
+          </TabsTrigger>
         </TabsList>
 
         <div className="mt-4 mb-4">
@@ -71,6 +88,14 @@ const AgentInboxPage = () => {
             <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
           </div>
         </div>
+
+        {hasPropertyRequests === false && tab === "property_request" && (
+          <div className="bg-muted/50 border border-border rounded-xl p-6 text-center">
+            <Lock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
+            <p className="text-sm font-medium text-foreground mb-1">{t("companyDashboard.propertyRequestsLocked")}</p>
+            <p className="text-xs text-muted-foreground">{t("companyDashboard.propertyRequestsUpgrade")}</p>
+          </div>
+        )}
 
         <TabsContent value={tab}>
           <div className="bg-card rounded-xl border border-border overflow-hidden">
