@@ -201,11 +201,11 @@ const CompanyProjectUnitsPage = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Project Units</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("units.projectUnits")}</h1>
           {projectTitle && <p className="text-sm text-muted-foreground">{projectTitle}</p>}
         </div>
         <div className="ml-auto">
-          <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Add Unit</Button>
+          <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> {t("units.addUnit")}</Button>
         </div>
       </div>
 
