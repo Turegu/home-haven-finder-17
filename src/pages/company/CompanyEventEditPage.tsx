@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -109,7 +110,9 @@ const CompanyEventEditPage = () => {
 
   const [form, setForm] = useState({
     title: "",
+    title_ar: "",
     description: "",
+    description_ar: "",
     event_type: "open_house",
     event_date: "",
     event_end_date: "",
@@ -154,7 +157,9 @@ const CompanyEventEditPage = () => {
       const d = data as any;
       setForm({
         title: d.title || "",
+        title_ar: d.title_ar || "",
         description: d.description || "",
+        description_ar: d.description_ar || "",
         event_type: d.event_type || "open_house",
         event_date: d.event_date ? new Date(d.event_date).toISOString().slice(0, 16) : "",
         event_end_date: d.event_end_date ? new Date(d.event_end_date).toISOString().slice(0, 16) : "",
@@ -245,7 +250,9 @@ const CompanyEventEditPage = () => {
 
     const payload: any = {
       title: form.title.trim(),
+      title_ar: form.title_ar || null,
       description: form.description || null,
+      description_ar: form.description_ar || null,
       event_type: form.event_type,
       event_date: form.event_date ? new Date(form.event_date).toISOString() : null,
       event_end_date: form.event_end_date ? new Date(form.event_end_date).toISOString() : null,
@@ -317,6 +324,16 @@ const CompanyEventEditPage = () => {
                 <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required placeholder="Event Title" maxLength={60} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
               </div>
+              <ArabicTranslateField
+                label="Event Name (Arabic)"
+                value={form.title_ar}
+                onChange={(v) => updateField("title_ar", v)}
+                sourceText={form.title}
+                fieldType="name"
+                maxLength={60}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" /> Organizer
@@ -346,6 +363,14 @@ const CompanyEventEditPage = () => {
               <RichTextToolbar onAction={applyRichText} />
               <Textarea id="event-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
+            <ArabicTranslateField
+              label="Event Description (Arabic)"
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 

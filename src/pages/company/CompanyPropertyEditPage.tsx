@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
@@ -64,7 +65,9 @@ const CompanyPropertyEditPage = () => {
 
   const [form, setForm] = useState({
     title: "",
+    title_ar: "",
     description: "",
+    description_ar: "",
     contract_type: "residential_sale",
     property_purpose: "buy",
     property_classification: "residential",
@@ -160,7 +163,9 @@ const CompanyPropertyEditPage = () => {
 
       setForm({
         title: data.title || "",
+        title_ar: (data as any).title_ar || "",
         description: data.description || "",
+        description_ar: (data as any).description_ar || "",
         contract_type: contractType,
         property_purpose: purpose,
         property_classification: classification,
@@ -306,7 +311,9 @@ const CompanyPropertyEditPage = () => {
 
     const payload: any = {
       title: form.title.trim(),
+      title_ar: form.title_ar || null,
       description: form.description || null,
+      description_ar: form.description_ar || null,
       property_purpose: form.property_purpose,
       property_classification: classificationOverride || form.property_classification,
       rent_duration: isRent ? (form.rent_duration || null) : null,
@@ -424,6 +431,14 @@ const CompanyPropertyEditPage = () => {
               <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
               <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 {t("companyDashboard.characters")}</p>
             </div>
+            <ArabicTranslateField
+              label={t("companyDashboard.propertyTitle") + " (Arabic)"}
+              value={form.title_ar}
+              onChange={(v) => updateField("title_ar", v)}
+              sourceText={form.title}
+              fieldType="name"
+              maxLength={60}
+            />
             <div className="space-y-2">
               <Label className="text-foreground font-medium">{ t("companyDashboard.propertyDescription") }</Label>
               <RichTextToolbar
@@ -447,6 +462,14 @@ const CompanyPropertyEditPage = () => {
               />
               <Textarea id="prop-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
+            <ArabicTranslateField
+              label={t("companyDashboard.propertyDescription") + " (Arabic)"}
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 

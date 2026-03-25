@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
@@ -255,7 +256,7 @@ const CompanyProjectEditPage = () => {
   const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
-    title: "", tagline: "", description: "", developer: "",
+    title: "", title_ar: "", tagline: "", description: "", description_ar: "", developer: "",
     project_type: "residential", min_price: "", max_price: "",
     currency: "USD", min_units: "", max_units: "",
     min_area: "", max_area: "", area_unit: "m²",
@@ -296,8 +297,10 @@ const CompanyProjectEditPage = () => {
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error("Project not found"); return; }
       setForm({
-        title: data.title || "", tagline: (data as any).tagline || "",
-        description: data.description || "", developer: data.developer || "",
+        title: data.title || "", title_ar: (data as any).title_ar || "",
+        tagline: (data as any).tagline || "",
+        description: data.description || "", description_ar: (data as any).description_ar || "",
+        developer: data.developer || "",
         project_type: data.project_type || "residential",
         min_price: data.min_price?.toString() || "", max_price: data.max_price?.toString() || "",
         currency: data.currency || "USD",
@@ -575,7 +578,8 @@ const CompanyProjectEditPage = () => {
     }
 
     const payload: any = {
-      title: form.title.trim(), description: form.description || null,
+      title: form.title.trim(), title_ar: form.title_ar || null,
+      description: form.description || null, description_ar: form.description_ar || null,
       tagline: form.tagline || null, developer: form.developer || null,
       project_type: form.project_type,
       min_price: form.min_price ? parseFloat(form.min_price) : null,
@@ -654,6 +658,16 @@ const CompanyProjectEditPage = () => {
                 <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={20} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/20 characters</p>
               </div>
+              <ArabicTranslateField
+                label="Project Name (Arabic)"
+                value={form.title_ar}
+                onChange={(v) => updateField("title_ar", v)}
+                sourceText={form.title}
+                fieldType="name"
+                maxLength={20}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Tagline</Label>
                 <Input value={form.tagline} onChange={(e) => { if (e.target.value.length <= 60) updateField("tagline", e.target.value); }} className="bg-secondary/50" maxLength={60} />
@@ -665,6 +679,14 @@ const CompanyProjectEditPage = () => {
               <RichTextToolbar onAction={applyRichText} />
               <Textarea id="proj-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
+            <ArabicTranslateField
+              label="Project Description (Arabic)"
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 

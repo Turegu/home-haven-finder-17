@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -33,11 +34,13 @@ const AdminCompanyEditPage = () => {
 
   const [form, setForm] = useState({
     name: "",
+    name_ar: "",
     company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
     about: "",
+    about_ar: "",
     email: "",
     phone: "",
     whatsapp: "",
@@ -63,11 +66,13 @@ const AdminCompanyEditPage = () => {
       }
       setForm({
         name: data.name || "",
+        name_ar: (data as any).name_ar || "",
         company_types: (data.company_types as string[]) || [],
         service_areas: (data.service_areas as string[] || []).join(", "),
         languages: (data.languages as string[]) || [],
         registration_number: data.registration_number || "",
         about: data.about || "",
+        about_ar: (data as any).about_ar || "",
         email: data.email || "",
         phone: data.phone || "",
         whatsapp: data.whatsapp || "",
@@ -104,6 +109,7 @@ const AdminCompanyEditPage = () => {
     try {
       const { error } = await supabase.from("companies").update({
         name: form.name.trim(),
+        name_ar: form.name_ar || null,
         email: form.email.trim(),
         phone: form.phone || null,
         whatsapp: form.whatsapp || null,
@@ -112,6 +118,7 @@ const AdminCompanyEditPage = () => {
         languages: form.languages.length > 0 ? form.languages : null,
         registration_number: form.registration_number || null,
         about: form.about || null,
+        about_ar: form.about_ar || null,
         membership: form.membership,
         province: form.province || null,
         town: form.town || null,
@@ -158,6 +165,7 @@ const AdminCompanyEditPage = () => {
               <Label className="text-primary font-semibold">Company Name *</Label>
               <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/30" required />
             </div>
+            <ArabicTranslateField label="Company Name (Arabic)" value={form.name_ar} onChange={(v) => updateField("name_ar", v)} sourceText={form.name} fieldType="name" maxLength={100} />
             <div className="space-y-2">
               <Label className="text-primary font-semibold">Company Type</Label>
               <div className="flex flex-wrap gap-2 mt-1">
@@ -207,6 +215,9 @@ const AdminCompanyEditPage = () => {
         <div>
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">About Us</h2>
           <Textarea value={form.about} onChange={(e) => updateField("about", e.target.value)} className="bg-secondary/30 min-h-[120px]" />
+          <div className="mt-4">
+            <ArabicTranslateField label="About Us (Arabic)" value={form.about_ar} onChange={(v) => updateField("about_ar", v)} sourceText={form.about} fieldType="description" multiline maxLength={1000} />
+          </div>
         </div>
 
         {/* Contact */}

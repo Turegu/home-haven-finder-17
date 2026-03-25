@@ -149,11 +149,13 @@ export type Database = {
           created_at: string
           credit_balance: number
           description: string | null
+          description_ar: string | null
           designation: string | null
           email: string
           id: string
           languages: string[] | null
           name: string
+          name_ar: string | null
           phone: string | null
           profile_classification: string
           registration_number: string | null
@@ -170,11 +172,13 @@ export type Database = {
           created_at?: string
           credit_balance?: number
           description?: string | null
+          description_ar?: string | null
           designation?: string | null
           email: string
           id?: string
           languages?: string[] | null
           name: string
+          name_ar?: string | null
           phone?: string | null
           profile_classification?: string
           registration_number?: string | null
@@ -191,11 +195,13 @@ export type Database = {
           created_at?: string
           credit_balance?: number
           description?: string | null
+          description_ar?: string | null
           designation?: string | null
           email?: string
           id?: string
           languages?: string[] | null
           name?: string
+          name_ar?: string | null
           phone?: string | null
           profile_classification?: string
           registration_number?: string | null
@@ -412,6 +418,7 @@ export type Database = {
       companies: {
         Row: {
           about: string | null
+          about_ar: string | null
           boost_end_date: string | null
           company_type: Database["public"]["Enums"]["company_type"] | null
           company_types: string[] | null
@@ -426,6 +433,7 @@ export type Database = {
           logo_url: string | null
           membership: Database["public"]["Enums"]["membership_type"]
           name: string
+          name_ar: string | null
           neighbourhood: string | null
           owner_user_id: string | null
           package_end_date: string | null
@@ -442,6 +450,7 @@ export type Database = {
         }
         Insert: {
           about?: string | null
+          about_ar?: string | null
           boost_end_date?: string | null
           company_type?: Database["public"]["Enums"]["company_type"] | null
           company_types?: string[] | null
@@ -456,6 +465,7 @@ export type Database = {
           logo_url?: string | null
           membership?: Database["public"]["Enums"]["membership_type"]
           name: string
+          name_ar?: string | null
           neighbourhood?: string | null
           owner_user_id?: string | null
           package_end_date?: string | null
@@ -472,6 +482,7 @@ export type Database = {
         }
         Update: {
           about?: string | null
+          about_ar?: string | null
           boost_end_date?: string | null
           company_type?: Database["public"]["Enums"]["company_type"] | null
           company_types?: string[] | null
@@ -486,6 +497,7 @@ export type Database = {
           logo_url?: string | null
           membership?: Database["public"]["Enums"]["membership_type"]
           name?: string
+          name_ar?: string | null
           neighbourhood?: string | null
           owner_user_id?: string | null
           package_end_date?: string | null
@@ -853,6 +865,7 @@ export type Database = {
           created_at: string
           currency: string | null
           description: string | null
+          description_ar: string | null
           display_on_homepage: boolean
           entry_type: string
           event_date: string | null
@@ -871,6 +884,7 @@ export type Database = {
           province: string | null
           status: string
           title: string
+          title_ar: string | null
           town: string | null
           updated_at: string
           video_link: string | null
@@ -881,6 +895,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          description_ar?: string | null
           display_on_homepage?: boolean
           entry_type?: string
           event_date?: string | null
@@ -899,6 +914,7 @@ export type Database = {
           province?: string | null
           status?: string
           title: string
+          title_ar?: string | null
           town?: string | null
           updated_at?: string
           video_link?: string | null
@@ -909,6 +925,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          description_ar?: string | null
           display_on_homepage?: boolean
           entry_type?: string
           event_date?: string | null
@@ -927,6 +944,7 @@ export type Database = {
           province?: string | null
           status?: string
           title?: string
+          title_ar?: string | null
           town?: string | null
           updated_at?: string
           video_link?: string | null
@@ -1636,6 +1654,7 @@ export type Database = {
           created_at: string
           currency: string | null
           description: string | null
+          description_ar: string | null
           developer: string | null
           developer_logo_url: string | null
           display_on_homepage: boolean
@@ -1663,6 +1682,7 @@ export type Database = {
           status: string
           tagline: string | null
           title: string
+          title_ar: string | null
           town: string | null
           updated_at: string
           video_link: string | null
@@ -1677,6 +1697,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          description_ar?: string | null
           developer?: string | null
           developer_logo_url?: string | null
           display_on_homepage?: boolean
@@ -1704,6 +1725,7 @@ export type Database = {
           status?: string
           tagline?: string | null
           title: string
+          title_ar?: string | null
           town?: string | null
           updated_at?: string
           video_link?: string | null
@@ -1718,6 +1740,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          description_ar?: string | null
           developer?: string | null
           developer_logo_url?: string | null
           display_on_homepage?: boolean
@@ -1745,6 +1768,7 @@ export type Database = {
           status?: string
           tagline?: string | null
           title?: string
+          title_ar?: string | null
           town?: string | null
           updated_at?: string
           video_link?: string | null
@@ -1779,6 +1803,7 @@ export type Database = {
           created_at: string
           currency: string | null
           description: string | null
+          description_ar: string | null
           display_on_homepage: boolean
           exterior_amenities: string[] | null
           floor_level: string | null
@@ -1806,6 +1831,7 @@ export type Database = {
           rooms: string | null
           status: string
           title: string
+          title_ar: string | null
           title_deed: string | null
           town: string | null
           updated_at: string
@@ -1823,6 +1849,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          description_ar?: string | null
           display_on_homepage?: boolean
           exterior_amenities?: string[] | null
           floor_level?: string | null
@@ -1850,6 +1877,7 @@ export type Database = {
           rooms?: string | null
           status?: string
           title: string
+          title_ar?: string | null
           title_deed?: string | null
           town?: string | null
           updated_at?: string
@@ -1867,6 +1895,7 @@ export type Database = {
           created_at?: string
           currency?: string | null
           description?: string | null
+          description_ar?: string | null
           display_on_homepage?: boolean
           exterior_amenities?: string[] | null
           floor_level?: string | null
@@ -1894,6 +1923,7 @@ export type Database = {
           rooms?: string | null
           status?: string
           title?: string
+          title_ar?: string | null
           title_deed?: string | null
           town?: string | null
           updated_at?: string

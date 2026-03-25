@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -95,11 +96,13 @@ const CompanyAgentEditPage = () => {
 
   const [form, setForm] = useState({
     name: "",
+    name_ar: "",
     designation: "",
     email: "",
     phone: "",
     whatsapp: "",
     description: "",
+    description_ar: "",
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
@@ -135,11 +138,13 @@ const CompanyAgentEditPage = () => {
       const d = data as any;
       setForm({
         name: d.name || "",
+        name_ar: d.name_ar || "",
         designation: d.designation || "",
         email: d.email || "",
         phone: d.phone || "",
         whatsapp: d.whatsapp || "",
         description: d.description || "",
+        description_ar: d.description_ar || "",
         service_areas: (d.service_areas || []).join(", "),
         languages: d.languages || [],
         registration_number: d.registration_number || "",
@@ -219,11 +224,13 @@ const CompanyAgentEditPage = () => {
 
     const payload: any = {
       name: form.name.trim(),
+      name_ar: form.name_ar || null,
       designation: form.designation || null,
       email: form.email.trim(),
       phone: form.phone || null,
       whatsapp: form.whatsapp || null,
       description: form.description || null,
+      description_ar: form.description_ar || null,
       service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()).filter(Boolean) : [],
       languages: form.languages,
       registration_number: form.registration_number || null,
@@ -315,6 +322,14 @@ const CompanyAgentEditPage = () => {
                 <Input value={form.name} onChange={(e) => { updateField("name", e.target.value); clearFieldError("name"); }} className={`bg-secondary/50 ${fieldErrors.name ? "border-destructive" : ""}`} placeholder="Enter Agent Name" />
                 {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
               </div>
+              <ArabicTranslateField
+                label="Agent Name (Arabic)"
+                value={form.name_ar}
+                onChange={(v) => updateField("name_ar", v)}
+                sourceText={form.name}
+                fieldType="name"
+                maxLength={100}
+              />
               <div className="space-y-2" data-field="designation">
                 <Label className="text-foreground font-medium">Agent Designation *</Label>
                 <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder="Enter Agent Designation" />
@@ -345,6 +360,14 @@ const CompanyAgentEditPage = () => {
               <Textarea value={form.description} onChange={(e) => { updateField("description", e.target.value); clearFieldError("description"); }} className={`bg-secondary/50 min-h-[100px] ${fieldErrors.description ? "border-destructive" : ""}`} placeholder="Write Agent Description" />
               {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
+            <ArabicTranslateField
+              label="Description (Arabic)"
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 

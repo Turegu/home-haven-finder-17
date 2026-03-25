@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -99,11 +100,13 @@ const CompanyProfilePage = () => {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: "",
+    name_ar: "",
     company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
     about: "",
+    about_ar: "",
     email: "",
     phone: "",
     whatsapp: "",
@@ -146,11 +149,13 @@ const CompanyProfilePage = () => {
         setCompany(data);
         setForm({
           name: data.name || "",
+          name_ar: (data as any).name_ar || "",
           company_types: (data as any).company_types || [],
           service_areas: data.service_areas?.join(", ") || "",
           languages: data.languages || [],
           registration_number: data.registration_number || "",
           about: data.about || "",
+          about_ar: (data as any).about_ar || "",
           email: data.email || "",
           phone: data.phone || "",
           whatsapp: data.whatsapp || "",
@@ -199,11 +204,13 @@ const CompanyProfilePage = () => {
         .from("companies")
         .update({
           name: form.name.trim(),
+          name_ar: form.name_ar || null,
           company_types: form.company_types.length > 0 ? form.company_types : null,
           service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : null,
           languages: form.languages.length > 0 ? form.languages : null,
           registration_number: form.registration_number || null,
           about: form.about || null,
+          about_ar: form.about_ar || null,
           email: form.email.trim(),
           phone: form.phone || null,
           whatsapp: form.whatsapp || null,
@@ -394,6 +401,14 @@ const CompanyProfilePage = () => {
               <Label className="text-foreground font-medium">Company Name</Label>
               <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" />
             </div>
+            <ArabicTranslateField
+              label="Company Name (Arabic)"
+              value={form.name_ar}
+              onChange={(v) => updateField("name_ar", v)}
+              sourceText={form.name}
+              fieldType="name"
+              maxLength={100}
+            />
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Company Type</Label>
               <div className="flex flex-wrap gap-2 mt-1">
@@ -437,6 +452,17 @@ const CompanyProfilePage = () => {
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="About Us" />
           <Textarea value={form.about} onChange={(e) => { if (e.target.value.length <= 1000) updateField("about", e.target.value); }} className="bg-secondary/50 min-h-[120px]" maxLength={1000} />
           <p className="text-xs text-muted-foreground text-right mt-1">{(form.about || "").length}/1000</p>
+          <div className="mt-4">
+            <ArabicTranslateField
+              label="About Us (Arabic)"
+              value={form.about_ar}
+              onChange={(v) => updateField("about_ar", v)}
+              sourceText={form.about}
+              fieldType="description"
+              multiline
+              maxLength={1000}
+            />
+          </div>
         </section>
 
         {/* ─── Contact ─── */}
