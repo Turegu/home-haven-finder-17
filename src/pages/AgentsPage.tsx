@@ -147,6 +147,8 @@ const boostOrder = (cls?: string, endDate?: string | null) =>
 const AgentsPage = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
+  const { data: dbDesignations = [] } = useDesignations();
   const loc = (name: string, name_ar?: string | null, name_fr?: string | null) => {
     if (lang === 'ar' && name_ar) return name_ar;
     if (lang === 'fr' && name_fr) return name_fr;
