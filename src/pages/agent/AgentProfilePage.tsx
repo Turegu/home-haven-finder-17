@@ -22,7 +22,7 @@ import {
 import PatternLock from "@/components/admin/PatternLock";
 import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
-import { agentDesignations } from "@/data/designations";
+import { useDesignations, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 
 import { allLanguages } from "@/data/languages";
 import { useTranslation } from "react-i18next";
