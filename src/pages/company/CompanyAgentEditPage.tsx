@@ -138,11 +138,13 @@ const CompanyAgentEditPage = () => {
       const d = data as any;
       setForm({
         name: d.name || "",
+        name_ar: d.name_ar || "",
         designation: d.designation || "",
         email: d.email || "",
         phone: d.phone || "",
         whatsapp: d.whatsapp || "",
         description: d.description || "",
+        description_ar: d.description_ar || "",
         service_areas: (d.service_areas || []).join(", "),
         languages: d.languages || [],
         registration_number: d.registration_number || "",
