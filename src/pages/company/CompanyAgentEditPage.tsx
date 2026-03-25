@@ -96,11 +96,13 @@ const CompanyAgentEditPage = () => {
 
   const [form, setForm] = useState({
     name: "",
+    name_ar: "",
     designation: "",
     email: "",
     phone: "",
     whatsapp: "",
     description: "",
+    description_ar: "",
     service_areas: "",
     languages: [] as string[],
     registration_number: "",
