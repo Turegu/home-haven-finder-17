@@ -249,7 +249,7 @@ const CompanyProjectUnitsPage = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingUnitId ? "Edit Unit" : "Add Unit"}</DialogTitle>
+            <DialogTitle>{editingUnitId ? t("units.editUnit") : t("units.addUnit")}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-5 pt-2">
