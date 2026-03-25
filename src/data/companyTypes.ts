@@ -1,10 +1,8 @@
 export const companyTypes = [
-  { value: "real_estate_agency", label: "Real Estate Agency", label_ar: "وكالة عقارية", label_fr: "Agence immobilière" },
-  { value: "developer", label: "Developer", label_ar: "مطور عقاري", label_fr: "Promoteur immobilier" },
-  { value: "brokerage", label: "Brokerage", label_ar: "وساطة عقارية", label_fr: "Courtage immobilier" },
-  { value: "property_management", label: "Property Management", label_ar: "إدارة العقارات", label_fr: "Gestion immobilière" },
-  { value: "consulting", label: "Consulting", label_ar: "استشارات", label_fr: "Conseil" },
-  { value: "marketing_agency", label: "Marketing Agency", label_ar: "وكالة تسويق", label_fr: "Agence marketing" },
+  { value: "real_estate_company", label: "Real Estate Company", label_ar: "شركة عقارية", label_fr: "Société immobilière" },
+  { value: "real_estate_developer", label: "Real Estate Developer", label_ar: "مطور عقاري", label_fr: "Promoteur immobilier" },
+  { value: "construction_company", label: "Construction Company", label_ar: "شركة إنشاءات", label_fr: "Entreprise de construction" },
+  { value: "marketing_advertising", label: "Marketing & Advertising Company", label_ar: "شركة تسويق وإعلان", label_fr: "Société de marketing et publicité" },
 ];
 
 /** Convert a company_types array to a display string, with optional language */
