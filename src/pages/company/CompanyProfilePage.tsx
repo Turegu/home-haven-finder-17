@@ -148,11 +148,13 @@ const CompanyProfilePage = () => {
         setCompany(data);
         setForm({
           name: data.name || "",
+          name_ar: (data as any).name_ar || "",
           company_types: (data as any).company_types || [],
           service_areas: data.service_areas?.join(", ") || "",
           languages: data.languages || [],
           registration_number: data.registration_number || "",
           about: data.about || "",
+          about_ar: (data as any).about_ar || "",
           email: data.email || "",
           phone: data.phone || "",
           whatsapp: data.whatsapp || "",
