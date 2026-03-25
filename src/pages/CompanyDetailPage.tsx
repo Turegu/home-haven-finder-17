@@ -65,7 +65,7 @@ const CompanyDetailPage = () => {
 
       if (data) {
         const { data: agts } = await supabase
-          .from("agents").select("id, name, designation, avatar_url, languages")
+          .from("agents").select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages")
           .eq("company_id", data.id).eq("status", "active");
         setCompanyAgents((agts ?? []) as AgentData[]);
 
