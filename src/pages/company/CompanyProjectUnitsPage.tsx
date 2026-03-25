@@ -346,7 +346,7 @@ const CompanyProjectUnitsPage = () => {
                 ))}
                 <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
                   <Layers className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground">{uploadingFloorPlan ? "..." : "Browse"}</span>
+                  <span className="text-[10px] text-muted-foreground">{uploadingFloorPlan ? "..." : t("units.browse")}</span>
                   <input type="file" accept="image/*" multiple onChange={handleFloorPlanUpload} className="hidden" disabled={uploadingFloorPlan} />
                 </label>
               </div>
