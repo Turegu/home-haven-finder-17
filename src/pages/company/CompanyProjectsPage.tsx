@@ -7,6 +7,7 @@ import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
@@ -193,12 +194,25 @@ const CompanyProjectsPage = () => {
               <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
             </Button>
           )}
-          <Button onClick={() => {
-            if (!canCreate("projects")) { toast.error(t("companyDashboard.noUpgradeAllowed", { membership })); return; }
-            navigate("/company/projects/new");
-          }}>
-            <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewProject")}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    disabled={!canCreate("projects")}
+                    onClick={() => navigate("/company/projects/new")}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewProject")}
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {!canCreate("projects") && (
+                <TooltipContent>
+                  <p>{t("companyDashboard.limitReached", { type: t("companyDashboard.projectsManagement") })}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

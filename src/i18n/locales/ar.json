@@ -974,6 +974,8 @@
     "propertiesUsed": "العقارات المستخدمة: {{used}} / {{max}} ({{membership}})",
     "projectsUsed": "المشاريع المستخدمة: {{used}} / {{max}} ({{membership}})",
     "eventsUsed": "الفعاليات المستخدمة: {{used}} / {{max}} ({{membership}})",
+    "agentsUsed": "الوكلاء المستخدمون: {{used}} / {{max}} ({{membership}})",
+    "limitReached": "تم الوصول إلى حد {{type}}. قم بترقية خطتك.",
     "showing": "عرض {{count}} من {{total}}",
     "id": "المعرّف",
     "creationDate": "تاريخ الإنشاء",
