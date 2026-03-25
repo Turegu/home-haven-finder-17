@@ -216,6 +216,7 @@ const CompanyProfilePage = () => {
           registration_number: form.registration_number || null,
           about: form.about || null,
           about_ar: form.about_ar || null,
+          about_fr: form.about_fr || null,
           email: form.email.trim(),
           phone: form.phone || null,
           whatsapp: form.whatsapp || null,
