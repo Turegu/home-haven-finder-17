@@ -453,7 +453,7 @@ const AgentsPage = () => {
                       <img src={agent.avatar_url} alt={agent.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
-                        {agent.name.charAt(0)}
+                        {loc(agent.name, agent.name_ar, agent.name_fr).charAt(0)}
                       </div>
                     )}
                   </div>
