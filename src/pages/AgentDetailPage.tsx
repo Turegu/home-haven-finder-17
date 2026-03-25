@@ -45,12 +45,24 @@ interface AgentData {
 
 const AgentDetailPage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
+
+  const lang = i18n.language;
+  const getLocalizedName = (name: string, name_ar?: string | null, name_fr?: string | null) => {
+    if (lang === 'ar' && name_ar) return name_ar;
+    if (lang === 'fr' && name_fr) return name_fr;
+    return name;
+  };
+  const getLocalizedDesc = (desc?: string | null, desc_ar?: string | null, desc_fr?: string | null) => {
+    if (lang === 'ar' && desc_ar) return desc_ar;
+    if (lang === 'fr' && desc_fr) return desc_fr;
+    return desc;
+  };
 
   useEffect(() => {
     if (!id) return;
