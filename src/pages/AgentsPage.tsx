@@ -249,8 +249,9 @@ const AgentsPage = () => {
         </div>
 
         {activeTab === 'companies' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredCompanies.map((company) => {
+          <PaginatedCardGrid
+            items={filteredCompanies}
+            renderCard={(company) => {
               const counts = companyCounts[company.id] || { agents: 0, buy: 0, rent: 0 };
               const headOffice = [company.neighbourhood, company.town, company.province].filter(Boolean).join(', ');
               const speaksLangs = company.languages?.join(', ');
@@ -317,14 +318,14 @@ const AgentsPage = () => {
                   </div>
                 </Link>
               );
-            })}
-            {filteredCompanies.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noCompaniesFound')}</div>
-            )}
-          </div>
+            }}
+            emptyMessage={t('filters.noCompaniesFound')}
+            bannerPageName="agents"
+          />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredAgents.map((agent) => {
+          <PaginatedCardGrid
+            items={filteredAgents}
+            renderCard={(agent) => {
               const ac = agentCounts[agent.id] || { buy: 0, rent: 0 };
               const boosted = isBoosted(agent.profile_classification, agent.boost_end_date);
               return (
@@ -386,14 +387,11 @@ const AgentsPage = () => {
                   </div>
                 </Link>
               );
-            })}
-            {filteredAgents.length === 0 && (
-              <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{t('filters.noAgentsFound')}</div>
-            )}
-          </div>
+            }}
+            emptyMessage={t('filters.noAgentsFound')}
+            bannerPageName="agents"
+          />
         )}
-
-        <BannerDisplay pageName="agents" bannerType="horizontal" className="mt-8" />
       </div>
 
       <Footer />
