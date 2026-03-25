@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
