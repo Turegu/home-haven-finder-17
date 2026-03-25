@@ -464,7 +464,7 @@ const AgentsPage = () => {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                         <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
-                            {agent.name}
+                            {loc(agent.name, agent.name_ar, agent.name_fr)}
                           </h3>
                           {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
                           {boosted && (
