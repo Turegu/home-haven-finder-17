@@ -22,6 +22,7 @@ import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, Ban, LayoutList, Check
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 
 interface EventRow {
   id: string;
