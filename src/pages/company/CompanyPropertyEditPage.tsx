@@ -163,7 +163,9 @@ const CompanyPropertyEditPage = () => {
 
       setForm({
         title: data.title || "",
+        title_ar: (data as any).title_ar || "",
         description: data.description || "",
+        description_ar: (data as any).description_ar || "",
         contract_type: contractType,
         property_purpose: purpose,
         property_classification: classification,
