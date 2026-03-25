@@ -316,8 +316,10 @@ const CompanyPropertyEditPage = () => {
     const payload: any = {
       title: form.title.trim(),
       title_ar: form.title_ar || null,
+      title_fr: form.title_fr || null,
       description: form.description || null,
       description_ar: form.description_ar || null,
+      description_fr: form.description_fr || null,
       property_purpose: form.property_purpose,
       property_classification: classificationOverride || form.property_classification,
       rent_duration: isRent ? (form.rent_duration || null) : null,
