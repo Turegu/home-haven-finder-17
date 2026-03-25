@@ -211,9 +211,9 @@ const CompanyProjectUnitsPage = () => {
 
       <div className="space-y-3">
         {loading ? (
-          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">Loading...</div>
+          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">{t("common.loading")}</div>
         ) : units.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">No units yet. Click "Add Unit" to create one.</div>
+          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">{t("units.noUnitsYet")}</div>
         ) : (
           units.map((unit) => (
             <div key={unit.id} className="bg-card rounded-xl border border-border overflow-hidden">
