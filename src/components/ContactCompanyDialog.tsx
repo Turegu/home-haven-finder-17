@@ -129,13 +129,12 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         };
         if (listingType === 'property') inquiryData.property_id = property.id;
         else if (listingType === 'project') inquiryData.project_id = property.id;
-        await supabase.from('user_inquiries').insert(inquiryData);
+        const { error: inquiryError } = await supabase.from('user_inquiries').insert(inquiryData);
+        if (inquiryError) throw inquiryError;
       }
 
       // Route to company inbox — if agent is assigned, include agent_id so company knows which agent it's for
       // If no agent assigned, companyId will be set; if agent assigned, companyId is null
-      const targetCompanyId = companyId || (agentId ? null : null);
-      
       // We need to find the agent's company if only agentId is set
       let inboxCompanyId = companyId;
       if (!inboxCompanyId && agentId) {
@@ -159,10 +158,11 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         };
         if (listingType === 'property') inboxData.property_id = property.id;
         else if (listingType === 'project') inboxData.project_id = property.id;
-        await supabase.from('company_inbox').insert(inboxData);
+        const { error: inboxError } = await supabase.from('company_inbox').insert(inboxData);
+        if (inboxError) throw inboxError;
 
-        // Send email notification to agent or company (fire-and-forget)
-        supabase.functions.invoke('send-inquiry-notification', {
+        // Send email notification to agent or company
+        const { error: notificationError } = await supabase.functions.invoke('send-inquiry-notification', {
           body: {
             sender_name: fullName.trim(),
             sender_email: email.trim(),
@@ -176,7 +176,11 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             listing_id: property.listingId || property.id,
             listing_type: listingType,
           },
-        }).catch(console.error);
+        });
+
+        if (notificationError) {
+          console.error('send-inquiry-notification failed:', notificationError);
+        }
       }
 
       toast.success('Message sent successfully');

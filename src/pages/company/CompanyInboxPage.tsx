@@ -32,6 +32,8 @@ interface InboxItem {
   created_at: string;
 }
 
+type InboxTab = "property_request" | "inquiry" | "message";
+
 const CompanyInboxPage = () => {
   const { t } = useTranslation();
   const [items, setItems] = useState<InboxItem[]>([]);
@@ -39,7 +41,7 @@ const CompanyInboxPage = () => {
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState("inquiry");
+  const [activeTab, setActiveTab] = useState<InboxTab>("inquiry");
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ const CompanyInboxPage = () => {
       .from("company_inbox")
       .select("*")
       .eq("company_id", companyId)
-      .eq("inbox_type", activeTab)
+      .eq("inbox_type", activeTab === "inquiry" ? "inquiry" : activeTab)
       .order("created_at", { ascending: false });
     if (error) toast.error("Failed to load inbox");
     else setItems((data as InboxItem[]) || []);
@@ -129,7 +131,7 @@ const CompanyInboxPage = () => {
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t("companyDashboard.inbox")}</h1>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v)} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab((v === "property_request" || v === "inquiry" || v === "message") ? v : "inquiry")} className="space-y-6">
         <TabsList className="bg-secondary/50">
           <TabsTrigger value="property_request" className="gap-2">
             <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
