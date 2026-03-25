@@ -146,23 +146,30 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         inboxCompanyId = agentData?.company_id || null;
       }
 
-      if (inboxCompanyId) {
-        const inboxData: any = {
-          company_id: inboxCompanyId,
-          agent_id: agentId || null,
-          full_name: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim() || null,
-          message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
-          inbox_type: 'inquiry',
-        };
-        if (listingType === 'property') inboxData.property_id = property.id;
-        else if (listingType === 'project') inboxData.project_id = property.id;
-        const { error: inboxError } = await supabase.from('company_inbox').insert(inboxData);
-        if (inboxError) throw inboxError;
+      if (!inboxCompanyId) {
+        throw new Error('No company recipient found');
+      }
 
-        // Send email notification to agent or company
-        const { error: notificationError } = await supabase.functions.invoke('send-inquiry-notification', {
+      const inboxData: any = {
+        company_id: inboxCompanyId,
+        agent_id: agentId || null,
+        full_name: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim() || null,
+        message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
+        inbox_type: 'inquiry',
+      };
+      if (listingType === 'property') inboxData.property_id = property.id;
+      else if (listingType === 'project') inboxData.project_id = property.id;
+
+      const { error: inboxError } = await supabase.from('company_inbox').insert(inboxData);
+      if (inboxError) throw inboxError;
+
+      toast.success('Message sent successfully');
+      onOpenChange(false);
+
+      void supabase.functions
+        .invoke('send-inquiry-notification', {
           body: {
             sender_name: fullName.trim(),
             sender_email: email.trim(),
@@ -176,15 +183,15 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             listing_id: property.listingId || property.id,
             listing_type: listingType,
           },
+        })
+        .then(({ error }) => {
+          if (error) {
+            console.error('send-inquiry-notification failed:', error);
+          }
+        })
+        .catch((error) => {
+          console.error('send-inquiry-notification crashed:', error);
         });
-
-        if (notificationError) {
-          console.error('send-inquiry-notification failed:', notificationError);
-        }
-      }
-
-      toast.success('Message sent successfully');
-      onOpenChange(false);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
