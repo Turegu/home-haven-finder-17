@@ -127,6 +127,8 @@ interface AgentRow {
   name_ar: string | null;
   name_fr: string | null;
   designation: string | null;
+  designation_ar: string | null;
+  designation_fr: string | null;
   avatar_url: string | null;
   company_id: string;
   languages: string[] | null;
