@@ -166,7 +166,9 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       if (inboxError) throw inboxError;
 
       toast.success('Message sent successfully');
-      onOpenChange(false);
+      setSending(false);
+      setSent(true);
+      setTimeout(() => onOpenChange(false), 1500);
 
       void supabase.functions
         .invoke('send-inquiry-notification', {
