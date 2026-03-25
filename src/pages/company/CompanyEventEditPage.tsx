@@ -111,8 +111,10 @@ const CompanyEventEditPage = () => {
   const [form, setForm] = useState({
     title: "",
     title_ar: "",
+    title_fr: "",
     description: "",
     description_ar: "",
+    description_fr: "",
     event_type: "open_house",
     event_date: "",
     event_end_date: "",
