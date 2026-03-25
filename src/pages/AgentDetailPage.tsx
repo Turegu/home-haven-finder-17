@@ -46,6 +46,9 @@ interface AgentData {
 const AgentDetailPage = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
+  const { data: dbDesignations = [] } = useDesignations();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
