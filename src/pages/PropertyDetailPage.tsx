@@ -98,7 +98,7 @@ const parsePinLocation = (value: unknown): { lat: number; lng: number } | null =
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatArea } = useAreaUnit();
   const isMobile = useIsMobile();
   useTrackPageView(id, 'property');
