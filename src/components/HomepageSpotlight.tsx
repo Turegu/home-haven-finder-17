@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowRight, Building2, User, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
