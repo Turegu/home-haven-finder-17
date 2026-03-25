@@ -233,7 +233,7 @@ const AgentDetailPage = () => {
                 <div className="min-w-0">
                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{t('detail.company')}</p>
                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate flex items-center gap-1.5">
-                     {agent.companies.name}
+                     {getLocalizedName(agent.companies.name, agent.companies.name_ar)}
                      {agent.companies.is_verified && <VerifiedBadge />}
                    </h3>
                   <p className="text-xs text-muted-foreground">
