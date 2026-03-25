@@ -124,6 +124,8 @@ interface CompanyRow {
 interface AgentRow {
   id: string;
   name: string;
+  name_ar: string | null;
+  name_fr: string | null;
   designation: string | null;
   avatar_url: string | null;
   company_id: string;
@@ -131,7 +133,7 @@ interface AgentRow {
   service_areas: string[] | null;
   profile_classification?: string;
   boost_end_date?: string | null;
-  companies: { name: string; logo_url: string | null; is_verified?: boolean } | null;
+  companies: { name: string; name_ar: string | null; logo_url: string | null; is_verified?: boolean } | null;
 }
 
 const isBoosted = (cls?: string, endDate?: string | null) =>
@@ -141,7 +143,13 @@ const boostOrder = (cls?: string, endDate?: string | null) =>
   isBoosted(cls, endDate) ? 0 : 1;
 
 const AgentsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const loc = (name: string, name_ar?: string | null, name_fr?: string | null) => {
+    if (lang === 'ar' && name_ar) return name_ar;
+    if (lang === 'fr' && name_fr) return name_fr;
+    return name;
+  };
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -175,7 +183,7 @@ const AgentsPage = () => {
       const [cmsRes, compRes, agentRes] = await Promise.all([
         supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1),
         supabase.from("companies").select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified"),
-        supabase.from("agents").select("id, name, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, logo_url, is_verified)").eq("status", "active"),
+        supabase.from("agents").select("id, name, name_ar, name_fr, designation, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, name_ar, logo_url, is_verified)").eq("status", "active"),
       ]);
 
       if (cmsRes.data?.[0]) {
@@ -237,7 +245,12 @@ const AgentsPage = () => {
   }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
   const filteredAgents = agents.filter(a => {
-    if (searchQuery && !turkishIncludes(a.name, searchQuery)) return false;
+    if (searchQuery) {
+      const matchesName = turkishIncludes(a.name, searchQuery) ||
+        (a.name_ar && turkishIncludes(a.name_ar, searchQuery)) ||
+        (a.name_fr && turkishIncludes(a.name_fr, searchQuery));
+      if (!matchesName) return false;
+    }
     if (selectedProvince && !a.service_areas?.some(area => turkishIncludes(area, selectedProvince))) return false;
     if (selectedTown && !a.service_areas?.some(area => turkishIncludes(area, selectedTown))) return false;
     return true;
@@ -440,7 +453,7 @@ const AgentsPage = () => {
                       <img src={agent.avatar_url} alt={agent.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
-                        {agent.name.charAt(0)}
+                        {loc(agent.name, agent.name_ar, agent.name_fr).charAt(0)}
                       </div>
                     )}
                   </div>
@@ -451,7 +464,7 @@ const AgentsPage = () => {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                         <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
-                            {agent.name}
+                            {loc(agent.name, agent.name_ar, agent.name_fr)}
                           </h3>
                           {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
                           {boosted && (

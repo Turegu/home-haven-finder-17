@@ -19,9 +19,13 @@ import FollowButton from '@/components/FollowButton';
 interface AgentData {
   id: string;
   name: string;
+  name_ar: string | null;
+  name_fr: string | null;
   designation: string | null;
   avatar_url: string | null;
   description: string | null;
+  description_ar: string | null;
+  description_fr: string | null;
   languages: string[] | null;
   service_areas: string[] | null;
   phone: string | null;
@@ -31,6 +35,7 @@ interface AgentData {
   companies: {
     id: string;
     name: string;
+    name_ar: string | null;
     logo_url: string | null;
     company_types: string[] | null;
     cover_url: string | null;
@@ -40,19 +45,31 @@ interface AgentData {
 
 const AgentDetailPage = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
+  const lang = i18n.language;
+  const getLocalizedName = (name: string, name_ar?: string | null, name_fr?: string | null) => {
+    if (lang === 'ar' && name_ar) return name_ar;
+    if (lang === 'fr' && name_fr) return name_fr;
+    return name;
+  };
+  const getLocalizedDesc = (desc?: string | null, desc_ar?: string | null, desc_fr?: string | null) => {
+    if (lang === 'ar' && desc_ar) return desc_ar;
+    if (lang === 'fr' && desc_fr) return desc_fr;
+    return desc;
+  };
+
   useEffect(() => {
     if (!id) return;
     const fetchAgent = async () => {
       const { data } = await supabase
         .from("agents")
-        .select("id, name, designation, avatar_url, description, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, logo_url, company_types, cover_url, is_verified)")
+        .select("id, name, name_ar, name_fr, designation, avatar_url, description, description_ar, description_fr, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, name_ar, logo_url, company_types, cover_url, is_verified)")
         .eq("id", id)
         .maybeSingle();
       const agentData = data as unknown as AgentData | null;
@@ -111,7 +128,7 @@ const AgentDetailPage = () => {
           <ChevronRight className="h-3 w-3" />
           <Link to="/agents" className="hover:text-primary transition-colors">{t('nav.agents')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground font-medium">{agent.name}</span>
+          <span className="text-foreground font-medium">{agent ? getLocalizedName(agent.name, agent.name_ar, agent.name_fr) : ''}</span>
         </div>
       </div>
 
@@ -148,7 +165,7 @@ const AgentDetailPage = () => {
                     <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
-                      {agent.name.charAt(0)}
+                      {getLocalizedName(agent.name, agent.name_ar, agent.name_fr).charAt(0)}
                     </div>
                   )}
                 </div>
@@ -157,7 +174,7 @@ const AgentDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-12">
                       <div className="flex items-center gap-1.5">
-                        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{getLocalizedName(agent.name, agent.name_ar, agent.name_fr)}</h1>
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
@@ -209,14 +226,14 @@ const AgentDetailPage = () => {
                     <img src={agent.companies.logo_url} alt={agent.companies.name} className="w-full h-full object-contain p-1.5" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-lg">
-                      {agent.companies.name.charAt(0)}
+                      {getLocalizedName(agent.companies.name, agent.companies.name_ar).charAt(0)}
                     </div>
                   )}
                 </div>
                 <div className="min-w-0">
                    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{t('detail.company')}</p>
                    <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate flex items-center gap-1.5">
-                     {agent.companies.name}
+                     {getLocalizedName(agent.companies.name, agent.companies.name_ar)}
                      {agent.companies.is_verified && <VerifiedBadge />}
                    </h3>
                   <p className="text-xs text-muted-foreground">
@@ -232,9 +249,9 @@ const AgentDetailPage = () => {
       {/* ── About section — full-width prominent ── */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-bold text-foreground mb-2">{t('detail.about')} {agent.name}</h2>
+          <h2 className="text-lg font-bold text-foreground mb-2">{t('detail.about')} {getLocalizedName(agent.name, agent.name_ar, agent.name_fr)}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-            {agent.description || `${agent.name} is an experienced real estate professional dedicated to helping clients find their ideal properties. With deep market knowledge and a client-first approach, ${agent.name} provides personalized guidance for buying, selling, and renting across all service areas.`}
+            {getLocalizedDesc(agent.description, agent.description_ar, agent.description_fr) || `${getLocalizedName(agent.name, agent.name_ar, agent.name_fr)} is an experienced real estate professional dedicated to helping clients find their ideal properties. With deep market knowledge and a client-first approach, ${getLocalizedName(agent.name, agent.name_ar, agent.name_fr)} provides personalized guidance for buying, selling, and renting across all service areas.`}
           </p>
         </div>
       </div>
