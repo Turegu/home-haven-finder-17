@@ -118,7 +118,7 @@ const AgentProfilePage = () => {
     whatsapp: "",
     description: "",
     registration_number: "",
-    service_areas: "",
+    service_areas: [] as string[],
     languages: [] as string[],
     avatar_url: "",
   });
