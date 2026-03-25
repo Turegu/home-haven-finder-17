@@ -160,6 +160,23 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         if (listingType === 'property') inboxData.property_id = property.id;
         else if (listingType === 'project') inboxData.project_id = property.id;
         await supabase.from('company_inbox').insert(inboxData);
+
+        // Send email notification to agent or company (fire-and-forget)
+        supabase.functions.invoke('send-inquiry-notification', {
+          body: {
+            sender_name: fullName.trim(),
+            sender_email: email.trim(),
+            sender_phone: phone.trim() || undefined,
+            preferred_contact: preferredContact,
+            message: `${message}${unitSuffix}`,
+            agent_id: agentId || undefined,
+            company_id: inboxCompanyId,
+            listing_title: property.title,
+            listing_location: property.location,
+            listing_id: property.listingId || property.id,
+            listing_type: listingType,
+          },
+        }).catch(console.error);
       }
 
       toast.success('Message sent successfully');
