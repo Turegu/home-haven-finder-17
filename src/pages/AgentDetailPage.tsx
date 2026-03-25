@@ -15,6 +15,7 @@ import ProfileProjectFilters, { type ProjectFilters } from '@/components/Profile
 import PropertyCard from '@/components/PropertyCard';
 import ProjectListCard from '@/components/ProjectListCard';
 import FollowButton from '@/components/FollowButton';
+import { useLocalizedLanguages, useLocalizedServiceAreas } from '@/hooks/useLocalizedProfileContent';
 
 interface AgentData {
   id: string;
@@ -54,6 +55,8 @@ const AgentDetailPage = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
+  const localizedLanguages = useLocalizedLanguages(agent?.languages);
+  const localizedServiceAreas = useLocalizedServiceAreas(agent?.service_areas);
 
   
   const getLocalizedName = (name: string, name_ar?: string | null, name_fr?: string | null) => {
@@ -266,22 +269,22 @@ const AgentDetailPage = () => {
           {/* Sidebar */}
           <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
             {/* Languages */}
-            {agent.languages && agent.languages.length > 0 && (
+            {localizedLanguages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                    <Globe className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />{t('detail.iSpeak')}
                 </h3>
-                <ExpandablePillList items={agent.languages} maxVisible={6} />
+                <ExpandablePillList items={localizedLanguages} maxVisible={6} />
               </div>
             )}
 
             {/* Service areas */}
-            {agent.service_areas && agent.service_areas.length > 0 && (
+            {localizedServiceAreas.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
                    <MapPin className="h-3.5 w-3.5 inline-block mr-1.5 -mt-0.5" />{t('detail.serviceAreas')}
                 </h3>
-                <ExpandablePillList items={agent.service_areas} maxVisible={6} />
+                <ExpandablePillList items={localizedServiceAreas} maxVisible={6} />
               </div>
             )}
           </aside>
