@@ -1659,7 +1659,13 @@
     "deactivated": "Deactivated",
     "searchByTitleIdCompany": "Search by Title, ID, or Company",
     "searchByLocation": "Search by Province, City, Area",
-    "emailPreview": "Email Template Preview"
+    "emailPreview": "Email Template Preview",
+    "currencies": "CURRENCIES",
+    "addCurrency": "Add Currency",
+    "symbol": "Symbol",
+    "noCurrenciesFound": "No currencies found",
+    "editCurrency": "Edit Currency",
+    "titleRequired": "Title is required"
   },
   "ai": {
     "premium": "PREMIUM",

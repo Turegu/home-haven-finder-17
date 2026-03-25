@@ -1659,7 +1659,13 @@
     "deactivated": "غير مفعّل",
     "searchByTitleIdCompany": "البحث بالعنوان أو الرقم أو الشركة",
     "searchByLocation": "البحث بالمحافظة أو المدينة أو المنطقة",
-    "emailPreview": "معاينة قالب البريد الإلكتروني"
+    "emailPreview": "معاينة قالب البريد الإلكتروني",
+    "currencies": "العملات",
+    "addCurrency": "إضافة عملة",
+    "symbol": "الرمز",
+    "noCurrenciesFound": "لم يتم العثور على عملات",
+    "editCurrency": "تعديل العملة",
+    "titleRequired": "العنوان مطلوب"
   },
   "ai": {
     "premium": "مميز",

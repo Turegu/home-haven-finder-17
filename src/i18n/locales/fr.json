@@ -1659,7 +1659,13 @@
     "deactivated": "Désactivé",
     "searchByTitleIdCompany": "Rechercher par titre, ID ou entreprise",
     "searchByLocation": "Rechercher par province, ville, zone",
-    "emailPreview": "Aperçu du modèle d'email"
+    "emailPreview": "Aperçu du modèle d'email",
+    "currencies": "DEVISES",
+    "addCurrency": "Ajouter une devise",
+    "symbol": "Symbole",
+    "noCurrenciesFound": "Aucune devise trouvée",
+    "editCurrency": "Modifier la devise",
+    "titleRequired": "Le titre est requis"
   },
   "ai": {
     "premium": "PREMIUM",
