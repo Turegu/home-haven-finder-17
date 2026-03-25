@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, ReactNode } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import { formatCompanyTypes } from '@/data/companyTypes';
-import { MapPin, Search, Home, Globe, Rocket, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Search, Home, Globe, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -374,7 +374,11 @@ const AgentsPage = () => {
                         {company.name}
                       </h3>
                       {company.is_verified && <VerifiedBadge size="sm" />}
-                      {boosted && <Rocket className="h-4 w-4 text-primary shrink-0" />}
+                      {boosted && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                          Top Company
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-primary/80 font-medium mt-0.5">
                       {typeLabel(company.company_types)}
@@ -429,13 +433,13 @@ const AgentsPage = () => {
                   }`}>
 
                   {/* Left: Avatar */}
-                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border overflow-hidden ${
+                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-3 ${
                     boosted ? 'bg-primary/5' : 'bg-muted'
                   }`}>
                     {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={agent.avatar_url} alt={agent.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl">
+                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
                         {agent.name.charAt(0)}
                       </div>
                     )}
@@ -450,7 +454,11 @@ const AgentsPage = () => {
                             {agent.name}
                           </h3>
                           {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
-                          {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}
+                          {boosted && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                              Top Agent
+                            </span>
+                          )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>
                       </div>
