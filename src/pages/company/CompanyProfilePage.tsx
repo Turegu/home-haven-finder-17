@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ArabicTranslateField from "@/components/ArabicTranslateField";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import CompanyLayout from "@/components/company/CompanyLayout";
