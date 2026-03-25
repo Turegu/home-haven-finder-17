@@ -158,9 +158,12 @@ const Header = () => {
     setSelectedLang(lang);
     localStorage.setItem('selectedLangCode', lang.code);
     // Sync i18n language
-    if (lang.code === 'ar' || lang.code === 'en') {
+    const supportedLangs = ['en', 'ar', 'fr'];
+    if (supportedLangs.includes(lang.code)) {
       i18n.changeLanguage(lang.code);
     }
+    document.documentElement.dir = lang.code === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang.code;
     setOpenDropdown(null);
   };
   const selectCurrency = (currency: typeof currencies[0]) => { setSelectedCurrency(currency); localStorage.setItem('selectedCurrencyCode', currency.code); setOpenDropdown(null); };
