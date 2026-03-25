@@ -297,8 +297,10 @@ const CompanyProjectEditPage = () => {
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error("Project not found"); return; }
       setForm({
-        title: data.title || "", tagline: (data as any).tagline || "",
-        description: data.description || "", developer: data.developer || "",
+        title: data.title || "", title_ar: (data as any).title_ar || "",
+        tagline: (data as any).tagline || "",
+        description: data.description || "", description_ar: (data as any).description_ar || "",
+        developer: data.developer || "",
         project_type: data.project_type || "residential",
         min_price: data.min_price?.toString() || "", max_price: data.max_price?.toString() || "",
         currency: data.currency || "USD",
