@@ -28,6 +28,7 @@ const INITIAL_FILTERS: ProfileFilters = {
 };
 
 const ProfileListingFilters = ({ onFiltersChange }: ProfileListingFiltersProps) => {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<ProfileFilters>(INITIAL_FILTERS);
   const { options } = useFilterOptions("property");
 

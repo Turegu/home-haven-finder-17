@@ -143,6 +143,7 @@ interface AmenitiesViewAllDialogProps {
 }
 
 export default function AmenitiesViewAllDialog({ type, options, selected, onToggle, trigger }: AmenitiesViewAllDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 

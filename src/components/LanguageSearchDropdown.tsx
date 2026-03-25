@@ -39,6 +39,7 @@ export default function LanguageSearchDropdown({
   single = false,
   className = '',
 }: LanguageSearchDropdownProps) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

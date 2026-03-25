@@ -28,6 +28,7 @@ export default function AmenitiesPickerDialog({
   onToggleExterior,
   trigger,
 }: AmenitiesPickerDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<string>('exterior');

@@ -105,13 +105,13 @@ const AdminCrudsPage = () => {
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CrudCategory)}>
           <TabsList className="flex flex-wrap h-auto gap-1">
-            {TABS.map((t) => (
-              <TabsTrigger key={t.key} value={t.key} className="text-xs">{t.label}</TabsTrigger>
+            {TABS.map((tab) => (
+              <TabsTrigger key={tab.key} value={tab.key} className="text-xs">{tab.label}</TabsTrigger>
             ))}
           </TabsList>
 
-          {TABS.map((t) => (
-            <TabsContent key={t.key} value={t.key}>
+          {TABS.map((tab) => (
+            <TabsContent key={tab.key} value={tab.key}>
               <div className="bg-card rounded-lg border border-border">
                 <Table>
                   <TableHeader>
