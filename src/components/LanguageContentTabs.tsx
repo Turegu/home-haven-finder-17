@@ -47,11 +47,17 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
   const activeLang = LANGS.find((l) => l.code === activeTab) || LANGS[0];
   const otherLangs = LANGS.filter((l) => l.code !== activeTab);
 
-  const getFieldValue = (field: TranslatableField, langCode: string) =>
-    langCode === "ar" ? field.value_ar : field.value_en;
+  const getFieldValue = (field: TranslatableField, langCode: string) => {
+    if (langCode === "ar") return field.value_ar;
+    if (langCode === "fr") return field.value_fr || "";
+    return field.value_en;
+  };
 
-  const getFieldOnChange = (field: TranslatableField, langCode: string) =>
-    langCode === "ar" ? field.onChange_ar : field.onChange_en;
+  const getFieldOnChange = (field: TranslatableField, langCode: string) => {
+    if (langCode === "ar") return field.onChange_ar;
+    if (langCode === "fr") return field.onChange_fr || (() => {});
+    return field.onChange_en;
+  };
 
   const handleTranslateAll = async () => {
     // Get source text from the active tab
