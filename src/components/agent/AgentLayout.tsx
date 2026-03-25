@@ -3,13 +3,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, FolderKanban, Calendar,
-  UserCircle, Bell, Mail, LogOut, Menu, Users2, Home, Globe
+  UserCircle, Bell, Mail, LogOut, Menu, Users2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import DashboardSidebarHeader from "@/components/DashboardSidebarHeader";
 
 interface AgentLayoutProps {
   children: React.ReactNode;
