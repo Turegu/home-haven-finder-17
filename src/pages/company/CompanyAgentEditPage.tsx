@@ -234,6 +234,8 @@ const CompanyAgentEditPage = () => {
       name_ar: form.name_ar || null,
       name_fr: form.name_fr || null,
       designation: form.designation || null,
+      designation_ar: form.designation_ar || null,
+      designation_fr: form.designation_fr || null,
       email: form.email.trim(),
       phone: form.phone || null,
       whatsapp: form.whatsapp || null,
