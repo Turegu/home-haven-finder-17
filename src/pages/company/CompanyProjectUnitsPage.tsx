@@ -299,7 +299,7 @@ const CompanyProjectUnitsPage = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Unit Price ({form.currency})</Label>
+                <Label className="font-medium">{t("units.unitPrice")} ({form.currency})</Label>
                 <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" />
               </div>
               <div className="space-y-2">
