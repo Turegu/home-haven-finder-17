@@ -149,6 +149,8 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
           const onChange = getFieldOnChange(field, activeTab);
           const placeholder = isAr
             ? field.placeholder_ar || (field.multiline ? "النص بالعربية..." : "الاسم بالعربية...")
+            : activeTab === "fr"
+            ? field.placeholder_fr || (field.multiline ? "Texte en français..." : "Nom en français...")
             : field.placeholder_en || "";
 
           return (
