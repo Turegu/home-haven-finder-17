@@ -49,6 +49,7 @@ function pickRandom<T>(arr: T[], count: number): T[] {
 }
 
 export const TopAgentsSpotlight = () => {
+  const { i18n } = useTranslation();
   const { data: dbAgents } = useQuery({
     queryKey: ["spotlight-agents"],
     queryFn: async () => {
