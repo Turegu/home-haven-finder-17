@@ -35,7 +35,7 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
   if (count === 0) return null;
 
   const deletionDate = earliestDate ? format(addDays(new Date(earliestDate), 90), "do MMM yyyy") : "3 months after deactivation";
-  const label = tableName === "properties" ? "listings" : tableName;
+  const label = tableName === "properties" ? "listings" : tableName === "agents" ? "agents" : tableName;
 
   return (
     <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 mb-4">
