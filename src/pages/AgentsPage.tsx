@@ -143,7 +143,13 @@ const boostOrder = (cls?: string, endDate?: string | null) =>
   isBoosted(cls, endDate) ? 0 : 1;
 
 const AgentsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const loc = (name: string, name_ar?: string | null, name_fr?: string | null) => {
+    if (lang === 'ar' && name_ar) return name_ar;
+    if (lang === 'fr' && name_fr) return name_fr;
+    return name;
+  };
   const [activeTab, setActiveTab] = useState<'companies' | 'agents'>('agents');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
