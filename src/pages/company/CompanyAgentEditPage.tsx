@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useMembershipLimits } from "@/hooks/useMembershipLimits";
+import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import {
   Save, Upload, X, Mail, ImageIcon, UserCircle, Phone, FileText,
   Globe, ChevronDown, Search, Briefcase

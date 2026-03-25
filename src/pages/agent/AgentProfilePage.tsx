@@ -20,6 +20,7 @@ import {
   FileText, Globe, ChevronDown, Search, Grid3X3, Briefcase, Rocket
 } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
 import { agentDesignations } from "@/data/designations";
 
