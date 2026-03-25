@@ -400,6 +400,14 @@ const CompanyProfilePage = () => {
               <Label className="text-foreground font-medium">Company Name</Label>
               <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" />
             </div>
+            <ArabicTranslateField
+              label="Company Name (Arabic)"
+              value={form.name_ar}
+              onChange={(v) => updateField("name_ar", v)}
+              sourceText={form.name}
+              fieldType="name"
+              maxLength={100}
+            />
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Company Type</Label>
               <div className="flex flex-wrap gap-2 mt-1">
