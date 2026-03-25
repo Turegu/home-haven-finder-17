@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
 import { formatCompanyTypes } from '@/data/companyTypes';
-import { MapPin, Search, Home, Globe, Building2, ChevronLeft, ChevronRight, Crown } from 'lucide-react';
+import { MapPin, Search, Home, Globe, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
