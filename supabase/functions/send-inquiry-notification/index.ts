@@ -132,8 +132,8 @@ Deno.serve(async (req) => {
         to: recipientEmail,
         subject,
         html,
-        sender_domain: "notify.turegu.com",
-        from: "noreply@turegu.com",
+        sender_domain: Deno.env.get("EMAIL_SENDER_DOMAIN") || "notify.turegu.com",
+        from: Deno.env.get("EMAIL_FROM_ADDRESS") || "noreply@turegu.com",
         from_name: "Turegu",
       }),
     });
