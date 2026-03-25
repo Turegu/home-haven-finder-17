@@ -114,7 +114,10 @@
     "languages": "اللغات",
     "noCompaniesFound": "لم يتم العثور على شركات.",
     "noAgentsFound": "لم يتم العثور على وكلاء.",
-    "saveSearch": "حفظ البحث"
+    "saveSearch": "حفظ البحث",
+    "topCompany": "شركة رائدة",
+    "topAgent": "وكيل مميز",
+    "headOfficeNotSet": "لم يتم تحديد موقع المكتب الرئيسي"
   },
   "home": {
     "featuredProjects": "مشاريع مميزة",
