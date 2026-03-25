@@ -394,7 +394,7 @@ const CompanyAgentEditPage = () => {
               >
                 <option value="">{t("companyDashboard.agentDesignation")}</option>
                 {agentDesignations.map(d => (
-                  <option key={d.value} value={d.value}>{d.en}</option>
+                  <option key={d.value} value={d.value}>{i18n.language === "ar" ? d.ar : i18n.language === "fr" ? d.fr : d.en}</option>
                 ))}
               </select>
               {fieldErrors.designation && <p className="text-xs text-destructive">{fieldErrors.designation}</p>}

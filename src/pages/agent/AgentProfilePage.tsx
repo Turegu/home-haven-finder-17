@@ -335,7 +335,16 @@ const AgentProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Designation</Label>
-              <Input value={form.designation} onChange={(e) => updateField("designation", e.target.value)} className="bg-secondary/50" />
+              <select
+                value={form.designation}
+                onChange={(e) => updateField("designation", e.target.value)}
+                className="w-full rounded-md border border-input px-3 py-2 text-sm bg-secondary/50"
+              >
+                <option value="">Designation</option>
+                {agentDesignations.map((d) => (
+                  <option key={d.value} value={d.value}>{designationLabel(d)}</option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">

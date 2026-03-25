@@ -472,7 +472,7 @@ const CompanyProfilePage = () => {
                           : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
                       }`}
                     >
-                      {ct.label}
+                      {i18n.language === "ar" ? ct.label_ar : i18n.language === "fr" ? ct.label_fr : ct.label}
                     </button>
                   ))}
                 </div>
