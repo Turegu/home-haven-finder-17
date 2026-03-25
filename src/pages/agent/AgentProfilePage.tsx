@@ -203,7 +203,7 @@ const AgentProfilePage = () => {
           whatsapp: form.whatsapp || null,
           description: form.description || null,
           registration_number: form.registration_number || null,
-          service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : [],
+          service_areas: form.service_areas.length > 0 ? form.service_areas : [],
           languages: form.languages.length > 0 ? form.languages : [],
           avatar_url: form.avatar_url || null,
         })
