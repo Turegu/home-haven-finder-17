@@ -974,6 +974,8 @@
     "propertiesUsed": "Propriétés utilisées : {{used}} / {{max}} ({{membership}})",
     "projectsUsed": "Projets utilisés : {{used}} / {{max}} ({{membership}})",
     "eventsUsed": "Événements utilisés : {{used}} / {{max}} ({{membership}})",
+    "agentsUsed": "Agents utilisés : {{used}} / {{max}} ({{membership}})",
+    "limitReached": "Limite de {{type}} atteinte. Mettez à niveau votre forfait.",
     "showing": "Affichage de {{count}} sur {{total}}",
     "id": "ID",
     "creationDate": "Date de création",
