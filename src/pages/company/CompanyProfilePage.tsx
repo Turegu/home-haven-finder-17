@@ -209,6 +209,7 @@ const CompanyProfilePage = () => {
         .update({
           name: form.name.trim(),
           name_ar: form.name_ar || null,
+          name_fr: form.name_fr || null,
           company_types: form.company_types.length > 0 ? form.company_types : null,
           service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()) : null,
           languages: form.languages.length > 0 ? form.languages : null,
