@@ -20,6 +20,8 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Search, Plus, MoreVertical, Pencil, Coins, Trash2, ArrowUpCircle, Rocket } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
