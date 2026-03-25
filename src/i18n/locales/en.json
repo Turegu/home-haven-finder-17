@@ -337,7 +337,8 @@
     "backToTop": "Back to top",
     "loadingMap": "Loading map...",
     "searchLanguages": "Search languages...",
-    "noLanguagesFound": "No languages found"
+    "noLanguagesFound": "No languages found",
+    "autoTranslateNote": "Auto-translate for speed, or enter your own text in any language for maximum precision."
   },
   "detail": {
     "about": "About",

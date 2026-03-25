@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ const LANGS = [
 ];
 
 const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("en");
   const [translating, setTranslating] = useState(false);
 
@@ -143,7 +145,7 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
 
       {/* Translation note */}
       <p className="text-xs text-muted-foreground italic -mt-2">
-        Auto-translate for speed, or enter your own text in any language for maximum precision.
+        {t("common.autoTranslateNote")}
       </p>
 
       {/* Fields */}

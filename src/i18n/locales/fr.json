@@ -337,7 +337,8 @@
     "backToTop": "Retour en haut",
     "loadingMap": "Chargement de la carte...",
     "searchLanguages": "Rechercher des langues...",
-    "noLanguagesFound": "Aucune langue trouvée"
+    "noLanguagesFound": "Aucune langue trouvée",
+    "autoTranslateNote": "Utilisez la traduction automatique pour aller plus vite, ou saisissez votre propre texte dans n'importe quelle langue pour une précision maximale."
   },
   "detail": {
     "about": "À propos",
