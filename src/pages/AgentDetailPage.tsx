@@ -19,9 +19,13 @@ import FollowButton from '@/components/FollowButton';
 interface AgentData {
   id: string;
   name: string;
+  name_ar: string | null;
+  name_fr: string | null;
   designation: string | null;
   avatar_url: string | null;
   description: string | null;
+  description_ar: string | null;
+  description_fr: string | null;
   languages: string[] | null;
   service_areas: string[] | null;
   phone: string | null;
@@ -31,6 +35,7 @@ interface AgentData {
   companies: {
     id: string;
     name: string;
+    name_ar: string | null;
     logo_url: string | null;
     company_types: string[] | null;
     cover_url: string | null;
