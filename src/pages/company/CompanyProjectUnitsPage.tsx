@@ -332,7 +332,7 @@ const CompanyProjectUnitsPage = () => {
             {/* Floor Plans — separate section */}
             <div className="space-y-2">
               <Label className="font-medium flex items-center gap-1.5">
-                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> Floor Plans / Layouts
+                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> {t("units.floorPlansLayouts")}
               </Label>
               <div className="flex flex-wrap gap-3">
                 {form.floor_plans.map((url, i) => (
