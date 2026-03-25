@@ -386,7 +386,7 @@ const AgentsPage = () => {
 
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-2">
                       <Home className="h-3.5 w-3.5 text-accent shrink-0" />
-                      <span className="truncate">{headOffice || 'Head office location not set'}</span>
+                      <span className="truncate">{headOffice || t('filters.headOfficeNotSet')}</span>
                     </div>
 
                     <div className="flex items-center gap-4 mt-3 text-sm">
