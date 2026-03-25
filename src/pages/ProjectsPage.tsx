@@ -40,7 +40,7 @@ import verticalBannerPlaceholder from '@/assets/banners/vertical-banner-placehol
 const horizontalBanners = [horizontalBannerPlaceholder, horizontalBannerPlaceholder2];
 
 const GRID_ITEMS = 15;
-const LIST_ITEMS = 21;
+const LIST_ITEMS = 20;
 
 const ProjectsPage = () => {
   const { t } = useTranslation();
