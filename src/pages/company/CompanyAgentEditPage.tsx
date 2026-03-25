@@ -101,6 +101,8 @@ const CompanyAgentEditPage = () => {
     name_ar: "",
     name_fr: "",
     designation: "",
+    designation_ar: "",
+    designation_fr: "",
     email: "",
     phone: "",
     whatsapp: "",
