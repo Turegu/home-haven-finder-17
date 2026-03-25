@@ -239,7 +239,7 @@ const CompanyAgentsPage = () => {
                     <TableCell className="text-sm font-semibold text-primary">{agent.credit_balance}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(agent.status)} variant="secondary">
-                        {agent.status === "active" ? t("companyDashboard.active") : agent.status === "inactive" ? t("companyDashboard.inactive") : agent.status === "pending" ? t("common.pending") : agent.status}
+                        {agent.status === "active" ? t("companyDashboard.active") : agent.status === "inactive" && agent.downgraded_at ? t("companyDashboard.frozen") : agent.status === "inactive" ? t("companyDashboard.inactive") : agent.status === "pending" ? t("common.pending") : agent.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
