@@ -147,6 +147,8 @@ const CompanyAgentEditPage = () => {
         name_ar: d.name_ar || "",
         name_fr: d.name_fr || "",
         designation: d.designation || "",
+        designation_ar: d.designation_ar || "",
+        designation_fr: d.designation_fr || "",
         email: d.email || "",
         phone: d.phone || "",
         whatsapp: d.whatsapp || "",
