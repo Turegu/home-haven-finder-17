@@ -1299,5 +1299,37 @@
       "aiAnalysis": "Comparaison et analyse d'investissement par IA",
       "galleryTools": "Galerie interactive et outils de visualisation"
     }
+  },
+  "units": {
+    "projectUnits": "Unités du projet",
+    "addUnit": "Ajouter une unité",
+    "editUnit": "Modifier l'unité",
+    "unitName": "Nom de l'unité",
+    "unitType": "Type d'unité",
+    "noOfRooms": "Nombre de chambres",
+    "noOfBathrooms": "Nombre de salles de bain",
+    "carParking": "Places de parking",
+    "unitPrice": "Prix de l'unité",
+    "unitArea": "Surface",
+    "unitImages": "Images de l'unité",
+    "floorPlansLayouts": "Plans d'étage / Agencements",
+    "amenities": "Équipements",
+    "noUnitsYet": "Aucune unité pour le moment. Cliquez sur \"Ajouter une unité\" pour en créer une.",
+    "unitNameRequired": "Le nom de l'unité est requis",
+    "unitSaved": "Unité enregistrée ! Vous pouvez maintenant ajouter des plans de paiement ci-dessous.",
+    "unitUpdated": "Unité mise à jour !",
+    "unitDeleted": "Unité supprimée",
+    "deleteFailed": "Échec de la suppression",
+    "saveFailed": "Échec de l'enregistrement",
+    "loadFailed": "Échec du chargement des unités",
+    "saving": "Enregistrement...",
+    "saveAndContinue": "Enregistrer et continuer",
+    "updateUnit": "Mettre à jour l'unité",
+    "saveAndAddPayment": "Enregistrer et ajouter un plan de paiement",
+    "selectRooms": "Sélectionner les chambres",
+    "selectBathrooms": "Sélectionner les salles de bain",
+    "selectParking": "Sélectionner le parking",
+    "browse": "Parcourir",
+    "bath": "SdB"
   }
 }
