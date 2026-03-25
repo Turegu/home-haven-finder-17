@@ -186,8 +186,8 @@ const CompanyProjectUnitsPage = () => {
 
   const handleDelete = async (unitId: string) => {
     const { error } = await supabase.from("project_units").delete().eq("id", unitId);
-    if (error) toast.error("Delete failed");
-    else { toast.success("Unit deleted"); fetchUnits(); }
+    if (error) toast.error(t("units.deleteFailed"));
+    else { toast.success(t("units.unitDeleted")); fetchUnits(); }
   };
 
   const statusColor = (s: string) => {
