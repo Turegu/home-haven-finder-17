@@ -100,7 +100,7 @@ export function usePropertySearch(params: PropertySearchParams) {
 
       // Property types
       if (params.propertyTypes && params.propertyTypes.length > 0) {
-        query = query.in("property_type", params.propertyTypes);
+        query = query.in("property_type", params.propertyTypes.map(t => t.toLowerCase()));
       }
 
       // Price range
