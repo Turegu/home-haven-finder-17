@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -40,48 +40,14 @@ export function useLocalizedServiceAreas(serviceAreas: string[] | null | undefin
     let cancelled = false;
 
     const localize = async () => {
-      // Build an OR filter for unaccent matching across all location columns
-      const orFilters = parts
-        .flatMap((p) => {
-          const escaped = p.replace(/'/g, "''");
-          return [
-            `province.ilike.%${escaped}%`,
-            `district.ilike.%${escaped}%`,
-            `neighborhood.ilike.%${escaped}%`,
-          ];
-        })
-        .join(",");
-
-      const { data: rows } = await supabase
-        .from("locations")
-        .select("province, province_ar, district, district_ar, neighborhood, neighborhood_ar")
-        .eq("status", "active")
-        .or(orFilters)
-        .limit(500);
+      const { data: rows } = await supabase.rpc("get_service_area_translations", {
+        p_areas: parts,
+      });
 
       const translationMap = new Map<string, string>();
-
-      const normalize = (s: string) =>
-        s
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .trim();
-
-      const partsNormalized = new Map(parts.map((p) => [normalize(p), p]));
-
       (rows ?? []).forEach((row: any) => {
-        if (row.province && row.province_ar) {
-          const n = normalize(row.province);
-          if (partsNormalized.has(n)) translationMap.set(partsNormalized.get(n)!, row.province_ar);
-        }
-        if (row.district && row.district_ar) {
-          const n = normalize(row.district);
-          if (partsNormalized.has(n)) translationMap.set(partsNormalized.get(n)!, row.district_ar);
-        }
-        if (row.neighborhood && row.neighborhood_ar) {
-          const n = normalize(row.neighborhood);
-          if (partsNormalized.has(n)) translationMap.set(partsNormalized.get(n)!, row.neighborhood_ar);
+        if (row.original && row.translated) {
+          translationMap.set(row.original, row.translated);
         }
       });
 
