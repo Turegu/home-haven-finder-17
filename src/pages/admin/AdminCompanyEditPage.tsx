@@ -118,6 +118,7 @@ const AdminCompanyEditPage = () => {
         languages: form.languages.length > 0 ? form.languages : null,
         registration_number: form.registration_number || null,
         about: form.about || null,
+        about_ar: form.about_ar || null,
         membership: form.membership,
         province: form.province || null,
         town: form.town || null,
