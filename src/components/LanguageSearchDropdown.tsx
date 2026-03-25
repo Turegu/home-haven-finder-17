@@ -129,8 +129,8 @@ export default function LanguageSearchDropdown({
           {/* Priority languages */}
           {filteredPriority.length > 0 && (
             <>
-              {filteredPriority.map((lang) => (
-                <LangRow key={lang} lang={lang} shortLabel={SHORT_LABELS[lang]} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
+          {filteredPriority.map((lang) => (
+                <LangRow key={lang} lang={lang} displayLabel={tLang(lang)} shortLabel={SHORT_LABELS[lang]} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
               ))}
               {filteredRest.length > 0 && (
                 <div className="border-t border-border my-1.5" />
