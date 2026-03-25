@@ -360,6 +360,14 @@ const CompanyAgentEditPage = () => {
               <Textarea value={form.description} onChange={(e) => { updateField("description", e.target.value); clearFieldError("description"); }} className={`bg-secondary/50 min-h-[100px] ${fieldErrors.description ? "border-destructive" : ""}`} placeholder="Write Agent Description" />
               {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
             </div>
+            <ArabicTranslateField
+              label="Description (Arabic)"
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 
