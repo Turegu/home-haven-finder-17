@@ -226,7 +226,7 @@ const AgentDetailPage = () => {
                     <img src={agent.companies.logo_url} alt={agent.companies.name} className="w-full h-full object-contain p-1.5" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-lg">
-                      {agent.companies.name.charAt(0)}
+                      {getLocalizedName(agent.companies.name, agent.companies.name_ar).charAt(0)}
                     </div>
                   )}
                 </div>
