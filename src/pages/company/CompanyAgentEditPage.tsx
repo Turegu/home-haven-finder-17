@@ -171,7 +171,7 @@ const CompanyAgentEditPage = () => {
         description: d.description || "",
         description_ar: d.description_ar || "",
         description_fr: d.description_fr || "",
-        service_areas: (d.service_areas || []).join(", "),
+        service_areas: d.service_areas || [],
         languages: d.languages || [],
         registration_number: d.registration_number || "",
       });
