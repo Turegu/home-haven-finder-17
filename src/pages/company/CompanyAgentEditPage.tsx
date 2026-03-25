@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ArabicTranslateField from "@/components/ArabicTranslateField";
+import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -316,20 +316,38 @@ const CompanyAgentEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<UserCircle className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
+            <LanguageContentTabs
+              fields={[
+                {
+                  key: "name",
+                  label: "Agent Name",
+                  value_en: form.name,
+                  value_ar: form.name_ar,
+                  onChange_en: (v) => { updateField("name", v); clearFieldError("name"); },
+                  onChange_ar: (v) => updateField("name_ar", v),
+                  maxLength: 100,
+                  placeholder_en: "Enter Agent Name",
+                  required: true,
+                  error: fieldErrors.name,
+                  fieldType: "name",
+                },
+                {
+                  key: "description",
+                  label: "Description",
+                  value_en: form.description,
+                  value_ar: form.description_ar,
+                  onChange_en: (v) => { updateField("description", v); clearFieldError("description"); },
+                  onChange_ar: (v) => updateField("description_ar", v),
+                  multiline: true,
+                  placeholder_en: "Write Agent Description",
+                  required: true,
+                  error: fieldErrors.description,
+                  fieldType: "description",
+                },
+              ]}
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2" data-field="name">
-                <Label className="text-foreground font-medium">Agent Name *</Label>
-                <Input value={form.name} onChange={(e) => { updateField("name", e.target.value); clearFieldError("name"); }} className={`bg-secondary/50 ${fieldErrors.name ? "border-destructive" : ""}`} placeholder="Enter Agent Name" />
-                {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
-              </div>
-              <ArabicTranslateField
-                label="Agent Name (Arabic)"
-                value={form.name_ar}
-                onChange={(v) => updateField("name_ar", v)}
-                sourceText={form.name}
-                fieldType="name"
-                maxLength={100}
-              />
               <div className="space-y-2" data-field="designation">
                 <Label className="text-foreground font-medium">Agent Designation *</Label>
                 <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder="Enter Agent Designation" />
@@ -354,20 +372,6 @@ const CompanyAgentEditPage = () => {
               <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder="Registration Number" />
               {fieldErrors.registration_number && <p className="text-xs text-destructive">{fieldErrors.registration_number}</p>}
             </div>
-
-            <div className="space-y-2" data-field="description">
-              <Label className="text-foreground font-medium">Description *</Label>
-              <Textarea value={form.description} onChange={(e) => { updateField("description", e.target.value); clearFieldError("description"); }} className={`bg-secondary/50 min-h-[100px] ${fieldErrors.description ? "border-destructive" : ""}`} placeholder="Write Agent Description" />
-              {fieldErrors.description && <p className="text-xs text-destructive">{fieldErrors.description}</p>}
-            </div>
-            <ArabicTranslateField
-              label="Description (Arabic)"
-              value={form.description_ar}
-              onChange={(v) => updateField("description_ar", v)}
-              sourceText={form.description}
-              fieldType="description"
-              multiline
-            />
           </div>
         </section>
 

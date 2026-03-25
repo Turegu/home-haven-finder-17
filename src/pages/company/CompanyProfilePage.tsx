@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ArabicTranslateField from "@/components/ArabicTranslateField";
+import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import CompanyLayout from "@/components/company/CompanyLayout";
@@ -396,72 +396,70 @@ const CompanyProfilePage = () => {
         {/* ─── Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<Building2 className="h-4 w-4" />} title="Information" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Company Name</Label>
-              <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" />
-            </div>
-            <ArabicTranslateField
-              label="Company Name (Arabic)"
-              value={form.name_ar}
-              onChange={(v) => updateField("name_ar", v)}
-              sourceText={form.name}
-              fieldType="name"
-              maxLength={100}
+          <div className="space-y-5">
+            <LanguageContentTabs
+              fields={[
+                {
+                  key: "name",
+                  label: "Company Name",
+                  value_en: form.name,
+                  value_ar: form.name_ar,
+                  onChange_en: (v) => updateField("name", v),
+                  onChange_ar: (v) => updateField("name_ar", v),
+                  maxLength: 100,
+                  fieldType: "name",
+                },
+                {
+                  key: "about",
+                  label: "About Us",
+                  value_en: form.about,
+                  value_ar: form.about_ar,
+                  onChange_en: (v) => { if (v.length <= 1000) updateField("about", v); },
+                  onChange_ar: (v) => updateField("about_ar", v),
+                  multiline: true,
+                  maxLength: 1000,
+                  fieldType: "description",
+                },
+              ]}
             />
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Company Type</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {companyTypes.map((ct) => (
-                  <button
-                    key={ct.value}
-                    type="button"
-                    onClick={() => {
-                      setForm(prev => ({
-                        ...prev,
-                        company_types: prev.company_types.includes(ct.value)
-                          ? prev.company_types.filter(v => v !== ct.value)
-                          : [...prev.company_types, ct.value],
-                      }));
-                    }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                      form.company_types.includes(ct.value)
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
-                    }`}
-                  >
-                    {ct.label}
-                  </button>
-                ))}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">Company Type</Label>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {companyTypes.map((ct) => (
+                    <button
+                      key={ct.value}
+                      type="button"
+                      onClick={() => {
+                        setForm(prev => ({
+                          ...prev,
+                          company_types: prev.company_types.includes(ct.value)
+                            ? prev.company_types.filter(v => v !== ct.value)
+                            : [...prev.company_types, ct.value],
+                        }));
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                        form.company_types.includes(ct.value)
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
+                      }`}
+                    >
+                      {ct.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">Service Areas</Label>
+                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
+              </div>
+              <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">Registration Number</Label>
+                <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Service Areas</Label>
-              <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
-            </div>
-            <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Registration Number</Label>
-              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" />
-            </div>
-          </div>
-        </section>
-
-        {/* ─── About Us ─── */}
-        <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<FileText className="h-4 w-4" />} title="About Us" />
-          <Textarea value={form.about} onChange={(e) => { if (e.target.value.length <= 1000) updateField("about", e.target.value); }} className="bg-secondary/50 min-h-[120px]" maxLength={1000} />
-          <p className="text-xs text-muted-foreground text-right mt-1">{(form.about || "").length}/1000</p>
-          <div className="mt-4">
-            <ArabicTranslateField
-              label="About Us (Arabic)"
-              value={form.about_ar}
-              onChange={(v) => updateField("about_ar", v)}
-              sourceText={form.about}
-              fieldType="description"
-              multiline
-              maxLength={1000}
-            />
           </div>
         </section>
 

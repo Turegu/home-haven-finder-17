@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import ArabicTranslateField from "@/components/ArabicTranslateField";
+import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
@@ -426,49 +426,52 @@ const CompanyPropertyEditPage = () => {
             <h2 className="text-base font-semibold text-foreground tracking-tight">{ t("companyDashboard.descriptionInfo") }</h2>
           </div>
           <div className="space-y-5">
-            <div className="space-y-2" data-field="title">
-              <Label className="text-foreground font-medium">{ t("companyDashboard.propertyTitle") + " *" }</Label>
-              <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={60} />
-              <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 {t("companyDashboard.characters")}</p>
-            </div>
-            <ArabicTranslateField
-              label={t("companyDashboard.propertyTitle") + " (Arabic)"}
-              value={form.title_ar}
-              onChange={(v) => updateField("title_ar", v)}
-              sourceText={form.title}
-              fieldType="name"
-              maxLength={60}
-            />
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">{ t("companyDashboard.propertyDescription") }</Label>
-              <RichTextToolbar
-                onAction={(tag) => {
-                  const el = document.getElementById("prop-desc") as HTMLTextAreaElement | null;
-                  if (!el) return;
-                  const start = el.selectionStart;
-                  const end = el.selectionEnd;
-                  const text = form.description;
-                  const selected = text.substring(start, end);
-                  let wrapped = selected;
-                  if (tag === "bold") wrapped = `**${selected}**`;
-                  else if (tag === "italic") wrapped = `*${selected}*`;
-                  else if (tag === "underline") wrapped = `__${selected}__`;
-                  else if (tag === "bullet") wrapped = `\n- ${selected}`;
-                  else if (tag === "heading") wrapped = `\n### ${selected}`;
-                  const newText = text.substring(0, start) + wrapped + text.substring(end);
-                  updateField("description", newText);
-                  setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
-                }}
-              />
-              <Textarea id="prop-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
-            </div>
-            <ArabicTranslateField
-              label={t("companyDashboard.propertyDescription") + " (Arabic)"}
-              value={form.description_ar}
-              onChange={(v) => updateField("description_ar", v)}
-              sourceText={form.description}
-              fieldType="description"
-              multiline
+            <LanguageContentTabs
+              fields={[
+                {
+                  key: "title",
+                  label: t("companyDashboard.propertyTitle"),
+                  value_en: form.title,
+                  value_ar: form.title_ar,
+                  onChange_en: (v) => { if (v.length <= 60) updateField("title", v); },
+                  onChange_ar: (v) => updateField("title_ar", v),
+                  maxLength: 60,
+                  required: true,
+                  fieldType: "name",
+                },
+                {
+                  key: "description",
+                  label: t("companyDashboard.propertyDescription"),
+                  value_en: form.description,
+                  value_ar: form.description_ar,
+                  onChange_en: (v) => updateField("description", v),
+                  onChange_ar: (v) => updateField("description_ar", v),
+                  multiline: true,
+                  fieldType: "description",
+                  textareaId: "prop-desc",
+                  renderAbove_en: (
+                    <RichTextToolbar
+                      onAction={(tag) => {
+                        const el = document.getElementById("prop-desc") as HTMLTextAreaElement | null;
+                        if (!el) return;
+                        const start = el.selectionStart;
+                        const end = el.selectionEnd;
+                        const text = form.description;
+                        const selected = text.substring(start, end);
+                        let wrapped = selected;
+                        if (tag === "bold") wrapped = `**${selected}**`;
+                        else if (tag === "italic") wrapped = `*${selected}*`;
+                        else if (tag === "underline") wrapped = `__${selected}__`;
+                        else if (tag === "bullet") wrapped = `\n- ${selected}`;
+                        else if (tag === "heading") wrapped = `\n### ${selected}`;
+                        const newText = text.substring(0, start) + wrapped + text.substring(end);
+                        updateField("description", newText);
+                        setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
+                      }}
+                    />
+                  ),
+                },
+              ]}
             />
           </div>
         </section>
