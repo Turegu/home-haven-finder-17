@@ -652,21 +652,33 @@ const CompanyProjectEditPage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
           <div className="space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2" data-field="title">
-                <Label className="text-foreground font-medium">Project Name *</Label>
-                <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 20) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required maxLength={20} />
-                <p className="text-xs text-muted-foreground text-right">{form.title.length}/20 characters</p>
-              </div>
-              <ArabicTranslateField
-                label="Project Name (Arabic)"
-                value={form.title_ar}
-                onChange={(v) => updateField("title_ar", v)}
-                sourceText={form.title}
-                fieldType="name"
-                maxLength={20}
-              />
-            </div>
+            <LanguageContentTabs
+              fields={[
+                {
+                  key: "title",
+                  label: "Project Name",
+                  value_en: form.title,
+                  value_ar: form.title_ar,
+                  onChange_en: (v) => { if (v.length <= 20) updateField("title", v); },
+                  onChange_ar: (v) => updateField("title_ar", v),
+                  maxLength: 20,
+                  required: true,
+                  fieldType: "name",
+                },
+                {
+                  key: "description",
+                  label: "Project Description",
+                  value_en: form.description,
+                  value_ar: form.description_ar,
+                  onChange_en: (v) => updateField("description", v),
+                  onChange_ar: (v) => updateField("description_ar", v),
+                  multiline: true,
+                  fieldType: "description",
+                  textareaId: "proj-desc",
+                  renderAbove_en: <RichTextToolbar onAction={applyRichText} />,
+                },
+              ]}
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Project Tagline</Label>
@@ -674,19 +686,6 @@ const CompanyProjectEditPage = () => {
                 <p className="text-xs text-muted-foreground text-right">{form.tagline.length}/60 characters</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Project Description</Label>
-              <RichTextToolbar onAction={applyRichText} />
-              <Textarea id="proj-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
-            </div>
-            <ArabicTranslateField
-              label="Project Description (Arabic)"
-              value={form.description_ar}
-              onChange={(v) => updateField("description_ar", v)}
-              sourceText={form.description}
-              fieldType="description"
-              multiline
-            />
           </div>
         </section>
 
