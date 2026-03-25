@@ -120,7 +120,7 @@ const CompanyProfilePage = () => {
     name_ar: "",
     name_fr: "",
     company_types: [] as string[],
-    service_areas: "",
+    service_areas: [] as string[],
     languages: [] as string[],
     registration_number: "",
     about: "",
