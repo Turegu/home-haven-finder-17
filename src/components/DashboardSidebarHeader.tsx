@@ -32,7 +32,7 @@ const DashboardSidebarHeader = ({ brandPath }: DashboardSidebarHeaderProps) => {
   };
 
   const currentLangName = dbLanguages.find((l) => l.code === i18n.language)?.name
-    || (i18n.language === "ar" ? "العربية" : "English");
+    || (i18n.language === "ar" ? "العربية" : i18n.language === "fr" ? "Français" : "English");
 
   return (
     <div className="flex items-center justify-between">
