@@ -108,6 +108,7 @@ const CompanyProfilePage = () => {
     registration_number: "",
     about: "",
     about_ar: "",
+    about_fr: "",
     email: "",
     phone: "",
     whatsapp: "",
