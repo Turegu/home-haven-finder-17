@@ -228,6 +228,7 @@ const CompanyAgentEditPage = () => {
     const payload: any = {
       name: form.name.trim(),
       name_ar: form.name_ar || null,
+      name_fr: form.name_fr || null,
       designation: form.designation || null,
       email: form.email.trim(),
       phone: form.phone || null,
