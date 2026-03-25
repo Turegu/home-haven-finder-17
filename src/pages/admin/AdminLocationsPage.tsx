@@ -58,6 +58,7 @@ interface LocationSetting {
 }
 
 const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (country: string) => void }) => {
+  const { t: tr } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const filtered = search ? COUNTRIES.filter(c => turkishIncludes(c, search)) : COUNTRIES;
@@ -66,16 +67,16 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between mt-1 font-normal">
-          {value || t("admin.selectCountry")}<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {value || tr("admin.selectCountry")}<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <div className="p-2 border-b border-border">
-          <Input placeholder={t("admin.searchCountry")} value={search} onChange={(e) => setSearch(e.target.value)} className="h-8" />
+          <Input placeholder={tr("admin.searchCountry")} value={search} onChange={(e) => setSearch(e.target.value)} className="h-8" />
         </div>
         <ScrollArea className="h-[200px]">
           <div className="p-1">
-            {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">{t("admin.noCountryFound")}</p>}
+            {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">{tr("admin.noCountryFound")}</p>}
             {filtered.map(country => (
               <button key={country} onClick={() => { onSelect(country); setOpen(false); setSearch(""); }}
                 className={cn("flex items-center gap-2 w-full rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground", value === country && "bg-accent text-accent-foreground")}>

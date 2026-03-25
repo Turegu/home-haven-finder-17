@@ -5,6 +5,7 @@ import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Glob
 import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
+import { getDesignationLabel } from '@/data/designations';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -178,7 +179,7 @@ const AgentDetailPage = () => {
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{getLocalizedName(agent.designation || '', (agent as any).designation_ar, (agent as any).designation_fr)}</p>
+                    <p className="text-sm text-muted-foreground">{getDesignationLabel(agent.designation, lang)}</p>
                   </div>
 
                   {/* Stats */}

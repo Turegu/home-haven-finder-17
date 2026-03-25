@@ -5,6 +5,7 @@ import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Glob
 import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { formatCompanyTypes } from '@/data/companyTypes';
+import { getDesignationLabel } from '@/data/designations';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -347,8 +348,8 @@ const CompanyDetailPage = () => {
                     )}
                     <div>
                       <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && (agent as any).name_ar ? (agent as any).name_ar : i18n.language === 'fr' && (agent as any).name_fr ? (agent as any).name_fr : agent.name}</h4>
-                      <p className="text-sm text-muted-foreground">{i18n.language === 'ar' && (agent as any).designation_ar ? (agent as any).designation_ar : i18n.language === 'fr' && (agent as any).designation_fr ? (agent as any).designation_fr : agent.designation}</p>
-                      {agent.languages && <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).join(', ')}</p>}
+                      <p className="text-sm text-muted-foreground">{getDesignationLabel(agent.designation, i18n.language)}</p>
+                      {agent.languages && <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).map(l => t(`languageNames.${l}`, l)).join(', ')}</p>}
                     </div>
                   </Link>
                 ))}
