@@ -224,7 +224,7 @@ const CompanyProjectEditPage = () => {
   const { id } = useParams();
   const isEdit = id && id !== "new";
   const { options: filterOpts } = useFilterOptions("project");
-  const projectTypes = (filterOpts["project_types"] || []).map(t => ({ value: t, label: t }));
+  const projectTypes = (filterOpts["project_types"] || []).map(pt => ({ value: pt, label: pt }));
   const projectStatuses = filterOpts["project_statuses"] || [];
   const interiorAmenities = filterOpts["interior_amenities"] || [];
   const exteriorAmenities = filterOpts["exterior_amenities"] || [];
@@ -295,7 +295,7 @@ const CompanyProjectEditPage = () => {
     if (!isEdit) return;
     const fetch = async () => {
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
-      if (error || !data) { toast.error("Project not found"); return; }
+      if (error || !data) { toast.error(t("companyDashboard.projectNotFound")); return; }
       setForm({
         title: data.title || "", title_ar: (data as any).title_ar || "", title_fr: (data as any).title_fr || "",
         tagline: (data as any).tagline || "",
@@ -453,9 +453,9 @@ const CompanyProjectEditPage = () => {
   };
 
   const handleSubmitUnit = async () => {
-    if (!unitForm.unit_name.trim()) { toast.error("Unit name is required"); return; }
+    if (!unitForm.unit_name.trim()) { toast.error(t("companyDashboard.unitNameRequired")); return; }
     const projId = savedProjectId;
-    if (!projId) { toast.error("Please save the project first before adding units"); return; }
+    if (!projId) { toast.error(t("companyDashboard.saveProjectFirst")); return; }
     setSavingUnit(true);
     const payload: any = {
       unit_name: unitForm.unit_name.trim(), unit_type: unitForm.unit_type,
@@ -523,18 +523,18 @@ const CompanyProjectEditPage = () => {
         }
       }
 
-      toast.success(editingUnitId ? "Unit updated!" : "Unit added!");
+      toast.success(editingUnitId ? t("companyDashboard.unitUpdated") : t("companyDashboard.unitAdded"));
       setUnitDialogOpen(false);
       fetchUnits(projId);
     } catch (err: any) {
-      toast.error(err.message || "Save failed");
+      toast.error(err.message || t("companyDashboard.saveFailed"));
     } finally { setSavingUnit(false); }
   };
 
   const handleDeleteUnit = async (unitId: string) => {
     const { error } = await supabase.from("project_units").delete().eq("id", unitId);
-    if (error) toast.error("Delete failed");
-    else { toast.success("Unit deleted"); if (savedProjectId) fetchUnits(savedProjectId); }
+    if (error) toast.error(t("admin.failedToDelete"));
+    else { toast.success(t("companyDashboard.unitDeleted")); if (savedProjectId) fetchUnits(savedProjectId); }
   };
 
   const unitStatusColor = (s: string) => {
@@ -542,20 +542,20 @@ const CompanyProjectEditPage = () => {
   };
 
   const validateProjectForm = (): boolean => {
-    if (!companyId) { toast.error("Company not found"); return false; }
+    if (!companyId) { toast.error(t("companyDashboard.companyNotFound")); return false; }
     if (!isEdit && !membershipLimits.canCreate("projects")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more projects. Please upgrade.`);
       return false;
     }
     const rules = [
-      { field: "title", check: !form.title.trim(), message: "Project name is required" },
-      { field: "project_type", check: !form.project_type, message: "Project type is required" },
-      { field: "project_status", check: !form.project_status, message: "Project status is required" },
-      { field: "province", check: !form.province, message: "Province is required" },
-      { field: "town", check: !form.town, message: "Town/District is required" },
-      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
-      { field: "min_price", check: !form.min_price && !form.max_price, message: "At least one price value is required" },
-      { field: "min_area", check: !form.min_area && !form.max_area, message: "At least one area value is required" },
+      { field: "title", check: !form.title.trim(), message: t("companyDashboard.projectNameRequired") },
+      { field: "project_type", check: !form.project_type, message: t("companyDashboard.projectTypeRequired") },
+      { field: "project_status", check: !form.project_status, message: t("companyDashboard.projectStatusRequired") },
+      { field: "province", check: !form.province, message: t("companyDashboard.provinceRequired") },
+      { field: "town", check: !form.town, message: t("companyDashboard.townRequired") },
+      { field: "neighbourhood", check: !form.neighbourhood, message: t("companyDashboard.neighbourhoodRequired") },
+      { field: "min_price", check: !form.min_price && !form.max_price, message: t("companyDashboard.atLeastOnePrice") },
+      { field: "min_area", check: !form.min_area && !form.max_area, message: t("companyDashboard.atLeastOneArea") },
     ];
     const valid = validate(rules);
     if (!valid) {
@@ -573,7 +573,7 @@ const CompanyProjectEditPage = () => {
   const handleSave = async (publishStatus: "draft" | "active", classificationOverride?: string) => {
     if (publishStatus === "active" && !validateProjectForm()) return;
     if (publishStatus === "draft") {
-      if (!companyId) { toast.error("Company not found"); return; }
+      if (!companyId) { toast.error(t("companyDashboard.companyNotFound")); return; }
       if (!form.title.trim()) { toast.error("Project name is required"); return; }
     }
 
@@ -609,16 +609,16 @@ const CompanyProjectEditPage = () => {
       if (isEdit) {
         const { error } = await supabase.from("projects").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
+        toast.success(publishStatus === "active" ? t("companyDashboard.projectPublished") : t("companyDashboard.projectSavedDraft"));
       } else {
         const { data: inserted, error } = await supabase.from("projects").insert(payload).select("id").single();
         if (error) throw error;
         if (inserted) setSavedProjectId(inserted.id);
-        toast.success(publishStatus === "active" ? "Project published!" : "Project saved as draft!");
+        toast.success(publishStatus === "active" ? t("companyDashboard.projectPublished") : t("companyDashboard.projectSavedDraft"));
       }
       navigate("/company/projects");
     } catch (err: any) {
-      toast.error(err.message || "Save failed");
+      toast.error(err.message || t("companyDashboard.saveFailed"));
     } finally { setLoading(false); }
   };
 
@@ -644,19 +644,19 @@ const CompanyProjectEditPage = () => {
 
   return (
     <CompanyLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Project" : "New Project"}</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? t("companyDashboard.editProject") : t("companyDashboard.newProject")}</h1>
 
       <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
 
         {/* ─── Description & Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
+          <SectionHeader icon={<FileText className="h-4 w-4" />} title={t("companyDashboard.descriptionInfo")} />
           <div className="space-y-5">
             <LanguageContentTabs
               fields={[
                 {
                   key: "title",
-                  label: "Project Name",
+                  label: t("companyDashboard.projectName"),
                   value_en: form.title,
                   value_ar: form.title_ar,
                   value_fr: form.title_fr,
@@ -669,7 +669,7 @@ const CompanyProjectEditPage = () => {
                 },
                 {
                   key: "description",
-                  label: "Project Description",
+                  label: t("companyDashboard.projectDescription"),
                   value_en: form.description,
                   value_ar: form.description_ar,
                   value_fr: form.description_fr,
@@ -685,7 +685,7 @@ const CompanyProjectEditPage = () => {
             />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label className="text-foreground font-medium">Project Tagline</Label>
+                <Label className="text-foreground font-medium">{t("companyDashboard.projectTagline")}</Label>
                 <Input value={form.tagline} onChange={(e) => { if (e.target.value.length <= 60) updateField("tagline", e.target.value); }} className="bg-secondary/50" maxLength={60} />
                 <p className="text-xs text-muted-foreground text-right">{form.tagline.length}/60 characters</p>
               </div>
@@ -695,19 +695,19 @@ const CompanyProjectEditPage = () => {
 
         {/* ─── Type & Status ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<Building2 className="h-4 w-4" />} title="Type & Status" />
+          <SectionHeader icon={<Building2 className="h-4 w-4" />} title={t("companyDashboard.typeStatus")} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FormSelect
-              label="Project Type *"
+              label={t("companyDashboard.projectType") + " *"}
               icon={<Building2 className="h-3.5 w-3.5 text-muted-foreground" />}
               value={form.project_type}
               onChange={(v) => updateField("project_type", v)}
-              options={projectTypes.map((t) => ({ value: t.value, label: t.label }))}
+              options={projectTypes.map((opt) => ({ value: opt.value, label: opt.label }))}
               fieldName="project_type"
               error={errorClass("project_type") !== ""}
             />
             <FormSelect
-              label="Project Status *"
+              label={t("companyDashboard.projectStatus") + " *"}
               icon={<Activity className="h-3.5 w-3.5 text-muted-foreground" />}
               value={form.project_status}
               onChange={(v) => updateField("project_status", v)}
@@ -717,7 +717,7 @@ const CompanyProjectEditPage = () => {
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> Developer Name
+                <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.developerName")}
               </Label>
               <Input value={form.developer} onChange={(e) => updateField("developer", e.target.value)} className="bg-secondary/50" />
             </div>
@@ -726,17 +726,17 @@ const CompanyProjectEditPage = () => {
 
         {/* ─── Pricing & Size ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<DollarSign className="h-4 w-4" />} title="Pricing & Size" />
+          <SectionHeader icon={<DollarSign className="h-4 w-4" />} title={t("companyDashboard.pricingSize")} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div className="space-y-2" data-field="min_price">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Starting Price ({form.currency}) *
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.startingPrice")} ({form.currency}) *
               </Label>
               <Input type="number" value={form.min_price} onChange={(e) => updateField("min_price", e.target.value)} className={`bg-secondary/50 ${errorClass("min_price")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Max Price ({form.currency})
+                <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.maxPrice")} ({form.currency})
               </Label>
               <Input type="number" value={form.max_price} onChange={(e) => updateField("max_price", e.target.value)} className="bg-secondary/50" />
             </div>
@@ -754,19 +754,19 @@ const CompanyProjectEditPage = () => {
             />
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> No. Of Units
+                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.noOfUnits")}
               </Label>
               <Input type="number" value={form.min_units} onChange={(e) => updateField("min_units", e.target.value)} className="bg-secondary/50" />
             </div>
             <div className="space-y-2" data-field="min_area">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Min Area ({form.area_unit}) *
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.minArea")} ({form.area_unit}) *
               </Label>
               <Input type="number" value={form.min_area} onChange={(e) => updateField("min_area", e.target.value)} className={`bg-secondary/50 ${errorClass("min_area")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> Max Area ({form.area_unit})
+                <Ruler className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.maxArea")} ({form.area_unit})
               </Label>
               <Input type="number" value={form.max_area} onChange={(e) => updateField("max_area", e.target.value)} className="bg-secondary/50" />
             </div>
