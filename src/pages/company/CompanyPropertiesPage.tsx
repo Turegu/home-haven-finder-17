@@ -28,6 +28,7 @@ import { useMembershipLimits } from "@/hooks/useMembershipLimits";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PerformanceInsightsTab from "@/components/analytics/PerformanceInsightsTab";
 import { useAnalyticsPhase } from "@/hooks/useAnalyticsPhase";
+import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 
 interface Property {
   id: string;
