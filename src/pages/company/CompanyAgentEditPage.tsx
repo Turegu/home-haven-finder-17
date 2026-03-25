@@ -103,7 +103,7 @@ function MultiSelectLanguages({
 
 const CompanyAgentEditPage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const isEdit = id && id !== "new";
   const [loading, setLoading] = useState(false);
