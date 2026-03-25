@@ -310,7 +310,7 @@ const CompanyProjectUnitsPage = () => {
 
             {/* Unit Images — separate section */}
             <div className="space-y-2">
-              <Label className="font-medium">Unit Images</Label>
+              <Label className="font-medium">{t("units.unitImages")}</Label>
               <div className="flex flex-wrap gap-3">
                 {form.images.map((url, i) => (
                   <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
