@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import DashboardSidebarHeader from "@/components/DashboardSidebarHeader";
 
 interface UserLayoutProps {
   children: React.ReactNode;
