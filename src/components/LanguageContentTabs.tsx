@@ -13,12 +13,15 @@ export interface TranslatableField {
   label: string;
   value_en: string;
   value_ar: string;
+  value_fr?: string;
   onChange_en: (value: string) => void;
   onChange_ar: (value: string) => void;
+  onChange_fr?: (value: string) => void;
   multiline?: boolean;
   maxLength?: number;
   placeholder_en?: string;
   placeholder_ar?: string;
+  placeholder_fr?: string;
   required?: boolean;
   error?: string;
   fieldType?: "name" | "description";
