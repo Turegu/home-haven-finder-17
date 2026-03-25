@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminListingTable, { ListingItem } from "@/components/admin/AdminListingTable";
 import { Home } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const AdminPropertiesPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialCompanyFilter = searchParams.get("company") || undefined;
@@ -70,10 +72,10 @@ const AdminPropertiesPage = () => {
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <Home className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Properties Management</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.propertiesManagement")}</h1>
         </div>
         {isLoading ? (
-          <p className="text-muted-foreground">Loading properties...</p>
+          <p className="text-muted-foreground">{t("admin.loadingProperties")}</p>
         ) : (
           <AdminListingTable
             tableName="properties"

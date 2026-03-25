@@ -7,12 +7,14 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { EventResult } from '@/hooks/useEventSearch';
+import { useTranslation } from "react-i18next";
 
 interface EventGridCardProps {
   event: EventResult;
 }
 
 const formatDate = (dateStr: string | null) => {
+  const { t } = useTranslation();
   if (!dateStr) return 'TBA';
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };

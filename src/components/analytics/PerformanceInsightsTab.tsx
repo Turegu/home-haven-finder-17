@@ -4,6 +4,7 @@ import { Eye, MousePointerClick, Heart, Phone, MessageCircle, Mail, TrendingUp, 
 import { useListingStats, getPerformanceTier, type ListingStats } from '@/hooks/useListingStats';
 import { useAnalyticsPhase, type AnalyticsPhase } from '@/hooks/useAnalyticsPhase';
 import ConversionFunnelChart from './ConversionFunnelChart';
+import { useTranslation } from "react-i18next";
 
 interface PerformanceInsightsTabProps {
   listingId: string;
@@ -41,7 +42,7 @@ function Phase1Display({ stats }: { stats: ListingStats }) {
         <Activity className="h-5 w-5 text-primary" />
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-foreground">Listing Performance</h3>
+            <h3 className="font-semibold text-foreground">{t("analytics.listingPerformance")}</h3>
             <Badge className={tier.color} variant="secondary">{tier.label}</Badge>
           </div>
           <p className="text-sm text-muted-foreground mt-1">{tier.description}</p>
@@ -53,13 +54,13 @@ function Phase1Display({ stats }: { stats: ListingStats }) {
           <Loader2 className="h-5 w-5 text-muted-foreground animate-spin" />
           <div>
             <p className="font-medium text-foreground">Analyzing Market Data...</p>
-            <p className="text-sm text-muted-foreground">Your listing is in its initial exposure phase. Performance data is being collected.</p>
+            <p className="text-sm text-muted-foreground">{t("analytics.initialExposure")}</p>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon={Eye} label="Visibility" value={stats.impressions >= 50 ? 'Excellent' : stats.impressions >= 25 ? 'Good' : 'Growing'} />
-          <StatCard icon={MousePointerClick} label="Engagement" value={stats.views >= 10 ? 'High' : stats.views >= 5 ? 'Moderate' : 'Building'} />
+          <StatCard icon={Eye} label={t("analytics.visibility")} value={stats.impressions >= 50 ? 'Excellent' : stats.impressions >= 25 ? 'Good' : 'Growing'} />
+          <StatCard icon={MousePointerClick} label={t("analytics.engagement")} value={stats.views >= 10 ? 'High' : stats.views >= 5 ? 'Moderate' : 'Building'} />
           <StatCard icon={Heart} label="Saves" value={stats.saves >= 5 ? 'Popular' : stats.saves >= 1 ? 'Gaining Interest' : 'Early Stage'} />
           <StatCard icon={Phone} label="Inquiries" value={stats.inquiryClicks >= 3 ? 'Active' : stats.inquiryClicks >= 1 ? 'Started' : 'Pending'} />
         </div>
@@ -146,6 +147,7 @@ function Phase3Display({ stats, listingTitle }: { stats: ListingStats; listingTi
 }
 
 const PerformanceInsightsTab = ({ listingId, listingType = 'property', listingTitle }: PerformanceInsightsTabProps) => {
+  const { t } = useTranslation();
   const { data: stats, isLoading: statsLoading } = useListingStats(listingId, listingType);
   const { data: phase, isLoading: phaseLoading } = useAnalyticsPhase();
 

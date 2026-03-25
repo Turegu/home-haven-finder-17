@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
+import { useTranslation } from "react-i18next";
   Dialog, DialogContent,
 } from "@/components/ui/dialog";
 
@@ -95,6 +96,7 @@ const statusColors: Record<string, string> = {
 type GalleryMode = "images" | "floor_plans";
 
 const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
+  const { t } = useTranslation();
   const [units, setUnits] = useState<ProjectUnit[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
@@ -176,8 +178,8 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
   if (loading) {
     return (
       <div className="bg-card rounded-xl border border-border p-6">
-        <h2 className="text-lg font-bold text-foreground mb-4">Available Units</h2>
-        <p className="text-sm text-muted-foreground">Loading units...</p>
+        <h2 className="text-lg font-bold text-foreground mb-4">{t("units.availableUnits")}</h2>
+        <p className="text-sm text-muted-foreground">{t("units.loadingUnits")}</p>
       </div>
     );
   }
@@ -202,7 +204,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
       {/* 1. Header with dropdown selector + unit arrows */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-bold text-foreground">Available Units</h2>
+          <h2 className="text-lg font-bold text-foreground">{t("units.availableUnits")}</h2>
           <p className="text-sm text-muted-foreground">{units.length} unit{units.length !== 1 ? 's' : ''} found</p>
         </div>
         <div className="flex items-center gap-2">

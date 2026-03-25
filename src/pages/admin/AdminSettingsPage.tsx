@@ -10,9 +10,11 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PatternLock from "@/components/admin/PatternLock";
 import type { AnalyticsPhase } from "@/hooks/useAnalyticsPhase";
+import { useTranslation } from "react-i18next";
 
 const AdminSettingsPage = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -78,9 +80,9 @@ const AdminSettingsPage = () => {
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
-      toast({ title: "Error saving settings", variant: "destructive" });
+      toast({ title: t("admin.errorSavingSettings"), variant: "destructive" });
     } else {
-      toast({ title: "Settings saved successfully" });
+      toast({ title: t("admin.settingsSaved") });
     }
     setSaving(false);
   };
@@ -94,17 +96,17 @@ const AdminSettingsPage = () => {
         const patternStr = pattern.join(",");
         saveSetting("admin_pattern_code", patternStr).then(err => {
           if (err) {
-            toast({ title: "Error saving pattern", variant: "destructive" });
+            toast({ title: t("admin.errorSavingPattern"), variant: "destructive" });
           } else {
             setCurrentPattern(patternStr);
-            toast({ title: "Pattern updated successfully" });
+            toast({ title: t("admin.patternUpdated") });
           }
           setPatternStep('view');
           setNewPattern(null);
           setConfirmPattern(null);
         });
       } else {
-        toast({ title: "Patterns don't match. Try again.", variant: "destructive" });
+        toast({ title: t("admin.patternsDontMatch"), variant: "destructive" });
         setPatternStep('draw');
         setNewPattern(null);
         setConfirmPattern(null);
@@ -113,116 +115,116 @@ const AdminSettingsPage = () => {
   };
 
   if (loading) {
-    return <AdminLayout><div className="text-center py-12 text-muted-foreground">Loading settings...</div></AdminLayout>;
+    return <AdminLayout><div className="text-center py-12 text-muted-foreground">{t("admin.loadingSettings")}</div></AdminLayout>;
   }
 
   return (
     <AdminLayout>
       <div className="space-y-8 max-w-2xl">
-        <h1 className="text-2xl font-bold text-foreground">SETTINGS</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("admin.settings")}</h1>
 
         {/* Sales Team Contact */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-5">
-          <h2 className="text-lg font-semibold text-foreground">Sales Team Contact</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("admin.salesTeamContact")}</h2>
           
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><Phone className="h-4 w-4" /> Phone Number</Label>
+            <Label className="flex items-center gap-2"><Phone className="h-4 w-4" /> {t("admin.phoneNumber")}</Label>
             <Input value={salesPhone} onChange={e => setSalesPhone(e.target.value)} placeholder="+90 555 123 4567" />
           </div>
 
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><MessageCircle className="h-4 w-4" /> WhatsApp Number</Label>
+            <Label className="flex items-center gap-2"><MessageCircle className="h-4 w-4" /> {t("admin.whatsappNumber")}</Label>
             <Input value={salesWhatsapp} onChange={e => setSalesWhatsapp(e.target.value)} placeholder="+90 555 123 4567" />
           </div>
 
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><Mail className="h-4 w-4" /> Contact Email</Label>
+            <Label className="flex items-center gap-2"><Mail className="h-4 w-4" /> {t("admin.contactEmail")}</Label>
             <Input type="email" value={salesEmail} onChange={e => setSalesEmail(e.target.value)} placeholder="sales@turegu.com" />
           </div>
 
           <div className="space-y-2">
-            <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" /> Office Address</Label>
+            <Label className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {t("admin.officeAddress")}</Label>
             <Input value={salesAddress} onChange={e => setSalesAddress(e.target.value)} placeholder="123 Main St, City, Country" />
           </div>
 
           <Button onClick={handleSaveSettings} disabled={saving}>
-            <Save className="h-4 w-4 mr-2" /> {saving ? "Saving..." : "Save Settings"}
+            <Save className="h-4 w-4 mr-2" /> {saving ? t("admin.saving") : t("admin.saveSettings")}
           </Button>
         </div>
 
 
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Bot className="h-5 w-5" /> AI Property Search
+            <Bot className="h-5 w-5" /> {t("admin.aiPropertySearch")}
           </h2>
           <p className="text-sm text-muted-foreground">
             Enable or disable the AI Property Agent button across all pages.
           </p>
           <div className="space-y-2">
-            <Label>AI Search Status</Label>
+            <Label>{t("admin.aiSearchStatus")}</Label>
             <Select value={aiSearchEnabled ? 'true' : 'false'} onValueChange={(v) => setAiSearchEnabled(v === 'true')}>
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="true">Enabled</SelectItem>
-                <SelectItem value="false">Disabled</SelectItem>
+                <SelectItem value="true">{t("admin.enabled")}</SelectItem>
+                <SelectItem value="false">{t("admin.disabled")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>When disabled, the floating AI agent button will be hidden on the homepage, Buy, Rent, and Projects pages.</span>
+            <span>{t("admin.aiSearchDisabledInfo")}</span>
           </div>
         </div>
 
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Globe className="h-5 w-5" /> Map Provider
+            <Globe className="h-5 w-5" /> {t("admin.mapProvider")}
           </h2>
           <p className="text-sm text-muted-foreground">
             Choose which map service to display on listing pages.
           </p>
           <div className="space-y-2">
-            <Label>Active Map Provider</Label>
+            <Label>{t("admin.activeMapProvider")}</Label>
             <Select value={mapProvider} onValueChange={setMapProvider}>
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="google">Google Maps</SelectItem>
-                <SelectItem value="leaflet">Leaflet (OpenStreetMap)</SelectItem>
+                <SelectItem value="google">{t("admin.googleMaps")}</SelectItem>
+                <SelectItem value="leaflet">{t("admin.leafletOSM")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>Google Maps provides satellite imagery and Street View. Leaflet uses free OpenStreetMap tiles with no API costs.</span>
+            <span>{t("admin.googleMapsInfo")}</span>
           </div>
         </div>
         {/* Login Email */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Login Email</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t("admin.loginEmail")}</h2>
           <div className="space-y-2">
-            <Label>Current Admin Email</Label>
+            <Label>{t("admin.currentAdminEmail")}</Label>
             <Input value={adminEmail} disabled className="bg-muted" />
           </div>
           <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
             <Info className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>Changing the admin email requires a secure verification process (OTP). This feature is planned for a future update.</span>
+            <span>{t("admin.changeEmailInfo")}</span>
           </div>
         </div>
 
         {/* Analytics Display Phase */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" /> Analytics Display Mode
+            <BarChart3 className="h-5 w-5" /> {t("admin.analyticsDisplayMode")}
           </h2>
           <p className="text-sm text-muted-foreground">
             Controls what companies and agents see in their Performance Insights tab.
           </p>
           <div className="space-y-2">
-            <Label>Active Phase</Label>
+            <Label>{t("admin.activePhase")}</Label>
             <Select value={analyticsPhase} onValueChange={(v) => setAnalyticsPhase(v as AnalyticsPhase)}>
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue />
@@ -250,17 +252,17 @@ const AdminSettingsPage = () => {
         {/* Pattern Lock */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Lock className="h-5 w-5" /> Pattern Lock
+            <Lock className="h-5 w-5" /> {t("admin.patternLock")}
           </h2>
 
           {/* Pattern Login Toggle */}
           <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4">
             <div>
               <p className="text-sm font-medium text-foreground">
-                Pattern Login is {patternActive ? "Active" : "Inactive"}
+                {patternActive ? t("admin.patternLoginActive") : t("admin.patternLoginInactive")}
               </p>
               {!currentPattern && (
-                <p className="text-xs text-muted-foreground mt-0.5">Set a pattern first to activate</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{t("admin.setPatternFirst")}</p>
               )}
             </div>
             <Switch
@@ -279,34 +281,34 @@ const AdminSettingsPage = () => {
                 } else {
                   await supabase.from("admin_settings").insert({ setting_key: "admin_pattern_active", setting_value: String(val) });
                 }
-                toast({ title: val ? "Pattern login activated" : "Pattern login deactivated" });
+                toast({ title: val ? t("admin.patternActivated") : t("admin.patternDeactivated") });
               }}
             />
           </div>
 
           <p className="text-sm text-muted-foreground">
-            {currentPattern ? "A pattern is currently set." : "No pattern set yet."}
+            {currentPattern ? t("admin.patternCurrentlySet") : t("admin.noPatternSet")}
           </p>
 
           {patternStep === 'view' && (
             <Button variant="outline" onClick={() => { setPatternStep('draw'); setNewPattern(null); }}>
-              {currentPattern ? "Change Pattern" : "Set Pattern"}
+              {currentPattern ? t("admin.changePattern") : t("admin.setPattern")}
             </Button>
           )}
 
           {patternStep === 'draw' && (
             <div className="space-y-4">
-              <p className="text-sm font-medium text-foreground text-center">Draw a new pattern (min 3 dots)</p>
+              <p className="text-sm font-medium text-foreground text-center">{t("admin.drawNewPattern")}</p>
               <PatternLock onPatternComplete={handleNewPatternDraw} />
-              <Button variant="ghost" size="sm" className="w-full" onClick={() => setPatternStep('view')}>Cancel</Button>
+              <Button variant="ghost" size="sm" className="w-full" onClick={() => setPatternStep('view')}>{t("admin.cancel")}</Button>
             </div>
           )}
 
           {patternStep === 'confirm' && (
             <div className="space-y-4">
-              <p className="text-sm font-medium text-foreground text-center">Confirm your new pattern</p>
+              <p className="text-sm font-medium text-foreground text-center">{t("admin.confirmNewPattern")}</p>
               <PatternLock onPatternComplete={handleNewPatternDraw} />
-              <Button variant="ghost" size="sm" className="w-full" onClick={() => { setPatternStep('draw'); setNewPattern(null); }}>Redraw</Button>
+              <Button variant="ghost" size="sm" className="w-full" onClick={() => { setPatternStep('draw'); setNewPattern(null); }}>{t("admin.redraw")}</Button>
             </div>
           )}
         </div>

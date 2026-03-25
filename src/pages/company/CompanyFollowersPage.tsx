@@ -218,7 +218,7 @@ const CompanyFollowersPage = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name..."
+              placeholder={t("agentDashboard.searchByName")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
@@ -229,8 +229,8 @@ const CompanyFollowersPage = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest to Oldest</SelectItem>
-              <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="newest">{t("agentDashboard.newestToOldest")}</SelectItem>
+              <SelectItem value="oldest">{t("agentDashboard.oldestToNewest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -241,10 +241,10 @@ const CompanyFollowersPage = () => {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="w-16">sNo</TableHead>
-                <TableHead>Follower Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Followed On</TableHead>
+                <TableHead>{t("companyDashboard.followerNameCol")}</TableHead>
+                <TableHead>{t("companyDashboard.emailCol")}</TableHead>
+                <TableHead>{t("companyDashboard.phoneCol")}</TableHead>
+                <TableHead>{t("companyDashboard.followedOnCol")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

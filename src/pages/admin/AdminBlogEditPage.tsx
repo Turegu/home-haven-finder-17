@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface Language {
   id: string;
@@ -26,6 +27,7 @@ const AdminBlogEditPage = () => {
   const isNew = id === "new";
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [languages, setLanguages] = useState<Language[]>([]);
   const [activeLang, setActiveLang] = useState("en");
@@ -96,16 +98,16 @@ const AdminBlogEditPage = () => {
       });
       if (uploadError) {
         console.error("Blog image upload error:", uploadError);
-        toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+        toast({ title: t("admin.uploadFailed"), description: uploadError.message, variant: "destructive" });
         setUploading(false);
         return;
       }
       const { data: { publicUrl } } = supabase.storage.from("blog-images").getPublicUrl(path);
       setImageUrl(publicUrl);
-      toast({ title: "Image uploaded successfully" });
+      toast({ title: t("admin.imageUploaded") });
     } catch (err: any) {
       console.error("Blog image upload exception:", err);
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: t("admin.uploadFailed"), description: err.message, variant: "destructive" });
     }
     setUploading(false);
   };
@@ -132,11 +134,11 @@ const AdminBlogEditPage = () => {
   const handleSave = async (publish: boolean) => {
     const firstTitle = translations[activeLang]?.title || Object.values(translations).find(t => t.title)?.title;
     if (!firstTitle) {
-      toast({ title: "Please enter a title for at least one language", variant: "destructive" });
+      toast({ title: t("admin.enterTitleForOneLanguage"), variant: "destructive" });
       return;
     }
     if (!slug) {
-      toast({ title: "Please enter a slug", variant: "destructive" });
+      toast({ title: t("admin.enterSlug"), variant: "destructive" });
       return;
     }
 
@@ -179,10 +181,10 @@ const AdminBlogEditPage = () => {
         if (error) throw error;
       }
 
-      toast({ title: isNew ? "Blog created!" : "Blog updated!" });
+      toast({ title: isNew ? t("admin.blogSaved") : t("admin.blogSaved") });
       navigate("/admin/blog");
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: err.message, variant: "destructive" });
     } finally {
       setSaving(false);
     }

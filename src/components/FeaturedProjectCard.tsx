@@ -1,5 +1,6 @@
 import { MapPin, Calendar, ArrowUpRight, Building, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
 
 interface FeaturedProjectCardProps {
   project: {
@@ -25,6 +26,7 @@ const tagColorMap: Record<string, string> = {
 };
 
 const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
+  const { t } = useTranslation();
   return (
     <Link
       to={`/projects/${project.id}`}
@@ -89,7 +91,7 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
           {/* Footer row */}
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">Starting from</p>
+              <p className="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">{t("home.startingFrom")}</p>
               <p className="text-lg font-bold text-white tracking-tight">
                 ${project.priceFrom.toLocaleString()}
               </p>

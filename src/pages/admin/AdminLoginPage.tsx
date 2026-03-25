@@ -8,11 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { LogIn, Lock, Eye, EyeOff } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import { useTranslation } from "react-i18next";
 
 type LoginStep = "credentials" | "pattern";
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,7 +47,7 @@ const AdminLoginPage = () => {
 
       if (!roleData) {
         await supabase.auth.signOut();
-        toast.error("Access denied. You don't have admin privileges.");
+        toast.error(t("admin.accessDenied"));
         return;
       }
 
@@ -71,9 +73,9 @@ const AdminLoginPage = () => {
       if (patternCode && patternIsActive) {
         setSavedPattern(patternCode);
         setStep("pattern");
-        toast.info("Please draw the admin pattern to continue.");
+        toast.info(t("admin.drawAdminPattern"));
       } else {
-        toast.success("Welcome back, Admin!");
+        toast.success(t("admin.welcomeBack"));
         navigate("/admin");
       }
     } catch (err: any) {
@@ -87,11 +89,11 @@ const AdminLoginPage = () => {
     const patternStr = pattern.join(",");
     if (patternStr === savedPattern) {
       setPatternError(false);
-      toast.success("Welcome back, Admin!");
+      toast.success(t("admin.welcomeBack"));
       navigate("/admin");
     } else {
       setPatternError(true);
-      toast.error("Wrong pattern. Try again.");
+      toast.error(t("admin.wrongPattern"));
       setTimeout(() => setPatternError(false), 800);
     }
   };
@@ -111,12 +113,12 @@ const AdminLoginPage = () => {
               <span className="text-primary-foreground font-bold text-xl">T</span>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
-              {step === "pattern" ? "Pattern Unlock" : "Admin Login"}
+              {step === "pattern" ? t("admin.patternUnlock") : t("admin.adminLogin")}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {step === "pattern"
-                ? "Draw the pattern to continue"
-                : "Sign in to access the admin dashboard"}
+                ? t("admin.drawPatternToContinue")
+                : t("admin.signInToAdmin")}
             </p>
           </div>
 
@@ -141,7 +143,7 @@ const AdminLoginPage = () => {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground">Email</Label>
+                <Label htmlFor="email" className="text-foreground">{t("admin.email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -154,7 +156,7 @@ const AdminLoginPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-foreground">Password</Label>
+                <Label htmlFor="password" className="text-foreground">{t("auth.password")}</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -189,7 +191,7 @@ const AdminLoginPage = () => {
 
               <Button type="submit" className="w-full" disabled={loading}>
                 <LogIn className="h-4 w-4 mr-2" />
-                {loading ? "Please wait..." : "Sign In"}
+                {loading ? t("admin.pleaseWait") : t("admin.signIn")}
               </Button>
             </form>
           )}

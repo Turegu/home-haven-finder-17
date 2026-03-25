@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MapPin, Building, Maximize, Bath, BedDouble, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from "react-i18next";
 
 interface ProjectUnitOption {
   id: string;
@@ -51,6 +52,7 @@ interface ContactCompanyDialogProps {
 }
 
 const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId, companyName, companyLogo, agentAvatar, listingType = 'property', projectUnits }: ContactCompanyDialogProps) => {
+  const { t } = useTranslation();
   const defaultMessages: Record<string, string> = {
     property: 'Hi!, I am interested in your property please contact me.',
     project: 'Hi!, I am interested in your project please contact me.',
@@ -217,8 +219,8 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             <div className="h-16 w-16 rounded-full border-2 border-primary flex items-center justify-center">
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-bold text-foreground">Thank you</h3>
-            <p className="text-sm text-muted-foreground">Your message is on its way</p>
+            <h3 className="text-lg font-bold text-foreground">{t("contact.thankYou")}</h3>
+            <p className="text-sm text-muted-foreground">{t("contact.messageOnItsWay")}</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -287,13 +289,13 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         {/* Unit selector for projects */}
         {listingType === 'project' && projectUnits && projectUnits.length > 0 && (
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-foreground">I'm interested in a specific unit</Label>
+            <Label className="text-xs font-medium text-foreground">{t("contact.interestedInUnit")}</Label>
             <Select value={selectedUnitId} onValueChange={setSelectedUnitId}>
               <SelectTrigger className="h-9 text-sm">
-                <SelectValue placeholder="Select a unit (optional)" />
+                <SelectValue placeholder={t("contact.selectUnit")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No specific unit</SelectItem>
+                <SelectItem value="none">{t("contact.noSpecificUnit")}</SelectItem>
                 {projectUnits.map((unit) => (
                   <SelectItem key={unit.id} value={unit.id}>
                     <span className="flex items-center gap-2">

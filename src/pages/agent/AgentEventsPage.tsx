@@ -79,26 +79,26 @@ const AgentEventsPage = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-primary/10 p-2"><LayoutList className="h-4 w-4 text-primary" /></div>
-          <div><p className="text-xs text-muted-foreground">Total</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("agentDashboard.total")}</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-emerald-100 p-2"><CheckCircle className="h-4 w-4 text-emerald-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Active</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("agentDashboard.active")}</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-red-100 p-2"><XCircle className="h-4 w-4 text-red-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Inactive</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("agentDashboard.inactive")}</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-amber-100 p-2"><FileText className="h-4 w-4 text-amber-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Draft</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("agentDashboard.draft")}</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search by Title or ID" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
+          <Input placeholder={t("agentDashboard.searchByTitleOrId")} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
         </div>
         <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
           <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
@@ -138,9 +138,9 @@ const AgentEventsPage = () => {
               <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="active">{t("agentDashboard.active")}</SelectItem>
+                <SelectItem value="inactive">{t("agentDashboard.inactive")}</SelectItem>
+                <SelectItem value="draft">{t("agentDashboard.draft")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -7,6 +7,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { allLanguages } from '@/data/languages';
+import { useTranslation } from "react-i18next";
 
 // Platform priority languages — shown at the top
 const PRIORITY_LANGUAGES = [
@@ -105,7 +106,7 @@ export default function LanguageSearchDropdown({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search languages..."
+              placeholder={t("common.searchLanguages")}
               className="w-full h-8 pl-8 pr-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
             />
           </div>
@@ -140,7 +141,7 @@ export default function LanguageSearchDropdown({
           ))}
 
           {filteredPriority.length === 0 && filteredRest.length === 0 && (
-            <p className="text-xs text-muted-foreground px-2 py-4 text-center">No languages found</p>
+            <p className="text-xs text-muted-foreground px-2 py-4 text-center">{t("common.noLanguagesFound")}</p>
           )}
         </div>
 

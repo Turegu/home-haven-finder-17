@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, Pencil, Search, ImageIcon, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";
 
 interface Banner {
@@ -72,6 +73,7 @@ const emptyForm = {
 
 const AdminBannersPage = () => {
   const { isTestMode } = useTestMode();
+  const { t } = useTranslation();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -136,7 +138,7 @@ const AdminBannersPage = () => {
   };
 
   const handleSave = async () => {
-    if (!form.name) { toast.error("Banner name is required"); return; }
+    if (!form.name) { toast.error(t("admin.bannerNameRequired")); return; }
     setSaving(true);
 
     let image_url = editing?.image_url || null;
@@ -149,7 +151,7 @@ const AdminBannersPage = () => {
         .from("banners")
         .upload(path, imageFile);
       if (uploadError) {
-        toast.error("Failed to upload image");
+        toast.error(t("admin.failedToUploadImage"));
         setSaving(false);
         return;
       }
@@ -175,12 +177,12 @@ const AdminBannersPage = () => {
 
     if (editing) {
       const { error } = await supabase.from("banners").update(payload).eq("id", editing.id);
-      if (error) toast.error("Failed to update banner");
-      else toast.success("Banner updated");
+      if (error) toast.error(t("admin.failedToUpdateBanner"));
+      else toast.success(t("admin.bannerUpdated"));
     } else {
       const { error } = await supabase.from("banners").insert(payload);
-      if (error) toast.error("Failed to create banner");
-      else toast.success("Banner created");
+      if (error) toast.error(t("admin.failedToCreateBanner"));
+      else toast.success(t("admin.bannerCreated"));
     }
 
     setSaving(false);
@@ -189,9 +191,9 @@ const AdminBannersPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this banner?")) return;
+    if (!confirm(t("admin.deleteThisBanner"))) return;
     await supabase.from("banners").delete().eq("id", id);
-    toast.success("Banner deleted");
+    toast.success(t("admin.bannerDeleted"));
     fetchBanners();
   };
 
@@ -202,15 +204,15 @@ const AdminBannersPage = () => {
   return (
     <AdminLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Banners Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("admin.bannersManagement")}</h1>
         <Button onClick={openCreate} className="gap-2">
-          <Plus className="h-4 w-4" /> New Banner
+          <Plus className="h-4 w-4" /> {t("admin.newBanner")}
         </Button>
       </div>
 
       {/* Info box */}
       <div className="bg-muted/50 border border-border rounded-lg p-4 mb-6 text-sm text-muted-foreground space-y-1">
-        <p className="font-semibold text-foreground mb-2">Required Banner Dimensions:</p>
+        <p className="font-semibold text-foreground mb-2">{t("admin.requiredBannerDimensions")}</p>
         <p>Horizontal (listing pages): <span className="font-medium text-foreground">1172 × 206 px</span></p>
         <p>Horizontal (detail pages): <span className="font-medium text-foreground">1172 × 206 px</span></p>
         <p>Vertical (sidebar): <span className="font-medium text-foreground">225 × 513 px</span></p>
@@ -224,7 +226,7 @@ const AdminBannersPage = () => {
       <div className="relative max-w-sm mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by banner name..."
+          placeholder={t("admin.searchByBannerName")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -236,24 +238,24 @@ const AdminBannersPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Banner Name</TableHead>
-              <TableHead>Page</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Position</TableHead>
-              <TableHead>Start Date</TableHead>
-              <TableHead>End Date</TableHead>
-              <TableHead>Preview</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("admin.bannerName")}</TableHead>
+              <TableHead>{t("admin.page")}</TableHead>
+              <TableHead>{t("admin.type")}</TableHead>
+              <TableHead>{t("admin.position")}</TableHead>
+              <TableHead>{t("admin.startDate")}</TableHead>
+              <TableHead>{t("admin.endDate")}</TableHead>
+              <TableHead>{t("admin.preview")}</TableHead>
+              <TableHead className="text-right">{t("admin.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading...</TableCell>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{t("admin.loading")}</TableCell>
               </TableRow>
             ) : filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No banners found</TableCell>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{t("admin.noBannersFound")}</TableCell>
               </TableRow>
             ) : (
               filtered.map((banner) => (
@@ -296,23 +298,23 @@ const AdminBannersPage = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Banner" : "New Banner"}</DialogTitle>
+            <DialogTitle>{editing ? t("admin.editBanner") : t("admin.newBanner")}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 mt-2">
             <div className="bg-muted/50 border border-border rounded-md p-3 text-xs text-muted-foreground">
-              <p className="font-medium text-foreground mb-0.5">Required Dimensions:</p>
+              <p className="font-medium text-foreground mb-0.5">{t("admin.requiredDimensions")}</p>
               <p>Horizontal: 1172 × 206 px &nbsp;|&nbsp; Vertical: 225 × 513 px</p>
             </div>
 
             <div>
-              <Label>Banner Name</Label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Enter Banner Name" />
+              <Label>{t("admin.bannerName")}</Label>
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t("admin.enterBannerName")} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Page</Label>
+                <Label>{t("admin.page")}</Label>
                 <Select value={form.page_name} onValueChange={(v) => setForm({ ...form, page_name: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -323,19 +325,19 @@ const AdminBannersPage = () => {
                 </Select>
               </div>
               <div>
-                <Label>Banner Type</Label>
+                <Label>{t("admin.bannerType")}</Label>
                 <Select value={form.banner_type} onValueChange={(v) => setForm({ ...form, banner_type: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="horizontal">Horizontal</SelectItem>
-                    <SelectItem value="vertical">Vertical</SelectItem>
+                    <SelectItem value="horizontal">{t("admin.horizontal")}</SelectItem>
+                    <SelectItem value="vertical">{t("admin.vertical")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div>
-              <Label>Duration {isTestMode && <span className="text-xs text-amber-500 ml-1">(minutes in test mode)</span>}</Label>
+              <Label>{t("admin.duration")} {isTestMode && <span className="text-xs text-amber-500 ml-1">(minutes in test mode)</span>}</Label>
               <Select value={String(form.duration_months)} onValueChange={(v) => setForm({ ...form, duration_months: Number(v) })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -350,7 +352,7 @@ const AdminBannersPage = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Page Position</Label>
+                <Label>{t("admin.pagePosition")}</Label>
                 <Select value={String(form.page_position)} onValueChange={(v) => setForm({ ...form, page_position: Number(v) })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -361,20 +363,20 @@ const AdminBannersPage = () => {
                 </Select>
               </div>
               <div>
-                <Label>Link URL</Label>
+                <Label>{t("admin.linkUrl")}</Label>
                 <Input value={form.link_url} onChange={(e) => setForm({ ...form, link_url: e.target.value })} placeholder="https://example.com" />
               </div>
             </div>
 
             {/* Banner Text */}
             <div>
-              <Label>Banner Text (overlay on image)</Label>
-              <Input value={form.banner_text} onChange={(e) => setForm({ ...form, banner_text: e.target.value })} placeholder="Enter text to display on the banner" />
+              <Label>{t("admin.bannerTextOverlay")}</Label>
+              <Input value={form.banner_text} onChange={(e) => setForm({ ...form, banner_text: e.target.value })} placeholder={t("admin.enterBannerText")} />
             </div>
 
             {/* Image Upload */}
             <div>
-              <Label>Banner Image</Label>
+              <Label>{t("admin.bannerImage")}</Label>
               <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
               <div
                 onClick={() => fileRef.current?.click()}
@@ -385,16 +387,16 @@ const AdminBannersPage = () => {
                 ) : (
                   <div className="text-muted-foreground text-sm">
                     <ImageIcon className="h-8 w-8 mx-auto mb-1" />
-                    Click to upload banner image
+                    {t("admin.clickToUploadBanner")}
                   </div>
                 )}
               </div>
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>{t("admin.cancel")}</Button>
               <Button className="flex-1" onClick={handleSave} disabled={saving}>
-                {saving ? "Saving..." : editing ? "Update Banner" : "Create Banner"}
+                {saving ? t("admin.saving") : editing ? t("admin.updateBanner") : t("admin.createBanner")}
               </Button>
             </div>
           </div>

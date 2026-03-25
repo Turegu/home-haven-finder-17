@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { MoreVertical, Power, ArrowUpDown, Plus, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface Language {
   id: string;
@@ -28,6 +29,7 @@ const AdminLanguagesPage = () => {
   const [languages, setLanguages] = useState<Language[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // Dialog states
   const [editDialog, setEditDialog] = useState(false);
@@ -58,9 +60,9 @@ const AdminLanguagesPage = () => {
       .update({ status: newStatus })
       .eq("id", lang.id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: `Language ${newStatus === "active" ? "activated" : "deactivated"}` });
+      toast({ title: newStatus === "active" ? t("admin.languageActivated") : t("admin.languageDeactivated") });
       fetchLanguages();
     }
   };
@@ -79,9 +81,9 @@ const AdminLanguagesPage = () => {
       .update({ name: editName, code: editCode })
       .eq("id", selected.id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Language updated" });
+      toast({ title: t("admin.languageUpdated") });
       setEditDialog(false);
       fetchLanguages();
     }
@@ -100,9 +102,9 @@ const AdminLanguagesPage = () => {
       .update({ sort_order: Number(editOrder) })
       .eq("id", selected.id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Order updated" });
+      toast({ title: t("admin.orderUpdated") });
       setOrderDialog(false);
       fetchLanguages();
     }
@@ -114,9 +116,9 @@ const AdminLanguagesPage = () => {
       .from("languages")
       .insert({ name: newName, code: newCode.toLowerCase(), sort_order: maxOrder + 1 });
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Language added" });
+      toast({ title: t("admin.languageAdded") });
       setAddDialog(false);
       setNewName("");
       setNewCode("");
@@ -128,9 +130,9 @@ const AdminLanguagesPage = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">LANGUAGES</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.languages")}</h1>
           <Button onClick={() => setAddDialog(true)} size="sm">
-            <Plus className="h-4 w-4 mr-2" /> Add Language
+            <Plus className="h-4 w-4 mr-2" /> {t("admin.addLanguage")}
           </Button>
         </div>
 
@@ -138,11 +140,11 @@ const AdminLanguagesPage = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead>Name</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>{t("admin.name")}</TableHead>
+                <TableHead>{t("admin.code")}</TableHead>
+                <TableHead>{t("admin.order")}</TableHead>
+                <TableHead>{t("admin.status")}</TableHead>
+                <TableHead className="text-right">{t("admin.action")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -152,7 +154,7 @@ const AdminLanguagesPage = () => {
                 </TableRow>
               ) : languages.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No languages found</TableCell>
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">{t("admin.noLanguagesFound")}</TableCell>
                 </TableRow>
               ) : (
                 languages.map((lang) => (
@@ -174,14 +176,14 @@ const AdminLanguagesPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => openEdit(lang)}>
-                            <Pencil className="h-4 w-4 mr-2" /> Edit
+                            <Pencil className="h-4 w-4 mr-2" /> {t("admin.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => toggleStatus(lang)}>
                             <Power className="h-4 w-4 mr-2" />
-                            {lang.status === "active" ? "Deactivate" : "Activate"}
+                            {lang.status === "active" ? t("admin.deactivate") : t("admin.activate")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => openOrder(lang)}>
-                            <ArrowUpDown className="h-4 w-4 mr-2" /> Edit Order
+                            <ArrowUpDown className="h-4 w-4 mr-2" /> {t("admin.editOrder")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -197,14 +199,14 @@ const AdminLanguagesPage = () => {
       {/* Edit Dialog */}
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Edit Language</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("admin.editLanguage")}</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div><Label>Name</Label><Input value={editName} onChange={e => setEditName(e.target.value)} /></div>
-            <div><Label>Code</Label><Input value={editCode} onChange={e => setEditCode(e.target.value)} /></div>
+            <div><Label>{t("admin.name")}</Label><Input value={editName} onChange={e => setEditName(e.target.value)} /></div>
+            <div><Label>{t("admin.code")}</Label><Input value={editCode} onChange={e => setEditCode(e.target.value)} /></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialog(false)}>Cancel</Button>
-            <Button onClick={saveEdit}>Save</Button>
+            <Button variant="outline" onClick={() => setEditDialog(false)}>{t("admin.cancel")}</Button>
+            <Button onClick={saveEdit}>{t("admin.save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -212,11 +214,11 @@ const AdminLanguagesPage = () => {
       {/* Order Dialog */}
       <Dialog open={orderDialog} onOpenChange={setOrderDialog}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Edit Order</DialogTitle></DialogHeader>
-          <div><Label>Sort Order</Label><Input type="number" value={editOrder} onChange={e => setEditOrder(e.target.value)} /></div>
+          <DialogHeader><DialogTitle>{t("admin.editOrder")}</DialogTitle></DialogHeader>
+          <div><Label>{t("admin.sortOrder")}</Label><Input type="number" value={editOrder} onChange={e => setEditOrder(e.target.value)} /></div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOrderDialog(false)}>Cancel</Button>
-            <Button onClick={saveOrder}>Save</Button>
+            <Button variant="outline" onClick={() => setOrderDialog(false)}>{t("admin.cancel")}</Button>
+            <Button onClick={saveOrder}>{t("admin.save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -224,13 +226,13 @@ const AdminLanguagesPage = () => {
       {/* Add Dialog */}
       <Dialog open={addDialog} onOpenChange={setAddDialog}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Add Language</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("admin.addLanguage")}</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div><Label>Name</Label><Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. Spanish" /></div>
-            <div><Label>Code</Label><Input value={newCode} onChange={e => setNewCode(e.target.value)} placeholder="e.g. es" /></div>
+            <div><Label>{t("admin.name")}</Label><Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. Spanish" /></div>
+            <div><Label>{t("admin.code")}</Label><Input value={newCode} onChange={e => setNewCode(e.target.value)} placeholder="e.g. es" /></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAddDialog(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setAddDialog(false)}>{t("admin.cancel")}</Button>
             <Button onClick={addLanguage} disabled={!newName || !newCode}>Add</Button>
           </DialogFooter>
         </DialogContent>

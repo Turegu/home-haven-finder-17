@@ -30,6 +30,7 @@ type Company = Tables<"companies">;
 import { companyTypes } from "@/data/companyTypes";
 
 import { allLanguages } from "@/data/languages";
+import { useTranslation } from "react-i18next";
 const languageOptions = allLanguages;
 
 function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
@@ -95,6 +96,7 @@ function MultiSelectLanguages({
 }
 
 const CompanyProfilePage = () => {
+  const { t } = useTranslation();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -313,14 +315,14 @@ const CompanyProfilePage = () => {
   if (loading) {
     return (
       <CompanyLayout>
-        <div className="flex items-center justify-center py-20 text-muted-foreground">Loading profile...</div>
+        <div className="flex items-center justify-center py-20 text-muted-foreground">{t("companyDashboard.loadingProfile")}</div>
       </CompanyLayout>
     );
   }
 
   return (
     <CompanyLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">Profile Settings</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{t("companyDashboard.profileSettings")}</h1>
 
       <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
         {/* ─── Branding ─── */}
@@ -328,7 +330,7 @@ const CompanyProfilePage = () => {
           <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Branding" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <Label className="text-foreground font-medium">Company Logo</Label>
+              <Label className="text-foreground font-medium">{t("companyDashboard.companyLogo")}</Label>
               <p className="text-xs text-muted-foreground -mt-1 mb-2">Recommended: 200 × 200 px (square)</p>
               <div className="flex items-center gap-4">
                 {form.logo_url ? (

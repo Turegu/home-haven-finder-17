@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 const BlogDetailPage = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const { t, i18n } = useTranslation();
   const [blog, setBlog] = useState<any>(null);
@@ -43,7 +44,7 @@ const BlogDetailPage = () => {
   if (loading) return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">Loading...</div>
+      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">{t("common.loading")}</div>
       <Footer />
     </div>
   );

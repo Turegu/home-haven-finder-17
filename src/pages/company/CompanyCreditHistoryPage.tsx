@@ -140,14 +140,14 @@ const CompanyCreditHistoryPage = () => {
         {/* Balance card */}
         <div className="md:col-span-1 bg-card rounded-xl border border-border p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Balance</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("companyDashboard.balance")}</h3>
             <CreditCard className="h-4 w-4 text-muted-foreground/50" />
           </div>
           <p className="text-3xl font-bold text-foreground">{balance}</p>
           {totalTopups > 0 && (
             <div className="mt-3">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
-                <span>Remaining</span>
+                <span>{t("companyDashboard.remaining")}</span>
                 <span>{balance} / {totalTopups}</span>
               </div>
               <Progress value={creditBarPercent} className="h-1.5" />
@@ -160,11 +160,11 @@ const CompanyCreditHistoryPage = () => {
 
         {/* Summary cards */}
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 flex flex-col justify-center">
-          <p className="text-[11px] font-medium text-muted-foreground mb-1">Total Topped Up</p>
+          <p className="text-[11px] font-medium text-muted-foreground mb-1">{t("companyDashboard.totalToppedUp")}</p>
           <p className="text-2xl font-bold text-emerald-700">{totalTopups}</p>
         </div>
         <div className="rounded-lg bg-rose-50 border border-rose-200 p-4 flex flex-col justify-center">
-          <p className="text-[11px] font-medium text-muted-foreground mb-1">Total Spent</p>
+          <p className="text-[11px] font-medium text-muted-foreground mb-1">{t("companyDashboard.totalSpent")}</p>
           <p className="text-2xl font-bold text-rose-700">{totalSpent}</p>
         </div>
         <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 flex flex-col justify-center">

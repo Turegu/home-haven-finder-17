@@ -1,4 +1,5 @@
 import { PersonStanding } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 interface StreetViewProps {
   lat: number;
@@ -9,13 +10,14 @@ interface StreetViewProps {
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCtQx-V0yQ2CDvqjL89-AX2X1u5ZOpbvzQ';
 
 const StreetView = ({ lat, lng, className = '' }: StreetViewProps) => {
+  const { t } = useTranslation();
   const embedUrl = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_MAPS_API_KEY}&location=${lat},${lng}&heading=210&pitch=10&fov=90`;
 
   return (
     <div className={`relative ${className}`}>
       <iframe
         src={embedUrl}
-        title="Street View"
+        title={t("property.streetViewTitle")}
         className="w-full h-full border-0"
         allowFullScreen
         loading="lazy"

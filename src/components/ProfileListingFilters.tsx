@@ -1,9 +1,14 @@
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
 
 interface ProfileListingFiltersProps {
@@ -44,12 +49,12 @@ const ProfileListingFilters = ({ onFiltersChange }: ProfileListingFiltersProps) 
       {/* Purpose */}
       <Select value={filters.purpose} onValueChange={(v) => update("purpose", v)}>
         <SelectTrigger className="w-[130px] h-9 text-xs">
-          <SelectValue placeholder="Purpose" />
+          <SelectValue placeholder={t("filters.purpose")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Listings</SelectItem>
-          <SelectItem value="buy">For Sale</SelectItem>
-          <SelectItem value="rent">For Rent</SelectItem>
+          <SelectItem value="all">{t("filters.allListings")}</SelectItem>
+          <SelectItem value="buy">{t("property.forSale")}</SelectItem>
+          <SelectItem value="rent">{t("property.forRent")}</SelectItem>
         </SelectContent>
       </Select>
 

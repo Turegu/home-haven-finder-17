@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Plus, Search, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface Blog {
   id: string;
@@ -29,6 +30,7 @@ const AdminBlogsPage = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const { toast } = useToast();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
@@ -39,7 +41,7 @@ const AdminBlogsPage = () => {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
       setLoading(false);
       return;
     }
@@ -69,15 +71,15 @@ const AdminBlogsPage = () => {
   const toggleStatus = async (blog: Blog) => {
     const newStatus = blog.status === "published" ? "draft" : "published";
     const { error } = await supabase.from("blogs").update({ status: newStatus }).eq("id", blog.id);
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     else { toast({ title: `Blog ${newStatus}` }); fetchBlogs(); }
   };
 
   const deleteBlog = async (blog: Blog) => {
-    if (!confirm("Delete this blog permanently?")) return;
+    if (!confirm(t("admin.deleteBlogConfirm"))) return;
     const { error } = await supabase.from("blogs").delete().eq("id", blog.id);
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Blog deleted" }); fetchBlogs(); }
+    if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
+    else { toast({ title: t("admin.blogDeleted") }); fetchBlogs(); }
   };
 
   const filtered = blogs.filter(b =>
@@ -89,19 +91,19 @@ const AdminBlogsPage = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <h1 className="text-2xl font-bold text-foreground">BLOGS</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.blogs")}</h1>
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name..."
+                placeholder={t("admin.search")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-9 w-[220px]"
               />
             </div>
             <Button onClick={() => navigate("/admin/blog/new")} size="sm">
-              <Plus className="h-4 w-4 mr-2" /> Create New Blog
+              <Plus className="h-4 w-4 mr-2" /> {t("admin.create")}
             </Button>
           </div>
         </div>
@@ -110,24 +112,24 @@ const AdminBlogsPage = () => {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead>Image</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Author</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>{t("admin.image")}</TableHead>
+                <TableHead>{t("admin.title")}</TableHead>
+                <TableHead>{t("admin.slug")}</TableHead>
+                <TableHead>{t("admin.author")}</TableHead>
+                <TableHead>{t("admin.status")}</TableHead>
+                <TableHead>{t("admin.startDate")}</TableHead>
+                <TableHead className="text-right">{t("admin.action")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">{t("admin.loading")}</TableCell></TableRow>
               ) : filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <Search className="h-10 w-10" />
-                      <p className="font-medium">No Blogs Found</p>
+                      <p className="font-medium">{t("admin.noBlogsFound")}</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -158,14 +160,14 @@ const AdminBlogsPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => navigate(`/admin/blog/${blog.id}`)}>
-                          <Pencil className="h-4 w-4 mr-2" /> Edit
+                          <Pencil className="h-4 w-4 mr-2" /> {t("admin.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => toggleStatus(blog)}>
                           {blog.status === "published" ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
                           {blog.status === "published" ? "Unpublish" : "Publish"}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => deleteBlog(blog)} className="text-destructive focus:text-destructive">
-                          <Trash2 className="h-4 w-4 mr-2" /> Delete
+                          <Trash2 className="h-4 w-4 mr-2" /> {t("admin.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

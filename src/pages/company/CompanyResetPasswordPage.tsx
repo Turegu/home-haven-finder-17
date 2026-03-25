@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const CompanyResetPasswordPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

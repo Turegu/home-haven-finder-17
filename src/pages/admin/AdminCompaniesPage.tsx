@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { format, differenceInDays, differenceInSeconds } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
 import UpgradeMembershipDialog from "@/components/admin/UpgradeMembershipDialog";
@@ -39,6 +40,7 @@ const MEMBERSHIP_COLORS: Record<string, string> = {
 
 const AdminCompaniesPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { isTestMode } = useTestMode();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +64,7 @@ const AdminCompaniesPage = () => {
 
     const { data, error } = await supabase.from("companies").select("*").order("created_at", { ascending: false });
     if (error) {
-      toast.error("Failed to fetch companies");
+      toast.error(t("admin.failedToFetchCompanies"));
     } else {
       setCompanies(data || []);
 
@@ -162,7 +164,7 @@ const AdminCompaniesPage = () => {
     if (selected.length === 0) return;
     const { error } = await supabase.from("companies").delete().in("id", selected);
     if (error) {
-      toast.error("Failed to delete companies");
+      toast.error(t("admin.failedToDeleteCompanies"));
     } else {
       toast.success(`${selected.length} company(ies) deleted`);
       setSelected([]);
@@ -174,7 +176,7 @@ const AdminCompaniesPage = () => {
     const newValue = !company.is_verified;
     const { error } = await supabase.from("companies").update({ is_verified: newValue }).eq("id", company.id);
     if (error) {
-      toast.error("Failed to update verification status");
+      toast.error(t("admin.failedToUpdateVerification"));
     } else {
       toast.success(`${company.name} ${newValue ? "verified" : "unverified"}`);
       fetchCompanies();
@@ -205,7 +207,7 @@ const AdminCompaniesPage = () => {
     <AdminLayout>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Companies Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("admin.companiesManagement")}</h1>
       </div>
 
       {/* Toolbar */}
@@ -214,7 +216,7 @@ const AdminCompaniesPage = () => {
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search By Company"
+              placeholder={t("admin.searchByCompany")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 bg-secondary/50"
@@ -222,18 +224,18 @@ const AdminCompaniesPage = () => {
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="whitespace-nowrap">Sort By</span>
+            <span className="whitespace-nowrap">{t("admin.sortBy")}</span>
             <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as SortOption)}>
               <SelectTrigger className="w-[200px] bg-secondary/50">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="most_properties">Most Properties</SelectItem>
-                <SelectItem value="most_agents">Most Agents</SelectItem>
-                <SelectItem value="most_projects">Most Projects</SelectItem>
-                <SelectItem value="expiry_soonest">Expiry Soonest</SelectItem>
+                <SelectItem value="newest">{t("admin.newestFirst")}</SelectItem>
+                <SelectItem value="oldest">{t("admin.oldestFirst")}</SelectItem>
+                <SelectItem value="most_properties">{t("admin.mostProperties")}</SelectItem>
+                <SelectItem value="most_agents">{t("admin.mostAgents")}</SelectItem>
+                <SelectItem value="most_projects">{t("admin.mostProjects")}</SelectItem>
+                <SelectItem value="expiry_soonest">{t("admin.expirySoonest")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -245,14 +247,14 @@ const AdminCompaniesPage = () => {
               </Button>
             )}
             <Button onClick={() => navigate("/admin/companies/new")}>
-              <Plus className="h-4 w-4 mr-2" /> Create New Company
+              <Plus className="h-4 w-4 mr-2" /> {t("admin.createNewCompany")}
             </Button>
           </div>
         </div>
 
         {/* Membership Filter Pills */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Membership:</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("admin.membership")}</span>
           {MEMBERSHIP_TIERS.map(tier => {
             const isActive = membershipFilter.includes(tier);
             const count = tierCounts[tier] || 0;
@@ -287,7 +289,7 @@ const AdminCompaniesPage = () => {
       {/* Table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">Companies</h2>
+          <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">{t("admin.companies")}</h2>
           <span className="text-xs text-muted-foreground">{filteredAndSorted.length} of {companies.length} companies</span>
         </div>
 
@@ -302,15 +304,15 @@ const AdminCompaniesPage = () => {
                   />
                 </TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold w-12">#</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Membership</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Company Name</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Package End</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-center">Properties</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-center">Agents</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-center">Projects</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Email</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("admin.creationDate")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("admin.membershipCol")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("admin.companyName")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("admin.packageEnd")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-center">{t("admin.properties")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-center">{t("admin.agents")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-center">{t("admin.projects")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("admin.email")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("admin.options")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -360,7 +362,7 @@ const AdminCompaniesPage = () => {
                           </span>
                           {expiring && (
                             <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                              Expiring Soon
+                              {t("admin.expiringSoon")}
                             </Badge>
                           )}
                         </div>
@@ -385,13 +387,13 @@ const AdminCompaniesPage = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}`)}>
-                            <Eye className="h-4 w-4 mr-2" /> View Profile
+                            <Eye className="h-4 w-4 mr-2" /> {t("admin.viewProfile")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => navigate(`/admin/companies/${company.id}/edit`)}>
-                            <Pencil className="h-4 w-4 mr-2" /> Edit
+                            <Pencil className="h-4 w-4 mr-2" /> {t("admin.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setUpgradeCompany(company)}>
-                            <ArrowUpCircle className="h-4 w-4 mr-2" /> Change Membership
+                            <ArrowUpCircle className="h-4 w-4 mr-2" /> {t("admin.changeMembership")}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleToggleVerified(company)}>
                             {company.is_verified

@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from "react-i18next";
 
 interface ContactProfileDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface ContactProfileDialogProps {
 }
 
 const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo, companyId, agentId, recipientType }: ContactProfileDialogProps) => {
+  const { t } = useTranslation();
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [topic, setTopic] = useState('');
@@ -132,8 +134,8 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
             <div className="h-16 w-16 rounded-full border-2 border-primary flex items-center justify-center">
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-lg font-bold text-foreground">Thank you</h3>
-            <p className="text-sm text-muted-foreground">Your message is on its way</p>
+            <h3 className="text-lg font-bold text-foreground">{t("contact.thankYou")}</h3>
+            <p className="text-sm text-muted-foreground">{t("contact.messageOnItsWay")}</p>
           </div>
         </DialogContent>
       </Dialog>
@@ -160,7 +162,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
         <Input
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          placeholder="Topic *"
+          placeholder={t("contact.topicRequired")}
           maxLength={200}
         />
 
@@ -170,7 +172,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
           onChange={(e) => setMessage(e.target.value)}
           rows={4}
           className="resize-none"
-          placeholder="Write your message... *"
+          placeholder={t("contact.writeMessage")}
           maxLength={2000}
         />
 
@@ -179,7 +181,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
           <Input
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="Full Name *"
+            placeholder={t("contact.fullNameRequired")}
           />
           <Input
             value={email}

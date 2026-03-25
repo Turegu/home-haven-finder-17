@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, Pencil, Search, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Bank {
   id: string;
@@ -43,6 +44,7 @@ const emptyForm = {
 };
 
 const AdminBanksPage = () => {
+  const { t } = useTranslation();
   const [banks, setBanks] = useState<Bank[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -107,7 +109,7 @@ const AdminBanksPage = () => {
   };
 
   const handleSave = async () => {
-    if (!form.name) { toast.error("Bank name is required"); return; }
+    if (!form.name) { toast.error(t("admin.bankNameRequired")); return; }
     setSaving(true);
 
     let logo_url = editing?.logo_url || null;
@@ -119,7 +121,7 @@ const AdminBanksPage = () => {
         .from("bank-logos")
         .upload(path, logoFile);
       if (uploadError) {
-        toast.error("Failed to upload logo");
+        toast.error(t("admin.failedToUploadLogo"));
         setSaving(false);
         return;
       }
@@ -142,12 +144,12 @@ const AdminBanksPage = () => {
 
     if (editing) {
       const { error } = await supabase.from("banks").update(payload).eq("id", editing.id);
-      if (error) toast.error("Failed to update bank");
-      else toast.success("Bank updated");
+      if (error) toast.error(t("admin.failedToUpdateBank"));
+      else toast.success(t("admin.bankUpdated"));
     } else {
       const { error } = await supabase.from("banks").insert(payload);
-      if (error) toast.error("Failed to create bank");
-      else toast.success("Bank created");
+      if (error) toast.error(t("admin.failedToCreateBank"));
+      else toast.success(t("admin.bankCreated"));
     }
 
     setSaving(false);
@@ -156,9 +158,9 @@ const AdminBanksPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this bank?")) return;
+    if (!confirm(t("admin.deleteThisBank"))) return;
     await supabase.from("banks").delete().eq("id", id);
-    toast.success("Bank deleted");
+    toast.success(t("admin.bankDeleted"));
     fetchBanks();
   };
 
@@ -169,9 +171,9 @@ const AdminBanksPage = () => {
   return (
     <AdminLayout>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Banks Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("admin.banksManagement")}</h1>
         <Button onClick={openCreate} className="gap-2">
-          <Plus className="h-4 w-4" /> New Bank
+          <Plus className="h-4 w-4" /> {t("admin.newBank")}
         </Button>
       </div>
 
@@ -179,7 +181,7 @@ const AdminBanksPage = () => {
       <div className="relative max-w-sm mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by bank name..."
+          placeholder={t("admin.searchByBankName")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-9"
@@ -191,24 +193,24 @@ const AdminBanksPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Logo</TableHead>
-              <TableHead>Bank Name</TableHead>
-              <TableHead>Interest Rate</TableHead>
-              <TableHead>Finance %</TableHead>
-              <TableHead>Max Amount</TableHead>
-              <TableHead>Max Duration</TableHead>
-              <TableHead>Down Payment</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("admin.logo")}</TableHead>
+              <TableHead>{t("admin.bankName")}</TableHead>
+              <TableHead>{t("admin.interestRate")}</TableHead>
+              <TableHead>{t("admin.financePercent")}</TableHead>
+              <TableHead>{t("admin.maxAmount")}</TableHead>
+              <TableHead>{t("admin.maxDuration")}</TableHead>
+              <TableHead>{t("admin.downPayment")}</TableHead>
+              <TableHead className="text-right">{t("admin.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading...</TableCell>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{t("admin.loading")}</TableCell>
               </TableRow>
             ) : filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No banks found</TableCell>
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{t("admin.noBanksFound")}</TableCell>
               </TableRow>
             ) : (
               filtered.map((bank) => (
@@ -249,12 +251,11 @@ const AdminBanksPage = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Bank" : "Bank Creation"}</DialogTitle>
+            <DialogTitle>{editing ? t("admin.editBank") : t("admin.bankCreation")}</DialogTitle>
           </DialogHeader>
 
           <p className="text-sm text-muted-foreground mb-4">
-            Add bank information for mortgage and loan advertising. This data will be displayed on the mortgage bank loans page.
-          </p>
+            Add bank information for mortgage           </p>
 
           <div className="space-y-4">
             {/* Logo Upload */}
@@ -271,60 +272,60 @@ const AdminBanksPage = () => {
                 )}
               </div>
               <div>
-                <Label className="text-primary font-semibold">Bank Logo</Label>
-                <p className="text-xs text-muted-foreground">Click the circle to upload bank logo</p>
+                <Label className="text-primary font-semibold">{t("admin.bankLogo")}</Label>
+                <p className="text-xs text-muted-foreground">{t("admin.clickToUploadLogo")}</p>
               </div>
             </div>
 
             {/* Bank Name */}
             <div>
-              <Label className="text-primary font-semibold">Bank Name</Label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Enter Bank Name" className="mt-1" />
+              <Label className="text-primary font-semibold">{t("admin.bankName")}</Label>
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t("admin.enterBankName")} className="mt-1" />
             </div>
 
             {/* Row: Interest Rate, Finance %, Max Amount */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-primary font-semibold">Interest Rate</Label>
-                <Input type="number" step="0.01" value={form.interest_rate} onChange={(e) => setForm({ ...form, interest_rate: e.target.value })} placeholder="Enter Interest Rate" className="mt-1" />
+                <Label className="text-primary font-semibold">{t("admin.interestRate")}</Label>
+                <Input type="number" step="0.01" value={form.interest_rate} onChange={(e) => setForm({ ...form, interest_rate: e.target.value })} placeholder={t("admin.enterInterestRate")} className="mt-1" />
               </div>
               <div>
-                <Label className="text-primary font-semibold">Finance Amount Percentage</Label>
-                <Input type="number" step="0.01" value={form.finance_amount_percentage} onChange={(e) => setForm({ ...form, finance_amount_percentage: e.target.value })} placeholder="Enter Finance Amount Percent" className="mt-1" />
+                <Label className="text-primary font-semibold">{t("admin.financeAmountPercentage")}</Label>
+                <Input type="number" step="0.01" value={form.finance_amount_percentage} onChange={(e) => setForm({ ...form, finance_amount_percentage: e.target.value })} placeholder={t("admin.enterFinancePercent")} className="mt-1" />
               </div>
               <div>
-                <Label className="text-primary font-semibold">Maximum Amount</Label>
-                <Input type="number" value={form.maximum_amount} onChange={(e) => setForm({ ...form, maximum_amount: e.target.value })} placeholder="Enter Maximum Amount" className="mt-1" />
+                <Label className="text-primary font-semibold">{t("admin.maximumAmount")}</Label>
+                <Input type="number" value={form.maximum_amount} onChange={(e) => setForm({ ...form, maximum_amount: e.target.value })} placeholder={t("admin.enterMaxAmount")} className="mt-1" />
               </div>
             </div>
 
             {/* Row: Max Duration, Down Payment, Final Payment */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label className="text-primary font-semibold">Maximum Duration</Label>
-                <Input type="number" value={form.maximum_duration} onChange={(e) => setForm({ ...form, maximum_duration: e.target.value })} placeholder="Enter Maximum Duration" className="mt-1" />
+                <Label className="text-primary font-semibold">{t("admin.maximumDuration")}</Label>
+                <Input type="number" value={form.maximum_duration} onChange={(e) => setForm({ ...form, maximum_duration: e.target.value })} placeholder={t("admin.enterMaxDuration")} className="mt-1" />
               </div>
               <div>
-                <Label className="text-primary font-semibold">Down Payment</Label>
-                <Input type="number" step="0.01" value={form.down_payment} onChange={(e) => setForm({ ...form, down_payment: e.target.value })} placeholder="Enter Down Payment" className="mt-1" />
+                <Label className="text-primary font-semibold">{t("admin.downPayment")}</Label>
+                <Input type="number" step="0.01" value={form.down_payment} onChange={(e) => setForm({ ...form, down_payment: e.target.value })} placeholder={t("admin.enterDownPayment")} className="mt-1" />
               </div>
               <div>
-                <Label className="text-primary font-semibold">Final Payment</Label>
-                <Input type="number" step="0.01" value={form.final_payment} onChange={(e) => setForm({ ...form, final_payment: e.target.value })} placeholder="Enter Final Payment" className="mt-1" />
+                <Label className="text-primary font-semibold">{t("admin.finalPayment")}</Label>
+                <Input type="number" step="0.01" value={form.final_payment} onChange={(e) => setForm({ ...form, final_payment: e.target.value })} placeholder={t("admin.enterFinalPayment")} className="mt-1" />
               </div>
             </div>
 
             {/* Bank Info Link */}
             <div>
-              <Label className="text-primary font-semibold">Bank Information Link</Label>
-              <Input value={form.bank_info_link} onChange={(e) => setForm({ ...form, bank_info_link: e.target.value })} placeholder="Enter Bank Information Link" className="mt-1" />
+              <Label className="text-primary font-semibold">{t("admin.bankInfoLink")}</Label>
+              <Input value={form.bank_info_link} onChange={(e) => setForm({ ...form, bank_info_link: e.target.value })} placeholder={t("admin.enterBankInfoLink")} className="mt-1" />
             </div>
 
             {/* Buttons */}
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1" onClick={handleClear}>Clear</Button>
+              <Button variant="outline" className="flex-1" onClick={handleClear}>{t("admin.clear")}</Button>
               <Button className="flex-1" onClick={handleSave} disabled={saving}>
-                {saving ? "Saving..." : editing ? "Update" : "Create"}
+                {saving ? t("admin.saving") : editing ? t("admin.update") : t("admin.create")}
               </Button>
             </div>
           </div>

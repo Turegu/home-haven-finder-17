@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import 'leaflet/dist/leaflet.css';
+import { useTranslation } from "react-i18next";
 
 interface NearbyPlace {
   id: string;
@@ -111,6 +112,7 @@ function FlyToCenter({ lat, lng }: { lat: number; lng: number }) {
 }
 
 const NearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: NearbyPlacesMapProps) => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [places, setPlaces] = useState<Record<string, NearbyPlace[]>>({});
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);

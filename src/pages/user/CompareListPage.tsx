@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
+import { useTranslation } from "react-i18next";
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
   Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell
 } from "recharts";
@@ -45,6 +46,7 @@ const CHART_COLORS = [
 ];
 
 const CompareListPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [items, setItems] = useState<CompareItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -363,7 +365,7 @@ const CompareListPage = () => {
     <UserLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Compare List</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("userPages.compareList")}</h1>
           <div className="flex items-center gap-2">
             {items.length >= 2 && (
               <Button
@@ -378,7 +380,7 @@ const CompareListPage = () => {
               </Button>
             )}
             {items.length > 0 && (
-              <Button variant="destructive" size="sm" onClick={handleDeleteAll}>Delete All</Button>
+              <Button variant="destructive" size="sm" onClick={handleDeleteAll}>{t("userPages.deleteAll")}</Button>
             )}
           </div>
         </div>
@@ -399,15 +401,15 @@ const CompareListPage = () => {
           </div>
         ) : items.length === 0 ? (
           <div className="bg-card rounded-xl border border-border p-8 text-center">
-            <p className="text-muted-foreground">No properties to compare.</p>
-            <Link to="/buy"><Button variant="outline" className="mt-4">Browse Properties</Button></Link>
+            <p className="text-muted-foreground">{t("userPages.noPropertiesToCompare")}</p>
+            <Link to="/buy"><Button variant="outline" className="mt-4">{t("userPages.browseProperties")}</Button></Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-3 px-4 text-muted-foreground font-medium">Property</th>
+                  <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t("userPages.propertyCol")}</th>
                   <th className="text-left py-3 px-4 text-muted-foreground font-medium">Price</th>
                   <th className="text-left py-3 px-4 text-muted-foreground font-medium">Type</th>
                   <th className="text-left py-3 px-4 text-muted-foreground font-medium">Area</th>

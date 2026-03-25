@@ -3,6 +3,7 @@ import { TrendingUp, Home, CalendarClock, AlertCircle, Banknote } from "lucide-r
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMarketStats, useNeighbourhoodsInTown, CurrentPropertyData } from "@/hooks/useMarketTrends";
+import { useTranslation } from "react-i18next";
 
 interface MarketTrendsProps {
   province: string | null;
@@ -14,6 +15,7 @@ interface MarketTrendsProps {
 }
 
 const MarketTrends = ({ province, town, neighbourhood, currency = "USD", areaUnit = "m²", currentProperty }: MarketTrendsProps) => {
+  const { t } = useTranslation();
   const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(neighbourhood);
   const { data: neighbourhoods } = useNeighbourhoodsInTown(province, town);
 
