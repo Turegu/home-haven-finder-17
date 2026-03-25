@@ -111,7 +111,7 @@ function MultiSelectLanguages({
 }
 
 const CompanyProfilePage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
