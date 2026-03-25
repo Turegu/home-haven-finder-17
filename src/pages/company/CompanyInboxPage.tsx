@@ -39,7 +39,7 @@ const CompanyInboxPage = () => {
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState("property_request");
+  const [activeTab, setActiveTab] = useState("inquiry");
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
 
   useEffect(() => {
