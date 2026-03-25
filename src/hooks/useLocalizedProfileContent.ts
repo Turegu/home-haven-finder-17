@@ -40,36 +40,15 @@ export function useLocalizedServiceAreas(serviceAreas: string[] | null | undefin
     let cancelled = false;
 
     const localize = async () => {
-      const [provincesRes, districtsRes, neighborhoodsRes] = await Promise.all([
-        supabase
-          .from("locations")
-          .select("province, province_ar")
-          .eq("status", "active")
-          .in("province", parts),
-        supabase
-          .from("locations")
-          .select("district, district_ar")
-          .eq("status", "active")
-          .in("district", parts),
-        supabase
-          .from("locations")
-          .select("neighborhood, neighborhood_ar")
-          .eq("status", "active")
-          .in("neighborhood", parts),
-      ]);
+      const { data: rows } = await supabase.rpc("get_service_area_translations", {
+        p_areas: parts,
+      });
 
       const translationMap = new Map<string, string>();
-
-      (provincesRes.data ?? []).forEach((row) => {
-        if (row.province && row.province_ar) translationMap.set(row.province, row.province_ar);
-      });
-
-      (districtsRes.data ?? []).forEach((row) => {
-        if (row.district && row.district_ar) translationMap.set(row.district, row.district_ar);
-      });
-
-      (neighborhoodsRes.data ?? []).forEach((row) => {
-        if (row.neighborhood && row.neighborhood_ar) translationMap.set(row.neighborhood, row.neighborhood_ar);
+      (rows ?? []).forEach((row: any) => {
+        if (row.original && row.translated) {
+          translationMap.set(row.original, row.translated);
+        }
       });
 
       const next = areas.map((area) =>

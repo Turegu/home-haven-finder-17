@@ -2673,6 +2673,13 @@ export type Database = {
           name: string
         }[]
       }
+      get_service_area_translations: {
+        Args: { p_areas: string[] }
+        Returns: {
+          original: string
+          translated: string
+        }[]
+      }
       get_user_emails_for_company: {
         Args: { p_user_ids: string[] }
         Returns: {
