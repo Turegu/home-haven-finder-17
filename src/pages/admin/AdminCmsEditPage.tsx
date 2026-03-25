@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ImageIcon, ArrowLeft, Plus, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -32,6 +33,7 @@ interface Partner {
 }
 
 const AdminCmsEditPage = () => {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [pageId, setPageId] = useState("");
@@ -109,24 +111,24 @@ const AdminCmsEditPage = () => {
     setPartnerDialog(true);
   };
   const handlePartnerSave = async () => {
-    if (!partnerForm.name) { toast.error("Name is required"); return; }
+    if (!partnerForm.name) { toast.error(t("admin.nameRequired")); return; }
     let logo_url = editingPartner?.logo_url || null;
     if (partnerImageFile) logo_url = await uploadImage(partnerImageFile, "partners");
     const payload = { name: partnerForm.name, link_url: partnerForm.link_url || null, logo_url, sort_order: editingPartner?.sort_order ?? partners.length };
     if (editingPartner) {
       await supabase.from("partners").update(payload).eq("id", editingPartner.id);
-      toast.success("Partner updated");
+      toast.success(t("admin.partnerUpdated"));
     } else {
       await supabase.from("partners").insert(payload);
-      toast.success("Partner created");
+      toast.success(t("admin.partnerCreated"));
     }
     setPartnerDialog(false);
     fetchPartners();
   };
   const handlePartnerDelete = async (id: string) => {
-    if (!confirm("Delete this partner?")) return;
+    if (!confirm(t("admin.deletePartnerConfirm"))) return;
     await supabase.from("partners").delete().eq("id", id);
-    toast.success("Partner deleted");
+    toast.success(t("admin.partnerDeleted"));
     fetchPartners();
   };
 
@@ -154,7 +156,7 @@ const AdminCmsEditPage = () => {
     const ext = file.name.split(".").pop();
     const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage.from("cms-images").upload(path, file);
-    if (error) { toast.error("Upload failed"); return null; }
+    if (error) { toast.error(t("admin.uploadFailed")); return null; }
     const { data } = supabase.storage.from("cms-images").getPublicUrl(path);
     return data.publicUrl;
   };
@@ -165,8 +167,8 @@ const AdminCmsEditPage = () => {
       .from("cms_pages")
       .update({ content })
       .eq("id", pageId);
-    if (error) toast.error("Failed to save");
-    else toast.success("Page saved successfully");
+    if (error) toast.error(t("admin.failedToSave"));
+    else toast.success(t("admin.pageSaved"));
     setSaving(false);
   };
 
@@ -186,29 +188,29 @@ const AdminCmsEditPage = () => {
     setLocDialog(true);
   };
   const handleLocSave = async () => {
-    if (!locForm.name) { toast.error("Name is required"); return; }
+    if (!locForm.name) { toast.error(t("admin.nameRequired")); return; }
     let image_url = editingLoc?.image_url || null;
     if (locImageFile) image_url = await uploadImage(locImageFile, "locations");
     const payload = { name: locForm.name, link_url: locForm.link_url || null, image_url, sort_order: locForm.sort_order, tagline: locForm.tagline || null, subtitle: locForm.subtitle || null };
     if (editingLoc) {
       await supabase.from("featured_locations").update(payload).eq("id", editingLoc.id);
-      toast.success("Location updated");
+      toast.success(t("admin.locationUpdated"));
     } else {
       await supabase.from("featured_locations").insert(payload);
-      toast.success("Location created");
+      toast.success(t("admin.locationCreated"));
     }
     setLocDialog(false);
     fetchLocations();
   };
   const handleLocDelete = async (id: string) => {
-    if (!confirm("Delete this location?")) return;
+    if (!confirm(t("admin.deleteLocationConfirm"))) return;
     await supabase.from("featured_locations").delete().eq("id", id);
-    toast.success("Location deleted");
+    toast.success(t("admin.locationDeleted"));
     fetchLocations();
   };
 
   if (loading) {
-    return <AdminLayout><p className="text-muted-foreground py-8">Loading...</p></AdminLayout>;
+    return <AdminLayout><p className="text-muted-foreground py-8">{t("admin.loading")}</p></AdminLayout>;
   }
 
   return (
@@ -230,7 +232,7 @@ const AdminCmsEditPage = () => {
         {slug === "property-request" && <PropertyRequestForm content={content} updateSection={updateSection} updateNestedField={updateNestedField} uploadImage={uploadImage} />}
 
         <Button onClick={handleSave} disabled={saving} className="w-full" size="lg">
-          {saving ? "Saving..." : "Save"}
+          {saving ? t("admin.saving") : t("admin.save")}
         </Button>
       </div>
 
@@ -238,7 +240,7 @@ const AdminCmsEditPage = () => {
       <Dialog open={locDialog} onOpenChange={setLocDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingLoc ? "Edit Featured Location" : "Create Featured Location"}</DialogTitle>
+            <DialogTitle>{editingLoc ? t("admin.editFeaturedLocation") : t("admin.createFeaturedLocation")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <input ref={locFileRef} type="file" accept="image/*" className="hidden"
@@ -248,7 +250,7 @@ const AdminCmsEditPage = () => {
               }} />
             <ImageUploadBox preview={locImagePreview} onClick={() => locFileRef.current?.click()} height="h-40" />
             <div>
-              <Label>Name</Label>
+              <Label>{t("admin.name")}</Label>
               <Input value={locForm.name} onChange={(e) => setLocForm({ ...locForm, name: e.target.value })} />
             </div>
             <div>
@@ -260,12 +262,12 @@ const AdminCmsEditPage = () => {
               <Input value={locForm.subtitle} onChange={(e) => setLocForm({ ...locForm, subtitle: e.target.value })} placeholder="Projects in Dubai" />
             </div>
             <div>
-              <Label>Link</Label>
+              <Label>{t("admin.link")}</Label>
               <Input value={locForm.link_url} onChange={(e) => setLocForm({ ...locForm, link_url: e.target.value })} placeholder="https://..." />
             </div>
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1" onClick={() => setLocDialog(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={handleLocSave}>{editingLoc ? "Update" : "Create"}</Button>
+              <Button variant="outline" className="flex-1" onClick={() => setLocDialog(false)}>{t("admin.cancel")}</Button>
+              <Button className="flex-1" onClick={handleLocSave}>{editingLoc ? t("admin.update") : t("admin.create")}</Button>
             </div>
           </div>
         </DialogContent>
@@ -275,7 +277,7 @@ const AdminCmsEditPage = () => {
       <Dialog open={partnerDialog} onOpenChange={setPartnerDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingPartner ? "Edit Partner" : "Create Partner"}</DialogTitle>
+            <DialogTitle>{editingPartner ? t("admin.editPartner") : t("admin.createPartner")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <input ref={partnerFileRef} type="file" accept="image/*" className="hidden"
@@ -285,16 +287,16 @@ const AdminCmsEditPage = () => {
               }} />
             <ImageUploadBox preview={partnerImagePreview} onClick={() => partnerFileRef.current?.click()} height="h-28" label="Logo" />
             <div>
-              <Label>Name</Label>
+              <Label>{t("admin.name")}</Label>
               <Input value={partnerForm.name} onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })} />
             </div>
             <div>
-              <Label>Link URL</Label>
+              <Label>{t("admin.linkUrl")}</Label>
               <Input value={partnerForm.link_url} onChange={(e) => setPartnerForm({ ...partnerForm, link_url: e.target.value })} placeholder="https://..." />
             </div>
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1" onClick={() => setPartnerDialog(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={handlePartnerSave}>{editingPartner ? "Update" : "Create"}</Button>
+              <Button variant="outline" className="flex-1" onClick={() => setPartnerDialog(false)}>{t("admin.cancel")}</Button>
+              <Button className="flex-1" onClick={handlePartnerSave}>{editingPartner ? t("admin.update") : t("admin.create")}</Button>
             </div>
           </div>
         </DialogContent>
@@ -326,7 +328,7 @@ const ImageUploadBox = ({ preview, onClick, height = "h-40", label }: { preview:
       ) : (
         <div className="text-center text-muted-foreground text-sm">
           <ImageIcon className="h-8 w-8 mx-auto mb-1" />
-          Click to upload
+          {t("admin.clickToUpload")}
         </div>
       )}
     </div>
@@ -405,7 +407,7 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
             <div><Label>SubTitle</Label><Input value={hero.subtitle || ""} onChange={(e) => updateSection("hero", "subtitle", e.target.value)} /></div>
           </div>
           <div className="space-y-3">
-            <div><Label>Link URL</Label><Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." /></div>
+            <div><Label>{t("admin.linkUrl")}</Label><Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." /></div>
             <div><Label>Link Text</Label><Input value={hero.link_text || ""} onChange={(e) => updateSection("hero", "link_text", e.target.value)} /></div>
           </div>
         </div>
@@ -420,7 +422,7 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
           onChange={async (e) => { const f = e.target.files?.[0]; if (f) { const url = await uploadImage(f, "second_banner"); if (url) updateSection("second_banner", "image_url", url); } }} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ImageUploadBox preview={secondBanner.image_url} onClick={() => bannerRef.current?.click()} height="h-32" />
-          <div><Label>Link URL</Label><Input value={secondBanner.link_url || ""} onChange={(e) => updateSection("second_banner", "link_url", e.target.value)} placeholder="https://..." /></div>
+          <div><Label>{t("admin.linkUrl")}</Label><Input value={secondBanner.link_url || ""} onChange={(e) => updateSection("second_banner", "link_url", e.target.value)} placeholder="https://..." /></div>
         </div>
       </SectionCard>
 

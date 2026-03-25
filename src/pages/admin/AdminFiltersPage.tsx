@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +43,7 @@ interface FilterOption {
 }
 
 const AdminFiltersPage = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<FilterCategory[]>([]);
   const [options, setOptions] = useState<FilterOption[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<FilterCategory | null>(null);
@@ -72,7 +74,7 @@ const AdminFiltersPage = () => {
       .select("*")
       .order("sort_order");
     if (error) {
-      toast.error("Failed to load categories");
+      toast.error(t("admin.failedToLoadCategories"));
     } else {
       const cats = (data || []) as unknown as FilterCategory[];
       setCategories(cats);
@@ -88,7 +90,7 @@ const AdminFiltersPage = () => {
       .eq("category_id", categoryId)
       .order("sort_order");
     if (error) {
-      toast.error("Failed to load options");
+      toast.error(t("admin.failedToLoadOptions"));
     } else {
       setOptions((data || []) as unknown as FilterOption[]);
     }
@@ -123,7 +125,7 @@ const AdminFiltersPage = () => {
 
   async function handleSave() {
     if (!formTitle.trim()) {
-      toast.error("Title is required");
+      toast.error(t("admin.titleRequired"));
       return;
     }
     setSaving(true);
@@ -134,8 +136,8 @@ const AdminFiltersPage = () => {
           .from("filter_options")
           .update({ title: formTitle, translations: formTranslations as unknown as Record<string, never>, status: formStatus })
           .eq("id", editingItem.id);
-        if (error) toast.error("Failed to update");
-        else toast.success("Option updated");
+        if (error) toast.error(t("admin.failedToUpdate"));
+        else toast.success(t("admin.optionUpdated"));
       } else {
         const maxOrder = options.length > 0 ? Math.max(...options.map(o => o.sort_order)) + 1 : 1;
         const { error } = await supabase
@@ -147,8 +149,8 @@ const AdminFiltersPage = () => {
             sort_order: maxOrder,
             status: formStatus,
           });
-        if (error) toast.error("Failed to add option");
-        else toast.success("Option added");
+        if (error) toast.error(t("admin.failedToAddOption"));
+        else toast.success(t("admin.optionAdded"));
       }
       if (selectedCategory) fetchOptions(selectedCategory.id);
     } else {
@@ -157,8 +159,8 @@ const AdminFiltersPage = () => {
           .from("filter_categories")
           .update({ title: formTitle, translations: formTranslations as unknown as Record<string, never>, status: formStatus })
           .eq("id", editingItem.id);
-        if (error) toast.error("Failed to update");
-        else toast.success("Category updated");
+        if (error) toast.error(t("admin.failedToUpdate"));
+        else toast.success(t("admin.categoryUpdated"));
       }
       fetchCategories();
     }
@@ -168,11 +170,11 @@ const AdminFiltersPage = () => {
   }
 
   async function handleDelete(optionId: string) {
-    if (!confirm("Are you sure you want to delete this option?")) return;
+    if (!confirm(t("admin.confirmDeleteOption"))) return;
     const { error } = await supabase.from("filter_options").delete().eq("id", optionId);
-    if (error) toast.error("Failed to delete");
+    if (error) toast.error(t("admin.failedToDelete"));
     else {
-      toast.success("Option deleted");
+      toast.success(t("admin.optionDeleted"));
       if (selectedCategory) fetchOptions(selectedCategory.id);
     }
   }
@@ -180,7 +182,7 @@ const AdminFiltersPage = () => {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div>
+        <div className="flex items-center justify-center h-64 text-muted-foreground">{t("admin.loading")}</div>
       </AdminLayout>
     );
   }
@@ -189,13 +191,13 @@ const AdminFiltersPage = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Filter Management</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("admin.filterManagement")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Manage filter categories and options used across listings, search, and forms
+            {t("admin.filterManagementDesc")}
           </p>
           <div className="mt-3">
             <Button variant="outline" size="sm" onClick={() => setExcelDialogOpen(true)}>
-              <Upload className="h-4 w-4 mr-1" /> Import from Excel
+              <Upload className="h-4 w-4 mr-1" /> {t("admin.importFromExcel")}
             </Button>
           </div>
         </div>
@@ -203,7 +205,7 @@ const AdminFiltersPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Categories sidebar */}
           <div className="lg:col-span-1 space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Categories</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">{t("admin.categories")}</h3>
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -246,14 +248,14 @@ const AdminFiltersPage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-semibold text-foreground">{selectedCategory.title}</h2>
-                    <p className="text-xs text-muted-foreground">{options.length} options</p>
+                    <p className="text-xs text-muted-foreground">{options.length} {t("admin.options")}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="outline" onClick={() => setCategoryExcelOpen(true)}>
-                      <Upload className="h-4 w-4 mr-1" /> Import Excel
+                      <Upload className="h-4 w-4 mr-1" /> {t("admin.importExcel")}
                     </Button>
                     <Button size="sm" onClick={openAddOption}>
-                      <Plus className="h-4 w-4 mr-1" /> Add Option
+                      <Plus className="h-4 w-4 mr-1" /> {t("admin.addOption")}
                     </Button>
                   </div>
                 </div>
@@ -263,14 +265,14 @@ const AdminFiltersPage = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-10">#</TableHead>
-                        <TableHead>English</TableHead>
+                        <TableHead>{t("admin.english")}</TableHead>
                         <TableHead>
                           <div className="flex items-center gap-1">
-                            <Globe className="h-3.5 w-3.5" /> Translations
+                            <Globe className="h-3.5 w-3.5" /> {t("admin.translations")}
                           </div>
                         </TableHead>
-                        <TableHead className="w-20">Status</TableHead>
-                        <TableHead className="w-24">Actions</TableHead>
+                        <TableHead className="w-20">{t("admin.status")}</TableHead>
+                        <TableHead className="w-24">{t("admin.actions")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -319,7 +321,7 @@ const AdminFiltersPage = () => {
                       {options.length === 0 && (
                         <TableRow>
                           <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                            No options yet. Click "Add Option" to create one.
+                            {t("admin.noOptionsYet")}
                           </TableCell>
                         </TableRow>
                       )}
@@ -337,14 +339,14 @@ const AdminFiltersPage = () => {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Edit" : "Add"} {dialogType === "category" ? "Category" : "Option"}
+              {editingItem ? t("admin.update") : t("admin.create")} {dialogType === "category" ? t("admin.editCategory") : t("admin.addOption")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">English Title</Label>
-              <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder="Enter title in English" />
+              <Input value={formTitle} onChange={(e) => setFormTitle(e.target.value)} placeholder={t("admin.enterTitleEnglish")} />
             </div>
 
             <div className="space-y-1.5">
@@ -352,8 +354,8 @@ const AdminFiltersPage = () => {
               <Select value={formStatus} onValueChange={setFormStatus}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="active">{t("admin.active")}</SelectItem>
+                  <SelectItem value="inactive">{t("admin.inactive")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -384,9 +386,9 @@ const AdminFiltersPage = () => {
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setDialogOpen(false)}>{t("admin.cancel")}</Button>
             <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Saving..." : "Save"}
+              {saving ? t("admin.saving") : t("admin.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

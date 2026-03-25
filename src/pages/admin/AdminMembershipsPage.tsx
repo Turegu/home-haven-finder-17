@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Save, Clock, CheckCircle, Phone, Mail, Building2, Trash2 } from "lucide-react";
 
 type MembershipPackage = {
@@ -46,6 +47,7 @@ type AdvertisingRequest = {
 };
 
 const AdminMembershipsPage = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: packages, isLoading: packagesLoading } = useQuery({
@@ -75,13 +77,13 @@ const AdminMembershipsPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Membership Management</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("admin.membershipManagement")}</h1>
 
         <Tabs defaultValue="packages">
           <TabsList>
-            <TabsTrigger value="packages">Packages</TabsTrigger>
+            <TabsTrigger value="packages">{t("admin.packages")}</TabsTrigger>
             <TabsTrigger value="requests">
-              Advertising Requests
+              {t("admin.advertisingRequests")}
               {requests && requests.filter((r) => r.status === "pending").length > 0 && (
                 <Badge variant="destructive" className="ml-2 text-xs">
                   {requests.filter((r) => r.status === "pending").length}
@@ -92,7 +94,7 @@ const AdminMembershipsPage = () => {
 
           <TabsContent value="packages" className="mt-6">
             {packagesLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="text-muted-foreground">{t("admin.loading")}</p>
             ) : (
               <PackagesEditor packages={packages || []} />
             )}
@@ -100,7 +102,7 @@ const AdminMembershipsPage = () => {
 
           <TabsContent value="requests" className="mt-6">
             {requestsLoading ? (
-              <p className="text-muted-foreground">Loading...</p>
+              <p className="text-muted-foreground">{t("admin.loading")}</p>
             ) : (
               <RequestsList requests={requests || []} />
             )}
@@ -113,6 +115,7 @@ const AdminMembershipsPage = () => {
 
 // --- Packages Editor ---
 const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [editData, setEditData] = useState<Record<string, MembershipPackage>>(
     () => Object.fromEntries(packages.map((p) => [p.id, { ...p }]))
@@ -144,9 +147,9 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-membership-packages"] });
-      toast.success("Package updated successfully");
+      toast.success(t("admin.packageUpdated"));
     },
-    onError: () => toast.error("Failed to update package"),
+    onError: () => toast.error(t("admin.failedToUpdatePackage")),
   });
 
   const update = (id: string, field: keyof MembershipPackage, value: any) => {
@@ -163,7 +166,7 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr>
-            <th className="text-left p-3 bg-primary/10 text-foreground font-semibold w-48 rounded-tl-lg">Feature</th>
+            <th className="text-left p-3 bg-primary/10 text-foreground font-semibold w-48 rounded-tl-lg">{t("admin.feature")}</th>
             {packages.map((p, i) => (
               <th
                 key={p.id}
@@ -177,20 +180,20 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
           </tr>
         </thead>
         <tbody>
-          <EditableRow label="Package Name" packages={packages} editData={editData} field="name" update={update} type="text" />
-          <EditableRow label="Package Tagline" packages={packages} editData={editData} field="tagline" update={update} type="text" />
-          <CheckboxRow label="Professional Company Profile" packages={packages} editData={editData} field="has_company_profile" update={update} />
-          <EditableRow label="Professional Agent Profiles" packages={packages} editData={editData} field="max_agents" update={update} type="number" />
-          <EditableRow label="Property Listings" packages={packages} editData={editData} field="max_properties" update={update} type="number" />
-          <EditableRow label="Projects Listings" packages={packages} editData={editData} field="max_projects" update={update} type="number" />
-          <EditableRow label="Events Listings" packages={packages} editData={editData} field="max_events" update={update} type="number" />
-          <CheckboxRow label="Receive Property Requests" packages={packages} editData={editData} field="has_property_requests" update={update} />
-          <CheckboxRow label="Included Company & Agent Search" packages={packages} editData={editData} field="has_company_agent_search" update={update} />
-          <CheckboxRow label="Included in AI Search" packages={packages} editData={editData} field="has_ai_search" update={update} />
-          <PriceRow label="Monthly Subscription fees" packages={packages} editData={editData} field="monthly_price" update={update} />
-          <PriceRow label="3 months Subscription fees" packages={packages} editData={editData} field="quarterly_price" update={update} />
-          <PriceRow label="6 months Subscription fees" packages={packages} editData={editData} field="semiannual_price" update={update} />
-          <PriceRow label="12 months Subscription fees" packages={packages} editData={editData} field="annual_price" update={update} />
+          <EditableRow label={t("admin.packageName")} packages={packages} editData={editData} field="name" update={update} type="text" />
+          <EditableRow label={t("admin.packageTagline")} packages={packages} editData={editData} field="tagline" update={update} type="text" />
+          <CheckboxRow label={t("admin.professionalCompanyProfile")} packages={packages} editData={editData} field="has_company_profile" update={update} />
+          <EditableRow label={t("admin.professionalAgentProfiles")} packages={packages} editData={editData} field="max_agents" update={update} type="number" />
+          <EditableRow label={t("admin.propertyListings")} packages={packages} editData={editData} field="max_properties" update={update} type="number" />
+          <EditableRow label={t("admin.projectsListings")} packages={packages} editData={editData} field="max_projects" update={update} type="number" />
+          <EditableRow label={t("admin.eventsListings")} packages={packages} editData={editData} field="max_events" update={update} type="number" />
+          <CheckboxRow label={t("admin.receivePropertyRequests")} packages={packages} editData={editData} field="has_property_requests" update={update} />
+          <CheckboxRow label={t("admin.includedCompanyAgentSearch")} packages={packages} editData={editData} field="has_company_agent_search" update={update} />
+          <CheckboxRow label={t("admin.includedInAiSearch")} packages={packages} editData={editData} field="has_ai_search" update={update} />
+          <PriceRow label={t("admin.monthlySubscription")} packages={packages} editData={editData} field="monthly_price" update={update} />
+          <PriceRow label={t("admin.quarterlySubscription")} packages={packages} editData={editData} field="quarterly_price" update={update} />
+          <PriceRow label={t("admin.semiannualSubscription")} packages={packages} editData={editData} field="semiannual_price" update={update} />
+          <PriceRow label={t("admin.annualSubscription")} packages={packages} editData={editData} field="annual_price" update={update} />
           <tr>
             <td className="p-3 bg-primary/5 font-semibold rounded-bl-lg"></td>
             <td colSpan={packages.length} className={`p-3 text-center rounded-br-lg`}>
@@ -201,7 +204,7 @@ const PackagesEditor = ({ packages }: { packages: MembershipPackage[] }) => {
                 }}
                 disabled={updateMutation.isPending}
               >
-                <Save className="h-4 w-4 mr-1" /> Update All Packages
+                <Save className="h-4 w-4 mr-1" /> {t("admin.updateAllPackages")}
               </Button>
             </td>
           </tr>
@@ -291,6 +294,7 @@ const PriceRow = ({
 
 // --- Requests List ---
 const RequestsList = ({ requests }: { requests: AdvertisingRequest[] }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const statusMutation = useMutation({
@@ -303,9 +307,9 @@ const RequestsList = ({ requests }: { requests: AdvertisingRequest[] }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-advertising-requests"] });
-      toast.success("Status updated");
+      toast.success(t("admin.statusUpdated"));
     },
-    onError: () => toast.error("Failed to update status"),
+    onError: () => toast.error(t("admin.failedToUpdateStatus")),
   });
 
   const deleteMutation = useMutation({
@@ -318,13 +322,13 @@ const RequestsList = ({ requests }: { requests: AdvertisingRequest[] }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-advertising-requests"] });
-      toast.success("Request deleted");
+      toast.success(t("admin.requestDeleted"));
     },
-    onError: () => toast.error("Failed to delete request"),
+    onError: () => toast.error(t("admin.failedToDeleteRequest")),
   });
 
   if (requests.length === 0) {
-    return <p className="text-muted-foreground text-center py-12">No advertising requests yet.</p>;
+    return <p className="text-muted-foreground text-center py-12">{t("admin.noAdvertisingRequests")}</p>;
   }
 
   const statusColors: Record<string, string> = {
@@ -371,7 +375,7 @@ const RequestsList = ({ requests }: { requests: AdvertisingRequest[] }) => {
                     variant="outline"
                     onClick={() => statusMutation.mutate({ id: req.id, status: "contacted" })}
                   >
-                    <CheckCircle className="h-4 w-4 mr-1" /> Mark Contacted
+                    <CheckCircle className="h-4 w-4 mr-1" /> {t("admin.markContacted")}
                   </Button>
                 )}
                 {req.status === "contacted" && (
@@ -388,7 +392,7 @@ const RequestsList = ({ requests }: { requests: AdvertisingRequest[] }) => {
                   variant="ghost"
                   className="text-destructive hover:text-destructive"
                   onClick={() => {
-                    if (confirm("Delete this request?")) deleteMutation.mutate(req.id);
+                    if (confirm(t("admin.deleteRequestConfirm"))) deleteMutation.mutate(req.id);
                   }}
                 >
                   <Trash2 className="h-4 w-4" />

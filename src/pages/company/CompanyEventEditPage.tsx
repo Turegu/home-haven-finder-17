@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
@@ -90,11 +91,12 @@ function FormSelect({
 }
 
 const CompanyEventEditPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = id && id !== "new";
   const { options: filterOpts } = useFilterOptions("event");
-  const eventTypes = (filterOpts["event_types"] || []).map(t => ({ value: t.toLowerCase().replace(/[\s\/]+/g, '_'), label: t }));
+  const eventTypes = (filterOpts["event_types"] || []).map(et => ({ value: et.toLowerCase().replace(/[\s\/]+/g, '_'), label: et }));
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const membershipLimits = useMembershipLimits(companyId);
@@ -155,7 +157,7 @@ const CompanyEventEditPage = () => {
     if (!isEdit) return;
     const fetchEvent = async () => {
       const { data, error } = await supabase.from("events").select("*").eq("id", id).maybeSingle();
-      if (error || !data) { toast.error("Event not found"); return; }
+      if (error || !data) { toast.error(t("companyDashboard.eventNotFound")); return; }
       const d = data as any;
       setForm({
         title: d.title || "",
@@ -215,19 +217,19 @@ const CompanyEventEditPage = () => {
   };
 
   const validateEventForm = (): boolean => {
-    if (!companyId) { toast.error("Company not found"); return false; }
+    if (!companyId) { toast.error(t("companyDashboard.companyNotFound")); return false; }
     if (!isEdit && !membershipLimits.canCreate("events")) {
       toast.error(`Your ${membershipLimits.membership} membership does not allow more events. Please upgrade.`);
       return false;
     }
     const rules = [
-      { field: "title", check: !form.title.trim(), message: "Event name is required" },
-      { field: "event_type", check: !form.event_type, message: "Event type is required" },
-      { field: "event_date", check: !form.event_date, message: "Event date is required" },
-      ...(form.entry_type === "paid" ? [{ field: "price", check: !form.price, message: "Price is required for paid events" }] : []),
-      { field: "province", check: !form.province, message: "Province is required" },
-      { field: "town", check: !form.town, message: "Town/District is required" },
-      { field: "neighbourhood", check: !form.neighbourhood, message: "Neighbourhood is required" },
+      { field: "title", check: !form.title.trim(), message: t("companyDashboard.eventNameRequired") },
+      { field: "event_type", check: !form.event_type, message: t("companyDashboard.eventTypeRequired") },
+      { field: "event_date", check: !form.event_date, message: t("companyDashboard.eventDateRequired") },
+      ...(form.entry_type === "paid" ? [{ field: "price", check: !form.price, message: t("companyDashboard.priceRequiredPaid") }] : []),
+      { field: "province", check: !form.province, message: t("companyDashboard.provinceRequired") },
+      { field: "town", check: !form.town, message: t("companyDashboard.townRequired") },
+      { field: "neighbourhood", check: !form.neighbourhood, message: t("companyDashboard.neighbourhoodRequired") },
     ];
     const valid = validate(rules);
     if (!valid) {
@@ -245,7 +247,7 @@ const CompanyEventEditPage = () => {
   const handleSave = async (publishStatus: "draft" | "active") => {
     if (publishStatus === "active" && !validateEventForm()) return;
     if (publishStatus === "draft") {
-      if (!companyId) { toast.error("Company not found"); return; }
+      if (!companyId) { toast.error(t("companyDashboard.companyNotFound")); return; }
       if (!form.title.trim()) { toast.error("Event name is required"); return; }
     }
     setLoading(true);
@@ -284,15 +286,15 @@ const CompanyEventEditPage = () => {
       if (isEdit) {
         const { error } = await supabase.from("events").update(payload).eq("id", id);
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Event published!" : "Event saved as draft!");
+        toast.success(publishStatus === "active" ? t("companyDashboard.eventPublished") : t("companyDashboard.eventSavedDraft"));
       } else {
         const { error } = await supabase.from("events").insert(payload);
         if (error) throw error;
-        toast.success(publishStatus === "active" ? "Event published!" : "Event saved as draft!");
+        toast.success(publishStatus === "active" ? t("companyDashboard.eventPublished") : t("companyDashboard.eventSavedDraft"));
       }
       navigate("/company/events");
     } catch (err: any) {
-      toast.error(err.message || "Save failed");
+      toast.error(err.message || t("companyDashboard.saveFailed"));
     } finally { setLoading(false); }
   };
 
@@ -316,19 +318,19 @@ const CompanyEventEditPage = () => {
 
   return (
     <CompanyLayout>
-      <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? "Edit Event" : "New Event"}</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">{isEdit ? t("companyDashboard.editEvent") : t("companyDashboard.newEvent")}</h1>
 
       <form onSubmit={(e) => e.preventDefault()} className="max-w-4xl space-y-6 pb-10">
 
         {/* ─── Description & Information ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<FileText className="h-4 w-4" />} title="Description & Information" />
+          <SectionHeader icon={<FileText className="h-4 w-4" />} title={t("companyDashboard.descriptionInfo")} />
           <div className="space-y-5">
             <LanguageContentTabs
               fields={[
                 {
                   key: "title",
-                  label: "Event Name",
+                  label: t("companyDashboard.eventName"),
                   value_en: form.title,
                   value_ar: form.title_ar,
                   value_fr: form.title_fr,
@@ -341,7 +343,7 @@ const CompanyEventEditPage = () => {
                 },
                 {
                   key: "description",
-                  label: "Event Description",
+                  label: t("companyDashboard.eventDescription"),
                   value_en: form.description,
                   value_ar: form.description_ar,
                   value_fr: form.description_fr,
@@ -358,20 +360,20 @@ const CompanyEventEditPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
-                  <Users className="h-3.5 w-3.5 text-muted-foreground" /> Organizer
+                  <Users className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.organizer")}
                 </Label>
-                <Input value={form.organizer} onChange={(e) => updateField("organizer", e.target.value)} className="bg-secondary/50" placeholder="Organizer name" />
+                <Input value={form.organizer} onChange={(e) => updateField("organizer", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.organizerName")} />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
-                  <Users className="h-3.5 w-3.5 text-muted-foreground" /> Assign Agent
+                  <Users className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.assignAgent")}
                 </Label>
                 <Select value={selectedAgentId || "none"} onValueChange={(v) => setSelectedAgentId(v === "none" ? "" : v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select an agent (optional)" /></SelectTrigger>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("companyDashboard.selectAgent")} /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">No Agent</SelectItem>
+                    <SelectItem value="none">{t("companyDashboard.noAgent")}</SelectItem>
                     {agents.map((a) => (
                       <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
                     ))}
@@ -384,10 +386,10 @@ const CompanyEventEditPage = () => {
 
         {/* ─── Event Details ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<CalendarDays className="h-4 w-4" />} title="Event Details" />
+          <SectionHeader icon={<CalendarDays className="h-4 w-4" />} title={t("companyDashboard.eventDetails")} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <FormSelect
-              label="Event Type *"
+              label={t("companyDashboard.eventType") + " *"}
               icon={<CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />}
               value={form.event_type}
               onChange={(v) => updateField("event_type", v)}
@@ -397,13 +399,13 @@ const CompanyEventEditPage = () => {
             />
             <div className="space-y-2" data-field="event_date">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> Start Date & Time *
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.startDateTime")} *
               </Label>
               <Input type="datetime-local" value={form.event_date} onChange={(e) => updateField("event_date", e.target.value)} className={`bg-secondary/50 ${errorClass("event_date")}`} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> End Date & Time
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.endDateTime")}
               </Label>
               <Input type="datetime-local" value={form.event_end_date} onChange={(e) => updateField("event_end_date", e.target.value)} className="bg-secondary/50" />
             </div>
@@ -423,15 +425,15 @@ const CompanyEventEditPage = () => {
 
           {/* Entry Type */}
           <div className="mt-5 space-y-3">
-            <Label className="text-foreground font-medium">Entry Type *</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.entryType")} *</Label>
             <RadioGroup value={form.entry_type} onValueChange={(v) => updateField("entry_type", v)} className="flex gap-6">
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="open_invitation" id="entry_open" />
-                <Label htmlFor="entry_open" className="cursor-pointer text-sm">Open Invitation (Free)</Label>
+                <Label htmlFor="entry_open" className="cursor-pointer text-sm">{t("companyDashboard.openInvitation")}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="paid" id="entry_paid" />
-                <Label htmlFor="entry_paid" className="cursor-pointer text-sm">Paid Entry</Label>
+                <Label htmlFor="entry_paid" className="cursor-pointer text-sm">{t("companyDashboard.paidEntry")}</Label>
               </div>
             </RadioGroup>
           </div>
@@ -440,9 +442,9 @@ const CompanyEventEditPage = () => {
             <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
-                  <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Entry Fee ({form.currency})
+                  <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.entryFee")} ({form.currency})
                 </Label>
-                <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder="Enter Price" min="0" step="0.01" />
+                <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enterPrice")} min="0" step="0.01" />
               </div>
             </div>
           )}
@@ -450,7 +452,7 @@ const CompanyEventEditPage = () => {
 
         {/* ─── Location ─── */}
         <section className="bg-card rounded-xl border border-border p-6" data-field="province">
-          <SectionHeader icon={<Compass className="h-4 w-4" />} title="Location *" />
+          <SectionHeader icon={<Compass className="h-4 w-4" />} title={t("companyDashboard.location") + " *"} />
           <div className={`rounded-lg ${errorClass("province") || errorClass("town") || errorClass("neighbourhood") ? "ring-2 ring-destructive/70 p-2" : ""}`}>
           <LocationFormFields
             province={form.province}
@@ -467,8 +469,8 @@ const CompanyEventEditPage = () => {
 
         {/* ─── Event Logo ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Event Logo" />
-          <p className="text-xs text-muted-foreground mb-4">Upload a custom logo for this event. If none is uploaded, a default logo based on the event type will be used.</p>
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title={t("companyDashboard.eventLogo")} />
+          <p className="text-xs text-muted-foreground mb-4">{t("companyDashboard.eventLogoDesc")}</p>
           <div className="flex items-center gap-4">
             <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border flex items-center justify-center bg-muted/20">
               {logoUrl ? (
@@ -493,29 +495,29 @@ const CompanyEventEditPage = () => {
                   const ext = file.name.split(".").pop();
                   const path = `${companyId}/logo-${Date.now()}.${ext}`;
                   const { error } = await supabase.storage.from("event-images").upload(path, file);
-                  if (error) { toast.error("Upload failed"); setUploadingLogo(false); return; }
+                  if (error) { toast.error(t("admin.uploadFailed")); setUploadingLogo(false); return; }
                   const { data } = supabase.storage.from("event-images").getPublicUrl(path);
                   setLogoUrl(data.publicUrl);
                   setUploadingLogo(false);
-                  toast.success("Logo uploaded!");
+                  toast.success(t("companyDashboard.logoUploaded"));
                 }}
               />
               <Button type="button" variant="outline" size="sm" disabled={uploadingLogo}
                 onClick={() => document.getElementById("event-logo-upload")?.click()}>
-                <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? "Uploading..." : "Upload Logo"}
+                <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? t("companyDashboard.uploading") : t("companyDashboard.uploadLogo")}
               </Button>
-              <p className="text-xs text-muted-foreground mt-1">Recommended: 200×200px</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("companyDashboard.recommendedSize")}</p>
             </div>
           </div>
         </section>
 
         {/* ─── Media ─── */}
         <section className="bg-card rounded-xl border border-border p-6">
-          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title="Media" />
+          <SectionHeader icon={<ImageIcon className="h-4 w-4" />} title={t("companyDashboard.media")} />
 
           {/* Images */}
           <div className="space-y-3 mb-6">
-            <Label className="text-foreground font-medium">Images *</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.images")} *</Label>
             <div className="flex flex-wrap gap-3">
               {images.map((url, i) => (
                 <div key={i} className="relative w-24 h-24 rounded-lg overflow-hidden border border-border group">
@@ -528,11 +530,11 @@ const CompanyEventEditPage = () => {
               ))}
               <label className="w-24 h-24 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border cursor-pointer hover:border-primary transition-colors">
                 {uploadingImages ? (
-                  <span className="text-xs text-muted-foreground">Uploading…</span>
+                  <span className="text-xs text-muted-foreground">{t("companyDashboard.uploading")}</span>
                 ) : (
                   <>
                     <Upload className="h-5 w-5 text-muted-foreground mb-1" />
-                    <span className="text-xs text-muted-foreground">Browse</span>
+                    <span className="text-xs text-muted-foreground">{t("companyDashboard.browse")}</span>
                   </>
                 )}
                 <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploadingImages} />
@@ -542,7 +544,7 @@ const CompanyEventEditPage = () => {
 
           {/* PDF Catalogue */}
           <div className="space-y-3 mb-6">
-            <Label className="text-foreground font-medium">Attach PDF Catalogue</Label>
+            <Label className="text-foreground font-medium">{t("companyDashboard.attachPdfCatalogue")}</Label>
             <div className="flex items-center gap-4">
               {pdfUrl && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-secondary/50 rounded-lg border border-border text-sm">
@@ -552,7 +554,7 @@ const CompanyEventEditPage = () => {
                 </div>
               )}
               <label className="px-4 py-2 rounded-lg border border-dashed border-border cursor-pointer hover:border-primary transition-colors text-sm text-muted-foreground">
-                <Upload className="h-4 w-4 inline mr-2" />Choose File
+                <Upload className="h-4 w-4 inline mr-2" />{t("companyDashboard.chooseFile")}
                 <input type="file" accept=".pdf" onChange={handlePdfUpload} className="hidden" />
               </label>
             </div>
@@ -561,22 +563,22 @@ const CompanyEventEditPage = () => {
           {/* Video Link */}
           <div className="space-y-2">
             <Label className="text-foreground font-medium flex items-center gap-1.5">
-              <Video className="h-3.5 w-3.5 text-muted-foreground" /> Video Link
+              <Video className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.videoLink")}
             </Label>
-            <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder="YouTube or video URL" />
+            <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.videoPlaceholder")} />
           </div>
         </section>
 
         {/* Submit */}
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => navigate("/company/events")}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={() => navigate("/company/events")}>{t("admin.cancel")}</Button>
           <Button type="button" variant="secondary" disabled={loading} onClick={() => handleSave("draft")}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Saving..." : "Save as Draft"}
+            {loading ? t("admin.saving") : t("companyDashboard.saveAsDraft")}
           </Button>
           <Button type="button" disabled={loading} onClick={handlePublishClick}>
             <Save className="h-4 w-4 mr-2" />
-            {loading ? "Publishing..." : isEdit ? "Update & Publish" : "Publish"}
+            {loading ? t("companyDashboard.publishing") : isEdit ? t("companyDashboard.updatePublish") : t("companyDashboard.publish")}
           </Button>
         </div>
 

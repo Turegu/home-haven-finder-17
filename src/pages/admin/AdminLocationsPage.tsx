@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Upload, Search, Trash2, MapPin, ChevronRight, Settings, Plus, X, Check, ChevronsUpDown, Pencil } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -65,16 +66,16 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between mt-1 font-normal">
-          {value || "Select a country..."}<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {value || t("admin.selectCountry")}<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
         <div className="p-2 border-b border-border">
-          <Input placeholder="Search country..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8" />
+          <Input placeholder={t("admin.searchCountry")} value={search} onChange={(e) => setSearch(e.target.value)} className="h-8" />
         </div>
         <ScrollArea className="h-[200px]">
           <div className="p-1">
-            {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No country found.</p>}
+            {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">{t("admin.noCountryFound")}</p>}
             {filtered.map(country => (
               <button key={country} onClick={() => { onSelect(country); setOpen(false); setSearch(""); }}
                 className={cn("flex items-center gap-2 w-full rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground", value === country && "bg-accent text-accent-foreground")}>
@@ -89,6 +90,7 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
 };
 
 export default function AdminLocationsPage() {
+  const { t } = useTranslation();
   const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
   const [districts, setDistricts] = useState<{ name: string; ar: string }[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
@@ -190,15 +192,15 @@ export default function AdminLocationsPage() {
 
   const handleDeleteNeighborhood = async (id: string) => {
     const { error } = await supabase.from("locations").delete().eq("id", id);
-    if (error) { toast.error("Delete failed"); return; }
-    toast.success("Deleted");
+    if (error) { toast.error(t("admin.deleteFailed")); return; }
+    toast.success(t("admin.deleted"));
     if (selectedProvince && selectedDistrict) loadNeighborhoods(selectedProvince, selectedDistrict);
   };
 
   const handleDeleteDistrict = async (province: string, district: string) => {
     if (!confirm(`Delete ALL neighborhoods in ${district}, ${province}?`)) return;
     const { error } = await supabase.from("locations").delete().eq("province", province).eq("district", district);
-    if (error) { toast.error("Delete failed"); return; }
+    if (error) { toast.error(t("admin.deleteFailed")); return; }
     toast.success(`Deleted all in ${district}`);
     setSelectedDistrict(null); setNeighborhoods([]); loadDistricts(province);
   };
@@ -206,26 +208,26 @@ export default function AdminLocationsPage() {
   const handleDeleteProvince = async (province: string) => {
     if (!confirm(`Delete ALL locations in ${province}? This cannot be undone.`)) return;
     const { error } = await supabase.from("locations").delete().eq("province", province);
-    if (error) { toast.error("Delete failed"); return; }
+    if (error) { toast.error(t("admin.deleteFailed")); return; }
     toast.success(`Deleted all in ${province}`);
     setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); setDistricts([]); loadProvinces();
   };
 
   // Edit district: rename all rows matching old district name in province
   const handleSaveDistrictEdit = async (oldName: string) => {
-    if (!editDistrictName.trim()) { toast.error("District name required"); return; }
+    if (!editDistrictName.trim()) { toast.error(t("admin.districtRequired")); return; }
     const { error } = await supabase.from("locations")
       .update({ district: editDistrictName.trim(), district_ar: editDistrictAr.trim() || null })
       .eq("province", selectedProvince!).eq("district", oldName);
     if (error) { toast.error(error.message); return; }
-    toast.success("District updated");
+    toast.success(t("admin.districtUpdated"));
     setEditingDistrict(null);
     loadDistricts(selectedProvince!);
   };
 
   // Add new district (creates one placeholder neighborhood row)
   const handleAddDistrict = async () => {
-    if (!newDistrictName.trim()) { toast.error("District name required"); return; }
+    if (!newDistrictName.trim()) { toast.error(t("admin.districtRequired")); return; }
     const province = provinces.find(p => p.name === selectedProvince);
     const { error } = await supabase.from("locations").insert({
       province: selectedProvince!,
@@ -236,26 +238,26 @@ export default function AdminLocationsPage() {
       neighborhood_ar: null,
     });
     if (error) { toast.error(error.message); return; }
-    toast.success("District added");
+    toast.success(t("admin.districtAdded"));
     setShowAddDistrict(false); setNewDistrictName(""); setNewDistrictAr("");
     loadDistricts(selectedProvince!);
   };
 
   // Edit neighborhood
   const handleSaveNeighborhoodEdit = async (id: string) => {
-    if (!editNeighborhoodName.trim()) { toast.error("Neighborhood name required"); return; }
+    if (!editNeighborhoodName.trim()) { toast.error(t("admin.neighborhoodRequired")); return; }
     const { error } = await supabase.from("locations")
       .update({ neighborhood: editNeighborhoodName.trim(), neighborhood_ar: editNeighborhoodAr.trim() || null })
       .eq("id", id);
     if (error) { toast.error(error.message); return; }
-    toast.success("Neighborhood updated");
+    toast.success(t("admin.neighborhoodUpdated"));
     setEditingNeighborhood(null);
     loadNeighborhoods(selectedProvince!, selectedDistrict!);
   };
 
   // Add neighborhood
   const handleAddNeighborhood = async () => {
-    if (!newNeighborhoodName.trim()) { toast.error("Neighborhood name required"); return; }
+    if (!newNeighborhoodName.trim()) { toast.error(t("admin.neighborhoodRequired")); return; }
     const province = provinces.find(p => p.name === selectedProvince);
     const district = districts.find(d => d.name === selectedDistrict);
     const { error } = await supabase.from("locations").insert({
@@ -267,15 +269,15 @@ export default function AdminLocationsPage() {
       neighborhood_ar: newNeighborhoodAr.trim() || null,
     });
     if (error) { toast.error(error.message); return; }
-    toast.success("Neighborhood added");
+    toast.success(t("admin.neighborhoodAdded"));
     setShowAddNeighborhood(false); setNewNeighborhoodName(""); setNewNeighborhoodAr("");
     loadNeighborhoods(selectedProvince!, selectedDistrict!);
   };
 
   const handleUpdateSetting = async (key: string, value: string) => {
     const { error } = await supabase.from("location_settings").update({ setting_value: value }).eq("setting_key", key);
-    if (error) toast.error("Failed to update");
-    else { toast.success("Setting updated"); loadSettings(); }
+    if (error) toast.error(t("admin.failedToUpdateSetting"));
+    else { toast.success(t("admin.settingUpdated")); loadSettings(); }
   };
 
   const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -319,11 +321,11 @@ export default function AdminLocationsPage() {
 
   const handleAddEntry = async () => {
     if (!newEntry.province || !newEntry.district || !newEntry.neighborhood) {
-      toast.error("Province, District, and Neighborhood are required"); return;
+      toast.error(t("admin.provinceDistrictNeighRequired")); return;
     }
     const { error } = await supabase.from("locations").insert([newEntry]);
     if (error) { toast.error(error.message); return; }
-    toast.success("Location added");
+    toast.success(t("admin.locationAdded"));
     setShowAddDialog(false);
     setNewEntry({ province: "", province_ar: "", district: "", district_ar: "", neighborhood: "", neighborhood_ar: "" });
     loadProvinces();
@@ -342,40 +344,40 @@ export default function AdminLocationsPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <MapPin className="h-6 w-6 text-primary" /> Location Management
+              <MapPin className="h-6 w-6 text-primary" /> {t("admin.locationManagement")}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {totalCount.toLocaleString()} locations across {provinces.length} provinces
+              {totalCount.toLocaleString()} {t("admin.locationsAcrossProvinces")} {provinces.length} {t("admin.provinces")}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setShowSettings(true)}>
-              <Settings className="h-4 w-4 mr-1" /> Settings
+              <Settings className="h-4 w-4 mr-1" /> {t("admin.settings")}
             </Button>
             <Button variant="outline" size="sm" onClick={() => setShowUpload(true)}>
-              <Upload className="h-4 w-4 mr-1" /> Import Excel
+              <Upload className="h-4 w-4 mr-1" /> {t("admin.importFromExcel")}
             </Button>
             <Button size="sm" onClick={() => setShowAddDialog(true)}>
-              <Plus className="h-4 w-4 mr-1" /> Add Location
+              <Plus className="h-4 w-4 mr-1" /> {t("admin.addLocation")}
             </Button>
           </div>
         </div>
 
         {/* Search */}
         <div className="flex gap-2">
-          <Input placeholder="Search provinces, districts, neighborhoods..." value={searchQuery}
+          <Input placeholder={t("admin.searchPlaceholder")} value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} className="max-w-md" />
           <Button variant="outline" onClick={handleSearch}><Search className="h-4 w-4" /></Button>
           {(selectedProvince || searchQuery) && (
             <Button variant="ghost" size="sm" onClick={() => { setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); setSearchQuery(""); }}>
-              <X className="h-4 w-4 mr-1" /> Reset
+              <X className="h-4 w-4 mr-1" /> {t("admin.reset")}
             </Button>
           )}
         </div>
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <button onClick={() => { setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground">All Provinces</button>
+          <button onClick={() => { setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground">{t("admin.allProvinces")}</button>
           {selectedProvince && (
             <><ChevronRight className="h-3.5 w-3.5" />
               <button onClick={() => { setSelectedDistrict(null); setNeighborhoods([]); }} className="hover:text-foreground text-primary font-medium">{selectedProvince}</button></>
@@ -388,7 +390,7 @@ export default function AdminLocationsPage() {
         {/* Content */}
         <div className="bg-card rounded-lg border border-border">
           {loading && !selectedProvince ? (
-            <div className="flex items-center justify-center py-16 text-muted-foreground">Loading provinces...</div>
+            <div className="flex items-center justify-center py-16 text-muted-foreground">{t("admin.loadingProvinces")}</div>
           ) : !selectedProvince && neighborhoods.length === 0 ? (
             /* Province list */
             <ScrollArea className="h-[500px]">
@@ -416,7 +418,7 @@ export default function AdminLocationsPage() {
               <div className="flex items-center justify-between px-4 pt-3 pb-1">
                 <span className="text-sm font-medium text-muted-foreground">{districts.length} Districts in {selectedProvince}</span>
                 <Button size="sm" variant="outline" onClick={() => setShowAddDistrict(true)}>
-                  <Plus className="h-3.5 w-3.5 mr-1" /> Add District
+                  <Plus className="h-3.5 w-3.5 mr-1" /> {t("admin.addDistrict")}
                 </Button>
               </div>
 
@@ -424,11 +426,11 @@ export default function AdminLocationsPage() {
               {showAddDistrict && (
                 <div className="mx-4 mt-2 p-3 border border-border rounded-lg bg-muted/30 flex flex-col sm:flex-row gap-2 items-end">
                   <div className="flex-1">
-                    <Label className="text-xs">District Name</Label>
+                    <Label className="text-xs">{t("admin.districtName")}</Label>
                     <Input value={newDistrictName} onChange={e => setNewDistrictName(e.target.value)} placeholder="e.g. Alanya" className="h-8 text-sm" />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-xs">Arabic Name</Label>
+                    <Label className="text-xs">{t("admin.arabicName")}</Label>
                     <Input value={newDistrictAr} onChange={e => setNewDistrictAr(e.target.value)} placeholder="ألانيا" dir="rtl" className="h-8 text-sm" />
                   </div>
                   <div className="flex gap-1">
@@ -446,7 +448,7 @@ export default function AdminLocationsPage() {
                         <Input value={editDistrictName} onChange={e => setEditDistrictName(e.target.value)} className="h-7 text-sm" placeholder="District name" />
                         <Input value={editDistrictAr} onChange={e => setEditDistrictAr(e.target.value)} className="h-7 text-sm" placeholder="Arabic" dir="rtl" />
                         <div className="flex gap-1">
-                          <Button size="sm" className="h-7 text-xs flex-1" onClick={() => handleSaveDistrictEdit(district.name)}><Check className="h-3 w-3 mr-1" />Save</Button>
+                          <Button size="sm" className="h-7 text-xs flex-1" onClick={() => handleSaveDistrictEdit(district.name)}><Check className="h-3 w-3 mr-1" />{t("admin.save")}</Button>
                           <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setEditingDistrict(null)}><X className="h-3 w-3" /></Button>
                         </div>
                       </div>
@@ -481,7 +483,7 @@ export default function AdminLocationsPage() {
                 <span className="text-sm font-medium text-muted-foreground">{neighborhoods.length} Neighborhoods in {selectedDistrict}</span>
                 {selectedProvince && selectedDistrict && (
                   <Button size="sm" variant="outline" onClick={() => setShowAddNeighborhood(true)}>
-                    <Plus className="h-3.5 w-3.5 mr-1" /> Add Neighborhood
+                    <Plus className="h-3.5 w-3.5 mr-1" /> {t("admin.addNeighborhood")}
                   </Button>
                 )}
               </div>
@@ -489,11 +491,11 @@ export default function AdminLocationsPage() {
               {showAddNeighborhood && (
                 <div className="mx-4 mt-2 p-3 border border-border rounded-lg bg-muted/30 flex flex-col sm:flex-row gap-2 items-end">
                   <div className="flex-1">
-                    <Label className="text-xs">Neighborhood Name</Label>
+                    <Label className="text-xs">{t("admin.neighborhoodName")}</Label>
                     <Input value={newNeighborhoodName} onChange={e => setNewNeighborhoodName(e.target.value)} placeholder="e.g. Kestel" className="h-8 text-sm" />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-xs">Arabic Name</Label>
+                    <Label className="text-xs">{t("admin.arabicName")}</Label>
                     <Input value={newNeighborhoodAr} onChange={e => setNewNeighborhoodAr(e.target.value)} placeholder="كستل" dir="rtl" className="h-8 text-sm" />
                   </div>
                   <div className="flex gap-1">
@@ -507,11 +509,11 @@ export default function AdminLocationsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      {!selectedProvince && <TableHead>Province</TableHead>}
-                      {!selectedDistrict && <TableHead>District</TableHead>}
-                      <TableHead>Neighborhood</TableHead>
-                      <TableHead>Neighborhood (AR)</TableHead>
-                      <TableHead className="w-24">Actions</TableHead>
+                      {!selectedProvince && <TableHead>{t("admin.province")}</TableHead>}
+                      {!selectedDistrict && <TableHead>{t("admin.district")}</TableHead>}
+                      <TableHead>{t("admin.neighborhood")}</TableHead>
+                      <TableHead>{t("admin.neighborhoodAr")}</TableHead>
+                      <TableHead className="w-24">{t("admin.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -550,7 +552,7 @@ export default function AdminLocationsPage() {
                       )
                     ))}
                     {neighborhoods.length === 0 && (
-                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No locations found</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">{t("admin.noLocationsFound")}</TableCell></TableRow>
                     )}
                   </TableBody>
                 </Table>
@@ -562,21 +564,21 @@ export default function AdminLocationsPage() {
         {/* Settings Dialog */}
         <Dialog open={showSettings} onOpenChange={setShowSettings}>
           <DialogContent>
-            <DialogHeader><DialogTitle>Location Settings</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t("admin.locationSettings")}</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label>Allowed Country (restricts keyword search)</Label>
+                <Label>{t("admin.allowedCountry")}</Label>
                 <CountryCombobox value={allowedCountry} onSelect={(country) => handleUpdateSetting("allowed_country", country)} />
-                <p className="text-xs text-muted-foreground mt-1">Keywords from search will be restricted to this country</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("admin.allowedCountryHint")}</p>
               </div>
               <div>
-                <Label>Max Keyword Suggestions</Label>
+                <Label>{t("admin.maxKeywordSuggestions")}</Label>
                 <div className="flex gap-2 mt-1">
                   <Input defaultValue={maxSuggestions} id="max_suggestions" type="number" min={1} max={50} />
                   <Button size="sm" onClick={() => {
                     const v = (document.getElementById("max_suggestions") as HTMLInputElement)?.value;
                     if (v) handleUpdateSetting("max_keyword_suggestions", v);
-                  }}>Save</Button>
+                  }}>{t("admin.save")}</Button>
                 </div>
               </div>
             </div>
@@ -586,7 +588,7 @@ export default function AdminLocationsPage() {
         {/* Upload Excel Dialog */}
         <Dialog open={showUpload} onOpenChange={(o) => { setShowUpload(o); if (!o) setUploadPreview(null); }}>
           <DialogContent className="max-w-2xl">
-            <DialogHeader><DialogTitle>Import Locations from Excel</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t("admin.importLocationsExcel")}</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Excel format: <Badge variant="outline">Province</Badge> <Badge variant="outline">Province(ar)</Badge> <Badge variant="outline">District</Badge> <Badge variant="outline">District(ar)</Badge> <Badge variant="outline">Neighborhood</Badge> <Badge variant="outline">Neighborhood(ar)</Badge>
@@ -604,12 +606,12 @@ export default function AdminLocationsPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="text-xs">Province</TableHead>
+                            <TableHead className="text-xs">{t("admin.province")}</TableHead>
                             <TableHead className="text-xs" dir="rtl">Province (AR)</TableHead>
-                            <TableHead className="text-xs">District</TableHead>
+                            <TableHead className="text-xs">{t("admin.district")}</TableHead>
                             <TableHead className="text-xs" dir="rtl">District (AR)</TableHead>
-                            <TableHead className="text-xs">Neighborhood</TableHead>
-                            <TableHead className="text-xs" dir="rtl">Neighborhood (AR)</TableHead>
+                            <TableHead className="text-xs">{t("admin.neighborhood")}</TableHead>
+                            <TableHead className="text-xs" dir="rtl">{t("admin.neighborhoodAr")}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -630,7 +632,7 @@ export default function AdminLocationsPage() {
                   </div>
                   <DialogFooter className="gap-2">
                     <Button variant="outline" onClick={() => handleConfirmUpload("merge")} disabled={uploading}>
-                      {uploading ? "Importing..." : "Merge (Add New)"}
+                      {uploading ? t("admin.importing") : t("admin.mergeAddNew")}
                     </Button>
                     <Button variant="destructive" onClick={() => handleConfirmUpload("replace")} disabled={uploading}>
                       {uploading ? "Importing..." : "Replace All"}
