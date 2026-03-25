@@ -381,6 +381,11 @@ const PropertyRequestPage = () => {
         </div>
       </div>
 
+      {/* Bottom Banner */}
+      <div className="container mx-auto px-4 pb-8">
+        <BannerDisplay pageName="property-request" bannerType="horizontal" className="" />
+      </div>
+
       <Footer />
     </div>
   );
