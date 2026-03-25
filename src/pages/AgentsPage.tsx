@@ -357,7 +357,7 @@ const AgentsPage = () => {
                   {/* Left: Logo area */}
                   <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-4 bg-white dark:bg-card`}>
                     {company.logo_url ? (
-                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                      <img src={company.logo_url} alt={company.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">
                         {company.name.charAt(0)}
