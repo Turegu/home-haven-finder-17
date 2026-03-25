@@ -109,6 +109,7 @@ const AdminCompanyEditPage = () => {
     try {
       const { error } = await supabase.from("companies").update({
         name: form.name.trim(),
+        name_ar: form.name_ar || null,
         email: form.email.trim(),
         phone: form.phone || null,
         whatsapp: form.whatsapp || null,
