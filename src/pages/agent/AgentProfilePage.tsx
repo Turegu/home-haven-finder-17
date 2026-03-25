@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
+import { agentDesignations } from "@/data/designations";
 
 import { allLanguages } from "@/data/languages";
 import { useTranslation } from "react-i18next";
