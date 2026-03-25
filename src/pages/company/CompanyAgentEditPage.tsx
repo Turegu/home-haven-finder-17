@@ -224,11 +224,13 @@ const CompanyAgentEditPage = () => {
 
     const payload: any = {
       name: form.name.trim(),
+      name_ar: form.name_ar || null,
       designation: form.designation || null,
       email: form.email.trim(),
       phone: form.phone || null,
       whatsapp: form.whatsapp || null,
       description: form.description || null,
+      description_ar: form.description_ar || null,
       service_areas: form.service_areas ? form.service_areas.split(",").map((s) => s.trim()).filter(Boolean) : [],
       languages: form.languages,
       registration_number: form.registration_number || null,
