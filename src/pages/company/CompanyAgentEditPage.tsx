@@ -214,7 +214,7 @@ const CompanyAgentEditPage = () => {
     if (!form.designation.trim()) errors.designation = t("companyDashboard.agentDesignation") + " required";
     if (!form.phone.trim()) errors.phone = t("companyDashboard.phone") + " required";
     if (!form.whatsapp.trim()) errors.whatsapp = t("companyDashboard.whatsapp") + " required";
-    if (!form.service_areas.trim()) errors.service_areas = t("companyDashboard.serviceAreas") + " required";
+    if (form.service_areas.length === 0) errors.service_areas = t("companyDashboard.serviceAreas") + " required";
     if (form.languages.length === 0) errors.languages = t("companyDashboard.languagesSpoken") + " required";
     if (!form.registration_number.trim()) errors.registration_number = t("companyDashboard.registrationNumber") + " required";
     if (!form.description.trim()) errors.description = t("companyDashboard.description") + " required";
