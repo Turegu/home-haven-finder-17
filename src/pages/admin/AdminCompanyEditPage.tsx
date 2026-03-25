@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Save, ArrowLeft } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import type { Database } from "@/integrations/supabase/types";
-import { companyTypes } from "@/data/companyTypes";
+import { useCompanyTypes } from "@/hooks/useTranslatableCruds";
 
 type MembershipType = Database["public"]["Enums"]["membership_type"];
 
@@ -29,6 +29,7 @@ const packageOptions: { value: MembershipType; label: string }[] = [
 const AdminCompanyEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -203,8 +204,8 @@ const AdminCompanyEditPage = () => {
                 <Select value={form.company_types[0] || ""} onValueChange={(v) => setForm(prev => ({ ...prev, company_types: [v] }))}>
                   <SelectTrigger className="bg-secondary/30"><SelectValue placeholder="Select Company Type" /></SelectTrigger>
                   <SelectContent>
-                    {companyTypes.map(ct => (
-                      <SelectItem key={ct.value} value={ct.value}>{ct.label}</SelectItem>
+                    {dbCompanyTypes.map(ct => (
+                      <SelectItem key={ct.title} value={ct.title}>{ct.title}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

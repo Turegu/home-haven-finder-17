@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
 import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
-import { formatCompanyTypes } from '@/data/companyTypes';
-import { getDesignationLabel } from '@/data/designations';
+import { useCompanyTypes, useDesignations, getTranslatedLabel, formatCompanyTypesFromDb } from '@/hooks/useTranslatableCruds';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -47,6 +46,8 @@ interface AgentData {
 const CompanyDetailPage = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
+  const { data: dbDesignations = [] } = useDesignations();
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [companyAgents, setCompanyAgents] = useState<AgentData[]>([]);
   const [activeTab, setActiveTab] = useState('properties');
@@ -89,7 +90,7 @@ const CompanyDetailPage = () => {
   }, [id]);
 
   const typeLabel = (types: string[] | null) => {
-    return formatCompanyTypes(types, i18n.language);
+    return formatCompanyTypesFromDb(dbCompanyTypes, types, i18n.language);
   };
 
   const handleMapClick = () => {
@@ -348,7 +349,7 @@ const CompanyDetailPage = () => {
                     )}
                     <div>
                       <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && (agent as any).name_ar ? (agent as any).name_ar : i18n.language === 'fr' && (agent as any).name_fr ? (agent as any).name_fr : agent.name}</h4>
-                      <p className="text-sm text-muted-foreground">{getDesignationLabel(agent.designation, i18n.language)}</p>
+                      <p className="text-sm text-muted-foreground">{getTranslatedLabel(dbDesignations, agent.designation, i18n.language)}</p>
                       {agent.languages && <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).map(l => t(`languageNames.${l}`, l)).join(', ')}</p>}
                     </div>
                   </Link>

@@ -1,4 +1,4 @@
-// Agent designation options with translations
+// Agent designation options - hardcoded fallback (DB is the source of truth)
 export interface DesignationOption {
   value: string;
   en: string;
@@ -6,6 +6,7 @@ export interface DesignationOption {
   fr: string;
 }
 
+// Fallback list used when DB data is not yet loaded
 export const agentDesignations: DesignationOption[] = [
   { value: "Sales Director", en: "Sales Director", ar: "مدير المبيعات", fr: "Directeur des ventes" },
   { value: "Sales Manager", en: "Sales Manager", ar: "مدير مبيعات", fr: "Responsable des ventes" },

@@ -22,7 +22,7 @@ import {
 import PatternLock from "@/components/admin/PatternLock";
 import ServiceAreaPicker from "@/components/ServiceAreaPicker";
 import BoostProfileDialog from "@/components/BoostProfileDialog";
-import { agentDesignations } from "@/data/designations";
+import { useDesignations, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 
 import { allLanguages } from "@/data/languages";
 import { useTranslation } from "react-i18next";
@@ -107,6 +107,7 @@ function MultiSelectLanguages({
 
 const AgentProfilePage = () => {
   const { t, i18n } = useTranslation();
+  const { data: dbDesignations = [] } = useDesignations();
   const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -188,8 +189,8 @@ const AgentProfilePage = () => {
     }));
   };
 
-  const designationLabel = (d: { en: string; ar: string; fr: string }) =>
-    i18n.language === "ar" ? d.ar : i18n.language === "fr" ? d.fr : d.en;
+  const designationLabel = (title: string) =>
+    getTranslatedLabel(dbDesignations, title, i18n.language);
 
   const handleSave = async () => {
     if (!agent) return;
@@ -342,8 +343,8 @@ const AgentProfilePage = () => {
                 className="w-full rounded-md border border-input px-3 py-2 text-sm bg-secondary/50"
               >
                 <option value="">Designation</option>
-                {agentDesignations.map((d) => (
-                  <option key={d.value} value={d.value}>{designationLabel(d)}</option>
+                {dbDesignations.map((d) => (
+                  <option key={d.title} value={d.title}>{designationLabel(d.title)}</option>
                 ))}
               </select>
             </div>

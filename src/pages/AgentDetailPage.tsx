@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
 import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
-import { formatCompanyTypes } from '@/data/companyTypes';
-import { getDesignationLabel } from '@/data/designations';
+import { useCompanyTypes, useDesignations, getTranslatedLabel, formatCompanyTypesFromDb } from '@/hooks/useTranslatableCruds';
 import ExpandablePillList from '@/components/ExpandablePillList';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -47,13 +46,16 @@ interface AgentData {
 const AgentDetailPage = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
+  const { data: dbDesignations = [] } = useDesignations();
   const [agent, setAgent] = useState<AgentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
-  const lang = i18n.language;
+  
   const getLocalizedName = (name: string, name_ar?: string | null, name_fr?: string | null) => {
     if (lang === 'ar' && name_ar) return name_ar;
     if (lang === 'fr' && name_fr) return name_fr;
@@ -179,7 +181,7 @@ const AgentDetailPage = () => {
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
-                    <p className="text-sm text-muted-foreground">{getDesignationLabel(agent.designation, lang)}</p>
+                    <p className="text-sm text-muted-foreground">{getTranslatedLabel(dbDesignations, agent.designation, lang)}</p>
                   </div>
 
                   {/* Stats */}
@@ -238,7 +240,7 @@ const AgentDetailPage = () => {
                      {agent.companies.is_verified && <VerifiedBadge />}
                    </h3>
                   <p className="text-xs text-muted-foreground">
-                    {formatCompanyTypes(agent.companies.company_types, lang)}
+                    {formatCompanyTypesFromDb(dbCompanyTypes, agent.companies.company_types, lang)}
                   </p>
                 </div>
               </Link>

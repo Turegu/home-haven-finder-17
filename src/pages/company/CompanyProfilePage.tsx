@@ -28,7 +28,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Company = Tables<"companies">;
 
-import { companyTypes } from "@/data/companyTypes";
+import { useCompanyTypes, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 
 import { allLanguages } from "@/data/languages";
 import { useTranslation } from "react-i18next";
@@ -113,6 +113,7 @@ function MultiSelectLanguages({
 
 const CompanyProfilePage = () => {
   const { t, i18n } = useTranslation();
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -455,25 +456,25 @@ const CompanyProfilePage = () => {
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Company Type</Label>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  {companyTypes.map((ct) => (
+                  {dbCompanyTypes.map((ct) => (
                     <button
-                      key={ct.value}
+                      key={ct.title}
                       type="button"
                       onClick={() => {
                         setForm(prev => ({
                           ...prev,
-                          company_types: prev.company_types.includes(ct.value)
-                            ? prev.company_types.filter(v => v !== ct.value)
-                            : [...prev.company_types, ct.value],
+                          company_types: prev.company_types.includes(ct.title)
+                            ? prev.company_types.filter(v => v !== ct.title)
+                            : [...prev.company_types, ct.title],
                         }));
                       }}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                        form.company_types.includes(ct.value)
+                        form.company_types.includes(ct.title)
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-secondary/30 text-muted-foreground border-border hover:border-primary"
                       }`}
                     >
-                      {i18n.language === "ar" ? ct.label_ar : i18n.language === "fr" ? ct.label_fr : ct.label}
+                      {getTranslatedLabel(dbCompanyTypes, ct.title, i18n.language)}
                     </button>
                   ))}
                 </div>

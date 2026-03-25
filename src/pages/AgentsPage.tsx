@@ -2,8 +2,7 @@ import { useState, useEffect, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { turkishIncludes } from '@/lib/utils';
-import { formatCompanyTypes } from '@/data/companyTypes';
-import { getDesignationLabel } from '@/data/designations';
+import { useCompanyTypes, useDesignations, getTranslatedLabel, formatCompanyTypesFromDb } from '@/hooks/useTranslatableCruds';
 import { MapPin, Search, Home, Globe, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import Header from '@/components/Header';
@@ -148,6 +147,8 @@ const boostOrder = (cls?: string, endDate?: string | null) =>
 const AgentsPage = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
+  const { data: dbDesignations = [] } = useDesignations();
   const loc = (name: string, name_ar?: string | null, name_fr?: string | null) => {
     if (lang === 'ar' && name_ar) return name_ar;
     if (lang === 'fr' && name_fr) return name_fr;
@@ -260,7 +261,7 @@ const AgentsPage = () => {
   }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
   const typeLabel = (types: string[] | null) => {
-    return formatCompanyTypes(types, lang);
+    return formatCompanyTypesFromDb(dbCompanyTypes, types, lang);
   };
 
   return (
@@ -476,7 +477,7 @@ const AgentsPage = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">{getDesignationLabel(agent.designation, lang)}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{getTranslatedLabel(dbDesignations, agent.designation, lang)}</p>
                       </div>
                       {agent.companies?.logo_url ? (
                         <img src={agent.companies.logo_url} alt={agent.companies.name ?? ''} className="w-12 h-12 rounded-lg object-contain border border-border bg-card p-0.5 shrink-0" />

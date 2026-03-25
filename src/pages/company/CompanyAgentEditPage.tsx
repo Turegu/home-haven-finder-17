@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { agentDesignations } from "@/data/designations";
+import { useDesignations, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useNavigate, useParams } from "react-router-dom";
@@ -110,6 +110,7 @@ const CompanyAgentEditPage = () => {
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const membershipLimits = useMembershipLimits(companyId);
+  const { data: dbDesignations = [] } = useDesignations();
   const [avatarUrl, setAvatarUrl] = useState("");
   const [agentHasUser, setAgentHasUser] = useState(false);
 
@@ -385,17 +386,17 @@ const CompanyAgentEditPage = () => {
                 value={form.designation}
                 onChange={(e) => {
                   const val = e.target.value;
-                  const found = agentDesignations.find(d => d.value === val);
+                  const found = dbDesignations.find(d => d.title === val);
                   updateField("designation", val);
-                  updateField("designation_ar", found?.ar || "");
-                  updateField("designation_fr", found?.fr || "");
+                  updateField("designation_ar", found?.translations?.ar || "");
+                  updateField("designation_fr", found?.translations?.fr || "");
                   clearFieldError("designation");
                 }}
                 className={`w-full rounded-md border px-3 py-2 text-sm bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : "border-input"}`}
               >
                 <option value="">{t("companyDashboard.agentDesignation")}</option>
-                {agentDesignations.map(d => (
-                  <option key={d.value} value={d.value}>{i18n.language === "ar" ? d.ar : i18n.language === "fr" ? d.fr : d.en}</option>
+                {dbDesignations.map(d => (
+                  <option key={d.title} value={d.title}>{getTranslatedLabel(dbDesignations, d.title, i18n.language)}</option>
                 ))}
               </select>
               {fieldErrors.designation && <p className="text-xs text-destructive">{fieldErrors.designation}</p>}
