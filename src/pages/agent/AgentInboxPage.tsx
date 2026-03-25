@@ -39,7 +39,6 @@ const AgentInboxPage = () => {
 
   const fetchItems = async (cId: string, aId: string) => {
     setLoading(true);
-    // Show only messages assigned to this agent
     const { data } = await supabase.from("company_inbox").select("*").eq("company_id", cId).eq("agent_id", aId).order("created_at", { ascending: false });
     setItems(data || []);
     setLoading(false);
@@ -69,7 +68,7 @@ const AgentInboxPage = () => {
         <div className="mt-4 mb-4">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+            <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
           </div>
         </div>
 
@@ -78,27 +77,27 @@ const AgentInboxPage = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-primary/5">
-                  <TableHead className="text-xs uppercase tracking-wider font-semibold">Name</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider font-semibold">Email</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider font-semibold">Date</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">View</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.creationDate")}</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.status")}</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.view")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={5} className="text-center py-12">
                     <Mail className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-muted-foreground">No items</p>
+                    <p className="text-muted-foreground">{t("companyDashboard.noDataFound")}</p>
                   </TableCell></TableRow>
                 ) : filtered.map((item) => (
                   <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
                     <TableCell className="font-medium">{item.full_name}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{format(new Date(item.created_at), "dd/MM/yyyy")}</TableCell>
-                    <TableCell><Badge variant="secondary" className={item.is_seen ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}>{item.is_seen ? "Seen" : "New"}</Badge></TableCell>
+                    <TableCell><Badge variant="secondary" className={item.is_seen ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"}>{item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.new")}</Badge></TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}><Eye className="h-4 w-4" /></Button>
                     </TableCell>
@@ -114,11 +113,11 @@ const AgentInboxPage = () => {
         <DialogContent>
           <DialogHeader><DialogTitle>{viewItem?.full_name}</DialogTitle></DialogHeader>
           <div className="space-y-3 text-sm">
-            <p><strong>Email:</strong> {viewItem?.email}</p>
-            {viewItem?.phone && <p><strong>Phone:</strong> {viewItem.phone}</p>}
-            {viewItem?.budget && <p><strong>Budget:</strong> {viewItem.budget}</p>}
-            {viewItem?.message && <div><strong>Message:</strong><p className="mt-1 text-muted-foreground whitespace-pre-wrap">{viewItem.message}</p></div>}
-            <p className="text-xs text-muted-foreground">Received: {viewItem && new Date(viewItem.created_at).toLocaleString()}</p>
+            <p><strong>{t("companyDashboard.email")}:</strong> {viewItem?.email}</p>
+            {viewItem?.phone && <p><strong>{t("companyDashboard.phone")}:</strong> {viewItem.phone}</p>}
+            {viewItem?.budget && <p><strong>{t("companyDashboard.budget")}:</strong> {viewItem.budget}</p>}
+            {viewItem?.message && <div><strong>{t("companyDashboard.message")}:</strong><p className="mt-1 text-muted-foreground whitespace-pre-wrap">{viewItem.message}</p></div>}
+            <p className="text-xs text-muted-foreground">{t("companyDashboard.received")}: {viewItem && new Date(viewItem.created_at).toLocaleString()}</p>
           </div>
         </DialogContent>
       </Dialog>
