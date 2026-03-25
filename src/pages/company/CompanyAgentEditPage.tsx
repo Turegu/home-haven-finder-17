@@ -110,6 +110,7 @@ const CompanyAgentEditPage = () => {
   const [loading, setLoading] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const membershipLimits = useMembershipLimits(companyId);
+  const { data: dbDesignations = [] } = useDesignations();
   const [avatarUrl, setAvatarUrl] = useState("");
   const [agentHasUser, setAgentHasUser] = useState(false);
 
