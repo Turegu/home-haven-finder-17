@@ -256,7 +256,7 @@ const CompanyProjectEditPage = () => {
   const { validate, clearError, errorClass } = useFieldValidation();
 
   const [form, setForm] = useState({
-    title: "", title_ar: "", tagline: "", description: "", description_ar: "", developer: "",
+    title: "", title_ar: "", title_fr: "", tagline: "", description: "", description_ar: "", description_fr: "", developer: "",
     project_type: "residential", min_price: "", max_price: "",
     currency: "USD", min_units: "", max_units: "",
     min_area: "", max_area: "", area_unit: "m²",
@@ -297,9 +297,9 @@ const CompanyProjectEditPage = () => {
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error("Project not found"); return; }
       setForm({
-        title: data.title || "", title_ar: (data as any).title_ar || "",
+        title: data.title || "", title_ar: (data as any).title_ar || "", title_fr: (data as any).title_fr || "",
         tagline: (data as any).tagline || "",
-        description: data.description || "", description_ar: (data as any).description_ar || "",
+        description: data.description || "", description_ar: (data as any).description_ar || "", description_fr: (data as any).description_fr || "",
         developer: data.developer || "",
         project_type: data.project_type || "residential",
         min_price: data.min_price?.toString() || "", max_price: data.max_price?.toString() || "",
@@ -578,8 +578,8 @@ const CompanyProjectEditPage = () => {
     }
 
     const payload: any = {
-      title: form.title.trim(), title_ar: form.title_ar || null,
-      description: form.description || null, description_ar: form.description_ar || null,
+      title: form.title.trim(), title_ar: form.title_ar || null, title_fr: form.title_fr || null,
+      description: form.description || null, description_ar: form.description_ar || null, description_fr: form.description_fr || null,
       tagline: form.tagline || null, developer: form.developer || null,
       project_type: form.project_type,
       min_price: form.min_price ? parseFloat(form.min_price) : null,
@@ -659,8 +659,10 @@ const CompanyProjectEditPage = () => {
                   label: "Project Name",
                   value_en: form.title,
                   value_ar: form.title_ar,
+                  value_fr: form.title_fr,
                   onChange_en: (v) => { if (v.length <= 20) updateField("title", v); },
                   onChange_ar: (v) => updateField("title_ar", v),
+                  onChange_fr: (v) => updateField("title_fr", v),
                   maxLength: 20,
                   required: true,
                   fieldType: "name",
@@ -670,8 +672,10 @@ const CompanyProjectEditPage = () => {
                   label: "Project Description",
                   value_en: form.description,
                   value_ar: form.description_ar,
+                  value_fr: form.description_fr,
                   onChange_en: (v) => updateField("description", v),
                   onChange_ar: (v) => updateField("description_ar", v),
+                  onChange_fr: (v) => updateField("description_fr", v),
                   multiline: true,
                   fieldType: "description",
                   textareaId: "proj-desc",
