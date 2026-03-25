@@ -442,41 +442,41 @@ const AgentsPage = () => {
               const boosted = isBoosted(agent.profile_classification, agent.boost_end_date);
               return (
                 <Link key={agent.id} to={`/agents/${agent.id}`}
-                  className={`group flex bg-card rounded-xl border overflow-hidden hover:shadow-lg transition-all duration-300 ${
+                  className={`group flex bg-card rounded-xl border overflow-hidden hover:shadow-lg transition-all duration-300 min-h-[180px] ${
                     boosted
                       ? 'border-primary/40 ring-1 ring-primary/20 shadow-md'
                       : 'border-border hover:border-primary/20'
                   }`}>
 
                   {/* Left: Avatar */}
-                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-3 ${
+                  <div className={`w-28 sm:w-40 shrink-0 border-r border-border flex items-center justify-center p-4 ${
                     boosted ? 'bg-primary/5' : 'bg-muted'
                   }`}>
                     {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt={agent.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
+                      <img src={agent.avatar_url} alt={agent.name} className="max-w-full max-h-28 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
+                      <div className="w-18 h-18 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
                         {loc(agent.name, agent.name_ar, agent.name_fr).charAt(0)}
                       </div>
                     )}
                   </div>
 
                   {/* Right: Info */}
-                  <div className="flex-1 p-4 flex flex-col min-w-0 bg-card">
+                  <div className="flex-1 p-5 flex flex-col min-w-0 bg-card">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                        <h3 className="text-base font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors duration-300 truncate">
                             {loc(agent.name, agent.name_ar, agent.name_fr)}
                           </h3>
                           {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
                           {boosted && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 whitespace-nowrap">
                               {t('filters.topAgent')}
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{getDesignationLabel(agent.designation, lang)}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{getDesignationLabel(agent.designation, lang)}</p>
                       </div>
                       {agent.companies?.logo_url ? (
                         <img src={agent.companies.logo_url} alt={agent.companies.name ?? ''} className="w-12 h-12 rounded-lg object-contain border border-border bg-card p-0.5 shrink-0" />
@@ -487,7 +487,7 @@ const AgentsPage = () => {
                       )}
                     </div>
 
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-sm text-muted-foreground mt-3">
                       <span>{t('filters.languages')}: </span>
                       <span className="text-foreground font-medium">{agent.languages?.map(l => t(`languageNames.${l}`, l)).join(', ') || '—'}</span>
                     </p>

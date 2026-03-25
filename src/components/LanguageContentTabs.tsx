@@ -141,6 +141,11 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
         </Button>
       </div>
 
+      {/* Translation note */}
+      <p className="text-xs text-muted-foreground italic -mt-2">
+        Auto-translate for speed, or enter your own text in any language for maximum precision.
+      </p>
+
       {/* Fields */}
       <div className="space-y-5">
         {fields.map((field) => {

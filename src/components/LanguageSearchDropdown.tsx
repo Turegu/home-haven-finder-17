@@ -161,8 +161,8 @@ export default function LanguageSearchDropdown({
   );
 }
 
-function LangRow({ lang, shortLabel, checked, onToggle, single }: {
-  lang: string; shortLabel?: string; checked: boolean; onToggle: () => void; single: boolean;
+function LangRow({ lang, displayLabel, shortLabel, checked, onToggle, single }: {
+  lang: string; displayLabel?: string; shortLabel?: string; checked: boolean; onToggle: () => void; single: boolean;
 }) {
   return (
     <label
@@ -176,7 +176,7 @@ function LangRow({ lang, shortLabel, checked, onToggle, single }: {
         <Checkbox checked={checked} onCheckedChange={onToggle} />
       )}
       <span className={`text-sm flex-1 ${checked ? 'text-foreground font-medium' : 'text-foreground'}`}>
-        {lang}
+        {displayLabel || lang}
       </span>
       {shortLabel && (
         <span className="text-[10px] text-muted-foreground font-medium">{shortLabel}</span>
