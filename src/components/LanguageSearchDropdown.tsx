@@ -70,12 +70,14 @@ export default function LanguageSearchDropdown({
     );
   }
 
+  const tLang = (lang: string) => t(`languageNames.${lang}`, lang);
+
   const label =
     selected.length === 0
-      ? 'Languages'
+      ? t('filters.languages')
       : selected.length === 1
-        ? (SHORT_LABELS[selected[0]] || selected[0])
-        : `${selected.length} Languages`;
+        ? (SHORT_LABELS[selected[0]] || tLang(selected[0]))
+        : `${selected.length} ${t('filters.languages')}`;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -127,8 +129,8 @@ export default function LanguageSearchDropdown({
           {/* Priority languages */}
           {filteredPriority.length > 0 && (
             <>
-              {filteredPriority.map((lang) => (
-                <LangRow key={lang} lang={lang} shortLabel={SHORT_LABELS[lang]} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
+          {filteredPriority.map((lang) => (
+                <LangRow key={lang} lang={lang} displayLabel={tLang(lang)} shortLabel={SHORT_LABELS[lang]} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
               ))}
               {filteredRest.length > 0 && (
                 <div className="border-t border-border my-1.5" />
@@ -138,7 +140,7 @@ export default function LanguageSearchDropdown({
 
           {/* Rest of world languages */}
           {filteredRest.map((lang) => (
-            <LangRow key={lang} lang={lang} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
+            <LangRow key={lang} lang={lang} displayLabel={tLang(lang)} checked={selected.includes(lang)} onToggle={() => toggle(lang)} single={single} />
           ))}
 
           {filteredPriority.length === 0 && filteredRest.length === 0 && (
@@ -159,8 +161,8 @@ export default function LanguageSearchDropdown({
   );
 }
 
-function LangRow({ lang, shortLabel, checked, onToggle, single }: {
-  lang: string; shortLabel?: string; checked: boolean; onToggle: () => void; single: boolean;
+function LangRow({ lang, displayLabel, shortLabel, checked, onToggle, single }: {
+  lang: string; displayLabel?: string; shortLabel?: string; checked: boolean; onToggle: () => void; single: boolean;
 }) {
   return (
     <label
@@ -174,7 +176,7 @@ function LangRow({ lang, shortLabel, checked, onToggle, single }: {
         <Checkbox checked={checked} onCheckedChange={onToggle} />
       )}
       <span className={`text-sm flex-1 ${checked ? 'text-foreground font-medium' : 'text-foreground'}`}>
-        {lang}
+        {displayLabel || lang}
       </span>
       {shortLabel && (
         <span className="text-[10px] text-muted-foreground font-medium">{shortLabel}</span>
