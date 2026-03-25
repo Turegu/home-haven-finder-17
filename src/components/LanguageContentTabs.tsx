@@ -21,11 +21,8 @@ export interface TranslatableField {
   placeholder_ar?: string;
   required?: boolean;
   error?: string;
-  /** Pass "name" for short fields (brand names), "description" for long text */
   fieldType?: "name" | "description";
-  /** Extra content to render below the EN field (e.g. RichTextToolbar) */
   renderAbove_en?: React.ReactNode;
-  /** Custom textarea id for EN field */
   textareaId?: string;
 }
 
@@ -35,8 +32,8 @@ interface LanguageContentTabsProps {
 }
 
 const LANGS = [
-  { code: "en", label: "English", dir: "ltr" as const },
-  { code: "ar", label: "العربية", dir: "rtl" as const },
+  { code: "en", label: "English", dir: "ltr" as const, langName: "English" },
+  { code: "ar", label: "العربية", dir: "rtl" as const, langName: "Arabic" },
 ];
 
 const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) => {
@@ -44,40 +41,55 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
   const [translating, setTranslating] = useState(false);
 
   const activeLang = LANGS.find((l) => l.code === activeTab) || LANGS[0];
+  const otherLangs = LANGS.filter((l) => l.code !== activeTab);
+
+  const getFieldValue = (field: TranslatableField, langCode: string) =>
+    langCode === "ar" ? field.value_ar : field.value_en;
+
+  const getFieldOnChange = (field: TranslatableField, langCode: string) =>
+    langCode === "ar" ? field.onChange_ar : field.onChange_en;
 
   const handleTranslateAll = async () => {
-    const fieldsToTranslate = fields.filter((f) => {
-      const source = f.value_en.trim();
-      return source.length > 0;
-    });
+    // Get source text from the active tab
+    const fieldsWithContent = fields.filter((f) => getFieldValue(f, activeTab).trim().length > 0);
 
-    if (fieldsToTranslate.length === 0) {
-      toast.error("Please fill in the English fields first");
+    if (fieldsWithContent.length === 0) {
+      toast.error("Please fill in the fields first");
       return;
     }
 
     setTranslating(true);
-    let successCount = 0;
+    let totalTranslated = 0;
 
     try {
-      for (const field of fieldsToTranslate) {
-        const { data, error } = await supabase.functions.invoke("translate-to-arabic", {
-          body: { text: field.value_en, fieldType: field.fieldType || "description" },
-        });
-        if (error) throw error;
-        if (data?.error) throw new Error(data.error);
-        if (data?.translated) {
-          field.onChange_ar(data.translated);
-          successCount++;
+      for (const targetLang of otherLangs) {
+        for (const field of fieldsWithContent) {
+          const sourceText = getFieldValue(field, activeTab);
+          const { data, error } = await supabase.functions.invoke("translate-to-arabic", {
+            body: {
+              text: sourceText,
+              fieldType: field.fieldType || "description",
+              targetLanguage: targetLang.langName,
+            },
+          });
+          if (error) throw error;
+          if (data?.error) throw new Error(data.error);
+          if (data?.translated) {
+            getFieldOnChange(field, targetLang.code)(data.translated);
+            totalTranslated++;
+          }
         }
       }
-      toast.success(`Translated ${successCount} field${successCount > 1 ? "s" : ""}! Review and edit if needed.`);
+      const langNames = otherLangs.map((l) => l.label).join(", ");
+      toast.success(`Translated ${totalTranslated} field${totalTranslated > 1 ? "s" : ""} to ${langNames}! Review and edit if needed.`);
     } catch (err: any) {
       toast.error(err.message || "Translation failed");
     } finally {
       setTranslating(false);
     }
   };
+
+  const hasContent = fields.some((f) => getFieldValue(f, activeTab).trim().length > 0);
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -101,32 +113,30 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
           ))}
         </div>
 
-        {/* Auto-translate button for Arabic tab */}
-        {activeTab === "ar" && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleTranslateAll}
-            disabled={translating || fields.every((f) => !f.value_en.trim())}
-            className="gap-1.5 text-xs h-8 border-primary/30 text-primary hover:bg-primary/5"
-          >
-            {translating ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Sparkles className="h-3.5 w-3.5" />
-            )}
-            {translating ? "Translating..." : "Auto Translate All"}
-          </Button>
-        )}
+        {/* Auto-translate button — always visible */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleTranslateAll}
+          disabled={translating || !hasContent}
+          className="gap-1.5 text-xs h-8 border-primary/30 text-primary hover:bg-primary/5"
+        >
+          {translating ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Sparkles className="h-3.5 w-3.5" />
+          )}
+          {translating ? "Translating..." : "Auto Translate to All Languages"}
+        </Button>
       </div>
 
       {/* Fields */}
       <div className="space-y-5">
         {fields.map((field) => {
           const isAr = activeTab === "ar";
-          const value = isAr ? field.value_ar : field.value_en;
-          const onChange = isAr ? field.onChange_ar : field.onChange_en;
+          const value = getFieldValue(field, activeTab);
+          const onChange = getFieldOnChange(field, activeTab);
           const placeholder = isAr
             ? field.placeholder_ar || (field.multiline ? "النص بالعربية..." : "الاسم بالعربية...")
             : field.placeholder_en || "";
@@ -179,10 +189,7 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
               )}
 
               {field.maxLength && (
-                <p className={cn(
-                  "text-xs text-muted-foreground",
-                  isAr ? "text-right" : "text-right"
-                )}>
+                <p className="text-xs text-muted-foreground text-right">
                   {(value || "").length}/{field.maxLength}{!isAr && field.key === "title" ? " characters" : ""}
                 </p>
               )}
