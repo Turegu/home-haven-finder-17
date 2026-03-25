@@ -88,7 +88,7 @@ const CompanyDetailPage = () => {
   }, [id]);
 
   const typeLabel = (types: string[] | null) => {
-    return formatCompanyTypes(types);
+    return formatCompanyTypes(types, i18n.language);
   };
 
   const handleMapClick = () => {
