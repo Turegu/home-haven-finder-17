@@ -189,8 +189,8 @@ const AgentProfilePage = () => {
     }));
   };
 
-  const designationLabel = (d: { en: string; ar: string; fr: string }) =>
-    i18n.language === "ar" ? d.ar : i18n.language === "fr" ? d.fr : d.en;
+  const designationLabel = (title: string) =>
+    getTranslatedLabel(dbDesignations, title, i18n.language);
 
   const handleSave = async () => {
     if (!agent) return;
