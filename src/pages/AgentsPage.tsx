@@ -488,7 +488,7 @@ const AgentsPage = () => {
 
                     <p className="text-xs text-muted-foreground mt-2">
                       <span>{t('filters.languages')}: </span>
-                      <span className="text-foreground font-medium">{agent.languages?.join(', ') || '—'}</span>
+                      <span className="text-foreground font-medium">{agent.languages?.map(l => t(`languageNames.${l}`, l)).join(', ') || '—'}</span>
                     </p>
 
                     <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border/50 text-sm">
