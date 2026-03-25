@@ -433,13 +433,13 @@ const AgentsPage = () => {
                   }`}>
 
                   {/* Left: Avatar */}
-                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border overflow-hidden ${
+                  <div className={`w-28 sm:w-36 shrink-0 border-r border-border flex items-center justify-center p-3 ${
                     boosted ? 'bg-primary/5' : 'bg-muted'
                   }`}>
                     {agent.avatar_url ? (
-                      <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={agent.avatar_url} alt={agent.name} className="max-w-full max-h-24 object-contain group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-3xl">
+                      <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
                         {agent.name.charAt(0)}
                       </div>
                     )}
