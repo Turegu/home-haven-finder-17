@@ -15,8 +15,6 @@ export function useLocalizedServiceAreas(serviceAreas: string[] | null | undefin
   const { i18n } = useTranslation();
   const [localizedAreas, setLocalizedAreas] = useState<string[]>(serviceAreas ?? []);
 
-  const cacheRef = useRef<Map<string, string>>(new Map());
-
   useEffect(() => {
     const areas = serviceAreas ?? [];
 
@@ -39,44 +37,27 @@ export function useLocalizedServiceAreas(serviceAreas: string[] | null | undefin
       return;
     }
 
-    // Check if all parts are already cached
-    const allCached = parts.every((p) => cacheRef.current.has(p));
-    if (allCached) {
-      setLocalizedAreas(
-        areas.map((area) =>
-          area
-            .split(" - ")
-            .map((p) => cacheRef.current.get(p.trim()) || p.trim())
-            .join(" - ")
-        )
-      );
-      return;
-    }
-
     let cancelled = false;
 
     const localize = async () => {
-      // Use unaccent matching to handle Turkish characters (İstanbul vs Istanbul)
-      const conditions = parts.map((p) => `public.unaccent(lower('${p.replace(/'/g, "''")}'))`);
-      const matchList = conditions.join(", ");
+      // Build an OR filter for unaccent matching across all location columns
+      const orFilters = parts
+        .flatMap((p) => {
+          const escaped = p.replace(/'/g, "''");
+          return [
+            `province.ilike.%${escaped}%`,
+            `district.ilike.%${escaped}%`,
+            `neighborhood.ilike.%${escaped}%`,
+          ];
+        })
+        .join(",");
 
-      const [provincesRes, districtsRes, neighborhoodsRes] = await Promise.all([
-        supabase
-          .from("locations")
-          .select("province, province_ar")
-          .eq("status", "active")
-          .not("province_ar", "is", null),
-        supabase
-          .from("locations")
-          .select("district, district_ar")
-          .eq("status", "active")
-          .not("district_ar", "is", null),
-        supabase
-          .from("locations")
-          .select("neighborhood, neighborhood_ar")
-          .eq("status", "active")
-          .not("neighborhood_ar", "is", null),
-      ]);
+      const { data: rows } = await supabase
+        .from("locations")
+        .select("province, province_ar, district, district_ar, neighborhood, neighborhood_ar")
+        .eq("status", "active")
+        .or(orFilters)
+        .limit(500);
 
       const translationMap = new Map<string, string>();
 
@@ -89,36 +70,19 @@ export function useLocalizedServiceAreas(serviceAreas: string[] | null | undefin
 
       const partsNormalized = new Map(parts.map((p) => [normalize(p), p]));
 
-      (provincesRes.data ?? []).forEach((row) => {
+      (rows ?? []).forEach((row: any) => {
         if (row.province && row.province_ar) {
           const n = normalize(row.province);
-          if (partsNormalized.has(n)) {
-            translationMap.set(partsNormalized.get(n)!, row.province_ar);
-          }
+          if (partsNormalized.has(n)) translationMap.set(partsNormalized.get(n)!, row.province_ar);
         }
-      });
-
-      (districtsRes.data ?? []).forEach((row) => {
         if (row.district && row.district_ar) {
           const n = normalize(row.district);
-          if (partsNormalized.has(n)) {
-            translationMap.set(partsNormalized.get(n)!, row.district_ar);
-          }
+          if (partsNormalized.has(n)) translationMap.set(partsNormalized.get(n)!, row.district_ar);
         }
-      });
-
-      (neighborhoodsRes.data ?? []).forEach((row) => {
         if (row.neighborhood && row.neighborhood_ar) {
           const n = normalize(row.neighborhood);
-          if (partsNormalized.has(n)) {
-            translationMap.set(partsNormalized.get(n)!, row.neighborhood_ar);
-          }
+          if (partsNormalized.has(n)) translationMap.set(partsNormalized.get(n)!, row.neighborhood_ar);
         }
-      });
-
-      // Update cache
-      parts.forEach((p) => {
-        cacheRef.current.set(p, translationMap.get(p) || p);
       });
 
       const next = areas.map((area) =>
