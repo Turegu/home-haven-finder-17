@@ -477,10 +477,11 @@ const CompanyProfilePage = () => {
                   ))}
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-foreground font-medium">Service Areas</Label>
-                <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
-              </div>
+              <ServiceAreaPicker
+                selected={form.service_areas}
+                onChange={(areas) => updateField("service_areas", areas)}
+                label={t("companyDashboard.serviceAreas")}
+              />
               <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Registration Number</Label>

@@ -401,10 +401,15 @@ const CompanyAgentEditPage = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-2" data-field="service_areas">
-                <Label className="text-foreground font-medium">{t("companyDashboard.serviceAreas")} *</Label>
-                <Input value={form.service_areas} onChange={(e) => { updateField("service_areas", e.target.value); clearFieldError("service_areas"); }} className={`bg-secondary/50 ${fieldErrors.service_areas ? "border-destructive" : ""}`} placeholder="Area 1, Area 2, ..." />
-                {fieldErrors.service_areas && <p className="text-xs text-destructive">{fieldErrors.service_areas}</p>}
+              <div data-field="service_areas">
+                <ServiceAreaPicker
+                  selected={form.service_areas}
+                  onChange={(areas) => { updateField("service_areas", areas); clearFieldError("service_areas"); }}
+                  label={t("companyDashboard.serviceAreas")}
+                  required
+                  error={fieldErrors.service_areas}
+                  onClearError={() => clearFieldError("service_areas")}
+                />
               </div>
               <div data-field="languages">
                 <MultiSelectLanguages selected={form.languages} onToggle={(lang) => { toggleLanguage(lang); clearFieldError("languages"); }} label={t("companyDashboard.languagesSpoken")} />

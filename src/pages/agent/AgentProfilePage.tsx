@@ -385,10 +385,11 @@ const AgentProfilePage = () => {
         <section className="bg-card rounded-xl border border-border p-6">
           <SectionHeader icon={<Briefcase className="h-4 w-4" />} title="Skills & Languages" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">Service Areas</Label>
-              <Input value={form.service_areas} onChange={(e) => updateField("service_areas", e.target.value)} className="bg-secondary/50" placeholder="Istanbul, Ankara..." />
-            </div>
+            <ServiceAreaPicker
+              selected={form.service_areas}
+              onChange={(areas) => updateField("service_areas", areas)}
+              label="Service Areas"
+            />
             <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
           </div>
         </section>
