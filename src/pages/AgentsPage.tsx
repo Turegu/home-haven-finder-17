@@ -454,7 +454,11 @@ const AgentsPage = () => {
                             {agent.name}
                           </h3>
                           {agent.companies?.is_verified && <VerifiedBadge size="sm" />}
-                          {boosted && <Rocket className="h-3.5 w-3.5 text-primary shrink-0" />}
+                          {boosted && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                              Top Agent
+                            </span>
+                          )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">{agent.designation}</p>
                       </div>
