@@ -1,4 +1,4 @@
-import { MapPin, Calendar, ArrowUpRight, Building } from 'lucide-react';
+import { MapPin, Calendar, ArrowUpRight, Building, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface FeaturedProjectCardProps {
@@ -13,8 +13,16 @@ interface FeaturedProjectCardProps {
     developerLogo?: string;
     units: number;
     completionDate: string;
+    advertisingTags?: string[];
   };
 }
+
+const tagColorMap: Record<string, string> = {
+  'Hot Deal': 'bg-red-500',
+  'Price Drop': 'bg-green-600',
+  'Exclusive': 'bg-purple-600',
+  'New Launch': 'bg-teal-600',
+};
 
 const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
   return (
@@ -45,9 +53,16 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
           )}
         </div>
 
-        {/* Arrow on hover */}
-        <div className="absolute top-4 right-4 h-9 w-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-          <ArrowUpRight className="h-4 w-4 text-white" />
+        {/* Top-right: arrow + tag */}
+        <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5 z-10">
+          <div className="h-9 w-9 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+            <ArrowUpRight className="h-4 w-4 text-white" />
+          </div>
+          {project.advertisingTags?.[0] && (
+            <span className={`${tagColorMap[project.advertisingTags[0]] || 'bg-orange-500'} text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full flex items-center gap-1`}>
+              <Tag className="h-3 w-3" /> {project.advertisingTags[0]}
+            </span>
+          )}
         </div>
 
         {/* Bottom overlaid content */}
