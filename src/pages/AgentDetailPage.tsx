@@ -174,7 +174,7 @@ const AgentDetailPage = () => {
                   <div>
                     <div className="flex items-center gap-12">
                       <div className="flex items-center gap-1.5">
-                        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{agent.name}</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">{getLocalizedName(agent.name, agent.name_ar, agent.name_fr)}</h1>
                       </div>
                       <FollowButton type="agent" targetId={agent.id} />
                     </div>
