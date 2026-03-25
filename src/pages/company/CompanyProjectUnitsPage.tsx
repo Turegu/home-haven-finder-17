@@ -149,7 +149,7 @@ const CompanyProjectUnitsPage = () => {
   };
 
   const handleSubmitUnit = async () => {
-    if (!form.unit_name.trim()) { toast.error("Unit name is required"); return; }
+    if (!form.unit_name.trim()) { toast.error(t("units.unitNameRequired")); return; }
     setSaving(true);
     const payload: any = {
       unit_name: form.unit_name.trim(), unit_type: form.unit_type,
