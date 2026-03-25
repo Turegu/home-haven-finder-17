@@ -32,7 +32,7 @@ const DashboardSidebarHeader = ({ brandPath }: DashboardSidebarHeaderProps) => {
   };
 
   const currentLangName = dbLanguages.find((l) => l.code === i18n.language)?.name
-    || (i18n.language === "ar" ? "العربية" : "English");
+    || (i18n.language === "ar" ? "العربية" : i18n.language === "fr" ? "Français" : "English");
 
   return (
     <div className="flex items-center justify-between">
@@ -81,6 +81,14 @@ const DashboardSidebarHeader = ({ brandPath }: DashboardSidebarHeaderProps) => {
                     }`}
                   >
                     العربية
+                  </button>
+                  <button
+                    onClick={() => switchLanguage("fr")}
+                    className={`w-full text-start px-3 py-1.5 text-sm hover:bg-muted transition-colors ${
+                      i18n.language === "fr" ? "text-primary font-medium bg-primary/5" : "text-foreground"
+                    }`}
+                  >
+                    Français
                   </button>
                 </>
               )}

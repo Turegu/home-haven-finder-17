@@ -13,12 +13,15 @@ export interface TranslatableField {
   label: string;
   value_en: string;
   value_ar: string;
+  value_fr?: string;
   onChange_en: (value: string) => void;
   onChange_ar: (value: string) => void;
+  onChange_fr?: (value: string) => void;
   multiline?: boolean;
   maxLength?: number;
   placeholder_en?: string;
   placeholder_ar?: string;
+  placeholder_fr?: string;
   required?: boolean;
   error?: string;
   fieldType?: "name" | "description";
@@ -34,6 +37,7 @@ interface LanguageContentTabsProps {
 const LANGS = [
   { code: "en", label: "English", dir: "ltr" as const, langName: "English" },
   { code: "ar", label: "العربية", dir: "rtl" as const, langName: "Arabic" },
+  { code: "fr", label: "Français", dir: "ltr" as const, langName: "French" },
 ];
 
 const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) => {
@@ -43,11 +47,17 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
   const activeLang = LANGS.find((l) => l.code === activeTab) || LANGS[0];
   const otherLangs = LANGS.filter((l) => l.code !== activeTab);
 
-  const getFieldValue = (field: TranslatableField, langCode: string) =>
-    langCode === "ar" ? field.value_ar : field.value_en;
+  const getFieldValue = (field: TranslatableField, langCode: string) => {
+    if (langCode === "ar") return field.value_ar;
+    if (langCode === "fr") return field.value_fr || "";
+    return field.value_en;
+  };
 
-  const getFieldOnChange = (field: TranslatableField, langCode: string) =>
-    langCode === "ar" ? field.onChange_ar : field.onChange_en;
+  const getFieldOnChange = (field: TranslatableField, langCode: string) => {
+    if (langCode === "ar") return field.onChange_ar;
+    if (langCode === "fr") return field.onChange_fr || (() => {});
+    return field.onChange_en;
+  };
 
   const handleTranslateAll = async () => {
     // Get source text from the active tab
@@ -139,6 +149,8 @@ const LanguageContentTabs = ({ fields, className }: LanguageContentTabsProps) =>
           const onChange = getFieldOnChange(field, activeTab);
           const placeholder = isAr
             ? field.placeholder_ar || (field.multiline ? "النص بالعربية..." : "الاسم بالعربية...")
+            : activeTab === "fr"
+            ? field.placeholder_fr || (field.multiline ? "Texte en français..." : "Nom en français...")
             : field.placeholder_en || "";
 
           return (

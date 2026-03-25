@@ -84,7 +84,7 @@ const CompanyProjectUnitsPage = () => {
       .select("*")
       .eq("project_id", projectId)
       .order("created_at", { ascending: true });
-    if (error) toast.error("Failed to load units");
+    if (error) toast.error(t("units.loadFailed"));
     else setUnits(data || []);
     setLoading(false);
   };
@@ -149,7 +149,7 @@ const CompanyProjectUnitsPage = () => {
   };
 
   const handleSubmitUnit = async () => {
-    if (!form.unit_name.trim()) { toast.error("Unit name is required"); return; }
+    if (!form.unit_name.trim()) { toast.error(t("units.unitNameRequired")); return; }
     setSaving(true);
     const payload: any = {
       unit_name: form.unit_name.trim(), unit_type: form.unit_type,
@@ -171,23 +171,23 @@ const CompanyProjectUnitsPage = () => {
       if (editingUnitId) {
         const { error } = await supabase.from("project_units").update(payload).eq("id", editingUnitId);
         if (error) throw error;
-        toast.success("Unit updated!");
+        toast.success(t("units.unitUpdated"));
       } else {
         const { data, error } = await supabase.from("project_units").insert(payload).select("id").single();
         if (error) throw error;
-        toast.success("Unit saved! You can now add payment plans below.");
+        toast.success(t("units.unitSaved"));
         setEditingUnitId(data.id);
       }
       fetchUnits();
     } catch (err: any) {
-      toast.error(err.message || "Save failed");
+      toast.error(err.message || t("units.saveFailed"));
     } finally { setSaving(false); }
   };
 
   const handleDelete = async (unitId: string) => {
     const { error } = await supabase.from("project_units").delete().eq("id", unitId);
-    if (error) toast.error("Delete failed");
-    else { toast.success("Unit deleted"); fetchUnits(); }
+    if (error) toast.error(t("units.deleteFailed"));
+    else { toast.success(t("units.unitDeleted")); fetchUnits(); }
   };
 
   const statusColor = (s: string) => {
@@ -201,19 +201,19 @@ const CompanyProjectUnitsPage = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Project Units</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("units.projectUnits")}</h1>
           {projectTitle && <p className="text-sm text-muted-foreground">{projectTitle}</p>}
         </div>
         <div className="ml-auto">
-          <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Add Unit</Button>
+          <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> {t("units.addUnit")}</Button>
         </div>
       </div>
 
       <div className="space-y-3">
         {loading ? (
-          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">Loading...</div>
+          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">{t("common.loading")}</div>
         ) : units.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">No units yet. Click "Add Unit" to create one.</div>
+          <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">{t("units.noUnitsYet")}</div>
         ) : (
           units.map((unit) => (
             <div key={unit.id} className="bg-card rounded-xl border border-border overflow-hidden">
@@ -222,7 +222,7 @@ const CompanyProjectUnitsPage = () => {
                   <span className="font-medium text-foreground col-span-2">{unit.unit_name}</span>
                   <span className="capitalize text-muted-foreground">{unit.unit_type}</span>
                   <span className="text-muted-foreground">{unit.rooms || "—"}</span>
-                  <span className="text-muted-foreground">{unit.bathrooms ?? "—"} bath</span>
+                  <span className="text-muted-foreground">{unit.bathrooms ?? "—"} {t("units.bath")}</span>
                   <span className="text-muted-foreground">{unit.price ? `${unit.currency} ${unit.price.toLocaleString()}` : "—"}</span>
                   <span className="text-muted-foreground">{unit.area ? `${unit.area} ${unit.area_unit}` : "—"}</span>
                   <div>
@@ -249,26 +249,26 @@ const CompanyProjectUnitsPage = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingUnitId ? "Edit Unit" : "Add Unit"}</DialogTitle>
+            <DialogTitle>{editingUnitId ? t("units.editUnit") : t("units.addUnit")}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-5 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="font-medium">Unit Name *</Label>
+                <Label className="font-medium">{t("units.unitName")} *</Label>
                 <Input value={form.unit_name} onChange={(e) => updateField("unit_name", e.target.value)} className="bg-secondary/50" />
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Unit Type</Label>
+                <Label className="font-medium">{t("units.unitType")}</Label>
                 <Select value={form.unit_type} onValueChange={(v) => updateField("unit_type", v)}>
                   <SelectTrigger className="bg-secondary/50"><SelectValue /></SelectTrigger>
                   <SelectContent>{unitTypes.map((t) => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">No Of Rooms</Label>
+                <Label className="font-medium">{t("units.noOfRooms")}</Label>
                 <Select value={form.rooms} onValueChange={(v) => updateField("rooms", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select rooms" /></SelectTrigger>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("units.selectRooms")} /></SelectTrigger>
                   <SelectContent>
                     {(filterOpts["rooms"] || []).map(r => (
                       <SelectItem key={r} value={r}>{r}</SelectItem>
@@ -277,9 +277,9 @@ const CompanyProjectUnitsPage = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">No Of Bathrooms</Label>
+                <Label className="font-medium">{t("units.noOfBathrooms")}</Label>
                 <Select value={form.bathrooms} onValueChange={(v) => updateField("bathrooms", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select bathrooms" /></SelectTrigger>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("units.selectBathrooms")} /></SelectTrigger>
                   <SelectContent>
                     {(filterOpts["bathrooms"] || []).map(b => (
                       <SelectItem key={b} value={b}>{b}</SelectItem>
@@ -288,9 +288,9 @@ const CompanyProjectUnitsPage = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Car Parking</Label>
+                <Label className="font-medium">{t("units.carParking")}</Label>
                 <Select value={form.car_parking} onValueChange={(v) => updateField("car_parking", v)}>
-                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder="Select parking" /></SelectTrigger>
+                  <SelectTrigger className="bg-secondary/50"><SelectValue placeholder={t("units.selectParking")} /></SelectTrigger>
                   <SelectContent>
                     {(filterOpts["parking"] || []).map(p => (
                       <SelectItem key={p} value={p}>{p}</SelectItem>
@@ -299,18 +299,18 @@ const CompanyProjectUnitsPage = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Unit Price ({form.currency})</Label>
+                <Label className="font-medium">{t("units.unitPrice")} ({form.currency})</Label>
                 <Input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} className="bg-secondary/50" />
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Area ({form.area_unit})</Label>
+                <Label className="font-medium">{t("units.unitArea")} ({form.area_unit})</Label>
                 <Input type="number" value={form.area} onChange={(e) => updateField("area", e.target.value)} className="bg-secondary/50" />
               </div>
             </div>
 
             {/* Unit Images — separate section */}
             <div className="space-y-2">
-              <Label className="font-medium">Unit Images</Label>
+              <Label className="font-medium">{t("units.unitImages")}</Label>
               <div className="flex flex-wrap gap-3">
                 {form.images.map((url, i) => (
                   <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border group">
@@ -323,7 +323,7 @@ const CompanyProjectUnitsPage = () => {
                 ))}
                 <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
                   <Upload className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground">{uploading ? "..." : "Browse"}</span>
+                  <span className="text-[10px] text-muted-foreground">{uploading ? "..." : t("units.browse")}</span>
                   <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploading} />
                 </label>
               </div>
@@ -332,7 +332,7 @@ const CompanyProjectUnitsPage = () => {
             {/* Floor Plans — separate section */}
             <div className="space-y-2">
               <Label className="font-medium flex items-center gap-1.5">
-                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> Floor Plans / Layouts
+                <Layers className="h-3.5 w-3.5 text-muted-foreground" /> {t("units.floorPlansLayouts")}
               </Label>
               <div className="flex flex-wrap gap-3">
                 {form.floor_plans.map((url, i) => (
@@ -346,7 +346,7 @@ const CompanyProjectUnitsPage = () => {
                 ))}
                 <label className="w-20 h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
                   <Layers className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground">{uploadingFloorPlan ? "..." : "Browse"}</span>
+                  <span className="text-[10px] text-muted-foreground">{uploadingFloorPlan ? "..." : t("units.browse")}</span>
                   <input type="file" accept="image/*" multiple onChange={handleFloorPlanUpload} className="hidden" disabled={uploadingFloorPlan} />
                 </label>
               </div>
@@ -354,7 +354,7 @@ const CompanyProjectUnitsPage = () => {
 
             {/* Amenities */}
             <div className="space-y-2">
-              <Label className="font-medium">Amenities</Label>
+              <Label className="font-medium">{t("units.amenities")}</Label>
               <AmenitiesPickerDialog
                 interiorOptions={interiorAmenities}
                 exteriorOptions={exteriorAmenities}
@@ -387,9 +387,9 @@ const CompanyProjectUnitsPage = () => {
             )}
 
             <div className="flex justify-end gap-3 pt-2">
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>{t("companyDashboard.cancel")}</Button>
               <Button onClick={handleSubmitUnit} disabled={saving}>
-                {saving ? (editingUnitId ? "Saving..." : "Save & Continue") : (editingUnitId ? "Update Unit" : "Save & Add Payment Plan")}
+                {saving ? (editingUnitId ? t("units.saving") : t("units.saveAndContinue")) : (editingUnitId ? t("units.updateUnit") : t("units.saveAndAddPayment"))}
               </Button>
             </div>
           </div>

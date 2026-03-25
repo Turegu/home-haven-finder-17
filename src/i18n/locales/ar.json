@@ -1299,5 +1299,37 @@
       "aiAnalysis": "مقارنة وتحليل استثماري بالذكاء الاصطناعي",
       "galleryTools": "أدوات معرض تفاعلية ومشاهدة متقدمة"
     }
+  },
+  "units": {
+    "projectUnits": "وحدات المشروع",
+    "addUnit": "إضافة وحدة",
+    "editUnit": "تعديل الوحدة",
+    "unitName": "اسم الوحدة",
+    "unitType": "نوع الوحدة",
+    "noOfRooms": "عدد الغرف",
+    "noOfBathrooms": "عدد الحمامات",
+    "carParking": "مواقف السيارات",
+    "unitPrice": "سعر الوحدة",
+    "unitArea": "المساحة",
+    "unitImages": "صور الوحدة",
+    "floorPlansLayouts": "المخططات الطابقية",
+    "amenities": "المرافق",
+    "noUnitsYet": "لا توجد وحدات بعد. انقر على \"إضافة وحدة\" لإنشاء واحدة.",
+    "unitNameRequired": "اسم الوحدة مطلوب",
+    "unitSaved": "تم حفظ الوحدة! يمكنك الآن إضافة خطط الدفع أدناه.",
+    "unitUpdated": "تم تحديث الوحدة!",
+    "unitDeleted": "تم حذف الوحدة",
+    "deleteFailed": "فشل الحذف",
+    "saveFailed": "فشل الحفظ",
+    "loadFailed": "فشل تحميل الوحدات",
+    "saving": "جاري الحفظ...",
+    "saveAndContinue": "حفظ ومتابعة",
+    "updateUnit": "تحديث الوحدة",
+    "saveAndAddPayment": "حفظ وإضافة خطة دفع",
+    "selectRooms": "اختر الغرف",
+    "selectBathrooms": "اختر الحمامات",
+    "selectParking": "اختر المواقف",
+    "browse": "تصفح",
+    "bath": "حمام"
   }
 }
