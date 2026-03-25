@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
+import { getDesignationLabel } from '@/data/designations';
 import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { Button } from '@/components/ui/button';
