@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Save, ArrowLeft } from "lucide-react";
 import LocationFormFields from "@/components/LocationFormFields";
 import type { Database } from "@/integrations/supabase/types";
-import { companyTypes } from "@/data/companyTypes";
+import { useCompanyTypes } from "@/hooks/useTranslatableCruds";
 
 type MembershipType = Database["public"]["Enums"]["membership_type"];
 
