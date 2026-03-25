@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, Trash2, Eye, Mail, MessageSquare, Home } from "lucide-react";
+import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -43,14 +43,24 @@ const CompanyInboxPage = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<InboxTab>("inquiry");
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
+  const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
 
   useEffect(() => {
     const init = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: company } = await supabase
-        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) setCompanyId(company.id);
+        .from("companies").select("id, membership").eq("owner_user_id", user.id).limit(1).maybeSingle();
+      if (company) {
+        setCompanyId(company.id);
+        // Check if company plan supports property requests
+        const { data: pkg } = await supabase
+          .from("membership_packages")
+          .select("has_property_requests")
+          .eq("package_type", company.membership)
+          .maybeSingle();
+        setHasPropertyRequests(pkg?.has_property_requests ?? false);
+      }
     };
     init();
   }, []);
@@ -62,7 +72,7 @@ const CompanyInboxPage = () => {
       .from("company_inbox")
       .select("*")
       .eq("company_id", companyId)
-      .eq("inbox_type", activeTab === "inquiry" ? "inquiry" : activeTab)
+      .eq("inbox_type", activeTab)
       .order("created_at", { ascending: false });
     if (error) toast.error("Failed to load inbox");
     else setItems((data as InboxItem[]) || []);
@@ -117,15 +127,88 @@ const CompanyInboxPage = () => {
     }
   };
 
+  const handleTabChange = (value: string) => {
+    if (value === "property_request" || value === "inquiry" || value === "message") {
+      setActiveTab(value);
+    }
+  };
+
+  // Determine which tabs to show
+  const showPropertyRequestTab = hasPropertyRequests === true;
+
+  const renderInboxTable = (tab: string) => (
+    <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-primary/5">
+              <TableHead className="w-10">
+                <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
+              </TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.sno")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
+              {tab === "property_request" && (
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.budget")}</TableHead>
+              )}
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.isSeen")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell>
+              </TableRow>
+            ) : filtered.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noDataFound")}</TableCell>
+              </TableRow>
+            ) : (
+              filtered.map((item, idx) => (
+                <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
+                  <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{idx + 1}</TableCell>
+                  <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
+                  {tab === "property_request" && (
+                    <TableCell className="text-sm font-medium text-foreground">{item.budget ? `$${item.budget}` : "—"}</TableCell>
+                  )}
+                  <TableCell>
+                    <Badge
+                      className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
+                      variant="secondary"
+                    >
+                      {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}>
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t("companyDashboard.inbox")}</h1>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab((v === "property_request" || v === "inquiry" || v === "message") ? v : "inquiry")} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-secondary/50">
-          <TabsTrigger value="property_request" className="gap-2">
-            <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
-          </TabsTrigger>
+          {showPropertyRequestTab && (
+            <TabsTrigger value="property_request" className="gap-2">
+              <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
+            </TabsTrigger>
+          )}
           <TabsTrigger value="inquiry" className="gap-2">
             <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
           </TabsTrigger>
@@ -134,8 +217,17 @@ const CompanyInboxPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        {["property_request", "inquiry", "message"].map((tab) => (
-          <TabsContent key={tab} value={tab}>
+        {/* Upgrade prompt for Basic/Lite — shown only if they don't have property requests */}
+        {hasPropertyRequests === false && (
+          <div className="bg-muted/50 border border-border rounded-xl p-6 text-center">
+            <Lock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
+            <p className="text-sm font-medium text-foreground mb-1">{t("companyDashboard.propertyRequestsLocked")}</p>
+            <p className="text-xs text-muted-foreground">{t("companyDashboard.propertyRequestsUpgrade")}</p>
+          </div>
+        )}
+
+        {showPropertyRequestTab && (
+          <TabsContent value="property_request">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -147,68 +239,39 @@ const CompanyInboxPage = () => {
                 </Button>
               )}
             </div>
-
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-primary/5">
-                      <TableHead className="w-10">
-                        <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
-                      </TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.sno")}</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
-                      {tab === "property_request" && (
-                        <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.budget")}</TableHead>
-                      )}
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.isSeen")}</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell>
-                      </TableRow>
-                    ) : filtered.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noDataFound")}</TableCell>
-                      </TableRow>
-                    ) : (
-                      filtered.map((item, idx) => (
-                        <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
-                          <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{idx + 1}</TableCell>
-                          <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
-                          <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
-                          {tab === "property_request" && (
-                            <TableCell className="text-sm font-medium text-foreground">{item.budget ? `$${item.budget}` : "—"}</TableCell>
-                          )}
-                          <TableCell>
-                            <Badge
-                              className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
-                              variant="secondary"
-                            >
-                              {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}>
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
+            {renderInboxTable("property_request")}
           </TabsContent>
-        ))}
+        )}
+
+        <TabsContent value="inquiry">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+            </div>
+            {selected.length > 0 && (
+              <Button variant="destructive" onClick={handleDelete} className="ml-auto">
+                <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
+              </Button>
+            )}
+          </div>
+          {renderInboxTable("inquiry")}
+        </TabsContent>
+
+        <TabsContent value="message">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+            </div>
+            {selected.length > 0 && (
+              <Button variant="destructive" onClick={handleDelete} className="ml-auto">
+                <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
+              </Button>
+            )}
+          </div>
+          {renderInboxTable("message")}
+        </TabsContent>
       </Tabs>
 
       {/* View Dialog */}
@@ -245,7 +308,7 @@ const CompanyInboxPage = () => {
               {viewItem.message && (
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.message")}</p>
-                  <p className="text-sm text-foreground bg-secondary/30 rounded-lg p-3">{viewItem.message}</p>
+                  <p className="text-sm text-foreground bg-secondary/30 rounded-lg p-3 whitespace-pre-wrap">{viewItem.message}</p>
                 </div>
               )}
               <div>
