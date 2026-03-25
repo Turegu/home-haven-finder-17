@@ -70,12 +70,14 @@ export default function LanguageSearchDropdown({
     );
   }
 
+  const tLang = (lang: string) => t(`languageNames.${lang}`, lang);
+
   const label =
     selected.length === 0
-      ? 'Languages'
+      ? t('filters.languages')
       : selected.length === 1
-        ? (SHORT_LABELS[selected[0]] || selected[0])
-        : `${selected.length} Languages`;
+        ? (SHORT_LABELS[selected[0]] || tLang(selected[0]))
+        : `${selected.length} ${t('filters.languages')}`;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
