@@ -145,6 +145,8 @@ const CompanyEventsPage = () => {
         <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.eventsManagement")}</h1>
       </div>
 
+      <DowngradedListingsBanner companyId={companyId} tableName="events" />
+
       {/* Membership Usage */}
       <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
         <div className="flex-1">

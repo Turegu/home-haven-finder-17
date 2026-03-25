@@ -218,6 +218,8 @@ const CompanyPropertiesPage = () => {
         <h1 className="text-2xl font-bold text-foreground">{t("companyDashboard.propertiesManagement")}</h1>
       </div>
 
+      <DowngradedListingsBanner companyId={companyId} tableName="properties" />
+
       {/* Membership Usage */}
       {maxProps > 0 ? (
         <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
