@@ -150,6 +150,19 @@ const CompanyAgentsPage = () => {
         </div>
       </div>
 
+      {/* Membership Usage */}
+      <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
+        <div className="flex-1">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-medium text-muted-foreground">
+              {t("companyDashboard.agentsUsed", { used: usage.agents, max: maxAgents, membership: membership.charAt(0).toUpperCase() + membership.slice(1) })}
+            </span>
+            <span className="text-xs text-muted-foreground">{remainingSlots("agents")} {t("companyDashboard.remaining").toLowerCase()}</span>
+          </div>
+          <Progress value={usagePercent} className="h-2" />
+        </div>
+      </div>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -166,17 +179,25 @@ const CompanyAgentsPage = () => {
           </Select>
         </div>
         <div className="flex items-center gap-2 ml-auto">
-          <Button
-            onClick={() => {
-              if (!canCreate("agents")) {
-                toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
-                return;
-              }
-              navigate("/company/agents/new");
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewAgent")}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span>
+                  <Button
+                    disabled={atLimit}
+                    onClick={() => navigate("/company/agents/new")}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewAgent")}
+                  </Button>
+                </span>
+              </TooltipTrigger>
+              {atLimit && (
+                <TooltipContent>
+                  <p>{t("companyDashboard.limitReached", { type: t("companyDashboard.agents") })}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
