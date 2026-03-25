@@ -316,24 +316,27 @@ const SectionCard = ({ title, subtitle, children }: { title: string; subtitle?: 
   </div>
 );
 
-const ImageUploadBox = ({ preview, onClick, height = "h-40", label }: { preview: string | null; onClick: () => void; height?: string; label?: string }) => (
-  <div>
-    {label && <Label className="mb-1 block">{label}</Label>}
-    <div
-      onClick={onClick}
-      className={`border-2 border-dashed border-border rounded-lg ${height} flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden`}
-    >
-      {preview ? (
-        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-      ) : (
-        <div className="text-center text-muted-foreground text-sm">
-          <ImageIcon className="h-8 w-8 mx-auto mb-1" />
-          {t("admin.clickToUpload")}
-        </div>
-      )}
+const ImageUploadBox = ({ preview, onClick, height = "h-40", label }: { preview: string | null; onClick: () => void; height?: string; label?: string }) => {
+  const { t: tr } = useTranslation();
+  return (
+    <div>
+      {label && <Label className="mb-1 block">{label}</Label>}
+      <div
+        onClick={onClick}
+        className={`border-2 border-dashed border-border rounded-lg ${height} flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden`}
+      >
+        {preview ? (
+          <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+        ) : (
+          <div className="text-center text-muted-foreground text-sm">
+            <ImageIcon className="h-8 w-8 mx-auto mb-1" />
+            {tr("admin.clickToUpload")}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 function useImageUploader(uploadImage: (file: File, folder: string) => Promise<string | null>) {
   const ref = useRef<HTMLInputElement>(null);
