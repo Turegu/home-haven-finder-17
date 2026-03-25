@@ -5,7 +5,7 @@ import { format, addDays } from "date-fns";
 
 interface DowngradedListingsBannerProps {
   companyId: string | null;
-  tableName: "properties" | "projects" | "events";
+  tableName: "properties" | "projects" | "events" | "agents";
 }
 
 const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBannerProps) => {
