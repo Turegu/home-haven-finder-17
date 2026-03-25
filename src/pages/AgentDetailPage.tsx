@@ -128,7 +128,7 @@ const AgentDetailPage = () => {
           <ChevronRight className="h-3 w-3" />
           <Link to="/agents" className="hover:text-primary transition-colors">{t('nav.agents')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground font-medium">{agent.name}</span>
+          <span className="text-foreground font-medium">{agent ? getLocalizedName(agent.name, agent.name_ar, agent.name_fr) : ''}</span>
         </div>
       </div>
 
