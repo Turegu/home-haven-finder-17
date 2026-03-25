@@ -152,6 +152,7 @@ const CompanyProfilePage = () => {
         setForm({
           name: data.name || "",
           name_ar: (data as any).name_ar || "",
+          name_fr: (data as any).name_fr || "",
           company_types: (data as any).company_types || [],
           service_areas: data.service_areas?.join(", ") || "",
           languages: data.languages || [],
