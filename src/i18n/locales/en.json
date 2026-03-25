@@ -976,6 +976,7 @@
     "eventsUsed": "Events Used: {{used}} / {{max}} ({{membership}})",
     "agentsUsed": "Agents Used: {{used}} / {{max}} ({{membership}})",
     "limitReached": "{{type}} limit reached. Upgrade your plan.",
+    "frozen": "Frozen",
     "showing": "Showing {{count}} of {{total}}",
     "id": "ID",
     "creationDate": "Creation Date",
