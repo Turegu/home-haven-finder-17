@@ -113,6 +113,7 @@ function MultiSelectLanguages({
 
 const CompanyProfilePage = () => {
   const { t, i18n } = useTranslation();
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
