@@ -112,16 +112,17 @@ Deno.serve(async (req) => {
       subject = `New inquiry from ${sender_name} — ${listing_title || "Your listing"}`;
     }
 
-    // Send email via Lovable email API
+    // Send email via configured app email API
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+    const emailApiUrl = Deno.env.get("LOVABLE_EMAIL_API_URL") || "https://email.lovable.dev/v1/send";
     if (!lovableApiKey) {
-      return new Response(JSON.stringify({ error: "Email API not configured" }), {
-        status: 500,
+      console.error("LOVABLE_API_KEY missing; inquiry email skipped");
+      return new Response(JSON.stringify({ success: false, email_sent: false, reason: "email_api_not_configured" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const res = await fetch("https://email.lovable.dev/v1/send", {
+    const res = await fetch(emailApiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -140,13 +141,18 @@ Deno.serve(async (req) => {
     if (!res.ok) {
       const errText = await res.text();
       console.error(`Failed to send to ${recipientEmail}:`, errText);
-      return new Response(JSON.stringify({ error: "Email send failed", details: errText }), {
-        status: 500,
+      return new Response(JSON.stringify({
+        success: false,
+        email_sent: false,
+        sent_to: recipientEmail,
+        reason: "email_send_failed",
+        details: errText,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ success: true, sent_to: recipientEmail }), {
+    return new Response(JSON.stringify({ success: true, email_sent: true, sent_to: recipientEmail }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
