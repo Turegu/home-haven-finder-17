@@ -82,6 +82,14 @@ const DashboardSidebarHeader = ({ brandPath }: DashboardSidebarHeaderProps) => {
                   >
                     العربية
                   </button>
+                  <button
+                    onClick={() => switchLanguage("fr")}
+                    className={`w-full text-start px-3 py-1.5 text-sm hover:bg-muted transition-colors ${
+                      i18n.language === "fr" ? "text-primary font-medium bg-primary/5" : "text-foreground"
+                    }`}
+                  >
+                    Français
+                  </button>
                 </>
               )}
             </div>
