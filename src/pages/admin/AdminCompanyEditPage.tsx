@@ -34,6 +34,7 @@ const AdminCompanyEditPage = () => {
 
   const [form, setForm] = useState({
     name: "",
+    name_ar: "",
     company_types: [] as string[],
     service_areas: "",
     languages: [] as string[],
