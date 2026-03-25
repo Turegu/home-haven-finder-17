@@ -98,7 +98,7 @@ const CompanyProjectsPage = () => {
 
   const projectTypes = [...new Set(projects.map(p => p.project_type))];
   const projectStatuses = [...new Set(projects.map(p => p.project_status))];
-  const formatType = (t: string) => t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const formatType = (val: string) => val.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]));
@@ -117,7 +117,7 @@ const CompanyProjectsPage = () => {
   const handleDeactivate = async (proj: Project) => {
     const newStatus = proj.status === "active" ? "inactive" : "active";
     if (newStatus === "active" && !canCreate("projects")) {
-      toast.error(`Your ${membership} membership does not allow more active projects. Please upgrade.`);
+      toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
       return;
     }
     const { error } = await supabase.from("projects").update({ status: newStatus }).eq("id", proj.id);
@@ -142,8 +142,8 @@ const CompanyProjectsPage = () => {
       <div className="flex items-center gap-3 mb-4 p-3 rounded-lg border border-border bg-card">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-medium text-muted-foreground">Projects Used: {usage.projects} / {maxProjects} ({membership.charAt(0).toUpperCase() + membership.slice(1)})</span>
-            <span className="text-xs text-muted-foreground">{remainingSlots("projects")} remaining</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("companyDashboard.projectsUsed", { used: usage.projects, max: maxProjects, membership: membership.charAt(0).toUpperCase() + membership.slice(1) })}</span>
+            <span className="text-xs text-muted-foreground">{remainingSlots("projects")} {t("companyDashboard.remaining")}</span>
           </div>
           <Progress value={usagePercent} className="h-2" />
         </div>
@@ -153,48 +153,48 @@ const CompanyProjectsPage = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-primary/10 p-2"><LayoutList className="h-4 w-4 text-primary" /></div>
-          <div><p className="text-xs text-muted-foreground">Total</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.total")}</p><p className="text-lg font-bold text-foreground">{stats.total}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-emerald-100 p-2"><CheckCircle className="h-4 w-4 text-emerald-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Active</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.active")}</p><p className="text-lg font-bold text-emerald-700">{stats.active}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-red-100 p-2"><XCircle className="h-4 w-4 text-red-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Inactive</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.inactive")}</p><p className="text-lg font-bold text-red-700">{stats.inactive}</p></div>
         </div>
         <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
           <div className="rounded-full bg-amber-100 p-2"><FileText className="h-4 w-4 text-amber-700" /></div>
-          <div><p className="text-xs text-muted-foreground">Draft</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
+          <div><p className="text-xs text-muted-foreground">{t("companyDashboard.draft")}</p><p className="text-lg font-bold text-amber-700">{stats.draft}</p></div>
         </div>
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search By Title Or ID" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
+          <Input placeholder={t("companyDashboard.searchByTitleOrId")} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="whitespace-nowrap">Sort By Date</span>
+          <span className="whitespace-nowrap">{t("companyDashboard.sortByDate")}</span>
           <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
             <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest to Oldest</SelectItem>
-              <SelectItem value="oldest">Oldest to Newest</SelectItem>
+              <SelectItem value="newest">{t("companyDashboard.newestToOldest")}</SelectItem>
+              <SelectItem value="oldest">{t("companyDashboard.oldestToNewest")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="flex items-center gap-2 ml-auto">
           {selected.length > 0 && (
             <Button variant="destructive" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4 mr-2" /> Delete ({selected.length})
+              <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
             </Button>
           )}
           <Button onClick={() => {
-            if (!canCreate("projects")) { toast.error(`Your ${membership} membership does not allow more projects. Please upgrade.`); return; }
+            if (!canCreate("projects")) { toast.error(t("companyDashboard.noUpgradeAllowed", { membership })); return; }
             navigate("/company/projects/new");
           }}>
-            <Plus className="h-4 w-4 mr-2" /> Create New Project
+            <Plus className="h-4 w-4 mr-2" /> {t("companyDashboard.createNewProject")}
           </Button>
         </div>
       </div>
@@ -203,41 +203,41 @@ const CompanyProjectsPage = () => {
       <div className="bg-card rounded-xl border border-border p-4 mb-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Project Type</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("companyDashboard.projectType")}</label>
             <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
-              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder={t("companyDashboard.allTypes")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {projectTypes.map((t) => (<SelectItem key={t} value={t}>{formatType(t)}</SelectItem>))}
+                <SelectItem value="all">{t("companyDashboard.allTypes")}</SelectItem>
+                {projectTypes.map((pt) => (<SelectItem key={pt} value={pt}>{formatType(pt)}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Project Status</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("companyDashboard.projectStatus")}</label>
             <Select value={filterProjectStatus} onValueChange={(v) => { setFilterProjectStatus(v); setPage(1); }}>
-              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder={t("companyDashboard.all")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="all">{t("companyDashboard.all")}</SelectItem>
                 {projectStatuses.map((s) => (<SelectItem key={s} value={s}>{formatType(s)}</SelectItem>))}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Listing Status</label>
+            <label className="text-xs text-muted-foreground mb-1 block">{t("companyDashboard.listingStatus")}</label>
             <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
-              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder="All" /></SelectTrigger>
+              <SelectTrigger className="bg-secondary/50 text-sm"><SelectValue placeholder={t("companyDashboard.all")} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="all">{t("companyDashboard.all")}</SelectItem>
+                <SelectItem value="active">{t("companyDashboard.active")}</SelectItem>
+                <SelectItem value="inactive">{t("companyDashboard.inactive")}</SelectItem>
+                <SelectItem value="draft">{t("companyDashboard.draft")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground mb-2">Showing {paginated.length} of {filtered.length} project(s)</p>
+      <p className="text-xs text-muted-foreground mb-2">{t("companyDashboard.showing", { count: paginated.length, total: filtered.length })}</p>
 
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
@@ -245,22 +245,22 @@ const CompanyProjectsPage = () => {
             <TableHeader>
               <TableRow className="bg-primary/5">
                 <TableHead className="w-10"><Checkbox checked={paginated.length > 0 && selected.length === paginated.length} onCheckedChange={toggleAll} /></TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">ID</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Creation Date</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Type</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Project Status</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Title</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Assigned Agent</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Location</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">Status</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.id")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.creationDate")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.type")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.projectStatus")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.title")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.assignedAgent")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.location")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.status")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell></TableRow>
               ) : paginated.length === 0 ? (
-                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">No projects found.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={10} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noData")}</TableCell></TableRow>
               ) : (
                 paginated.map((proj) => (
                   <TableRow key={proj.id} className="hover:bg-muted/30">
@@ -276,7 +276,7 @@ const CompanyProjectsPage = () => {
                     <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{proj.location || "—"}</TableCell>
                     <TableCell>
                       <Badge className={statusColor(proj.status)} variant="secondary">
-                        {proj.status === "draft" ? "Unpublished" : proj.status.charAt(0).toUpperCase() + proj.status.slice(1)}
+                        {proj.status === "draft" ? t("companyDashboard.unpublished") : proj.status === "active" ? t("companyDashboard.active") : t("companyDashboard.inactive")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -285,10 +285,10 @@ const CompanyProjectsPage = () => {
                           <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => navigate(`/projects/${proj.id}`)}><Eye className="h-4 w-4 mr-2" /> View</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate(`/company/projects/${proj.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate(`/company/projects/${proj.id}/units`)}><Layers className="h-4 w-4 mr-2" /> View Units</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDeactivate(proj)}><Ban className="h-4 w-4 mr-2" /> {proj.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/projects/${proj.id}`)}><Eye className="h-4 w-4 mr-2" /> {t("companyDashboard.view")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/company/projects/${proj.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => navigate(`/company/projects/${proj.id}/units`)}><Layers className="h-4 w-4 mr-2" /> {t("companyDashboard.viewUnits")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeactivate(proj)}><Ban className="h-4 w-4 mr-2" /> {proj.status === "active" ? t("companyDashboard.deactivate") : t("companyDashboard.activate")}</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

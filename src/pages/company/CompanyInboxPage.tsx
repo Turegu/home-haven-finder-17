@@ -72,7 +72,6 @@ const CompanyInboxPage = () => {
 
   useEffect(() => { if (companyId) fetchItems(); }, [companyId, activeTab]);
 
-  // Realtime
   useEffect(() => {
     if (!companyId) return;
     const channel = supabase
@@ -118,15 +117,6 @@ const CompanyInboxPage = () => {
     }
   };
 
-  const unseenCounts = (type: string) => items.filter((i) => i.inbox_type === type && !i.is_seen).length;
-
-  const tabLabel = (type: string, label: string, icon: React.ReactNode) => (
-    <div className="flex items-center gap-2">
-      {icon}
-      <span>{label}</span>
-    </div>
-  );
-
   return (
     <CompanyLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">{t("companyDashboard.inbox")}</h1>
@@ -149,11 +139,11 @@ const CompanyInboxPage = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search By Name" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+                <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
               </div>
               {selected.length > 0 && (
                 <Button variant="destructive" onClick={handleDelete} className="ml-auto">
-                  <Trash2 className="h-4 w-4 mr-2" /> Delete ({selected.length})
+                  <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
                 </Button>
               )}
             </div>
@@ -166,25 +156,25 @@ const CompanyInboxPage = () => {
                       <TableHead className="w-10">
                         <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
                       </TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">SNO</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">Full Name</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">Email</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">Phone No.</TableHead>
+                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.sno")}</TableHead>
+                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
+                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
+                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
                       {tab === "property_request" && (
-                        <TableHead className="text-xs uppercase tracking-wider font-semibold">Budget</TableHead>
+                        <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.budget")}</TableHead>
                       )}
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold">Is Seen</TableHead>
-                      <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">Options</TableHead>
+                      <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.isSeen")}</TableHead>
+                      <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">Loading...</TableCell>
+                        <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell>
                       </TableRow>
                     ) : filtered.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">No Data Found</TableCell>
+                        <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noDataFound")}</TableCell>
                       </TableRow>
                     ) : (
                       filtered.map((item, idx) => (
@@ -202,7 +192,7 @@ const CompanyInboxPage = () => {
                               className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
                               variant="secondary"
                             >
-                              {item.is_seen ? "Seen" : "Unseen"}
+                              {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
@@ -226,41 +216,41 @@ const CompanyInboxPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {viewItem?.inbox_type === "property_request" ? "Property Request" :
-               viewItem?.inbox_type === "inquiry" ? "Inquiry" : "Message"} Details
+              {viewItem?.inbox_type === "property_request" ? t("companyDashboard.propertyRequests") :
+               viewItem?.inbox_type === "inquiry" ? t("companyDashboard.inquiry") : t("companyDashboard.message")} - {t("companyDashboard.requestDetails")}
             </DialogTitle>
           </DialogHeader>
           {viewItem && (
             <div className="space-y-4 py-2">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Full Name</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.fullName")}</p>
                   <p className="text-sm font-medium text-foreground">{viewItem.full_name}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Email</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.email")}</p>
                   <p className="text-sm font-medium text-foreground">{viewItem.email}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Phone</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.phone")}</p>
                   <p className="text-sm font-medium text-foreground">{viewItem.phone || "—"}</p>
                 </div>
                 {viewItem.budget && (
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Budget</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.budget")}</p>
                     <p className="text-sm font-medium text-foreground">${viewItem.budget}</p>
                   </div>
                 )}
               </div>
               {viewItem.message && (
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Message</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.message")}</p>
                   <p className="text-sm text-foreground bg-secondary/30 rounded-lg p-3">{viewItem.message}</p>
                 </div>
               )}
               <div>
                 <p className="text-xs text-muted-foreground">
-                  Received: {format(new Date(viewItem.created_at), "do MMM yyyy hh:mm a")}
+                  {t("companyDashboard.received")}: {format(new Date(viewItem.created_at), "do MMM yyyy hh:mm a")}
                 </p>
               </div>
             </div>
