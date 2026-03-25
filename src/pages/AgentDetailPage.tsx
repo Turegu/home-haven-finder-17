@@ -55,7 +55,7 @@ const AgentDetailPage = () => {
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
-  const lang = i18n.language;
+  
   const getLocalizedName = (name: string, name_ar?: string | null, name_fr?: string | null) => {
     if (lang === 'ar' && name_ar) return name_ar;
     if (lang === 'fr' && name_fr) return name_fr;
