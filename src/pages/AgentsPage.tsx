@@ -239,7 +239,12 @@ const AgentsPage = () => {
   }).sort((a, b) => boostOrder(a.profile_classification, a.boost_end_date) - boostOrder(b.profile_classification, b.boost_end_date));
 
   const filteredAgents = agents.filter(a => {
-    if (searchQuery && !turkishIncludes(a.name, searchQuery)) return false;
+    if (searchQuery) {
+      const matchesName = turkishIncludes(a.name, searchQuery) ||
+        (a.name_ar && turkishIncludes(a.name_ar, searchQuery)) ||
+        (a.name_fr && turkishIncludes(a.name_fr, searchQuery));
+      if (!matchesName) return false;
+    }
     if (selectedProvince && !a.service_areas?.some(area => turkishIncludes(area, selectedProvince))) return false;
     if (selectedTown && !a.service_areas?.some(area => turkishIncludes(area, selectedTown))) return false;
     return true;
