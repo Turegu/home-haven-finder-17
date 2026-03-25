@@ -362,11 +362,19 @@ const CompanyAgentEditPage = () => {
               ]}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div className="space-y-2" data-field="designation">
-                <Label className="text-foreground font-medium">{t("companyDashboard.agentDesignation")} *</Label>
+                <Label className="text-foreground font-medium">{t("companyDashboard.agentDesignation")} * (EN)</Label>
                 <Input value={form.designation} onChange={(e) => { updateField("designation", e.target.value); clearFieldError("designation"); }} className={`bg-secondary/50 ${fieldErrors.designation ? "border-destructive" : ""}`} placeholder={t("companyDashboard.agentDesignation")} />
                 {fieldErrors.designation && <p className="text-xs text-destructive">{fieldErrors.designation}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">{t("companyDashboard.agentDesignation")} (AR)</Label>
+                <Input value={form.designation_ar} onChange={(e) => updateField("designation_ar", e.target.value)} className="bg-secondary/50" placeholder="المسمى الوظيفي" dir="rtl" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-foreground font-medium">{t("companyDashboard.agentDesignation")} (FR)</Label>
+                <Input value={form.designation_fr} onChange={(e) => updateField("designation_fr", e.target.value)} className="bg-secondary/50" placeholder="Titre du poste" />
               </div>
             </div>
 
