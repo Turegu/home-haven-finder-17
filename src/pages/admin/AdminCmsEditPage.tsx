@@ -354,6 +354,7 @@ function useImageUploader(uploadImage: (file: File, folder: string) => Promise<s
 /* ============ Home Page Form ============ */
 
 const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocCreate, openLocEdit, handleLocDelete, partners: partnerItems, openPartnerCreate, openPartnerEdit, handlePartnerDelete }: any) => {
+  const { t } = useTranslation();
   const hero = content.hero || {};
   const secondBanner = content.second_banner || {};
   const featProps = content.featured_properties || {};
