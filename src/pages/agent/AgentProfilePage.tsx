@@ -343,8 +343,8 @@ const AgentProfilePage = () => {
                 className="w-full rounded-md border border-input px-3 py-2 text-sm bg-secondary/50"
               >
                 <option value="">Designation</option>
-                {agentDesignations.map((d) => (
-                  <option key={d.value} value={d.value}>{designationLabel(d)}</option>
+                {dbDesignations.map((d) => (
+                  <option key={d.title} value={d.title}>{designationLabel(d.title)}</option>
                 ))}
               </select>
             </div>
