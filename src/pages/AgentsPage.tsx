@@ -47,6 +47,8 @@ function PaginatedCardGrid<T extends { id: string }>({
   }
 
   let bannerPosition = 0;
+  // If 4 or fewer rows, show banner after 2nd row; otherwise every 4 rows
+  const bannerInterval = rows.length <= 4 ? 2 : BANNER_EVERY_ROWS;
 
   return (
     <>
@@ -56,7 +58,7 @@ function PaginatedCardGrid<T extends { id: string }>({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {row.map((item) => renderCard(item))}
             </div>
-            {(rowIdx + 1) % BANNER_EVERY_ROWS === 0 && rowIdx < rows.length - 1 && (
+            {(rowIdx + 1) % bannerInterval === 0 && rowIdx < rows.length - 1 && (
               <div className="my-5">
                 <BannerDisplay pageName={bannerPageName} bannerType="horizontal" position={++bannerPosition} />
               </div>
