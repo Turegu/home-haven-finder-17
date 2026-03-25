@@ -40,6 +40,7 @@ const AdminCompanyEditPage = () => {
     languages: [] as string[],
     registration_number: "",
     about: "",
+    about_ar: "",
     email: "",
     phone: "",
     whatsapp: "",
