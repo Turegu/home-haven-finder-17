@@ -324,6 +324,16 @@ const CompanyEventEditPage = () => {
                 <Input value={form.title} onChange={(e) => { if (e.target.value.length <= 60) updateField("title", e.target.value); }} className={`bg-secondary/50 ${errorClass("title")}`} required placeholder="Event Title" maxLength={60} />
                 <p className="text-xs text-muted-foreground text-right">{form.title.length}/60 characters</p>
               </div>
+              <ArabicTranslateField
+                label="Event Name (Arabic)"
+                value={form.title_ar}
+                onChange={(v) => updateField("title_ar", v)}
+                sourceText={form.title}
+                fieldType="name"
+                maxLength={60}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" /> Organizer
@@ -353,6 +363,14 @@ const CompanyEventEditPage = () => {
               <RichTextToolbar onAction={applyRichText} />
               <Textarea id="event-desc" value={form.description} onChange={(e) => updateField("description", e.target.value)} className="bg-secondary/50 min-h-[120px]" />
             </div>
+            <ArabicTranslateField
+              label="Event Description (Arabic)"
+              value={form.description_ar}
+              onChange={(v) => updateField("description_ar", v)}
+              sourceText={form.description}
+              fieldType="description"
+              multiline
+            />
           </div>
         </section>
 
