@@ -29,6 +29,7 @@ const durationOptions = ["1 Month", "3 Months", "6 Months", "1 Year"];
 
 const AdminCreateCompanyPage = () => {
   const navigate = useNavigate();
+  const { data: dbCompanyTypes = [] } = useCompanyTypes();
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
