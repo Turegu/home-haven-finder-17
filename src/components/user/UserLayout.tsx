@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Settings, UserCircle, Heart, Search, Layers, Bell,
-  MessageSquare, FileText, Users2, LogOut, Menu, Home
+  MessageSquare, FileText, Users2, LogOut, Menu, Home, Megaphone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
     { label: t("userMenu.dashboard"), path: "/account", icon: Home, countKey: null },
     { label: t("userMenu.accountSettings"), path: "/account/settings", icon: Settings, countKey: null },
     { label: t("userMenu.followedAgents"), path: "/account/followed-agents", icon: Users2, countKey: "followed" },
+    { label: t("userMenu.announcements", "Announcements"), path: "/account/announcements", icon: Megaphone, countKey: null },
     { label: t("userMenu.savedProperties"), path: "/account/saved-properties", icon: Heart, countKey: "saved" },
     { label: t("userMenu.savedSearches"), path: "/account/saved-searches", icon: Search, countKey: "searches" },
     { label: t("userMenu.compareList"), path: "/account/compare", icon: Layers, countKey: "compare" },

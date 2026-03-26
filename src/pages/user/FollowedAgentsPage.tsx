@@ -37,7 +37,7 @@ const FollowedAgentsPage = () => {
         .select("id, agent_id, created_at, agents(id, name, avatar_url, designation, company_id)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }) as any;
-      setItems((data || []).map((d: any) => ({ ...d, agent: d.agents })));
+      setItems((data || []).map((d: any) => ({ ...d, agent: d.agents })).filter((d: any) => d.agent));
     } catch (err) {
       console.error("Failed to load followed agents:", err);
     } finally {

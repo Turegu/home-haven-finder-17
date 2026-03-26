@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck } from "lucide-react";
+import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck, Globe } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+
+const LANG_OPTIONS = [
+  { code: 'en', label: 'English' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'fr', label: 'Français' },
+];
 
 type LoginMode = "agent" | "company";
 type LoginStep = "credentials" | "pattern";
@@ -15,6 +25,7 @@ type PendingRedirect = "/agent" | "/company";
 
 const CompanyLoginPage = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<LoginMode>("company");
   const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
@@ -348,10 +359,23 @@ const CompanyLoginPage = () => {
                 </Button>
               </form>
 
-              <div className="flex items-center justify-center mt-6">
+              <div className="flex items-center justify-center gap-4 mt-6">
                 <Link to="/" className="text-sm text-primary hover:underline">
                   Login as Buyer
                 </Link>
+                <div className="flex items-center gap-1.5">
+                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                  <Select value={i18n.language} onValueChange={(v) => i18n.changeLanguage(v)}>
+                    <SelectTrigger className="h-7 w-[110px] text-xs border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LANG_OPTIONS.map((l) => (
+                        <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </>
           )}

@@ -14,7 +14,7 @@ type LoginStep = "credentials" | "pattern";
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +23,11 @@ const AdminLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [patternError, setPatternError] = useState(false);
   const [savedPattern, setSavedPattern] = useState<string>("");
+
+  // Force English for admin login
+  useEffect(() => {
+    if (i18n.language !== 'en') i18n.changeLanguage('en');
+  }, [i18n]);
 
   // Load remembered email
   useEffect(() => {

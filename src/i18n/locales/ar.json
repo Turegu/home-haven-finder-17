@@ -793,6 +793,8 @@
     "parking": "مواقف السيارات",
     "furniture": "الأثاث",
     "propertyAge": "عمر العقار",
+    "propertyStatus": "حالة العقار",
+    "orientation": "الاتجاه",
     "interiorAmenities": "المرافق الداخلية",
     "exteriorAmenities": "المرافق الخارجية",
     "location": "الموقع",
