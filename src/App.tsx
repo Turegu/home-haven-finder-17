@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { AuthPromptProvider } from "@/hooks/useAuthPrompt";
 import { useDirection } from "@/hooks/useDirection";
+import { Sentry } from "@/lib/sentry";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
