@@ -227,16 +227,9 @@ const Index = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {locations.slice(0, 3).map((loc) => {
               const isExternal = loc.link_url?.startsWith('http');
-              const LinkTag = isExternal ? 'a' : Link;
-              const linkProps = isExternal
-                ? { href: loc.link_url || '#', target: '_blank', rel: 'noopener noreferrer' }
-                : { to: loc.link_url || '#' };
-              return (
-                <LinkTag
-                  key={loc.id}
-                  {...(linkProps as React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string })}
-                  className="group relative rounded-2xl overflow-hidden"
-                >
+              const sharedClassName = "group relative rounded-2xl overflow-hidden";
+
+              const content = (
                   <div className="relative aspect-[16/9] overflow-hidden">
                     {loc.image_url ? (
                       <img src={loc.image_url} alt={loc.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]" />
