@@ -118,7 +118,11 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
       }
 
       toast.success('Message sent successfully');
-      onOpenChange(false);
+      setSent(true);
+      window.setTimeout(() => {
+        onOpenChange(false);
+        setSent(false);
+      }, 1500);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
