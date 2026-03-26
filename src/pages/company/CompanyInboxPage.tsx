@@ -356,7 +356,7 @@ const CompanyInboxPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="inquiry">
+        <TabsContent value={INBOX_TYPES.INQUIRY}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -368,7 +368,7 @@ const CompanyInboxPage = () => {
               </Button>
             )}
           </div>
-          {renderInboxTable("inquiry")}
+          {renderInboxTable(INBOX_TYPES.INQUIRY)}
         </TabsContent>
 
         <TabsContent value="message">
