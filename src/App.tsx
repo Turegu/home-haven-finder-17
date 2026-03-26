@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { AuthPromptProvider } from "@/hooks/useAuthPrompt";
 import { useDirection } from "@/hooks/useDirection";
+import { Sentry } from "@/lib/sentry";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -133,6 +134,7 @@ const queryClient = new QueryClient({
 const App = () => {
   useDirection();
   return (
+  <Sentry.ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Something went wrong. Please refresh the page.</p></div>}>
   <QueryClientProvider client={queryClient}>
     <AreaUnitProvider>
     <TooltipProvider>
@@ -252,6 +254,7 @@ const App = () => {
     </TooltipProvider>
     </AreaUnitProvider>
   </QueryClientProvider>
+  </Sentry.ErrorBoundary>
   );
 };
 
