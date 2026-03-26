@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import { supabase } from '@/integrations/supabase/client';
+import { agentsService } from '@/services/agents.service';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
