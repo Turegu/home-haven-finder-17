@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 
 interface ListingMeta {
   title: string;
