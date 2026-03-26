@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +28,20 @@ const AdvertisePage = () => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement>(null);
   const [highlightForm, setHighlightForm] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+    (window as any).onTurnstileSuccess = (token: string) => setTurnstileToken(token);
+    return () => {
+      document.head.removeChild(script);
+      delete (window as any).onTurnstileSuccess;
+    };
+  }, []);
 
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -63,6 +77,10 @@ const AdvertisePage = () => {
       toast.error(t('pages.advertise.acceptTermsError'));
       return;
     }
+    if (!turnstileToken) {
+      toast.error('Please complete the human verification.');
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("advertising_requests").insert({
       company_name: form.company_name,
@@ -79,6 +97,8 @@ const AdvertisePage = () => {
       toast.success(t('pages.advertise.requestSubmitted'));
       setForm({ company_name: "", first_name: "", last_name: "", email: "", phone: "", message: "" });
       setAgreed(false);
+      setTurnstileToken(null);
+      if ((window as any).turnstile) (window as any).turnstile.reset();
     }
   };
 
@@ -210,6 +230,12 @@ const AdvertisePage = () => {
                       {t('pages.advertise.acceptTerms')}
                     </Label>
                   </div>
+                  <div
+                    className="cf-turnstile"
+                    data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                    data-callback="onTurnstileSuccess"
+                    data-theme="auto"
+                  />
                   <Button type="submit" className="w-full" size="lg" disabled={submitting}>
                     {submitting ? t('pages.advertise.submitting') : t('common.submit')}
                   </Button>
