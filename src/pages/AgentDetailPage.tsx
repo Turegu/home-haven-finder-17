@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import { supabase } from '@/integrations/supabase/client';
+import { agentsService } from '@/services/agents.service';
 import ProfileListingFilters, { type ProfileFilters } from '@/components/ProfileListingFilters';
 import ProfileProjectFilters, { type ProjectFilters } from '@/components/ProfileProjectFilters';
 import PropertyCard from '@/components/PropertyCard';
@@ -73,11 +74,7 @@ const AgentDetailPage = () => {
   useEffect(() => {
     if (!id) return;
     const fetchAgent = async () => {
-      const { data } = await supabase
-        .from("agents")
-        .select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, description, description_ar, description_fr, languages, service_areas, phone, email, whatsapp, company_id, companies(id, name, name_ar, logo_url, company_types, cover_url, is_verified)")
-        .eq("id", id)
-        .maybeSingle();
+      const { data } = await agentsService.getPublicById(id);
       const agentData = data as unknown as AgentData | null;
       setAgent(agentData);
 

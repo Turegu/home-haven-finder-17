@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { INBOX_TYPES, type InboxType } from "@/constants/inbox";
+import { inboxService } from "@/services/inbox.service";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,12 +137,7 @@ const CompanyInboxPage = () => {
     if (!companyId) return;
     setLoading(true);
 
-    const { data: inboxRows, error } = await supabase
-      .from("company_inbox")
-      .select("*")
-      .eq("company_id", companyId)
-      .eq("inbox_type", activeTab)
-      .order("created_at", { ascending: false });
+    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, activeTab);
 
     if (error) {
       toast.error("Failed to load inbox");
@@ -234,7 +230,7 @@ const CompanyInboxPage = () => {
 
   const handleDelete = async () => {
     if (selected.length === 0) return;
-    const { error } = await supabase.from("company_inbox").delete().in("id", selected);
+    const { error } = await inboxService.deleteMany(selected);
     if (error) toast.error("Delete failed");
     else {
       toast.success(`${selected.length} item(s) deleted`);
@@ -246,7 +242,7 @@ const CompanyInboxPage = () => {
   const handleView = async (item: InboxItem) => {
     setViewItem(item);
     if (!item.is_seen) {
-      await supabase.from("company_inbox").update({ is_seen: true }).eq("id", item.id);
+      await inboxService.markSeen(item.id);
       setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, is_seen: true } : i));
     }
   };

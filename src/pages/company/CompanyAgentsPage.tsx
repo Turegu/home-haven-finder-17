@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { AGENT_STATUS } from "@/constants/agent";
 import { supabase } from "@/integrations/supabase/client";
+import { agentsService } from "@/services/agents.service";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 import { Button } from "@/components/ui/button";
@@ -80,11 +81,7 @@ const CompanyAgentsPage = () => {
   const fetchAgents = async () => {
     if (!companyId) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("agents")
-      .select("id, name, email, phone, status, credit_balance, created_at, profile_classification, boost_end_date, downgraded_at")
-      .eq("company_id", companyId)
-      .order("created_at", { ascending: sortOrder === "oldest" });
+    const { data, error } = await agentsService.getByCompany(companyId, sortOrder === "oldest");
     if (error) toast.error("Failed to fetch agents");
     else setAgents((data as Agent[]) || []);
     setLoading(false);
@@ -98,7 +95,7 @@ const CompanyAgentsPage = () => {
 
   const handleDelete = async (agentId: string) => {
     if (!confirm(t("companyDashboard.confirmDelete"))) return;
-    const { error } = await supabase.from("agents").update({ status: AGENT_STATUS.INACTIVE, downgraded_at: new Date().toISOString() }).eq("id", agentId);
+    const { error } = await agentsService.softDeactivate(agentId);
     if (error) toast.error("Deactivation failed");
     else { toast.success("Agent deactivated"); fetchAgents(); }
   };
