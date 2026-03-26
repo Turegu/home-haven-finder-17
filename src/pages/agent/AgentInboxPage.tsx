@@ -108,8 +108,9 @@ const AgentInboxPage = () => {
         setCompanyId(agent.company_id);
         setAgentId(agent.id);
 
-        const { data: company } = await supabase.from("companies").select("membership").eq("id", agent.company_id).maybeSingle();
+        const { data: company } = await supabase.from("companies").select("name, membership").eq("id", agent.company_id).maybeSingle();
         if (company) {
+          setCompanyName(company.name || "");
           const { data: pkg } = await supabase.from("membership_packages").select("has_property_requests").eq("package_type", company.membership).maybeSingle();
           setHasPropertyRequests(pkg?.has_property_requests ?? false);
         }
