@@ -81,7 +81,7 @@ const CompanyAgentsPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("agents")
-      .select("id, name, email, phone, status, credit_balance, created_at, profile_classification, boost_end_date")
+      .select("id, name, email, phone, status, credit_balance, created_at, profile_classification, boost_end_date, downgraded_at")
       .eq("company_id", companyId)
       .order("created_at", { ascending: sortOrder === "oldest" });
     if (error) toast.error("Failed to fetch agents");
@@ -97,9 +97,9 @@ const CompanyAgentsPage = () => {
 
   const handleDelete = async (agentId: string) => {
     if (!confirm(t("companyDashboard.confirmDelete"))) return;
-    const { error } = await supabase.from("agents").delete().eq("id", agentId);
-    if (error) toast.error("Delete failed");
-    else { toast.success("Agent deleted"); fetchAgents(); }
+    const { error } = await supabase.from("agents").update({ status: 'inactive', downgraded_at: new Date().toISOString() }).eq("id", agentId);
+    if (error) toast.error("Deactivation failed");
+    else { toast.success("Agent deactivated"); fetchAgents(); }
   };
 
   const handleShareCredits = async () => {

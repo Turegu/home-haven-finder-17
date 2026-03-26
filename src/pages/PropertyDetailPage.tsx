@@ -521,7 +521,7 @@ const PropertyDetailPage = () => {
             {/* Title & Price Block */}
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-1">
-                <h1 className="text-lg sm:text-xl font-bold text-foreground line-clamp-2">{property.title.slice(0, 40)}</h1>
+                <h1 className="text-lg sm:text-xl font-bold text-foreground line-clamp-2">{property.title}</h1>
                 <div className="flex items-center gap-0.5 bg-muted/80 rounded-lg p-1 border border-border shrink-0 overflow-x-auto">
                   {mediaTabs.map((tab) => (
                     <button
@@ -568,7 +568,7 @@ const PropertyDetailPage = () => {
                 </div>
                 <div className="flex items-center gap-4 text-sm">
                   <span>{t('property.adId')}: <span className="font-medium text-foreground">{property.listingId}</span></span>
-                  <span>{t('property.added')}: <span className="font-medium text-foreground">01/01/2025</span></span>
+                  <span>{t('property.added')}: <span className="font-medium text-foreground">{property.listingDate || '—'}</span></span>
                 </div>
               </div>
             </div>
@@ -697,8 +697,8 @@ const PropertyDetailPage = () => {
 
             {/* Market Trends - Average Housing Prices */}
             <MarketTrends
-              province={property.city || null}
-              town={property.city || null}
+              province={property.province || null}
+              town={property.town || null}
               neighbourhood={property.location?.split(',')[0]?.trim() || null}
               currency={property.currency}
               areaUnit={property.areaUnit}
@@ -707,8 +707,8 @@ const PropertyDetailPage = () => {
 
             {/* Price Trends Chart */}
             <PriceTrendsChart
-              province={property.city || null}
-              town={property.city || null}
+              province={property.province || null}
+              town={property.town || null}
               neighbourhood={property.location?.split(',')[0]?.trim() || null}
               currency={property.currency}
               areaUnit={property.areaUnit}
@@ -719,8 +719,8 @@ const PropertyDetailPage = () => {
             <ROICalculator
               propertyPrice={property.price}
               propertyArea={property.area}
-              province={property.city || null}
-              town={property.city || null}
+              province={property.province || null}
+              town={property.town || null}
               neighbourhood={property.location?.split(',')[0]?.trim() || null}
               currency={property.currency}
               areaUnit={property.areaUnit}
