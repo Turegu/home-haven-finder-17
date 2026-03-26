@@ -33,6 +33,17 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
   const [preferredContact, setPreferredContact] = useState('email');
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  // Deterministic success close flow
+  useEffect(() => {
+    if (!open || !sent) return;
+    const timer = window.setTimeout(() => {
+      onOpenChange(false);
+      setSent(false);
+      setSending(false);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [open, sent, onOpenChange]);
+
   useEffect(() => {
     if (open) {
       setSent(false);
