@@ -505,7 +505,7 @@ const CompanyProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Phone</Label>
-              <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" maxLength={20} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">WhatsApp Number</Label>
