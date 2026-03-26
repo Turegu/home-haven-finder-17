@@ -38,8 +38,8 @@ const ContactedPropertiesPage = () => {
           .from("user_inquiries")
           .select("id, property_id, inquiry_type, message, email, phone, full_name, created_at, properties(title, location)")
           .eq("user_id", user.id)
-          .order("created_at", { ascending: false }) as any;
-        setItems((data || []).map((d: any) => ({ ...d, property: d.properties })));
+          .order("created_at", { ascending: false });
+        setItems((data || []).map((d) => ({ ...d, property: (d as unknown as { properties: Inquiry['property'] }).properties })));
       } catch (err) {
         console.error("Failed to load inquiries:", err);
       } finally {

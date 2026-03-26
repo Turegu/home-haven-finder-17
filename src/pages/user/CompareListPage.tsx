@@ -132,8 +132,8 @@ const CompareListPage = () => {
         .from("property_comparisons")
         .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces, province, town, neighbourhood, property_purpose)")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false }) as any;
-      const mappedItems: CompareItem[] = (data || []).map((d: any) => ({ ...d, property: d.properties }));
+        .order("created_at", { ascending: false });
+      const mappedItems: CompareItem[] = (data || []).map((d) => ({ ...d, property: (d as unknown as { properties: CompareItem['property'] }).properties }));
       setItems(mappedItems);
 
       // Fetch real rental market data for each property's area

@@ -666,8 +666,8 @@ const CompanyProfilePage = () => {
           profileType="company"
           balanceSource="company"
           balanceSourceId={company.id}
-          currentClassification={(company as any).profile_classification || "standard"}
-          boostEndDate={(company as any).boost_end_date || null}
+          currentClassification={company.profile_classification || "standard"}
+          boostEndDate={company.boost_end_date || null}
           onBoosted={() => window.location.reload()}
         />
       )}
