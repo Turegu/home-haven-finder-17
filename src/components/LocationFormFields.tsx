@@ -348,11 +348,19 @@ function InteractiveMapPicker({
       : cityCenter || [39.0, 35.0];
     const zoom = parsedCoords ? 15 : (cityCenter ? 12 : 6);
 
+    // Turkey bounding box — prevents dragging/panning outside the allowed country
+    const turkeyBounds = L.latLngBounds(
+      L.latLng(35.8, 25.6), // SW corner
+      L.latLng(42.1, 44.8)  // NE corner
+    );
+
     const map = L.map(containerRef.current, {
       center: initial,
       zoom,
       zoomControl: true,
       scrollWheelZoom: true,
+      maxBounds: turkeyBounds,
+      maxBoundsViscosity: 1.0, // hard stop at bounds edge
     });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
