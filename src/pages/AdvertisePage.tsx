@@ -230,6 +230,12 @@ const AdvertisePage = () => {
                       {t('pages.advertise.acceptTerms')}
                     </Label>
                   </div>
+                  <div
+                    className="cf-turnstile"
+                    data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                    data-callback="onTurnstileSuccess"
+                    data-theme="auto"
+                  />
                   <Button type="submit" className="w-full" size="lg" disabled={submitting}>
                     {submitting ? t('pages.advertise.submitting') : t('common.submit')}
                   </Button>
