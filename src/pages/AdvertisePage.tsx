@@ -19,6 +19,7 @@ import {
 
 const packageIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
+  lite: Zap,
   plus: Star,
   pro: Crown,
 };
