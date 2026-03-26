@@ -273,8 +273,8 @@ const AdvertisePage = () => {
           <p className="text-muted-foreground text-center mb-12">
             {t('pages.advertise.flexiblePackages')}
           </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {packages?.filter((pkg) => pkg.package_type !== "lite").map((pkg) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {packages?.map((pkg) => (
               <Card
                 key={pkg.id}
                 className={`relative overflow-hidden transition-all hover:shadow-xl ${
