@@ -344,9 +344,9 @@ const PropertyRequestPage = () => {
               <SelectField label="Province / City" field="province" options={provinces} required showAny={false} />
               <SelectField label="District" field="district" options={districts} showAny={false} />
               <SelectField label="Neighbourhood" field="neighbourhood" options={neighbourhoods} showAny={false} />
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" maxLength={300} /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" maxLength={100} /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" maxLength={20} /></div>
               <MultiSelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
               <MultiSelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
               <MultiSelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
