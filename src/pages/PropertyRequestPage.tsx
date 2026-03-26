@@ -98,9 +98,9 @@ const PropertyRequestPage = () => {
   const handleChange = (field: string, value: string) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-  const toggleMulti = (field: string, value: string) => {
+  const toggleMulti = (field: keyof typeof formData, value: string) => {
     setFormData(prev => {
-      const arr = (prev as any)[field] as string[];
+      const arr = prev[field] as string[];
       return { ...prev, [field]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] };
     });
   };
