@@ -362,7 +362,7 @@ const CompanyEventEditPage = () => {
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Users className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.organizer")}
                 </Label>
-                <Input value={form.organizer} onChange={(e) => updateField("organizer", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.organizerName")} />
+                <Input value={form.organizer} onChange={(e) => updateField("organizer", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.organizerName")} maxLength={100} />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
