@@ -325,9 +325,9 @@ const PropertyRequestPage = () => {
           {/* Contact Details */}
           <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Contact Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Full Name*</label><Input value={formData.fullName} onChange={(e) => handleChange('fullName', e.target.value)} placeholder="Full Name" /></div>
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Email*</label><Input type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder="Email" /></div>
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Phone Number*</label><Input value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Phone" /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">Full Name*</label><Input value={formData.fullName} onChange={(e) => handleChange('fullName', e.target.value)} placeholder="Full Name" maxLength={100} /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">Email*</label><Input type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder="Email" maxLength={254} /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">Phone Number*</label><Input value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Phone" maxLength={20} /></div>
             <SelectField label="Preferred Method of Contact" field="contactMethod" options={CONTACT_METHODS} />
           </div>
 
@@ -344,9 +344,9 @@ const PropertyRequestPage = () => {
               <SelectField label="Province / City" field="province" options={provinces} required showAny={false} />
               <SelectField label="District" field="district" options={districts} showAny={false} />
               <SelectField label="Neighbourhood" field="neighbourhood" options={neighbourhoods} showAny={false} />
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" maxLength={300} /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" maxLength={100} /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" maxLength={20} /></div>
               <MultiSelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
               <MultiSelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
               <MultiSelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
@@ -371,7 +371,7 @@ const PropertyRequestPage = () => {
 
           {/* Additional */}
           <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Additional Requests</h3>
-          <Textarea value={formData.additionalRequests} onChange={(e) => handleChange('additionalRequests', e.target.value)} placeholder="Any additional requirements..." className="mb-6" rows={4} />
+          <Textarea value={formData.additionalRequests} onChange={(e) => handleChange('additionalRequests', e.target.value)} placeholder="Any additional requirements..." className="mb-6" rows={4} maxLength={2000} />
           <p className="text-sm text-muted-foreground mb-4">
             By Submitting a request, you agree to our{' '}
             <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>

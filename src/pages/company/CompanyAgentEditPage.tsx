@@ -421,7 +421,7 @@ const CompanyAgentEditPage = () => {
 
             <div className="space-y-2" data-field="registration_number">
               <Label className="text-foreground font-medium">{t("companyDashboard.registrationNumber")} *</Label>
-              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder={t("companyDashboard.registrationNumber")} />
+              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder={t("companyDashboard.registrationNumber")} maxLength={100} />
               {fieldErrors.registration_number && <p className="text-xs text-destructive">{fieldErrors.registration_number}</p>}
             </div>
           </div>
@@ -436,7 +436,7 @@ const CompanyAgentEditPage = () => {
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.email")} *
                 </Label>
-                <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
+                <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} maxLength={254} />
                 {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
                 {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">{t("companyDashboard.emailCannotChange")}</p>}
                 {!isEdit && !fieldErrors.email && (
@@ -449,7 +449,7 @@ const CompanyAgentEditPage = () => {
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.phone")} *
                 </Label>
-                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" />
+                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" maxLength={20} />
                 {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
               </div>
             </div>
@@ -457,7 +457,7 @@ const CompanyAgentEditPage = () => {
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.whatsapp")} *
               </Label>
-              <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" />
+              <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" maxLength={20} />
               {fieldErrors.whatsapp && <p className="text-xs text-destructive">{fieldErrors.whatsapp}</p>}
             </div>
           </div>

@@ -787,11 +787,11 @@ const CompanyPropertyEditPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">{t("companyDashboard.videoLink")}</Label>
-              <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enterVideoLink")} />
+              <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enterVideoLink")} maxLength={500} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">{t("companyDashboard.view360Link")}</Label>
-              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enter360ViewLink")} />
+              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.enter360ViewLink")} maxLength={500} />
             </div>
           </div>
         </section>

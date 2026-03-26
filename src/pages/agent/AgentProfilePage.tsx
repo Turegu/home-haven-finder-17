@@ -333,7 +333,7 @@ const AgentProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Full Name</Label>
-              <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" maxLength={100} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Designation</Label>
@@ -356,7 +356,7 @@ const AgentProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Registration Number</Label>
-              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" maxLength={100} />
             </div>
           </div>
         </section>
@@ -367,11 +367,11 @@ const AgentProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Phone</Label>
-              <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" maxLength={20} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">WhatsApp</Label>
-              <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" maxLength={20} />
             </div>
           </div>
         </section>

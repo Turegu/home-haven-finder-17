@@ -487,7 +487,7 @@ const CompanyProfilePage = () => {
               <MultiSelectLanguages selected={form.languages} onToggle={toggleLanguage} />
               <div className="space-y-2">
                 <Label className="text-foreground font-medium">Registration Number</Label>
-                <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" />
+                <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" maxLength={100} />
               </div>
             </div>
           </div>
@@ -501,15 +501,15 @@ const CompanyProfilePage = () => {
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email *
               </Label>
-              <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" />
+              <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" maxLength={254} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Phone</Label>
-              <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className="bg-secondary/50" maxLength={20} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">WhatsApp Number</Label>
-              <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" maxLength={20} />
             </div>
           </div>
         </section>
