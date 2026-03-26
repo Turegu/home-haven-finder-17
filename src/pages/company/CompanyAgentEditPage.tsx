@@ -436,7 +436,7 @@ const CompanyAgentEditPage = () => {
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.email")} *
                 </Label>
-                <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} />
+                <Input type="email" value={form.email} onChange={(e) => { updateField("email", e.target.value); clearFieldError("email"); }} className={`bg-secondary/50 ${fieldErrors.email ? "border-destructive" : ""}`} placeholder="agent@email.com" disabled={isEdit && agentHasUser} maxLength={254} />
                 {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
                 {isEdit && agentHasUser && <p className="text-xs text-muted-foreground">{t("companyDashboard.emailCannotChange")}</p>}
                 {!isEdit && !fieldErrors.email && (
