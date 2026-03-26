@@ -89,7 +89,7 @@ const PropertyRequestPage = () => {
     if (!formData.province || !formData.district) { setNeighbourhoods([]); return; }
     const load = async () => {
       const { data } = await supabase.rpc("get_neighborhoods", { p_province: formData.province, p_district: formData.district });
-      if (data) setNeighbourhoods(data.map((d: any) => d.name));
+      if (data) setNeighbourhoods(data.map((d: { name: string }) => d.name));
     };
     load();
     setFormData(prev => ({ ...prev, neighbourhood: '' }));
