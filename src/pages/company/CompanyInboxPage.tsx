@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { INBOX_TYPES, type InboxType } from "@/constants/inbox";
+import { inboxService } from "@/services/inbox.service";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
