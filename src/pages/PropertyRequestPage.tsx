@@ -130,7 +130,7 @@ const PropertyRequestPage = () => {
       // Rate limit: max 5 requests per 24 hours per email
       const { data: allowed } = await supabase.rpc('check_property_request_rate_limit', { p_email: formData.email });
       if (!allowed) {
-        toast({ title: "Rate limit reached", description: "You can submit a maximum of 5 property requests per 24 hours. Please try again later.", variant: "destructive" });
+        toast({ title: "Rate limit reached", description: "You can only submit 1 property request per 24 hours. Please try again tomorrow.", variant: "destructive" });
         setSubmitting(false);
         return;
       }
