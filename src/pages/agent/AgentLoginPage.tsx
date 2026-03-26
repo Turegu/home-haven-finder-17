@@ -18,9 +18,15 @@ type LoginMode = "agent" | "company";
 type LoginStep = "credentials" | "pattern";
 type PendingRedirect = "/agent" | "/company";
 
+const LANG_OPTIONS = [
+  { code: 'en', label: 'English' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'fr', label: 'Français' },
+];
+
 const AgentLoginPage = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<LoginMode>("agent");
   const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
