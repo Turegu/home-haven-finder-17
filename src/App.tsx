@@ -177,6 +177,7 @@ const App = () => {
             <Route path="/account" element={<UserDashboardPage />} />
             <Route path="/account/settings" element={<AccountSettingsPage />} />
             <Route path="/account/followed-agents" element={<FollowedAgentsPage />} />
+            <Route path="/account/announcements" element={<AnnouncementsPage />} />
             <Route path="/account/saved-properties" element={<SavedPropertiesPage />} />
             <Route path="/account/saved-searches" element={<SavedSearchesPage />} />
             <Route path="/account/compare" element={<CompareListPage />} />
