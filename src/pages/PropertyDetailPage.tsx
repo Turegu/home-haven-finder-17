@@ -719,8 +719,8 @@ const PropertyDetailPage = () => {
             <ROICalculator
               propertyPrice={property.price}
               propertyArea={property.area}
-              province={property.city || null}
-              town={property.city || null}
+              province={property.province || null}
+              town={property.town || null}
               neighbourhood={property.location?.split(',')[0]?.trim() || null}
               currency={property.currency}
               areaUnit={property.areaUnit}
