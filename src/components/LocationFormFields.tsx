@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { AlertTriangle, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SearchableSelect from "@/components/ui/searchable-select";
+import { useAllowedCountry } from "@/hooks/useAllowedCountry";
+import { getCountryMapConfig } from "@/lib/mapConstants";
 import "leaflet/dist/leaflet.css";
 
 interface NamePair { name: string; ar: string }
@@ -250,6 +252,10 @@ function InteractiveMapPicker({
   const [boundaryPolygons, setBoundaryPolygons] = useState<number[][][] | null>(null);
   const [loadingBoundary, setLoadingBoundary] = useState(false);
 
+  // Dynamic country bounds from admin setting
+  const { data: allowedCountry } = useAllowedCountry();
+  const countryConfig = useMemo(() => getCountryMapConfig(allowedCountry || 'Turkey'), [allowedCountry]);
+
   // Parse existing pin_location "lat,lng" string
   const parsedCoords = useMemo(() => {
     if (!pinLocation) return null;
@@ -302,9 +308,10 @@ function InteractiveMapPicker({
 
   // Validate and set pin using polygon boundary + country bounds fallback
   const trySetPin = useCallback((lat: number, lng: number) => {
-    // Hard country bounds check (Turkey) — always enforced even without polygon data
-    if (lat < 35.8 || lat > 42.1 || lng < 25.6 || lng > 44.8) {
-      setBoundsError("Pin must be placed within Turkey.");
+    // Dynamic country bounds check — enforced even without polygon data
+    const [[swLat, swLng], [neLat, neLng]] = countryConfig.bounds;
+    if (lat < swLat || lat > neLat || lng < swLng || lng > neLng) {
+      setBoundsError(`Pin must be placed within ${allowedCountry || 'the allowed country'}.`);
       setTimeout(() => setBoundsError(null), 3000);
       return false;
     }
@@ -333,7 +340,7 @@ function InteractiveMapPicker({
     }
 
     return true;
-  }, [boundaryPolygons, town, onPinLocationChange, neighborhoods, onNeighbourhoodChange]);
+  }, [boundaryPolygons, town, onPinLocationChange, neighborhoods, onNeighbourhoodChange, countryConfig, allowedCountry]);
 
   // Keep ref in sync so map event handlers always use latest closure
   trySetPinRef.current = trySetPin;
@@ -352,13 +359,13 @@ function InteractiveMapPicker({
     const cityCenter = getCityCenter(province, town);
     const initial = parsedCoords
       ? [parsedCoords.lat, parsedCoords.lng] as [number, number]
-      : cityCenter || [39.0, 35.0];
-    const zoom = parsedCoords ? 15 : (cityCenter ? 12 : 6);
+      : cityCenter || [countryConfig.center.lat, countryConfig.center.lng] as [number, number];
+    const zoom = parsedCoords ? 15 : (cityCenter ? 12 : countryConfig.zoom);
 
-    // Turkey bounding box — prevents dragging/panning outside the allowed country
-    const turkeyBounds = L.latLngBounds(
-      L.latLng(35.8, 25.6), // SW corner
-      L.latLng(42.1, 44.8)  // NE corner
+    // Dynamic country bounding box — prevents dragging/panning outside the allowed country
+    const mapBounds = L.latLngBounds(
+      L.latLng(countryConfig.bounds[0][0], countryConfig.bounds[0][1]), // SW corner
+      L.latLng(countryConfig.bounds[1][0], countryConfig.bounds[1][1])  // NE corner
     );
 
     const map = L.map(containerRef.current, {
@@ -366,7 +373,7 @@ function InteractiveMapPicker({
       zoom,
       zoomControl: true,
       scrollWheelZoom: true,
-      maxBounds: turkeyBounds,
+      maxBounds: mapBounds,
       maxBoundsViscosity: 1.0, // hard stop at bounds edge
     });
 
