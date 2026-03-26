@@ -2732,6 +2732,20 @@ export type Database = {
           property_id: string
         }[]
       }
+      submit_company_inbox_message: {
+        Args: {
+          p_agent_id?: string
+          p_company_id: string
+          p_email: string
+          p_full_name: string
+          p_inbox_type?: string
+          p_message?: string
+          p_phone?: string
+          p_project_id?: string
+          p_property_id?: string
+        }
+        Returns: string
+      }
       unaccent: { Args: { "": string }; Returns: string }
       unaccent_match: {
         Args: { haystack: string; needle: string }
