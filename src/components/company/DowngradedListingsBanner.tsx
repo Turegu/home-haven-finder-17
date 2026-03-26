@@ -19,7 +19,7 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
     if (!companyId) return;
 
     const fetch = async () => {
-      const statusFilter = tableName === "agents" ? "inactive" : "deactivated";
+      const statusFilter = tableName === "agents" ? AGENT_STATUS.INACTIVE : "deactivated";
 
       const [countRes, earliestRes] = await Promise.all([
         supabase

@@ -386,7 +386,7 @@ const CompanyInboxPage = () => {
           {renderInboxTable(INBOX_TYPES.MESSAGE)}
         </TabsContent>
 
-        <TabsContent value="property_request">
+        <TabsContent value={INBOX_TYPES.PROPERTY_REQUEST}>
           {hasPropertyRequests === false ? (
             <div className="bg-muted/50 border border-border rounded-xl p-8 text-center">
               <Lock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
@@ -406,7 +406,7 @@ const CompanyInboxPage = () => {
                   </Button>
                 )}
               </div>
-              {renderInboxTable("property_request")}
+              {renderInboxTable(INBOX_TYPES.PROPERTY_REQUEST)}
             </>
           )}
         </TabsContent>

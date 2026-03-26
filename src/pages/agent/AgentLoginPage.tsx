@@ -57,7 +57,7 @@ const AgentLoginPage = () => {
       toast.error("No agent account found for this email.");
       return;
     }
-    if ((agent.status === "inactive" || agent.status === "deactivated") && agent.downgraded_at) {
+    if ((agent.status === AGENT_STATUS.INACTIVE || agent.status === AGENT_STATUS.DEACTIVATED) && agent.downgraded_at) {
       await supabase.auth.signOut();
       const deletionDate = new Date(new Date(agent.downgraded_at).getTime() + 90 * 24 * 60 * 60 * 1000);
       const formattedDate = deletionDate.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
@@ -67,7 +67,7 @@ const AgentLoginPage = () => {
       );
       return;
     }
-    if (agent.status !== "active") {
+    if (agent.status !== AGENT_STATUS.ACTIVE) {
       await supabase.auth.signOut();
       toast.error("Your agent account is not active yet. Contact your company admin.");
       return;

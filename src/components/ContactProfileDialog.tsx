@@ -118,7 +118,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
         p_agent_id: agentId || null,
         p_phone: phone.trim() || null,
         p_message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-        p_inbox_type: 'message',
+        p_inbox_type: INBOX_TYPES.MESSAGE,
       });
 
       if (inboxError) throw inboxError;

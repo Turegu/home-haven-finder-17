@@ -132,10 +132,10 @@ const CompanyAgentsPage = () => {
 
   const statusColor = (s: string) => {
     switch (s) {
-      case "active": return "bg-emerald-100 text-emerald-800";
-      case "pending": return "bg-amber-100 text-amber-800";
-      case "inactive": return "bg-red-100 text-red-800";
-      case "deactivated": return "bg-orange-100 text-orange-800";
+      case AGENT_STATUS.ACTIVE: return "bg-emerald-100 text-emerald-800";
+      case AGENT_STATUS.PENDING: return "bg-amber-100 text-amber-800";
+      case AGENT_STATUS.INACTIVE: return "bg-red-100 text-red-800";
+      case AGENT_STATUS.DEACTIVATED: return "bg-orange-100 text-orange-800";
       default: return "bg-muted text-muted-foreground";
     }
   };
