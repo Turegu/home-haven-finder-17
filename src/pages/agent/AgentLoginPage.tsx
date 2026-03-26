@@ -8,8 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck } from "lucide-react";
+import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck, Globe } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 
 type LoginMode = "agent" | "company";
 type LoginStep = "credentials" | "pattern";
