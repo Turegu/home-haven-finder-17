@@ -121,6 +121,7 @@ const CompanyInboxPage = () => {
 
       if (company) {
         setCompanyId(company.id);
+        setCompanyName(company.name || "");
         const { data: pkg } = await supabase
           .from("membership_packages")
           .select("has_property_requests")
