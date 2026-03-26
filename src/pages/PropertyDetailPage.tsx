@@ -568,7 +568,7 @@ const PropertyDetailPage = () => {
                 </div>
                 <div className="flex items-center gap-4 text-sm">
                   <span>{t('property.adId')}: <span className="font-medium text-foreground">{property.listingId}</span></span>
-                  <span>{t('property.added')}: <span className="font-medium text-foreground">01/01/2025</span></span>
+                  <span>{t('property.added')}: <span className="font-medium text-foreground">{property.listingDate || '—'}</span></span>
                 </div>
               </div>
             </div>
