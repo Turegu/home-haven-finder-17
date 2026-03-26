@@ -77,7 +77,7 @@ const PropertyRequestPage = () => {
     if (!formData.province) { setDistricts([]); return; }
     const load = async () => {
       const { data } = await supabase.rpc("get_distinct_districts", { p_province: formData.province });
-      if (data) setDistricts(data.map((d: any) => d.name));
+      if (data) setDistricts(data.map((d: { name: string }) => d.name));
     };
     load();
     setFormData(prev => ({ ...prev, district: '', neighbourhood: '' }));
