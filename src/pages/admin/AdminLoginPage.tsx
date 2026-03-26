@@ -24,6 +24,11 @@ const AdminLoginPage = () => {
   const [patternError, setPatternError] = useState(false);
   const [savedPattern, setSavedPattern] = useState<string>("");
 
+  // Force English for admin login
+  useEffect(() => {
+    if (i18n.language !== 'en') i18n.changeLanguage('en');
+  }, [i18n]);
+
   // Load remembered email
   useEffect(() => {
     const remembered = localStorage.getItem("turegu_admin_email");
