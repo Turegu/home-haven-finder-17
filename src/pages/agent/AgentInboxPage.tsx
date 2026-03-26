@@ -261,20 +261,12 @@ const AgentInboxPage = () => {
         </TabsContent>
       </Tabs>
 
-      <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>{viewItem?.full_name}</DialogTitle></DialogHeader>
-          <div className="space-y-3 text-sm">
-            <p><strong>{t("companyDashboard.email")}:</strong> {viewItem?.email}</p>
-            {viewItem?.phone && <p><strong>{t("companyDashboard.phone")}:</strong> {viewItem.phone}</p>}
-            {viewItem?.budget && <p><strong>{t("companyDashboard.budget")}:</strong> {viewItem.budget}</p>}
-            {/* Listing card */}
-            {viewItem && <ListingCard item={viewItem} />}
-            {viewItem?.message && <div><strong>{t("companyDashboard.message")}:</strong><p className="mt-1 text-muted-foreground whitespace-pre-wrap">{viewItem.message}</p></div>}
-            <p className="text-xs text-muted-foreground">{t("companyDashboard.received")}: {viewItem && new Date(viewItem.created_at).toLocaleString()}</p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <InboxMessageDialog
+        item={viewItem}
+        open={!!viewItem}
+        onOpenChange={(open) => !open && setViewItem(null)}
+        companyName={companyName}
+      />
     </AgentLayout>
   );
 };
