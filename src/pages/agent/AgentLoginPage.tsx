@@ -376,10 +376,23 @@ const AgentLoginPage = () => {
                 </Button>
               </form>
 
-              <div className="flex items-center justify-center mt-6">
+              <div className="flex items-center justify-center gap-4 mt-6">
                 <Link to="/" className="text-sm text-primary hover:underline">
                   Login as Buyer
                 </Link>
+                <div className="flex items-center gap-1.5">
+                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                  <Select value={i18n.language} onValueChange={(v) => i18n.changeLanguage(v)}>
+                    <SelectTrigger className="h-7 w-[110px] text-xs border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LANG_OPTIONS.map((l) => (
+                        <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </>
           )}
