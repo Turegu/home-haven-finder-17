@@ -138,7 +138,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const inquiryData: any = {
+          const inquiryData: Record<string, unknown> = {
             user_id: user.id,
             company_id: companyId,
             agent_id: agentId,
