@@ -373,7 +373,7 @@ function InteractiveMapPicker({
       zoom,
       zoomControl: true,
       scrollWheelZoom: true,
-      maxBounds: turkeyBounds,
+      maxBounds: mapBounds,
       maxBoundsViscosity: 1.0, // hard stop at bounds edge
     });
 
