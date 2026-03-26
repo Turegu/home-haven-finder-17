@@ -76,19 +76,23 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
 
     setSending(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (user) {
-        await supabase.from('user_inquiries').insert({
-          user_id: user.id,
-          company_id: companyId,
-          agent_id: agentId,
-          inquiry_type: 'email',
-          full_name: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim() || null,
-          message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-        } as any);
+      // Save to user_inquiries (non-critical — don't block on failure)
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('user_inquiries').insert({
+            user_id: user.id,
+            company_id: companyId,
+            agent_id: agentId,
+            inquiry_type: 'email',
+            full_name: fullName.trim(),
+            email: email.trim(),
+            phone: phone.trim() || null,
+            message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
+          } as any);
+        }
+      } catch (e) {
+        console.warn('user_inquiries insert skipped:', e);
       }
 
       // Route to company inbox
@@ -102,34 +106,38 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
         inboxCompanyId = agentData?.company_id || null;
       }
 
-      if (inboxCompanyId) {
-        await supabase.from('company_inbox').insert({
-          company_id: inboxCompanyId,
-          agent_id: agentId || null,
-          full_name: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim() || null,
-          message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-          inbox_type: 'inquiry',
-        } as any);
-
-        // Send email notification (fire-and-forget)
-        supabase.functions.invoke('send-inquiry-notification', {
-          body: {
-            sender_name: fullName.trim(),
-            sender_email: email.trim(),
-            sender_phone: phone.trim() || undefined,
-            preferred_contact: preferredContact,
-            message: `[${topic.trim()}]\n\n${message.trim()}`,
-            agent_id: agentId || undefined,
-            company_id: inboxCompanyId,
-            listing_type: 'profile',
-          },
-        }).catch(console.error);
+      if (!inboxCompanyId) {
+        throw new Error('No company recipient found');
       }
+
+      const { error: inboxError } = await supabase.from('company_inbox').insert({
+        company_id: inboxCompanyId,
+        agent_id: agentId || null,
+        full_name: fullName.trim(),
+        email: email.trim(),
+        phone: phone.trim() || null,
+        message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
+        inbox_type: 'inquiry',
+      } as any);
+
+      if (inboxError) throw inboxError;
 
       toast.success('Message sent successfully');
       setSent(true);
+
+      // Send email notification (fire-and-forget)
+      void supabase.functions.invoke('send-inquiry-notification', {
+        body: {
+          sender_name: fullName.trim(),
+          sender_email: email.trim(),
+          sender_phone: phone.trim() || undefined,
+          preferred_contact: preferredContact,
+          message: `[${topic.trim()}]\n\n${message.trim()}`,
+          agent_id: agentId || undefined,
+          company_id: inboxCompanyId,
+          listing_type: 'profile',
+        },
+      }).catch(console.error);
     } catch (err) {
       console.error('ContactProfileDialog send error:', err);
       toast.error('Something went wrong. Please try again.');
