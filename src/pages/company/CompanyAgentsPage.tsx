@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
+import { AGENT_STATUS } from "@/constants/agent";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
@@ -97,7 +98,7 @@ const CompanyAgentsPage = () => {
 
   const handleDelete = async (agentId: string) => {
     if (!confirm(t("companyDashboard.confirmDelete"))) return;
-    const { error } = await supabase.from("agents").update({ status: 'inactive', downgraded_at: new Date().toISOString() }).eq("id", agentId);
+    const { error } = await supabase.from("agents").update({ status: AGENT_STATUS.INACTIVE, downgraded_at: new Date().toISOString() }).eq("id", agentId);
     if (error) toast.error("Deactivation failed");
     else { toast.success("Agent deactivated"); fetchAgents(); }
   };
@@ -131,10 +132,10 @@ const CompanyAgentsPage = () => {
 
   const statusColor = (s: string) => {
     switch (s) {
-      case "active": return "bg-emerald-100 text-emerald-800";
-      case "pending": return "bg-amber-100 text-amber-800";
-      case "inactive": return "bg-red-100 text-red-800";
-      case "deactivated": return "bg-orange-100 text-orange-800";
+      case AGENT_STATUS.ACTIVE: return "bg-emerald-100 text-emerald-800";
+      case AGENT_STATUS.PENDING: return "bg-amber-100 text-amber-800";
+      case AGENT_STATUS.INACTIVE: return "bg-red-100 text-red-800";
+      case AGENT_STATUS.DEACTIVATED: return "bg-orange-100 text-orange-800";
       default: return "bg-muted text-muted-foreground";
     }
   };

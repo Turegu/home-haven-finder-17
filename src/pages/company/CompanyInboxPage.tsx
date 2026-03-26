@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
+import { INBOX_TYPES, type InboxType } from "@/constants/inbox";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,7 @@ interface InboxItem {
   listing_meta?: ListingMeta | null;
 }
 
-type InboxTab = "property_request" | "inquiry" | "message";
+type InboxTab = InboxType;
 
 const getListingLink = (item: InboxItem) => {
   if (item.property_id) return `/property/${item.property_id}`;
@@ -101,7 +102,7 @@ const CompanyInboxPage = () => {
   const [companyName, setCompanyName] = useState<string>("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<InboxTab>("inquiry");
+  const [activeTab, setActiveTab] = useState<InboxTab>(INBOX_TYPES.INQUIRY);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
   const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
 
@@ -251,7 +252,7 @@ const CompanyInboxPage = () => {
   };
 
   const handleTabChange = (value: string) => {
-    if (value === "property_request" || value === "inquiry" || value === "message") {
+    if (value === INBOX_TYPES.PROPERTY_REQUEST || value === INBOX_TYPES.INQUIRY || value === INBOX_TYPES.MESSAGE) {
       setActiveTab(value);
     }
   };
@@ -343,19 +344,19 @@ const CompanyInboxPage = () => {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-secondary/50">
-          <TabsTrigger value="inquiry" className="gap-2">
+          <TabsTrigger value={INBOX_TYPES.INQUIRY} className="gap-2">
             <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
           </TabsTrigger>
-          <TabsTrigger value="message" className="gap-2">
+          <TabsTrigger value={INBOX_TYPES.MESSAGE} className="gap-2">
             <Mail className="h-4 w-4" /> {t("companyDashboard.message")}
           </TabsTrigger>
-          <TabsTrigger value="property_request" className="gap-2">
+          <TabsTrigger value={INBOX_TYPES.PROPERTY_REQUEST} className="gap-2">
             <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
             {hasPropertyRequests === false && <Lock className="h-3 w-3 ml-1" />}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="inquiry">
+        <TabsContent value={INBOX_TYPES.INQUIRY}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -367,10 +368,10 @@ const CompanyInboxPage = () => {
               </Button>
             )}
           </div>
-          {renderInboxTable("inquiry")}
+          {renderInboxTable(INBOX_TYPES.INQUIRY)}
         </TabsContent>
 
-        <TabsContent value="message">
+        <TabsContent value={INBOX_TYPES.MESSAGE}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -382,10 +383,10 @@ const CompanyInboxPage = () => {
               </Button>
             )}
           </div>
-          {renderInboxTable("message")}
+          {renderInboxTable(INBOX_TYPES.MESSAGE)}
         </TabsContent>
 
-        <TabsContent value="property_request">
+        <TabsContent value={INBOX_TYPES.PROPERTY_REQUEST}>
           {hasPropertyRequests === false ? (
             <div className="bg-muted/50 border border-border rounded-xl p-8 text-center">
               <Lock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
@@ -405,7 +406,7 @@ const CompanyInboxPage = () => {
                   </Button>
                 )}
               </div>
-              {renderInboxTable("property_request")}
+              {renderInboxTable(INBOX_TYPES.PROPERTY_REQUEST)}
             </>
           )}
         </TabsContent>

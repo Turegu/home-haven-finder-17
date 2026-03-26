@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { AGENT_STATUS } from "@/constants/agent";
 
 interface DowngradedListingsBannerProps {
   companyId: string | null;
@@ -18,7 +19,7 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
     if (!companyId) return;
 
     const fetch = async () => {
-      const statusFilter = tableName === "agents" ? "inactive" : "deactivated";
+      const statusFilter = tableName === "agents" ? AGENT_STATUS.INACTIVE : "deactivated";
 
       const [countRes, earliestRes] = await Promise.all([
         supabase
