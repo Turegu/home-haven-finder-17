@@ -371,7 +371,7 @@ const PropertyRequestPage = () => {
 
           {/* Additional */}
           <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Additional Requests</h3>
-          <Textarea value={formData.additionalRequests} onChange={(e) => handleChange('additionalRequests', e.target.value)} placeholder="Any additional requirements..." className="mb-6" rows={4} />
+          <Textarea value={formData.additionalRequests} onChange={(e) => handleChange('additionalRequests', e.target.value)} placeholder="Any additional requirements..." className="mb-6" rows={4} maxLength={2000} />
           <p className="text-sm text-muted-foreground mb-4">
             By Submitting a request, you agree to our{' '}
             <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>

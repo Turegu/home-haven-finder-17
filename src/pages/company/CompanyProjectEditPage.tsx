@@ -974,13 +974,13 @@ const CompanyProjectEditPage = () => {
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Video className="h-3.5 w-3.5 text-muted-foreground" /> Video Link
               </Label>
-              <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" maxLength={500} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Compass className="h-3.5 w-3.5 text-muted-foreground" /> 360 View Link
               </Label>
-              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.view_360_link} onChange={(e) => updateField("view_360_link", e.target.value)} className="bg-secondary/50" maxLength={500} />
             </div>
           </div>
           <div className="mt-5 space-y-2">

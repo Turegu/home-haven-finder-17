@@ -565,7 +565,7 @@ const CompanyEventEditPage = () => {
             <Label className="text-foreground font-medium flex items-center gap-1.5">
               <Video className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.videoLink")}
             </Label>
-            <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.videoPlaceholder")} />
+            <Input value={form.video_link} onChange={(e) => updateField("video_link", e.target.value)} className="bg-secondary/50" placeholder={t("companyDashboard.videoPlaceholder")} maxLength={500} />
           </div>
         </section>
 

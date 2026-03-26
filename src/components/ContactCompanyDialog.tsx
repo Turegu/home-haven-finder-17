@@ -335,6 +335,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
           rows={4}
           className="resize-none"
           placeholder="Write your message..."
+          maxLength={2000}
         />
 
         {/* Name & Email */}
@@ -343,12 +344,14 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Full Name *"
+            maxLength={100}
           />
           <Input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email *"
             type="email"
+            maxLength={254}
           />
         </div>
 
@@ -358,6 +361,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Enter Phone Number *"
+            maxLength={20}
           />
           <div>
             <p className="text-xs font-medium text-foreground mb-2">Preferred Method of Contact *</p>

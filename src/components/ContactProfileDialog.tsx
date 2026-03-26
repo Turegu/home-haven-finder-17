@@ -203,12 +203,14 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder={t("contact.fullNameRequired")}
+              maxLength={100}
             />
             <Input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email *"
               type="email"
+              maxLength={254}
             />
           </div>
 
@@ -218,6 +220,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Enter Phone Number *"
+              maxLength={20}
             />
             <div>
               <p className="text-xs font-medium text-foreground mb-2">Preferred Method of Contact *</p>
