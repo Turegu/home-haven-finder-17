@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck } from "lucide-react";
+import { LogIn, Eye, EyeOff, Lock, Building2, UserCheck, Globe } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+
+const LANG_OPTIONS = [
+  { code: 'en', label: 'English' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'fr', label: 'Français' },
+];
 
 type LoginMode = "agent" | "company";
 type LoginStep = "credentials" | "pattern";
