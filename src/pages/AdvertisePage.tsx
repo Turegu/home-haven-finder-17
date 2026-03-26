@@ -28,6 +28,20 @@ const AdvertisePage = () => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLDivElement>(null);
   const [highlightForm, setHighlightForm] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+    (window as any).onTurnstileSuccess = (token: string) => setTurnstileToken(token);
+    return () => {
+      document.head.removeChild(script);
+      delete (window as any).onTurnstileSuccess;
+    };
+  }, []);
 
   const scrollToForm = () => {
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
