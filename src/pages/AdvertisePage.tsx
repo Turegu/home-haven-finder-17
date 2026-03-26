@@ -97,6 +97,8 @@ const AdvertisePage = () => {
       toast.success(t('pages.advertise.requestSubmitted'));
       setForm({ company_name: "", first_name: "", last_name: "", email: "", phone: "", message: "" });
       setAgreed(false);
+      setTurnstileToken(null);
+      if ((window as any).turnstile) (window as any).turnstile.reset();
     }
   };
 
