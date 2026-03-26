@@ -300,8 +300,15 @@ function InteractiveMapPicker({
     }
   }, [province, town]);
 
-  // Validate and set pin using polygon boundary
+  // Validate and set pin using polygon boundary + country bounds fallback
   const trySetPin = useCallback((lat: number, lng: number) => {
+    // Hard country bounds check (Turkey) — always enforced even without polygon data
+    if (lat < 35.8 || lat > 42.1 || lng < 25.6 || lng > 44.8) {
+      setBoundsError("Pin must be placed within Turkey.");
+      setTimeout(() => setBoundsError(null), 3000);
+      return false;
+    }
+
     if (boundaryPolygons) {
       if (!isPointInPolygons(lat, lng, boundaryPolygons)) {
         setBoundsError(`Pin must be placed within ${town} district boundary.`);
@@ -348,11 +355,19 @@ function InteractiveMapPicker({
       : cityCenter || [39.0, 35.0];
     const zoom = parsedCoords ? 15 : (cityCenter ? 12 : 6);
 
+    // Turkey bounding box — prevents dragging/panning outside the allowed country
+    const turkeyBounds = L.latLngBounds(
+      L.latLng(35.8, 25.6), // SW corner
+      L.latLng(42.1, 44.8)  // NE corner
+    );
+
     const map = L.map(containerRef.current, {
       center: initial,
       zoom,
       zoomControl: true,
       scrollWheelZoom: true,
+      maxBounds: turkeyBounds,
+      maxBoundsViscosity: 1.0, // hard stop at bounds edge
     });
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
