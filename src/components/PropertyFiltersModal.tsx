@@ -96,6 +96,8 @@ const FILTER_TABS: FilterTab[] = [
   { key: 'parking', labelKey: 'searchFilters.parking', icon: Car, section: 'advanced', filterKey: 'parkingSpaces', optionKey: 'parking', type: 'simple' },
   { key: 'furniture', labelKey: 'searchFilters.furniture', icon: Sofa, section: 'advanced', filterKey: 'furniture', optionKey: 'furniture', type: 'simple' },
   { key: 'age', labelKey: 'searchFilters.propertyAge', icon: Calendar, section: 'advanced', filterKey: 'propertyAges', optionKey: 'property_age', type: 'simple' },
+  { key: 'status', labelKey: 'searchFilters.propertyStatus', icon: ClipboardList, section: 'advanced', filterKey: 'propertyStatuses', optionKey: 'property_status', type: 'simple' },
+  { key: 'orientation', labelKey: 'searchFilters.orientation', icon: Compass, section: 'advanced', filterKey: 'orientations', optionKey: 'orientation', type: 'simple' },
   { key: 'interior', labelKey: 'searchFilters.interiorAmenities', icon: Lamp, section: 'advanced', filterKey: 'interiorAmenities', optionKey: 'interior_amenities', type: 'amenity', amenityType: 'interior' },
   { key: 'exterior', labelKey: 'searchFilters.exteriorAmenities', icon: TreePine, section: 'advanced', filterKey: 'exteriorAmenities', optionKey: 'exterior_amenities', type: 'amenity', amenityType: 'exterior' },
 ];
