@@ -385,11 +385,11 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
 
   return (
     <>
-      <SectionCard title="Hero Slideshow" subtitle="Upload up to 5 images (2000px × 560px). Images rotate automatically on the homepage.">
+      <SectionCard title="Hero Slideshow" subtitle="Upload up to 5 images (2000px × 560px). Each slide has its own title, subtitle & link in 3 languages.">
         <input ref={heroSlideRef} type="file" accept="image/*" className="hidden"
           onChange={async (e) => { const f = e.target.files?.[0]; if (f) await addHeroImage(f); e.target.value = ''; }} />
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4">
-          {heroImages.map((url, idx) => (
+          {heroImages.map((url: string, idx: number) => (
             <div key={idx} className="relative group rounded-lg overflow-hidden border border-border aspect-[21/9]">
               <img src={url} alt={`Slide ${idx + 1}`} className="w-full h-full object-cover" />
               <button onClick={() => removeHeroImage(idx)} className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -405,20 +405,9 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
             </button>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <div><Label>Title</Label><Input value={hero.title || ""} onChange={(e) => updateSection("hero", "title", e.target.value)} /></div>
-            <div><Label>SubTitle</Label><Input value={hero.subtitle || ""} onChange={(e) => updateSection("hero", "subtitle", e.target.value)} /></div>
-          </div>
-          <div className="space-y-3">
-            <div><Label>{t("admin.linkUrl")}</Label><Input value={hero.link_url || ""} onChange={(e) => updateSection("hero", "link_url", e.target.value)} placeholder="https://..." /></div>
-            <div><Label>Link Text</Label><Input value={hero.link_text || ""} onChange={(e) => updateSection("hero", "link_text", e.target.value)} /></div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 mt-3">
-          <Checkbox checked={hero.enable_link ?? true} onCheckedChange={(v) => updateSection("hero", "enable_link", v)} />
-          <Label className="mb-0">Enable Link</Label>
-        </div>
+
+        {/* Per-slide content editor */}
+        {heroImages.length > 0 && <HeroSlideEditor hero={hero} heroImages={heroImages} updateSection={updateSection} />}
       </SectionCard>
 
       <SectionCard title="Second Banner" subtitle="Advertising banner below hero">
