@@ -325,9 +325,9 @@ const PropertyRequestPage = () => {
           {/* Contact Details */}
           <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Contact Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Full Name*</label><Input value={formData.fullName} onChange={(e) => handleChange('fullName', e.target.value)} placeholder="Full Name" /></div>
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Email*</label><Input type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder="Email" /></div>
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Phone Number*</label><Input value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Phone" /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">Full Name*</label><Input value={formData.fullName} onChange={(e) => handleChange('fullName', e.target.value)} placeholder="Full Name" maxLength={100} /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">Email*</label><Input type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder="Email" maxLength={254} /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">Phone Number*</label><Input value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Phone" maxLength={20} /></div>
             <SelectField label="Preferred Method of Contact" field="contactMethod" options={CONTACT_METHODS} />
           </div>
 
