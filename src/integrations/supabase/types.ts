@@ -2732,6 +2732,10 @@ export type Database = {
           property_id: string
         }[]
       }
+      share_credits: {
+        Args: { p_agent_id: string; p_amount: number; p_company_id: string }
+        Returns: undefined
+      }
       submit_company_inbox_message: {
         Args: {
           p_agent_id?: string

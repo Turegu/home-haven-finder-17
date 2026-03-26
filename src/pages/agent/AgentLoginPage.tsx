@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ type PendingRedirect = "/agent" | "/company";
 
 const AgentLoginPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<LoginMode>("agent");
   const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
@@ -54,12 +56,12 @@ const AgentLoginPage = () => {
       toast.error("No agent account found for this email.");
       return;
     }
-    if (agent.status === "inactive" && agent.downgraded_at) {
+    if ((agent.status === "inactive" || agent.status === "deactivated") && agent.downgraded_at) {
       await supabase.auth.signOut();
       const deletionDate = new Date(new Date(agent.downgraded_at).getTime() + 90 * 24 * 60 * 60 * 1000);
-      const formattedDate = deletionDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+      const formattedDate = deletionDate.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
       toast.error(
-        `Your agent account has been temporarily frozen because your company's plan was downgraded. Please contact your company to upgrade their plan and restore your account. If not restored by ${formattedDate}, your account will be permanently deleted.`,
+        t("agentLogin.frozenMessage", { date: formattedDate }),
         { duration: 15000 }
       );
       return;

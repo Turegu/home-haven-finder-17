@@ -2037,5 +2037,8 @@
     "Yiddish": "Yiddish",
     "Yoruba": "Yoruba",
     "Zulu": "Zulu"
+  },
+  "agentLogin": {
+    "frozenMessage": "Your agent account has been temporarily frozen because your company's plan was downgraded. Please contact your company to upgrade their plan and restore your account. If not restored by {{date}}, your account will be permanently deleted."
   }
 }

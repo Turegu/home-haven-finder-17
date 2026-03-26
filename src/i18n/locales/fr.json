@@ -2033,5 +2033,8 @@
     "Yiddish": "Yiddish",
     "Yoruba": "Yoruba",
     "Zulu": "Zoulou"
+  },
+  "agentLogin": {
+    "frozenMessage": "Votre compte agent a été temporairement gelé en raison de la rétrogradation du forfait de votre entreprise. Veuillez contacter votre entreprise pour mettre à niveau son forfait et restaurer votre compte. Si non restauré avant le {{date}}, votre compte sera définitivement supprimé."
   }
 }
