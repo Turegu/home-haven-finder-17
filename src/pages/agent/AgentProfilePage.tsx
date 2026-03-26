@@ -333,7 +333,7 @@ const AgentProfilePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Full Name</Label>
-              <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.name} onChange={(e) => updateField("name", e.target.value)} className="bg-secondary/50" maxLength={100} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Designation</Label>
