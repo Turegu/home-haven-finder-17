@@ -359,13 +359,13 @@ function InteractiveMapPicker({
     const cityCenter = getCityCenter(province, town);
     const initial = parsedCoords
       ? [parsedCoords.lat, parsedCoords.lng] as [number, number]
-      : cityCenter || [39.0, 35.0];
-    const zoom = parsedCoords ? 15 : (cityCenter ? 12 : 6);
+      : cityCenter || [countryConfig.center.lat, countryConfig.center.lng] as [number, number];
+    const zoom = parsedCoords ? 15 : (cityCenter ? 12 : countryConfig.zoom);
 
-    // Turkey bounding box — prevents dragging/panning outside the allowed country
-    const turkeyBounds = L.latLngBounds(
-      L.latLng(35.8, 25.6), // SW corner
-      L.latLng(42.1, 44.8)  // NE corner
+    // Dynamic country bounding box — prevents dragging/panning outside the allowed country
+    const mapBounds = L.latLngBounds(
+      L.latLng(countryConfig.bounds[0][0], countryConfig.bounds[0][1]), // SW corner
+      L.latLng(countryConfig.bounds[1][0], countryConfig.bounds[1][1])  // NE corner
     );
 
     const map = L.map(containerRef.current, {
