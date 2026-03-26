@@ -114,7 +114,7 @@ const CompanyInboxPage = () => {
       if (!user) return;
       const { data: company } = await supabase
         .from("companies")
-        .select("id, membership")
+        .select("id, name, membership")
         .eq("owner_user_id", user.id)
         .limit(1)
         .maybeSingle();
