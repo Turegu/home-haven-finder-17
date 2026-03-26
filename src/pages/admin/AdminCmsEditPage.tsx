@@ -498,6 +498,119 @@ const HomePageForm = ({ content, updateSection, uploadImage, locations, openLocC
   );
 };
 
+/* ============ Hero Slide Editor with Language Tabs ============ */
+
+const SLIDE_LANGS = [
+  { code: "en", label: "English", dir: "ltr" },
+  { code: "ar", label: "العربية", dir: "rtl" },
+  { code: "fr", label: "Français", dir: "ltr" },
+];
+
+const HeroSlideEditor = ({ hero, heroImages, updateSection }: { hero: any; heroImages: string[]; updateSection: any }) => {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeLang, setActiveLang] = useState("en");
+
+  const slides: any[] = hero.slides || [];
+
+  const getSlide = (idx: number) => slides[idx] || {};
+
+  const updateSlide = (idx: number, field: string, value: string) => {
+    const updated = [...slides];
+    while (updated.length <= idx) updated.push({});
+    updated[idx] = { ...updated[idx], [field]: value };
+    updateSection("hero", "slides", updated);
+  };
+
+  const langSuffix = (lang: string, field: string) => {
+    if (lang === "en") return field;
+    return `${field}_${lang}`;
+  };
+
+  const currentSlide = getSlide(activeSlide);
+  const dir = SLIDE_LANGS.find(l => l.code === activeLang)?.dir || "ltr";
+
+  return (
+    <div className="mt-4 border-t border-border pt-4 space-y-4">
+      <p className="text-sm font-medium text-foreground">Per-Slide Content</p>
+
+      {/* Slide selector */}
+      <div className="flex gap-2">
+        {heroImages.map((_: string, idx: number) => (
+          <button
+            key={idx}
+            type="button"
+            onClick={() => setActiveSlide(idx)}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+              activeSlide === idx
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Slide {idx + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* Language tabs */}
+      <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/60 border border-border/50 w-fit">
+        {SLIDE_LANGS.map(lang => (
+          <button
+            key={lang.code}
+            type="button"
+            onClick={() => setActiveLang(lang.code)}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+              activeLang === lang.code
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {lang.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Fields for active slide + language */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label>Title ({activeLang.toUpperCase()})</Label>
+          <Input
+            dir={dir}
+            value={currentSlide[langSuffix(activeLang, "title")] || ""}
+            onChange={(e) => updateSlide(activeSlide, langSuffix(activeLang, "title"), e.target.value)}
+            className={activeLang === "ar" ? "text-right font-arabic" : ""}
+          />
+        </div>
+        <div>
+          <Label>Subtitle ({activeLang.toUpperCase()})</Label>
+          <Input
+            dir={dir}
+            value={currentSlide[langSuffix(activeLang, "subtitle")] || ""}
+            onChange={(e) => updateSlide(activeSlide, langSuffix(activeLang, "subtitle"), e.target.value)}
+            className={activeLang === "ar" ? "text-right font-arabic" : ""}
+          />
+        </div>
+        <div>
+          <Label>Link URL</Label>
+          <Input
+            value={currentSlide.link_url || ""}
+            onChange={(e) => updateSlide(activeSlide, "link_url", e.target.value)}
+            placeholder="https://..."
+          />
+        </div>
+        <div>
+          <Label>Link Button Text ({activeLang.toUpperCase()})</Label>
+          <Input
+            dir={dir}
+            value={currentSlide[langSuffix(activeLang, "link_text")] || ""}
+            onChange={(e) => updateSlide(activeSlide, langSuffix(activeLang, "link_text"), e.target.value)}
+            className={activeLang === "ar" ? "text-right font-arabic" : ""}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ============ Agents Page Form ============ */
 
 const AgentsPageForm = ({ content, uploadImage, updateSection }: any) => {
