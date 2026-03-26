@@ -719,7 +719,7 @@ const CompanyProjectEditPage = () => {
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Building2 className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.developerName")}
               </Label>
-              <Input value={form.developer} onChange={(e) => updateField("developer", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.developer} onChange={(e) => updateField("developer", e.target.value)} className="bg-secondary/50" maxLength={100} />
             </div>
           </div>
         </section>
