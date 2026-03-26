@@ -91,7 +91,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
             email: email.trim(),
             phone: phone.trim() || null,
             message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-          } as any);
+          });
         }
       } catch (e) {
         console.warn('user_inquiries insert skipped:', e);
