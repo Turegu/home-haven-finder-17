@@ -32,9 +32,7 @@ interface InboxItem {
   is_seen: boolean;
   created_at: string;
   property_title?: string | null;
-  property_listing_id?: string | null;
   project_title?: string | null;
-  project_listing_id?: string | null;
 }
 
 type InboxTab = "property_request" | "inquiry" | "message";
@@ -55,7 +53,12 @@ const CompanyInboxPage = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: company } = await supabase
-        .from("companies").select("id, membership").eq("owner_user_id", user.id).limit(1).maybeSingle();
+        .from("companies")
+        .select("id, membership")
+        .eq("owner_user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+
       if (company) {
         setCompanyId(company.id);
         const { data: pkg } = await supabase
@@ -66,29 +69,54 @@ const CompanyInboxPage = () => {
         setHasPropertyRequests(pkg?.has_property_requests ?? false);
       }
     };
+
     init();
   }, []);
 
   const fetchItems = async () => {
     if (!companyId) return;
     setLoading(true);
-    const { data, error } = await supabase
+
+    const { data: inboxRows, error } = await supabase
       .from("company_inbox")
-      .select("*, properties(title, listing_id), projects(title, listing_id)")
+      .select("*")
       .eq("company_id", companyId)
       .eq("inbox_type", activeTab)
       .order("created_at", { ascending: false });
-    if (error) toast.error("Failed to load inbox");
-    else {
-      const mapped = (data || []).map((row: any) => ({
-        ...row,
-        property_title: row.properties?.title || null,
-        property_listing_id: row.properties?.listing_id || null,
-        project_title: row.projects?.title || null,
-        project_listing_id: row.projects?.listing_id || null,
-      }));
-      setItems(mapped);
+
+    if (error) {
+      toast.error("Failed to load inbox");
+      setLoading(false);
+      return;
     }
+
+    const rows = (inboxRows || []) as InboxItem[];
+    const propertyIds = Array.from(new Set(rows.map((r) => r.property_id).filter(Boolean))) as string[];
+    const projectIds = Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean))) as string[];
+
+    const [propertiesRes, projectsRes] = await Promise.all([
+      propertyIds.length > 0
+        ? supabase.from("properties").select("id, title").in("id", propertyIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+      projectIds.length > 0
+        ? supabase.from("projects").select("id, title").in("id", projectIds)
+        : Promise.resolve({ data: [] as any[], error: null }),
+    ]);
+
+    const propertyTitleMap = new Map<string, string>(
+      ((propertiesRes.data || []) as any[]).map((p) => [p.id, p.title])
+    );
+    const projectTitleMap = new Map<string, string>(
+      ((projectsRes.data || []) as any[]).map((p) => [p.id, p.title])
+    );
+
+    const mapped = rows.map((row) => ({
+      ...row,
+      property_title: row.property_id ? propertyTitleMap.get(row.property_id) || null : null,
+      project_title: row.project_id ? projectTitleMap.get(row.project_id) || null : null,
+    }));
+
+    setItems(mapped);
     setSelected([]);
     setLoading(false);
   };
@@ -97,6 +125,7 @@ const CompanyInboxPage = () => {
 
   useEffect(() => {
     if (!companyId) return;
+
     const channel = supabase
       .channel("company-inbox")
       .on("postgres_changes", {
@@ -105,12 +134,13 @@ const CompanyInboxPage = () => {
         table: "company_inbox",
         filter: `company_id=eq.${companyId}`,
       }, (payload) => {
-        const newItem = payload.new as any;
+        const newItem = payload.new as InboxItem;
         if (newItem.inbox_type === activeTab) {
           setItems((prev) => [{ ...newItem, property_title: null, project_title: null }, ...prev]);
         }
       })
       .subscribe();
+
     return () => { supabase.removeChannel(channel); };
   }, [companyId, activeTab]);
 
@@ -120,6 +150,7 @@ const CompanyInboxPage = () => {
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
+
   const toggleAll = () => {
     if (selected.length === filtered.length) setSelected([]);
     else setSelected(filtered.map((i) => i.id));
@@ -129,7 +160,11 @@ const CompanyInboxPage = () => {
     if (selected.length === 0) return;
     const { error } = await supabase.from("company_inbox").delete().in("id", selected);
     if (error) toast.error("Delete failed");
-    else { toast.success(`${selected.length} item(s) deleted`); setSelected([]); fetchItems(); }
+    else {
+      toast.success(`${selected.length} item(s) deleted`);
+      setSelected([]);
+      fetchItems();
+    }
   };
 
   const handleView = async (item: InboxItem) => {
@@ -157,8 +192,7 @@ const CompanyInboxPage = () => {
   };
 
   const renderInboxTable = (tab: string) => {
-    const showListingCol = tab === "inquiry";
-    const colCount = 7 + (tab === "property_request" ? 1 : 0) + (showListingCol ? 1 : 0);
+    const colCount = 8 + (tab === "property_request" ? 1 : 0);
 
     return (
       <div className="bg-card rounded-xl border border-border overflow-hidden">
@@ -172,9 +206,7 @@ const CompanyInboxPage = () => {
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.sno")}</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
-                {showListingCol && (
-                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.listing", "Listing")}</TableHead>
-                )}
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">Property / العقار</TableHead>
                 <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
                 {tab === "property_request" && (
                   <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.budget")}</TableHead>
@@ -201,18 +233,16 @@ const CompanyInboxPage = () => {
                       <TableCell className="text-sm text-muted-foreground">{idx + 1}</TableCell>
                       <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
-                      {showListingCol && (
-                        <TableCell className="text-sm">
-                          {listing ? (
-                            <Link to={listing.link} className="text-primary hover:underline flex items-center gap-1 max-w-[200px]">
-                              <span className="truncate">{listing.title}</span>
-                              <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                            </Link>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">{t("companyDashboard.profileMessage", "Profile message")}</span>
-                          )}
-                        </TableCell>
-                      )}
+                      <TableCell className="text-sm">
+                        {listing ? (
+                          <Link to={listing.link} className="text-primary hover:underline flex items-center gap-1 max-w-[220px]">
+                            <span className="truncate">{listing.title}</span>
+                            <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          </Link>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
                       {tab === "property_request" && (
                         <TableCell className="text-sm font-medium text-foreground">{item.budget ? `$${item.budget}` : "—"}</TableCell>
@@ -247,13 +277,13 @@ const CompanyInboxPage = () => {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-secondary/50">
-          <TabsTrigger value="inquiry" className="gap-2">
+          <TabsTrigger value="inquiry" className="gap-2" onClick={() => setActiveTab("inquiry")}>
             <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
           </TabsTrigger>
-          <TabsTrigger value="message" className="gap-2">
+          <TabsTrigger value="message" className="gap-2" onClick={() => setActiveTab("message")}>
             <Mail className="h-4 w-4" /> {t("companyDashboard.message")}
           </TabsTrigger>
-          <TabsTrigger value="property_request" className="gap-2">
+          <TabsTrigger value="property_request" className="gap-2" onClick={() => setActiveTab("property_request")}>
             <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
             {hasPropertyRequests === false && <Lock className="h-3 w-3 ml-1" />}
           </TabsTrigger>
@@ -315,7 +345,6 @@ const CompanyInboxPage = () => {
         </TabsContent>
       </Tabs>
 
-      {/* View Dialog */}
       <Dialog open={!!viewItem} onOpenChange={(open) => !open && setViewItem(null)}>
         <DialogContent>
           <DialogHeader>
@@ -346,25 +375,27 @@ const CompanyInboxPage = () => {
                   </div>
                 )}
               </div>
-              {/* Listing info */}
+
               {(() => {
                 const listing = getListingInfo(viewItem);
                 if (!listing) return null;
                 return (
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.listing", "Listing")}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Property / العقار</p>
                     <Link to={listing.link} className="text-sm text-primary hover:underline flex items-center gap-1">
                       {listing.title} <ExternalLink className="h-3 w-3" />
                     </Link>
                   </div>
                 );
               })()}
+
               {viewItem.message && (
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.message")}</p>
                   <p className="text-sm text-foreground bg-secondary/30 rounded-lg p-3 whitespace-pre-wrap">{viewItem.message}</p>
                 </div>
               )}
+
               <div>
                 <p className="text-xs text-muted-foreground">
                   {t("companyDashboard.received")}: {format(new Date(viewItem.created_at), "do MMM yyyy hh:mm a")}
