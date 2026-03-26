@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { AGENT_STATUS } from "@/constants/agent";
 
 interface DowngradedListingsBannerProps {
   companyId: string | null;
