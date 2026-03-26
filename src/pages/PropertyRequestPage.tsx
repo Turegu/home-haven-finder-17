@@ -66,7 +66,7 @@ const PropertyRequestPage = () => {
     };
     const loadProvinces = async () => {
       const { data } = await supabase.rpc("get_distinct_provinces");
-      if (data) setProvinces(data.map((d: any) => d.name));
+      if (data) setProvinces(data.map((d: { name: string }) => d.name));
     };
     loadCms();
     loadProvinces();
