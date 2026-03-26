@@ -308,9 +308,10 @@ function InteractiveMapPicker({
 
   // Validate and set pin using polygon boundary + country bounds fallback
   const trySetPin = useCallback((lat: number, lng: number) => {
-    // Hard country bounds check (Turkey) — always enforced even without polygon data
-    if (lat < 35.8 || lat > 42.1 || lng < 25.6 || lng > 44.8) {
-      setBoundsError("Pin must be placed within Turkey.");
+    // Dynamic country bounds check — enforced even without polygon data
+    const [[swLat, swLng], [neLat, neLng]] = countryConfig.bounds;
+    if (lat < swLat || lat > neLat || lng < swLng || lng > neLng) {
+      setBoundsError(`Pin must be placed within ${allowedCountry || 'the allowed country'}.`);
       setTimeout(() => setBoundsError(null), 3000);
       return false;
     }
