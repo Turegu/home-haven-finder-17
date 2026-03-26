@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import InboxMessageDialog from "@/components/company/InboxMessageDialog";
 import { Search, Eye, Mail, MessageSquare, Home, Lock, ExternalLink, MapPin, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
@@ -94,6 +94,7 @@ const AgentInboxPage = () => {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("inquiry");
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>("");
   const [agentId, setAgentId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
   const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
@@ -107,8 +108,9 @@ const AgentInboxPage = () => {
         setCompanyId(agent.company_id);
         setAgentId(agent.id);
 
-        const { data: company } = await supabase.from("companies").select("membership").eq("id", agent.company_id).maybeSingle();
+        const { data: company } = await supabase.from("companies").select("name, membership").eq("id", agent.company_id).maybeSingle();
         if (company) {
+          setCompanyName(company.name || "");
           const { data: pkg } = await supabase.from("membership_packages").select("has_property_requests").eq("package_type", company.membership).maybeSingle();
           setHasPropertyRequests(pkg?.has_property_requests ?? false);
         }
@@ -259,20 +261,12 @@ const AgentInboxPage = () => {
         </TabsContent>
       </Tabs>
 
-      <Dialog open={!!viewItem} onOpenChange={() => setViewItem(null)}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>{viewItem?.full_name}</DialogTitle></DialogHeader>
-          <div className="space-y-3 text-sm">
-            <p><strong>{t("companyDashboard.email")}:</strong> {viewItem?.email}</p>
-            {viewItem?.phone && <p><strong>{t("companyDashboard.phone")}:</strong> {viewItem.phone}</p>}
-            {viewItem?.budget && <p><strong>{t("companyDashboard.budget")}:</strong> {viewItem.budget}</p>}
-            {/* Listing card */}
-            {viewItem && <ListingCard item={viewItem} />}
-            {viewItem?.message && <div><strong>{t("companyDashboard.message")}:</strong><p className="mt-1 text-muted-foreground whitespace-pre-wrap">{viewItem.message}</p></div>}
-            <p className="text-xs text-muted-foreground">{t("companyDashboard.received")}: {viewItem && new Date(viewItem.created_at).toLocaleString()}</p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <InboxMessageDialog
+        item={viewItem}
+        open={!!viewItem}
+        onOpenChange={(open) => !open && setViewItem(null)}
+        companyName={companyName}
+      />
     </AgentLayout>
   );
 };

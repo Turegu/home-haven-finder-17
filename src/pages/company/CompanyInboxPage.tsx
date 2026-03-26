@@ -11,9 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-} from "@/components/ui/dialog";
+import InboxMessageDialog from "@/components/company/InboxMessageDialog";
 import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock, ExternalLink, MapPin, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -100,6 +98,7 @@ const CompanyInboxPage = () => {
   const [items, setItems] = useState<InboxItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<InboxTab>("inquiry");
@@ -112,13 +111,14 @@ const CompanyInboxPage = () => {
       if (!user) return;
       const { data: company } = await supabase
         .from("companies")
-        .select("id, membership")
+        .select("id, name, membership")
         .eq("owner_user_id", user.id)
         .limit(1)
         .maybeSingle();
 
       if (company) {
         setCompanyId(company.id);
+        setCompanyName(company.name || "");
         const { data: pkg } = await supabase
           .from("membership_packages")
           .select("has_property_requests")
@@ -411,56 +411,12 @@ const CompanyInboxPage = () => {
         </TabsContent>
       </Tabs>
 
-      <Dialog open={!!viewItem} onOpenChange={(open) => !open && setViewItem(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {viewItem?.inbox_type === "property_request" ? t("companyDashboard.propertyRequests") :
-               viewItem?.inbox_type === "inquiry" ? t("companyDashboard.inquiry") : t("companyDashboard.message")} - {t("companyDashboard.requestDetails")}
-            </DialogTitle>
-          </DialogHeader>
-          {viewItem && (
-            <div className="space-y-4 py-2">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.fullName")}</p>
-                  <p className="text-sm font-medium text-foreground">{viewItem.full_name}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.email")}</p>
-                  <p className="text-sm font-medium text-foreground">{viewItem.email}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.phone")}</p>
-                  <p className="text-sm font-medium text-foreground">{viewItem.phone || "—"}</p>
-                </div>
-                {viewItem.budget && (
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">{t("companyDashboard.budget")}</p>
-                    <p className="text-sm font-medium text-foreground">${viewItem.budget}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Listing card */}
-              <ListingCard item={viewItem} />
-
-              {viewItem.message && (
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.message")}</p>
-                  <p className="text-sm text-foreground bg-secondary/30 rounded-lg p-3 whitespace-pre-wrap">{viewItem.message}</p>
-                </div>
-              )}
-
-              <div>
-                <p className="text-xs text-muted-foreground">
-                  {t("companyDashboard.received")}: {format(new Date(viewItem.created_at), "do MMM yyyy hh:mm a")}
-                </p>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <InboxMessageDialog
+        item={viewItem}
+        open={!!viewItem}
+        onOpenChange={(open) => !open && setViewItem(null)}
+        companyName={companyName}
+      />
     </CompanyLayout>
   );
 };
