@@ -202,7 +202,7 @@ const CompanyInboxPage = () => {
     if (!companyId) return;
 
     const channel = supabase
-      .channel("company-inbox")
+      .channel(`company-inbox-${companyId}`)
       .on("postgres_changes", {
         event: "INSERT",
         schema: "public",
