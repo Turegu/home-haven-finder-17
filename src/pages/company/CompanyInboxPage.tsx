@@ -137,12 +137,7 @@ const CompanyInboxPage = () => {
     if (!companyId) return;
     setLoading(true);
 
-    const { data: inboxRows, error } = await supabase
-      .from("company_inbox")
-      .select("*")
-      .eq("company_id", companyId)
-      .eq("inbox_type", activeTab)
-      .order("created_at", { ascending: false });
+    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, activeTab);
 
     if (error) {
       toast.error("Failed to load inbox");
