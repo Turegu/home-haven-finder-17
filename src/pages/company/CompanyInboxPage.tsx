@@ -42,7 +42,7 @@ interface InboxItem {
   listing_meta?: ListingMeta | null;
 }
 
-type InboxTab = "property_request" | "inquiry" | "message";
+type InboxTab = InboxType;
 
 const getListingLink = (item: InboxItem) => {
   if (item.property_id) return `/property/${item.property_id}`;
