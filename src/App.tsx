@@ -134,6 +134,7 @@ const queryClient = new QueryClient({
 const App = () => {
   useDirection();
   return (
+  <Sentry.ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Something went wrong. Please refresh the page.</p></div>}>
   <QueryClientProvider client={queryClient}>
     <AreaUnitProvider>
     <TooltipProvider>
@@ -253,6 +254,7 @@ const App = () => {
     </TooltipProvider>
     </AreaUnitProvider>
   </QueryClientProvider>
+  </Sentry.ErrorBoundary>
   );
 };
 
