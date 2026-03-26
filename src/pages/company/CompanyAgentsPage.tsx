@@ -98,8 +98,8 @@ const CompanyAgentsPage = () => {
   const handleDelete = async (agentId: string) => {
     if (!confirm(t("companyDashboard.confirmDelete"))) return;
     const { error } = await supabase.from("agents").update({ status: 'inactive', downgraded_at: new Date().toISOString() }).eq("id", agentId);
-    if (error) toast.error("Delete failed");
-    else { toast.success("Agent deleted"); fetchAgents(); }
+    if (error) toast.error("Deactivation failed");
+    else { toast.success("Agent deactivated"); fetchAgents(); }
   };
 
   const handleShareCredits = async () => {
