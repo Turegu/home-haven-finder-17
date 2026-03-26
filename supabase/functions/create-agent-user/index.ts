@@ -16,10 +16,22 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    // Verify caller is authenticated
+    // Verify JWT
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -34,7 +46,35 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Generate invite link - this sends an email to the agent to set their password
+    // Verify caller owns the company that this agent belongs to
+    const { data: agent } = await supabaseAdmin
+      .from("agents")
+      .select("company_id")
+      .eq("id", agentId)
+      .maybeSingle();
+
+    if (!agent) {
+      return new Response(JSON.stringify({ error: "Agent not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: company } = await supabaseAdmin
+      .from("companies")
+      .select("id")
+      .eq("id", agent.company_id)
+      .eq("owner_user_id", user.id)
+      .maybeSingle();
+
+    if (!company) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Generate invite link
     const { data: inviteData, error: inviteError } =
       await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
         data: { is_agent: true, agent_id: agentId },
