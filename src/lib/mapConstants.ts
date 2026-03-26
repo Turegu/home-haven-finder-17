@@ -1,5 +1,5 @@
 // Shared Google Maps API key — single source of truth
-export const GOOGLE_MAPS_API_KEY = 'AIzaSyCtQx-V0yQ2CDvqjL89-AX2X1u5ZOpbvzQ';
+export const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
 // Country center + zoom for map initialization
 export const countryBounds: Record<string, { center: { lat: number; lng: number }; zoom: number; bounds: [[number, number], [number, number]] }> = {
