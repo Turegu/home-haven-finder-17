@@ -25,6 +25,7 @@ type PendingRedirect = "/agent" | "/company";
 
 const CompanyLoginPage = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<LoginMode>("company");
   const [step, setStep] = useState<LoginStep>("credentials");
   const [email, setEmail] = useState("");
