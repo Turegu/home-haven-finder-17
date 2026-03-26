@@ -110,20 +110,15 @@ const CompanyAgentsPage = () => {
 
     setSharingCredits(true);
     try {
-      const { error: compErr } = await supabase
-        .from("companies")
-        .update({ credit_balance: companyCredits - amount })
-        .eq("id", companyId!);
-      if (compErr) throw compErr;
-
-      const { error: agentErr } = await supabase
-        .from("agents")
-        .update({ credit_balance: creditDialog.agent.credit_balance + amount })
-        .eq("id", creditDialog.agent.id);
-      if (agentErr) throw agentErr;
+      const { error } = await supabase.rpc("share_credits", {
+        p_company_id: companyId!,
+        p_agent_id: creditDialog.agent.id,
+        p_amount: amount,
+      });
+      if (error) throw error;
 
       setCompanyCredits((prev) => prev - amount);
-      toast.success(`${amount} credits shared with ${creditDialog.agent.name}`);
+      toast.success(`${amount} credits shared with ${creditDialog.agent!.name}`);
       setCreditDialog({ open: false, agent: null });
       setCreditAmount("");
       fetchAgents();
