@@ -77,6 +77,10 @@ const AdvertisePage = () => {
       toast.error(t('pages.advertise.acceptTermsError'));
       return;
     }
+    if (!turnstileToken) {
+      toast.error('Please complete the human verification.');
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.from("advertising_requests").insert({
       company_name: form.company_name,
