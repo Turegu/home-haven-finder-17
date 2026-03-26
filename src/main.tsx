@@ -2,7 +2,7 @@ import { initSentry } from "@/lib/sentry";
 
 const REQUIRED_ENV_VARS = [
   'VITE_SUPABASE_URL',
-  'VITE_SUPABASE_ANON_KEY',
+  'VITE_SUPABASE_PUBLISHABLE_KEY',
 ] as const;
 
 for (const key of REQUIRED_ENV_VARS) {
