@@ -202,9 +202,9 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         .catch((error) => {
           console.error('send-inquiry-notification crashed:', error);
         });
-    } catch {
+    } catch (err) {
+      console.error('ContactCompanyDialog send error:', err);
       toast.error('Something went wrong. Please try again.');
-    } finally {
       setSending(false);
     }
   };
