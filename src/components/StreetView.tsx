@@ -7,7 +7,7 @@ interface StreetViewProps {
   className?: string;
 }
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCtQx-V0yQ2CDvqjL89-AX2X1u5ZOpbvzQ';
+import { GOOGLE_MAPS_API_KEY } from '@/lib/mapConstants';
 
 const StreetView = ({ lat, lng, className = '' }: StreetViewProps) => {
   const { t } = useTranslation();
