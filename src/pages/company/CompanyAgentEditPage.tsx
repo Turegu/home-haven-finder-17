@@ -421,7 +421,7 @@ const CompanyAgentEditPage = () => {
 
             <div className="space-y-2" data-field="registration_number">
               <Label className="text-foreground font-medium">{t("companyDashboard.registrationNumber")} *</Label>
-              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder={t("companyDashboard.registrationNumber")} />
+              <Input value={form.registration_number} onChange={(e) => { updateField("registration_number", e.target.value); clearFieldError("registration_number"); }} className={`bg-secondary/50 ${fieldErrors.registration_number ? "border-destructive" : ""}`} placeholder={t("companyDashboard.registrationNumber")} maxLength={100} />
               {fieldErrors.registration_number && <p className="text-xs text-destructive">{fieldErrors.registration_number}</p>}
             </div>
           </div>
