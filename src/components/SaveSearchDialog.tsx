@@ -69,7 +69,7 @@ const SaveSearchDialog = ({
       user_id: user.id,
       title: searchName.trim(),
       search_type: searchType,
-      search_params: searchParams as any,
+      search_params: searchParams as Record<string, unknown>,
     });
     setSaving(false);
 

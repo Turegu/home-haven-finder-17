@@ -53,14 +53,14 @@ const ReportPropertyDialog = ({ open, onOpenChange, propertyId, propertyTitle }:
     }
 
     setSubmitting(true);
-    const { error } = await supabase.from("property_reports" as any).insert({
+    const { error } = await supabase.from("property_reports").insert({
       property_id: propertyId,
       user_id: userId,
       reason,
       details: details.trim() || null,
       reporter_email: email.trim() || null,
       reporter_phone: phone.trim() || null,
-    } as any);
+    });
 
     setSubmitting(false);
 

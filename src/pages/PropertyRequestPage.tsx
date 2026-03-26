@@ -197,7 +197,7 @@ const PropertyRequestPage = () => {
   };
 
   const MultiSelectField = ({ label, field, options }: { label: string; field: string; options: string[] }) => {
-    const selected = (formData as any)[field] as string[];
+    const selected = formData[field as keyof typeof formData] as string[];
     const [open, setOpen] = useState(false);
     return (
       <div>
