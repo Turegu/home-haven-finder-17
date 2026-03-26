@@ -230,7 +230,7 @@ const CompanyInboxPage = () => {
 
   const handleDelete = async () => {
     if (selected.length === 0) return;
-    const { error } = await supabase.from("company_inbox").delete().in("id", selected);
+    const { error } = await inboxService.deleteMany(selected);
     if (error) toast.error("Delete failed");
     else {
       toast.success(`${selected.length} item(s) deleted`);
