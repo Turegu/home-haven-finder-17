@@ -269,7 +269,7 @@ const AdvertisePage = () => {
       {/* Packages Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">{t('pages.advertise.ourPackages')}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Choose Your Plan</h2>
           <p className="text-muted-foreground text-center mb-12">
             {t('pages.advertise.flexiblePackages')}
           </p>
