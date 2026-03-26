@@ -793,6 +793,8 @@
     "parking": "Parking",
     "furniture": "Mobilier",
     "propertyAge": "Âge de la propriété",
+    "propertyStatus": "Statut du bien",
+    "orientation": "Orientation",
     "interiorAmenities": "Équipements intérieurs",
     "exteriorAmenities": "Équipements extérieurs",
     "location": "Emplacement",
