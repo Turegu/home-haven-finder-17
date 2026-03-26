@@ -252,6 +252,10 @@ function InteractiveMapPicker({
   const [boundaryPolygons, setBoundaryPolygons] = useState<number[][][] | null>(null);
   const [loadingBoundary, setLoadingBoundary] = useState(false);
 
+  // Dynamic country bounds from admin setting
+  const { data: allowedCountry } = useAllowedCountry();
+  const countryConfig = useMemo(() => getCountryMapConfig(allowedCountry || 'Turkey'), [allowedCountry]);
+
   // Parse existing pin_location "lat,lng" string
   const parsedCoords = useMemo(() => {
     if (!pinLocation) return null;
