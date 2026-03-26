@@ -9,9 +9,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Eye, Mail, MessageSquare, Home, Lock, ExternalLink } from "lucide-react";
+import { Search, Eye, Mail, MessageSquare, Home, Lock, ExternalLink, MapPin, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+
+interface ListingMeta {
+  title: string;
+  listing_id?: string;
+  images?: string[] | null;
+  price?: number | null;
+  currency?: string | null;
+  location?: string | null;
+}
 
 interface InboxItem {
   id: string;
@@ -25,9 +34,58 @@ interface InboxItem {
   project_id: string | null;
   is_seen: boolean;
   created_at: string;
-  property_title?: string | null;
-  project_title?: string | null;
+  listing_meta?: ListingMeta | null;
 }
+
+const getListingLink = (item: InboxItem) => {
+  if (item.property_id) return `/property/${item.property_id}`;
+  if (item.project_id) return `/projects/${item.project_id}`;
+  return null;
+};
+
+const getListingTitle = (item: InboxItem) => item.listing_meta?.title || null;
+
+const formatPrice = (price: number, currency?: string | null) => {
+  if (currency === 'USD') return `$ ${price.toLocaleString()}`;
+  if (currency === 'EUR') return `€ ${price.toLocaleString()}`;
+  if (currency === 'TRY') return `₺ ${price.toLocaleString()}`;
+  return `${currency || ''} ${price.toLocaleString()}`;
+};
+
+const ListingCard = ({ item }: { item: InboxItem }) => {
+  const meta = item.listing_meta;
+  if (!meta) return null;
+  const link = getListingLink(item);
+  if (!link) return null;
+  const image = meta.images?.[0];
+
+  return (
+    <Link to={link} className="block border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+      <div className="flex gap-3 p-3">
+        {image && (
+          <img src={image} alt={meta.title} className="w-24 h-20 rounded-md object-cover flex-shrink-0 bg-muted" />
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{meta.title}</p>
+          {meta.listing_id && (
+            <p className="text-xs text-muted-foreground">Ref: {meta.listing_id}</p>
+          )}
+          {meta.location && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+              <MapPin className="h-3 w-3" /> <span className="truncate">{meta.location}</span>
+            </p>
+          )}
+          {meta.price != null && meta.price > 0 && (
+            <p className="text-xs font-medium text-primary flex items-center gap-1 mt-0.5">
+              <DollarSign className="h-3 w-3" /> {formatPrice(meta.price, meta.currency)}
+            </p>
+          )}
+        </div>
+        <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
+      </div>
+    </Link>
+  );
+};
 
 const AgentInboxPage = () => {
   const { t } = useTranslation();
@@ -64,15 +122,18 @@ const AgentInboxPage = () => {
     setLoading(true);
     const { data } = await supabase
       .from("company_inbox")
-      .select("*, properties(title, listing_id), projects(title, listing_id)")
+      .select("*, properties(title, listing_id, images, price, currency, location), projects(title, listing_id, images, min_price, currency, location)")
       .eq("company_id", companyId)
       .eq("agent_id", agentId)
       .eq("inbox_type", tab)
       .order("created_at", { ascending: false });
     const mapped = (data || []).map((row: any) => ({
       ...row,
-      property_title: row.properties?.title || null,
-      project_title: row.projects?.title || null,
+      listing_meta: row.properties
+        ? { title: row.properties.title, listing_id: row.properties.listing_id, images: row.properties.images, price: row.properties.price, currency: row.properties.currency, location: row.properties.location }
+        : row.projects
+        ? { title: row.projects.title, listing_id: row.projects.listing_id, images: row.projects.images, price: row.projects.min_price, currency: row.projects.currency, location: row.projects.location }
+        : null,
     }));
     setItems(mapped);
     setLoading(false);
@@ -90,12 +151,6 @@ const AgentInboxPage = () => {
       await supabase.from("company_inbox").update({ is_seen: true }).eq("id", item.id);
       setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, is_seen: true } : i));
     }
-  };
-
-  const getListingInfo = (item: InboxItem) => {
-    if (item.property_title) return { title: item.property_title, link: `/properties/${item.property_id}` };
-    if (item.project_title) return { title: item.project_title, link: `/projects/${item.project_id}` };
-    return null;
   };
 
   const renderTable = (currentTab: string) => {
@@ -126,16 +181,17 @@ const AgentInboxPage = () => {
                 <p className="text-muted-foreground">{t("companyDashboard.noDataFound")}</p>
               </TableCell></TableRow>
             ) : filtered.map((item) => {
-              const listing = getListingInfo(item);
+              const title = getListingTitle(item);
+              const link = getListingLink(item);
               return (
                 <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
                   <TableCell className="font-medium">{item.full_name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
                   {showListingCol && (
                     <TableCell className="text-sm">
-                      {listing ? (
-                        <Link to={listing.link} className="text-primary hover:underline flex items-center gap-1 max-w-[180px]">
-                          <span className="truncate">{listing.title}</span>
+                      {title && link ? (
+                        <Link to={link} className="text-primary hover:underline flex items-center gap-1 max-w-[180px]">
+                          <span className="truncate">{title}</span>
                           <ExternalLink className="h-3 w-3 flex-shrink-0" />
                         </Link>
                       ) : (
@@ -210,19 +266,8 @@ const AgentInboxPage = () => {
             <p><strong>{t("companyDashboard.email")}:</strong> {viewItem?.email}</p>
             {viewItem?.phone && <p><strong>{t("companyDashboard.phone")}:</strong> {viewItem.phone}</p>}
             {viewItem?.budget && <p><strong>{t("companyDashboard.budget")}:</strong> {viewItem.budget}</p>}
-            {/* Listing info */}
-            {viewItem && (() => {
-              const listing = getListingInfo(viewItem);
-              if (!listing) return null;
-              return (
-                <div>
-                  <strong>{t("companyDashboard.listing", "Listing")}:</strong>{" "}
-                  <Link to={listing.link} className="text-primary hover:underline inline-flex items-center gap-1">
-                    {listing.title} <ExternalLink className="h-3 w-3" />
-                  </Link>
-                </div>
-              );
-            })()}
+            {/* Listing card */}
+            {viewItem && <ListingCard item={viewItem} />}
             {viewItem?.message && <div><strong>{t("companyDashboard.message")}:</strong><p className="mt-1 text-muted-foreground whitespace-pre-wrap">{viewItem.message}</p></div>}
             <p className="text-xs text-muted-foreground">{t("companyDashboard.received")}: {viewItem && new Date(viewItem.created_at).toLocaleString()}</p>
           </div>
