@@ -14,10 +14,19 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock, ExternalLink } from "lucide-react";
+import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock, ExternalLink, MapPin, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+
+interface ListingMeta {
+  title: string;
+  listing_id?: string;
+  images?: string[] | null;
+  price?: number | null;
+  currency?: string | null;
+  location?: string | null;
+}
 
 interface InboxItem {
   id: string;
@@ -31,11 +40,60 @@ interface InboxItem {
   project_id: string | null;
   is_seen: boolean;
   created_at: string;
-  property_title?: string | null;
-  project_title?: string | null;
+  listing_meta?: ListingMeta | null;
 }
 
 type InboxTab = "property_request" | "inquiry" | "message";
+
+const getListingLink = (item: InboxItem) => {
+  if (item.property_id) return `/property/${item.property_id}`;
+  if (item.project_id) return `/projects/${item.project_id}`;
+  return null;
+};
+
+const getListingTitle = (item: InboxItem) => item.listing_meta?.title || null;
+
+const formatPrice = (price: number, currency?: string | null) => {
+  if (currency === 'USD') return `$ ${price.toLocaleString()}`;
+  if (currency === 'EUR') return `€ ${price.toLocaleString()}`;
+  if (currency === 'TRY') return `₺ ${price.toLocaleString()}`;
+  return `${currency || ''} ${price.toLocaleString()}`;
+};
+
+const ListingCard = ({ item }: { item: InboxItem }) => {
+  const meta = item.listing_meta;
+  if (!meta) return null;
+  const link = getListingLink(item);
+  if (!link) return null;
+  const image = meta.images?.[0];
+
+  return (
+    <Link to={link} className="block border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+      <div className="flex gap-3 p-3">
+        {image && (
+          <img src={image} alt={meta.title} className="w-24 h-20 rounded-md object-cover flex-shrink-0 bg-muted" />
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{meta.title}</p>
+          {meta.listing_id && (
+            <p className="text-xs text-muted-foreground">Ref: {meta.listing_id}</p>
+          )}
+          {meta.location && (
+            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+              <MapPin className="h-3 w-3" /> <span className="truncate">{meta.location}</span>
+            </p>
+          )}
+          {meta.price != null && meta.price > 0 && (
+            <p className="text-xs font-medium text-primary flex items-center gap-1 mt-0.5">
+              <DollarSign className="h-3 w-3" /> {formatPrice(meta.price, meta.currency)}
+            </p>
+          )}
+        </div>
+        <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
+      </div>
+    </Link>
+  );
+};
 
 const CompanyInboxPage = () => {
   const { t } = useTranslation();
@@ -96,24 +154,41 @@ const CompanyInboxPage = () => {
 
     const [propertiesRes, projectsRes] = await Promise.all([
       propertyIds.length > 0
-        ? supabase.from("properties").select("id, title").in("id", propertyIds)
+        ? supabase.from("properties").select("id, title, listing_id, images, price, currency, location").in("id", propertyIds)
         : Promise.resolve({ data: [] as any[], error: null }),
       projectIds.length > 0
-        ? supabase.from("projects").select("id, title").in("id", projectIds)
+        ? supabase.from("projects").select("id, title, listing_id, images, min_price, currency, location").in("id", projectIds)
         : Promise.resolve({ data: [] as any[], error: null }),
     ]);
 
-    const propertyTitleMap = new Map<string, string>(
-      ((propertiesRes.data || []) as any[]).map((p) => [p.id, p.title])
+    const propertyMap = new Map<string, ListingMeta>(
+      ((propertiesRes.data || []) as any[]).map((p) => [p.id, {
+        title: p.title,
+        listing_id: p.listing_id,
+        images: p.images,
+        price: p.price,
+        currency: p.currency,
+        location: p.location,
+      }])
     );
-    const projectTitleMap = new Map<string, string>(
-      ((projectsRes.data || []) as any[]).map((p) => [p.id, p.title])
+    const projectMap = new Map<string, ListingMeta>(
+      ((projectsRes.data || []) as any[]).map((p) => [p.id, {
+        title: p.title,
+        listing_id: p.listing_id,
+        images: p.images,
+        price: p.min_price,
+        currency: p.currency,
+        location: p.location,
+      }])
     );
 
     const mapped = rows.map((row) => ({
       ...row,
-      property_title: row.property_id ? propertyTitleMap.get(row.property_id) || null : null,
-      project_title: row.project_id ? projectTitleMap.get(row.project_id) || null : null,
+      listing_meta: row.property_id
+        ? propertyMap.get(row.property_id) || null
+        : row.project_id
+        ? projectMap.get(row.project_id) || null
+        : null,
     }));
 
     setItems(mapped);
@@ -136,7 +211,7 @@ const CompanyInboxPage = () => {
       }, (payload) => {
         const newItem = payload.new as InboxItem;
         if (newItem.inbox_type === activeTab) {
-          setItems((prev) => [{ ...newItem, property_title: null, project_title: null }, ...prev]);
+          setItems((prev) => [{ ...newItem, listing_meta: null }, ...prev]);
         }
       })
       .subscribe();
@@ -181,16 +256,6 @@ const CompanyInboxPage = () => {
     }
   };
 
-  const getListingInfo = (item: InboxItem) => {
-    if (item.property_title) {
-      return { title: item.property_title, link: `/properties/${item.property_id}` };
-    }
-    if (item.project_title) {
-      return { title: item.project_title, link: `/projects/${item.project_id}` };
-    }
-    return null;
-  };
-
   const renderInboxTable = (tab: string) => {
     const colCount = 8 + (tab === "property_request" ? 1 : 0);
 
@@ -226,7 +291,8 @@ const CompanyInboxPage = () => {
                 </TableRow>
               ) : (
                 filtered.map((item, idx) => {
-                  const listing = getListingInfo(item);
+                  const title = getListingTitle(item);
+                  const link = getListingLink(item);
                   return (
                     <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
                       <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
@@ -234,9 +300,9 @@ const CompanyInboxPage = () => {
                       <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
                       <TableCell className="text-sm">
-                        {listing ? (
-                          <Link to={listing.link} className="text-primary hover:underline flex items-center gap-1 max-w-[220px]">
-                            <span className="truncate">{listing.title}</span>
+                        {title && link ? (
+                          <Link to={link} className="text-primary hover:underline flex items-center gap-1 max-w-[220px]">
+                            <span className="truncate">{title}</span>
                             <ExternalLink className="h-3 w-3 flex-shrink-0" />
                           </Link>
                         ) : (
@@ -376,18 +442,8 @@ const CompanyInboxPage = () => {
                 )}
               </div>
 
-              {(() => {
-                const listing = getListingInfo(viewItem);
-                if (!listing) return null;
-                return (
-                  <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Property / العقار</p>
-                    <Link to={listing.link} className="text-sm text-primary hover:underline flex items-center gap-1">
-                      {listing.title} <ExternalLink className="h-3 w-3" />
-                    </Link>
-                  </div>
-                );
-              })()}
+              {/* Listing card */}
+              <ListingCard item={viewItem} />
 
               {viewItem.message && (
                 <div>
