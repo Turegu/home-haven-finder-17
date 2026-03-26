@@ -1,4 +1,4 @@
-import { ArrowRight, MapPin, ExternalLink } from 'lucide-react';
+import { ArrowRight, MapPin, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import FeaturedProjectCard from '@/components/FeaturedProjectCard';
 import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
 import { Link } from 'react-router-dom';
@@ -14,10 +14,28 @@ import { useCmsPage, useFeaturedLocations } from '@/hooks/useAppData';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useDirection } from '@/hooks/useDirection';
+
+interface SlideContent {
+  title?: string;
+  title_ar?: string;
+  title_fr?: string;
+  subtitle?: string;
+  subtitle_ar?: string;
+  subtitle_fr?: string;
+  link_url?: string;
+  link_text?: string;
+  link_text_ar?: string;
+  link_text_fr?: string;
+}
 
 interface CmsContent {
-  hero?: { title?: string; subtitle?: string; image_url?: string; hero_images?: string[]; link_url?: string; link_text?: string; enable_link?: boolean };
+  hero?: {
+    title?: string; subtitle?: string; image_url?: string; hero_images?: string[];
+    link_url?: string; link_text?: string; enable_link?: boolean;
+    slides?: SlideContent[];
+  };
   second_banner?: { image_url?: string; link_url?: string };
   featured_properties?: { title?: string; tagline?: string };
   featured_projects?: { title?: string; tagline?: string };
@@ -148,13 +166,7 @@ const Index = () => {
 
       {/* Hero Banner */}
       <section className="container mx-auto px-4 pt-4">
-        {hero.link_url ? (
-          <a href={hero.link_url} target="_blank" rel="noopener noreferrer" className="block">
-            <HeroBannerContent hero={hero} isMain />
-          </a>
-        ) : (
-          <HeroBannerContent hero={hero} isMain />
-        )}
+        <HeroBannerContent hero={hero} isMain />
       </section>
 
       <HeroSearch />
@@ -272,53 +284,119 @@ const Index = () => {
   );
 };
 
-// Hero banner slideshow component
+// Hero banner slideshow component with per-slide content, 9s rotation, localStorage sequential start, pause on hover, RTL
+const HERO_STORAGE_KEY = 'turegu_hero_last_slide';
+
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir = useDirection();
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
   const images = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const slides: SlideContent[] = hero?.slides || [];
 
-  useEffect(() => {
-    if (images.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(interval);
+  // Sequential start: read last shown slide from localStorage, start with next
+  const getInitialIndex = useCallback(() => {
+    if (images.length <= 1) return 0;
+    try {
+      const last = parseInt(localStorage.getItem(HERO_STORAGE_KEY) || '0', 10);
+      return (last + 1) % images.length;
+    } catch { return 0; }
   }, [images.length]);
 
-  return (
-    <div className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}>
+  const [currentIndex, setCurrentIndex] = useState(getInitialIndex);
+  const [isPaused, setIsPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Save current index to localStorage when it changes
+  useEffect(() => {
+    try { localStorage.setItem(HERO_STORAGE_KEY, String(currentIndex)); } catch {}
+  }, [currentIndex]);
+
+  // Auto-rotate with 9s interval, pause on hover
+  useEffect(() => {
+    if (images.length <= 1 || isPaused) return;
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 9000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [images.length, isPaused]);
+
+  const goTo = (idx: number) => setCurrentIndex(idx);
+  const goPrev = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  const goNext = () => setCurrentIndex((prev) => (prev + 1) % images.length);
+
+  // Get localized field for current slide
+  const lang = i18n.language;
+  const currentSlide = slides[currentIndex] || {};
+
+  const getLocalizedField = (field: 'title' | 'subtitle' | 'link_text') => {
+    if (lang === 'ar') return currentSlide[`${field}_ar`] || currentSlide[field] || '';
+    if (lang === 'fr') return currentSlide[`${field}_fr`] || currentSlide[field] || '';
+    return currentSlide[field] || '';
+  };
+
+  const slideTitle = getLocalizedField('title') || hero?.title || t('hero.defaultTitle');
+  const slideSubtitle = getLocalizedField('subtitle') || hero?.subtitle || t('hero.defaultSubtitle');
+  const slideLinkUrl = currentSlide.link_url || '';
+  const slideLinkText = getLocalizedField('link_text') || '';
+
+  const slideContent = (
+    <div
+      className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {images.map((src, idx) => (
         <img
           key={src}
           src={src}
-          alt={`${hero?.title || "Banner"} ${idx + 1}`}
+          alt={`${slideTitle} ${idx + 1}`}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === currentIndex ? 'opacity-100' : 'opacity-0'}`}
           loading={idx === 0 ? "eager" : "lazy"}
         />
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div className="relative z-10 text-center px-4 pb-14 pt-16">
+      <div className="relative z-10 text-center px-4 pb-14 pt-16" dir={dir}>
         <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 tracking-tight">
-          {hero?.title || t('hero.defaultTitle')}
+          {slideTitle}
         </h1>
         <p className="text-white/80 text-sm md:text-base mb-4 font-light">
-          {hero?.subtitle || t('hero.defaultSubtitle')}
+          {slideSubtitle}
         </p>
-        {hero?.enable_link && hero?.link_text && (
+        {slideLinkText && (
           <span className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors cursor-pointer">
-            {hero.link_text}
+            {slideLinkText}
           </span>
         )}
       </div>
+
+      {/* Navigation arrows — RTL aware */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); dir === 'rtl' ? goNext() : goPrev(); }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); dir === 'rtl' ? goPrev() : goNext(); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </>
+      )}
+
       {/* Slide indicators */}
       {images.length > 1 && (
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
           {images.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setCurrentIndex(idx)}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); goTo(idx); }}
               className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/50'}`}
             />
           ))}
@@ -326,6 +404,17 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       )}
     </div>
   );
+
+  // Wrap in link if slide has link_url
+  if (slideLinkUrl) {
+    return (
+      <a href={slideLinkUrl} target="_blank" rel="noopener noreferrer" className="block">
+        {slideContent}
+      </a>
+    );
+  }
+
+  return slideContent;
 };
 
 export default Index;
