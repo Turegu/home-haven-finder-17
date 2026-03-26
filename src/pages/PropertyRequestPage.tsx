@@ -127,7 +127,7 @@ const PropertyRequestPage = () => {
     try {
       const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }));
 
-      const { error } = await supabase.from("property_requests" as any).insert({
+      const { error } = await supabase.from("property_requests").insert({
         user_id: user?.id || null,
         full_name: formData.fullName,
         email: formData.email,
@@ -151,7 +151,7 @@ const PropertyRequestPage = () => {
         interior_amenities: formData.interiorAmenities,
         exterior_amenities: formData.exteriorAmenities,
         additional_requests: formData.additionalRequests || null,
-      } as any);
+      });
 
       if (error) throw error;
 
