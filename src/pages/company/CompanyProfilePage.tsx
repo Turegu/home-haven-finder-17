@@ -501,7 +501,7 @@ const CompanyProfilePage = () => {
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5 text-muted-foreground" /> Email *
               </Label>
-              <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" />
+              <Input type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} className="bg-secondary/50" maxLength={254} />
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Phone</Label>
