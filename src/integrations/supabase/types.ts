@@ -2655,6 +2655,10 @@ export type Database = {
         Returns: undefined
       }
       check_contact_rate_limit: { Args: { p_email: string }; Returns: boolean }
+      check_property_request_rate_limit: {
+        Args: { p_email: string }
+        Returns: boolean
+      }
       downgrade_expired_memberships: { Args: never; Returns: undefined }
       get_distinct_districts: {
         Args: { p_province: string }

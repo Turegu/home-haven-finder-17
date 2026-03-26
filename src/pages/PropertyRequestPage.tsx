@@ -127,6 +127,14 @@ const PropertyRequestPage = () => {
     try {
       const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }));
 
+      // Rate limit: max 5 requests per 24 hours per email
+      const { data: allowed } = await supabase.rpc('check_property_request_rate_limit', { p_email: formData.email });
+      if (!allowed) {
+        toast({ title: "Rate limit reached", description: "You can submit a maximum of 5 property requests per 24 hours. Please try again later.", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+
       const { error } = await supabase.from("property_requests").insert({
         user_id: user?.id || null,
         full_name: formData.fullName,
