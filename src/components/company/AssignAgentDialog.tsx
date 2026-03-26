@@ -57,7 +57,7 @@ const AssignAgentDialog = ({
 
       const { error } = await supabase
         .from(tableName)
-        .update({ agent_id: agentId } as any)
+        .update({ agent_id: agentId })
         .eq("id", listingId);
       if (error) throw error;
 

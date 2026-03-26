@@ -92,7 +92,7 @@ const BoostProfileDialog = ({
       const tableName = profileType === "company" ? "companies" : "agents";
       const { error: updateErr } = await supabase
         .from(tableName)
-        .update({ profile_classification: "boosted", boost_end_date: endDate } as any)
+        .update({ profile_classification: "boosted", boost_end_date: endDate })
         .eq("id", profileId);
       if (updateErr) throw updateErr;
 

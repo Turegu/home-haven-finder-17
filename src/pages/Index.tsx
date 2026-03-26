@@ -234,7 +234,7 @@ const Index = () => {
               return (
                 <LinkTag
                   key={loc.id}
-                  {...(linkProps as any)}
+                  {...(linkProps as React.AnchorHTMLAttributes<HTMLAnchorElement> & { to?: string })}
                   className="group relative rounded-2xl overflow-hidden"
                 >
                   <div className="relative aspect-[16/9] overflow-hidden">

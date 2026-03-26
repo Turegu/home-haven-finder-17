@@ -129,7 +129,7 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
           .order("sort_order");
 
         if (plans && plans.length > 0) {
-          const planIds = plans.map((p: any) => p.id);
+          const planIds = (plans as { id: string }[]).map((p) => p.id);
           const { data: steps } = await supabase
             .from("unit_payment_plan_steps")
             .select("*")
@@ -138,12 +138,12 @@ const ProjectUnits = ({ projectId }: ProjectUnitsProps) => {
 
           const plansMap: Record<string, PaymentPlan[]> = {};
           for (const plan of plans) {
-            const p = plan as any;
+            const p = plan as { id: string; unit_id: string; plan_name: string };
             if (!plansMap[p.unit_id]) plansMap[p.unit_id] = [];
             plansMap[p.unit_id].push({
               id: p.id,
               plan_name: p.plan_name,
-              steps: (steps || []).filter((s: any) => s.plan_id === p.id),
+              steps: (steps || []).filter((s) => s.plan_id === p.id),
             });
           }
           setPaymentPlans(plansMap);
