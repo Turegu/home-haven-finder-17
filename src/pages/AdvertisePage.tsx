@@ -298,7 +298,7 @@ const AdvertisePage = () => {
                     );
                   })()}
                   <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{pkg.tagline}</p>
+                  
                   <div className="mt-4">
                     <span className="text-4xl font-bold text-foreground">${pkg.monthly_price}</span>
                     <span className="text-muted-foreground text-sm">/{t('pages.advertise.month')}</span>
