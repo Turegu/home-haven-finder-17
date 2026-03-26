@@ -106,7 +106,7 @@ const PriceTrendsChart = ({ province, town, neighbourhood, currency = "USD", are
                         <p className="text-primary font-bold">
                           {payload[0].value?.toLocaleString()} {currency}/{areaUnit}
                         </p>
-                        <p className="text-muted-foreground">{(payload[0].payload as any).count} properties</p>
+                        <p className="text-muted-foreground">{(payload[0].payload as Record<string, unknown>).count as number} properties</p>
                       </div>
                     );
                   }}

@@ -78,7 +78,7 @@ const UpgradeListingDialog = ({
 
       const { error: updateErr } = await supabase
         .from(tableName)
-        .update({ property_classification: opt.classification } as any)
+        .update({ property_classification: opt.classification })
         .eq("id", listingId);
       if (updateErr) throw updateErr;
 

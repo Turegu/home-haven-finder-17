@@ -138,7 +138,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const inquiryData: any = {
+          const inquiryPayload = {
             user_id: user.id,
             company_id: companyId,
             agent_id: agentId,
@@ -147,10 +147,10 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
             email: email.trim(),
             phone: phone.trim() || null,
             message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
+            ...(listingType === 'property' ? { property_id: property.id } : {}),
+            ...(listingType === 'project' ? { project_id: property.id } : {}),
           };
-          if (listingType === 'property') inquiryData.property_id = property.id;
-          else if (listingType === 'project') inquiryData.project_id = property.id;
-          await supabase.from('user_inquiries').insert(inquiryData);
+          await supabase.from('user_inquiries').insert(inquiryPayload);
         }
       } catch (e) {
         console.warn('user_inquiries insert skipped:', e);
@@ -171,7 +171,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         throw new Error('No company recipient found');
       }
 
-      const inboxData: any = {
+      const inboxPayload = {
         company_id: inboxCompanyId,
         agent_id: agentId || null,
         full_name: fullName.trim(),
@@ -179,11 +179,11 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         phone: phone.trim() || null,
         message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
         inbox_type: INBOX_TYPES.INQUIRY,
+        ...(listingType === 'property' ? { property_id: property.id } : {}),
+        ...(listingType === 'project' ? { project_id: property.id } : {}),
       };
-      if (listingType === 'property') inboxData.property_id = property.id;
-      else if (listingType === 'project') inboxData.project_id = property.id;
 
-      const { error: inboxError } = await supabase.from('company_inbox').insert(inboxData);
+      const { error: inboxError } = await supabase.from('company_inbox').insert(inboxPayload);
       if (inboxError) throw inboxError;
 
       toast.success('Message sent successfully');

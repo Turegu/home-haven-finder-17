@@ -170,15 +170,15 @@ const CompanyProfilePage = () => {
         setCompany(data);
         setForm({
           name: data.name || "",
-          name_ar: (data as any).name_ar || "",
-          name_fr: (data as any).name_fr || "",
-          company_types: (data as any).company_types || [],
+          name_ar: data.name_ar || "",
+          name_fr: data.name_fr || "",
+          company_types: data.company_types || [],
           service_areas: data.service_areas || [],
           languages: data.languages || [],
           registration_number: data.registration_number || "",
           about: data.about || "",
-          about_ar: (data as any).about_ar || "",
-          about_fr: (data as any).about_fr || "",
+          about_ar: data.about_ar || "",
+          about_fr: data.about_fr || "",
           email: data.email || "",
           phone: data.phone || "",
           whatsapp: data.whatsapp || "",
@@ -609,10 +609,10 @@ const CompanyProfilePage = () => {
           <p className="text-sm text-muted-foreground mb-4">
             Boost your company profile to appear at the top of search results and on the homepage spotlight.
           </p>
-          {company && (company as any).profile_classification === "boosted" && (company as any).boost_end_date && new Date((company as any).boost_end_date) > new Date() ? (
+          {company && company.profile_classification === "boosted" && company.boost_end_date && new Date(company.boost_end_date) > new Date() ? (
             <div className="flex items-center gap-3">
               <div className="text-sm text-primary font-medium flex items-center gap-1.5">
-                <Rocket className="h-4 w-4" /> Boosted until {new Date((company as any).boost_end_date).toLocaleDateString()}
+                <Rocket className="h-4 w-4" /> Boosted until {new Date(company.boost_end_date).toLocaleDateString()}
               </div>
               <Button variant="outline" size="sm" onClick={() => setBoostDialogOpen(true)}>Extend Boost</Button>
             </div>
@@ -666,8 +666,8 @@ const CompanyProfilePage = () => {
           profileType="company"
           balanceSource="company"
           balanceSourceId={company.id}
-          currentClassification={(company as any).profile_classification || "standard"}
-          boostEndDate={(company as any).boost_end_date || null}
+          currentClassification={company.profile_classification || "standard"}
+          boostEndDate={company.boost_end_date || null}
           onBoosted={() => window.location.reload()}
         />
       )}

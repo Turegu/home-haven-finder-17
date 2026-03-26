@@ -159,7 +159,7 @@ const CompanyAgentEditPage = () => {
     const fetchAgent = async () => {
       const { data, error } = await supabase.from("agents").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error("Agent not found"); return; }
-      const d = data as any;
+      const d = data;
       setForm({
         name: d.name || "",
         name_ar: d.name_ar || "",

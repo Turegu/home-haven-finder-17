@@ -16,7 +16,7 @@ export function useTrackPageView(listingId: string | undefined, listingType: Lis
         listing_id: listingId,
         listing_type: listingType,
         viewer_id: user?.id || null,
-      } as any);
+      });
     };
     track();
   }, [listingId, listingType]);
@@ -29,7 +29,7 @@ export async function trackImpressions(listingIds: string[], listingType: Listin
     listing_id: id,
     listing_type: listingType,
   }));
-  await supabase.from('listing_impressions').insert(rows as any);
+  await supabase.from('listing_impressions').insert(rows);
 }
 
 // Track inquiry click (WhatsApp, Call, Email)
@@ -38,5 +38,5 @@ export async function trackInquiryClick(listingId: string, listingType: ListingT
     listing_id: listingId,
     listing_type: listingType,
     click_type: clickType,
-  } as any);
+  });
 }

@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTranslation } from "react-i18next";
 import { INBOX_TYPES } from '@/constants/inbox';
+import { inboxService } from '@/services/inbox.service';
 
 interface ContactProfileDialogProps {
   open: boolean;
@@ -90,7 +91,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
             email: email.trim(),
             phone: phone.trim() || null,
             message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-          } as any);
+          });
         }
       } catch (e) {
         console.warn('user_inquiries insert skipped:', e);
@@ -111,14 +112,14 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
         throw new Error('No company recipient found');
       }
 
-      const { error: inboxError } = await (supabase as any).rpc('submit_company_inbox_message', {
-        p_company_id: inboxCompanyId,
-        p_full_name: fullName.trim(),
-        p_email: email.trim(),
-        p_agent_id: agentId || null,
-        p_phone: phone.trim() || null,
-        p_message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-        p_inbox_type: INBOX_TYPES.MESSAGE,
+      const { error: inboxError } = await inboxService.submitMessage({
+        company_id: inboxCompanyId,
+        full_name: fullName.trim(),
+        email: email.trim(),
+        agent_id: agentId || null,
+        phone: phone.trim() || null,
+        message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
+        inbox_type: INBOX_TYPES.MESSAGE,
       });
 
       if (inboxError) throw inboxError;

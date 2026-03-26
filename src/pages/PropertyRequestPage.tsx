@@ -62,11 +62,11 @@ const PropertyRequestPage = () => {
   useEffect(() => {
     const loadCms = async () => {
       const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "property-request").limit(1);
-      if (data?.[0]) setCms(((data[0] as any).content?.data) || {});
+      if (data?.[0]) setCms(((data[0] as { content: { data?: Record<string, unknown> } }).content?.data) || {});
     };
     const loadProvinces = async () => {
       const { data } = await supabase.rpc("get_distinct_provinces");
-      if (data) setProvinces(data.map((d: any) => d.name));
+      if (data) setProvinces(data.map((d: { name: string }) => d.name));
     };
     loadCms();
     loadProvinces();
@@ -77,7 +77,7 @@ const PropertyRequestPage = () => {
     if (!formData.province) { setDistricts([]); return; }
     const load = async () => {
       const { data } = await supabase.rpc("get_distinct_districts", { p_province: formData.province });
-      if (data) setDistricts(data.map((d: any) => d.name));
+      if (data) setDistricts(data.map((d: { name: string }) => d.name));
     };
     load();
     setFormData(prev => ({ ...prev, district: '', neighbourhood: '' }));
@@ -89,7 +89,7 @@ const PropertyRequestPage = () => {
     if (!formData.province || !formData.district) { setNeighbourhoods([]); return; }
     const load = async () => {
       const { data } = await supabase.rpc("get_neighborhoods", { p_province: formData.province, p_district: formData.district });
-      if (data) setNeighbourhoods(data.map((d: any) => d.name));
+      if (data) setNeighbourhoods(data.map((d: { name: string }) => d.name));
     };
     load();
     setFormData(prev => ({ ...prev, neighbourhood: '' }));
@@ -98,9 +98,9 @@ const PropertyRequestPage = () => {
   const handleChange = (field: string, value: string) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-  const toggleMulti = (field: string, value: string) => {
+  const toggleMulti = (field: keyof typeof formData, value: string) => {
     setFormData(prev => {
-      const arr = (prev as any)[field] as string[];
+      const arr = prev[field] as string[];
       return { ...prev, [field]: arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value] };
     });
   };
@@ -127,7 +127,7 @@ const PropertyRequestPage = () => {
     try {
       const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }));
 
-      const { error } = await supabase.from("property_requests" as any).insert({
+      const { error } = await supabase.from("property_requests").insert({
         user_id: user?.id || null,
         full_name: formData.fullName,
         email: formData.email,
@@ -151,7 +151,7 @@ const PropertyRequestPage = () => {
         interior_amenities: formData.interiorAmenities,
         exterior_amenities: formData.exteriorAmenities,
         additional_requests: formData.additionalRequests || null,
-      } as any);
+      });
 
       if (error) throw error;
 
@@ -173,8 +173,8 @@ const PropertyRequestPage = () => {
     }
   };
 
-  const SelectField = ({ label, field, options, required = false, showAny = true }: { label: string; field: string; options: string[]; required?: boolean; showAny?: boolean }) => {
-    const currentValue = (formData as any)[field] ?? '';
+  const SelectField = ({ label, field, options, required = false, showAny = true }: { label: string; field: keyof typeof formData; options: string[]; required?: boolean; showAny?: boolean }) => {
+    const currentValue = formData[field] as string ?? '';
     const hasAnyInOptions = options.some(o => o.toLowerCase() === 'any');
     const shouldShowAny = showAny && !hasAnyInOptions;
     return (
@@ -196,8 +196,8 @@ const PropertyRequestPage = () => {
     );
   };
 
-  const MultiSelectField = ({ label, field, options }: { label: string; field: string; options: string[] }) => {
-    const selected = (formData as any)[field] as string[];
+  const MultiSelectField = ({ label, field, options }: { label: string; field: keyof typeof formData; options: string[] }) => {
+    const selected = formData[field] as string[];
     const [open, setOpen] = useState(false);
     return (
       <div>

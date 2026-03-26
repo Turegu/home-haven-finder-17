@@ -227,36 +227,36 @@ const Index = () => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {locations.slice(0, 3).map((loc) => {
               const isExternal = loc.link_url?.startsWith('http');
-              const LinkTag = isExternal ? 'a' : Link;
-              const linkProps = isExternal
-                ? { href: loc.link_url || '#', target: '_blank', rel: 'noopener noreferrer' }
-                : { to: loc.link_url || '#' };
-              return (
-                <LinkTag
-                  key={loc.id}
-                  {...(linkProps as any)}
-                  className="group relative rounded-2xl overflow-hidden"
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    {loc.image_url ? (
-                      <img src={loc.image_url} alt={loc.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]" />
-                    ) : (
-                      <div className="absolute inset-0 bg-muted flex items-center justify-center">
-                        <MapPin className="h-12 w-12 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-                    <div className="absolute bottom-0 inset-x-0 p-5 flex items-end justify-between">
-                      <div>
-                        {loc.tagline && <p className="text-[11px] text-white/60 uppercase tracking-widest font-light mb-1">{loc.tagline}</p>}
-                        <h3 className="font-display text-lg font-bold text-white tracking-tight">{loc.subtitle || loc.name}</h3>
-                      </div>
-                      <div className="h-8 w-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                        <ExternalLink className="h-3.5 w-3.5 text-white" />
-                      </div>
+              const innerContent = (
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  {loc.image_url ? (
+                    <img src={loc.image_url} alt={loc.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]" />
+                  ) : (
+                    <div className="absolute inset-0 bg-muted flex items-center justify-center">
+                      <MapPin className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                  <div className="absolute bottom-0 inset-x-0 p-5 flex items-end justify-between">
+                    <div>
+                      {loc.tagline && <p className="text-[11px] text-white/60 uppercase tracking-widest font-light mb-1">{loc.tagline}</p>}
+                      <h3 className="font-display text-lg font-bold text-white tracking-tight">{loc.subtitle || loc.name}</h3>
+                    </div>
+                    <div className="h-8 w-8 rounded-full bg-white/10 backdrop-blur flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <ExternalLink className="h-3.5 w-3.5 text-white" />
                     </div>
                   </div>
-                </LinkTag>
+                </div>
+              );
+
+              return isExternal ? (
+                <a key={loc.id} href={loc.link_url || '#'} target="_blank" rel="noopener noreferrer" className="group relative rounded-2xl overflow-hidden">
+                  {innerContent}
+                </a>
+              ) : (
+                <Link key={loc.id} to={loc.link_url || '#'} className="group relative rounded-2xl overflow-hidden">
+                  {innerContent}
+                </Link>
               );
             })}
           </div>
