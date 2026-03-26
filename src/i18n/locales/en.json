@@ -793,6 +793,8 @@
     "parking": "Parking",
     "furniture": "Furniture",
     "propertyAge": "Property Age",
+    "propertyStatus": "Property Status",
+    "orientation": "Orientation",
     "interiorAmenities": "Interior Amenities",
     "exteriorAmenities": "Exterior Amenities",
     "location": "Location",
