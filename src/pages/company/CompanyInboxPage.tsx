@@ -14,9 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock } from "lucide-react";
+import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface InboxItem {
   id: string;
@@ -30,6 +31,10 @@ interface InboxItem {
   project_id: string | null;
   is_seen: boolean;
   created_at: string;
+  property_title?: string | null;
+  property_listing_id?: string | null;
+  project_title?: string | null;
+  project_listing_id?: string | null;
 }
 
 type InboxTab = "property_request" | "inquiry" | "message";
@@ -53,7 +58,6 @@ const CompanyInboxPage = () => {
         .from("companies").select("id, membership").eq("owner_user_id", user.id).limit(1).maybeSingle();
       if (company) {
         setCompanyId(company.id);
-        // Check if company plan supports property requests
         const { data: pkg } = await supabase
           .from("membership_packages")
           .select("has_property_requests")
@@ -70,12 +74,21 @@ const CompanyInboxPage = () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("company_inbox")
-      .select("*")
+      .select("*, properties(title, listing_id), projects(title, listing_id)")
       .eq("company_id", companyId)
       .eq("inbox_type", activeTab)
       .order("created_at", { ascending: false });
     if (error) toast.error("Failed to load inbox");
-    else setItems((data as InboxItem[]) || []);
+    else {
+      const mapped = (data || []).map((row: any) => ({
+        ...row,
+        property_title: row.properties?.title || null,
+        property_listing_id: row.properties?.listing_id || null,
+        project_title: row.projects?.title || null,
+        project_listing_id: row.projects?.listing_id || null,
+      }));
+      setItems(mapped);
+    }
     setSelected([]);
     setLoading(false);
   };
@@ -92,9 +105,9 @@ const CompanyInboxPage = () => {
         table: "company_inbox",
         filter: `company_id=eq.${companyId}`,
       }, (payload) => {
-        const newItem = payload.new as InboxItem;
+        const newItem = payload.new as any;
         if (newItem.inbox_type === activeTab) {
-          setItems((prev) => [newItem, ...prev]);
+          setItems((prev) => [{ ...newItem, property_title: null, project_title: null }, ...prev]);
         }
       })
       .subscribe();
@@ -133,70 +146,100 @@ const CompanyInboxPage = () => {
     }
   };
 
-  // Determine which tabs to show
-  const showPropertyRequestTab = hasPropertyRequests === true;
+  const getListingInfo = (item: InboxItem) => {
+    if (item.property_title) {
+      return { title: item.property_title, link: `/properties/${item.property_id}` };
+    }
+    if (item.project_title) {
+      return { title: item.project_title, link: `/projects/${item.project_id}` };
+    }
+    return null;
+  };
 
-  const renderInboxTable = (tab: string) => (
-    <div className="bg-card rounded-xl border border-border overflow-hidden">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-primary/5">
-              <TableHead className="w-10">
-                <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
-              </TableHead>
-              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.sno")}</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
-              {tab === "property_request" && (
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.budget")}</TableHead>
-              )}
-              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.isSeen")}</TableHead>
-              <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell>
+  const renderInboxTable = (tab: string) => {
+    const showListingCol = tab === "inquiry";
+    const colCount = 7 + (tab === "property_request" ? 1 : 0) + (showListingCol ? 1 : 0);
+
+    return (
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-primary/5">
+                <TableHead className="w-10">
+                  <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
+                </TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.sno")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.fullName")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.email")}</TableHead>
+                {showListingCol && (
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.listing", "Listing")}</TableHead>
+                )}
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.phoneNo")}</TableHead>
+                {tab === "property_request" && (
+                  <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.budget")}</TableHead>
+                )}
+                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.isSeen")}</TableHead>
+                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
               </TableRow>
-            ) : filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={tab === "property_request" ? 8 : 7} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noDataFound")}</TableCell>
-              </TableRow>
-            ) : (
-              filtered.map((item, idx) => (
-                <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
-                  <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{idx + 1}</TableCell>
-                  <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
-                  {tab === "property_request" && (
-                    <TableCell className="text-sm font-medium text-foreground">{item.budget ? `$${item.budget}` : "—"}</TableCell>
-                  )}
-                  <TableCell>
-                    <Badge
-                      className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
-                      variant="secondary"
-                    >
-                      {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}>
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={colCount} className="text-center py-12 text-muted-foreground">{t("common.loading")}</TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={colCount} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noDataFound")}</TableCell>
+                </TableRow>
+              ) : (
+                filtered.map((item, idx) => {
+                  const listing = getListingInfo(item);
+                  return (
+                    <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
+                      <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{idx + 1}</TableCell>
+                      <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
+                      {showListingCol && (
+                        <TableCell className="text-sm">
+                          {listing ? (
+                            <Link to={listing.link} className="text-primary hover:underline flex items-center gap-1 max-w-[200px]">
+                              <span className="truncate">{listing.title}</span>
+                              <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">{t("companyDashboard.profileMessage", "Profile message")}</span>
+                          )}
+                        </TableCell>
+                      )}
+                      <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
+                      {tab === "property_request" && (
+                        <TableCell className="text-sm font-medium text-foreground">{item.budget ? `$${item.budget}` : "—"}</TableCell>
+                      )}
+                      <TableCell>
+                        <Badge
+                          className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
+                          variant="secondary"
+                        >
+                          {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <CompanyLayout>
@@ -204,44 +247,17 @@ const CompanyInboxPage = () => {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-secondary/50">
-          {showPropertyRequestTab && (
-            <TabsTrigger value="property_request" className="gap-2">
-              <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
-            </TabsTrigger>
-          )}
           <TabsTrigger value="inquiry" className="gap-2">
             <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
           </TabsTrigger>
           <TabsTrigger value="message" className="gap-2">
             <Mail className="h-4 w-4" /> {t("companyDashboard.message")}
           </TabsTrigger>
+          <TabsTrigger value="property_request" className="gap-2">
+            <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
+            {hasPropertyRequests === false && <Lock className="h-3 w-3 ml-1" />}
+          </TabsTrigger>
         </TabsList>
-
-        {/* Upgrade prompt for Basic/Lite — shown only if they don't have property requests */}
-        {hasPropertyRequests === false && (
-          <div className="bg-muted/50 border border-border rounded-xl p-6 text-center">
-            <Lock className="h-8 w-8 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="text-sm font-medium text-foreground mb-1">{t("companyDashboard.propertyRequestsLocked")}</p>
-            <p className="text-xs text-muted-foreground">{t("companyDashboard.propertyRequestsUpgrade")}</p>
-          </div>
-        )}
-
-        {showPropertyRequestTab && (
-          <TabsContent value="property_request">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
-              </div>
-              {selected.length > 0 && (
-                <Button variant="destructive" onClick={handleDelete} className="ml-auto">
-                  <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
-                </Button>
-              )}
-            </div>
-            {renderInboxTable("property_request")}
-          </TabsContent>
-        )}
 
         <TabsContent value="inquiry">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
@@ -271,6 +287,31 @@ const CompanyInboxPage = () => {
             )}
           </div>
           {renderInboxTable("message")}
+        </TabsContent>
+
+        <TabsContent value="property_request">
+          {hasPropertyRequests === false ? (
+            <div className="bg-muted/50 border border-border rounded-xl p-8 text-center">
+              <Lock className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
+              <p className="text-sm font-medium text-foreground mb-1">{t("companyDashboard.propertyRequestsLocked")}</p>
+              <p className="text-xs text-muted-foreground">{t("companyDashboard.propertyRequestsUpgrade")}</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder={t("companyDashboard.searchByName")} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-secondary/50" />
+                </div>
+                {selected.length > 0 && (
+                  <Button variant="destructive" onClick={handleDelete} className="ml-auto">
+                    <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")} ({selected.length})
+                  </Button>
+                )}
+              </div>
+              {renderInboxTable("property_request")}
+            </>
+          )}
         </TabsContent>
       </Tabs>
 
@@ -305,6 +346,19 @@ const CompanyInboxPage = () => {
                   </div>
                 )}
               </div>
+              {/* Listing info */}
+              {(() => {
+                const listing = getListingInfo(viewItem);
+                if (!listing) return null;
+                return (
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.listing", "Listing")}</p>
+                    <Link to={listing.link} className="text-sm text-primary hover:underline flex items-center gap-1">
+                      {listing.title} <ExternalLink className="h-3 w-3" />
+                    </Link>
+                  </div>
+                );
+              })()}
               {viewItem.message && (
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{t("companyDashboard.message")}</p>
