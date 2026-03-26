@@ -101,6 +101,7 @@ const CompanyInboxPage = () => {
   const [items, setItems] = useState<InboxItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>("");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<InboxTab>("inquiry");
