@@ -509,7 +509,7 @@ const CompanyProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">WhatsApp Number</Label>
-              <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.whatsapp} onChange={(e) => updateField("whatsapp", e.target.value)} className="bg-secondary/50" maxLength={20} />
             </div>
           </div>
         </section>

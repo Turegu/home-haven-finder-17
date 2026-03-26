@@ -457,7 +457,7 @@ const CompanyAgentEditPage = () => {
               <Label className="text-foreground font-medium flex items-center gap-1.5">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.whatsapp")} *
               </Label>
-              <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" />
+              <Input value={form.whatsapp} onChange={(e) => { updateField("whatsapp", e.target.value); clearFieldError("whatsapp"); }} className={`bg-secondary/50 ${fieldErrors.whatsapp ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" maxLength={20} />
               {fieldErrors.whatsapp && <p className="text-xs text-destructive">{fieldErrors.whatsapp}</p>}
             </div>
           </div>

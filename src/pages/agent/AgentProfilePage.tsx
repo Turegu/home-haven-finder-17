@@ -356,7 +356,7 @@ const AgentProfilePage = () => {
             </div>
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Registration Number</Label>
-              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" />
+              <Input value={form.registration_number} onChange={(e) => updateField("registration_number", e.target.value)} className="bg-secondary/50" maxLength={100} />
             </div>
           </div>
         </section>
