@@ -117,22 +117,26 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
     const selectedUnit = projectUnits?.find(u => u.id === selectedUnitId);
     const unitSuffix = selectedUnit ? `\n[Interested in unit: ${selectedUnit.unit_name} (${selectedUnit.unit_type})]` : '';
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const inquiryData: any = {
-          user_id: user.id,
-          company_id: companyId,
-          agent_id: agentId,
-          inquiry_type: 'email',
-          full_name: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim() || null,
-          message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
-        };
-        if (listingType === 'property') inquiryData.property_id = property.id;
-        else if (listingType === 'project') inquiryData.project_id = property.id;
-        const { error: inquiryError } = await supabase.from('user_inquiries').insert(inquiryData);
-        if (inquiryError) throw inquiryError;
+      // Save to user_inquiries (non-critical — don't block on failure)
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const inquiryData: any = {
+            user_id: user.id,
+            company_id: companyId,
+            agent_id: agentId,
+            inquiry_type: 'email',
+            full_name: fullName.trim(),
+            email: email.trim(),
+            phone: phone.trim() || null,
+            message: `${message}${unitSuffix}\n\n[Preferred contact: ${preferredContact}]`,
+          };
+          if (listingType === 'property') inquiryData.property_id = property.id;
+          else if (listingType === 'project') inquiryData.project_id = property.id;
+          await supabase.from('user_inquiries').insert(inquiryData);
+        }
+      } catch (e) {
+        console.warn('user_inquiries insert skipped:', e);
       }
 
       // Route to company inbox — if agent is assigned, include agent_id so company knows which agent it's for
