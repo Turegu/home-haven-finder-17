@@ -44,6 +44,7 @@ const ResetPasswordPage = lazy(() => import("./pages/user/ResetPasswordPage.tsx"
 const UserDashboardPage = lazy(() => import("./pages/user/UserDashboardPage.tsx"));
 const AccountSettingsPage = lazy(() => import("./pages/user/AccountSettingsPage.tsx"));
 const FollowedAgentsPage = lazy(() => import("./pages/user/FollowedAgentsPage.tsx"));
+const AnnouncementsPage = lazy(() => import("./pages/user/AnnouncementsPage.tsx"));
 const SavedPropertiesPage = lazy(() => import("./pages/user/SavedPropertiesPage.tsx"));
 const SavedSearchesPage = lazy(() => import("./pages/user/SavedSearchesPage.tsx"));
 const CompareListPage = lazy(() => import("./pages/user/CompareListPage.tsx"));
