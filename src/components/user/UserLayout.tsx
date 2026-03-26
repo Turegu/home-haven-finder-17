@@ -31,7 +31,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
     { label: t("userMenu.compareList"), path: "/account/compare", icon: Layers, countKey: "compare" },
     { label: t("userMenu.notifications"), path: "/account/notifications", icon: Bell, countKey: "notifications" },
     { label: t("userMenu.contactedProperties"), path: "/account/contacted", icon: MessageSquare, countKey: "contacted" },
-    { label: t("userMenu.propertyRequests"), path: "/account/requests", icon: FileText, countKey: null },
+    { label: t("userMenu.propertyRequests"), path: "/account/requests", icon: FileText, countKey: "requests" },
   ];
 
   const { data: authUser } = useQuery({
