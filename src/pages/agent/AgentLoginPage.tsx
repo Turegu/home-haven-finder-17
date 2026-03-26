@@ -121,22 +121,8 @@ const AgentLoginPage = () => {
       return;
     }
 
-    // Only fallback to admin_settings if no company-specific pattern record exists at all
-    if (!patternData) {
-      const { data: adminData } = await supabase
-        .from("admin_settings")
-        .select("setting_value")
-        .eq("setting_key", "company_pattern_code")
-        .limit(1);
-
-      if (adminData?.[0]) {
-        setSavedPattern((adminData[0] as any).setting_value);
-        setPendingRedirect("/company");
-        setStep("pattern");
-        toast.info("Please draw the pattern to continue.");
-        return;
-      }
-    }
+    // New companies have no pattern — skip pattern lock entirely.
+    // They can set one later from their profile settings.
 
     toast.success("Welcome to your Company Dashboard!");
     navigate("/company");
