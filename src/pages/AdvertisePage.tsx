@@ -303,6 +303,7 @@ const AdvertisePage = () => {
                     <span className="text-4xl font-bold text-foreground">${pkg.monthly_price}</span>
                     <span className="text-muted-foreground text-sm">/{t('pages.advertise.month')}</span>
                   </div>
+                  <p className="text-xs text-primary font-semibold mt-1">Billed Quarterly</p>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <FeatureLine value={`${pkg.max_agents}`} label={t('pages.advertise.agentsAllowed')} />
@@ -315,10 +316,9 @@ const AdvertisePage = () => {
                     positive={pkg.has_property_requests}
                   />
 
-                  <div className="border-t border-border pt-3 mt-4 space-y-2 text-xs text-muted-foreground">
-                    <p>$ {pkg.semiannual_price?.toLocaleString()} {t('pages.advertise.for6Months')}</p>
-                    <p>$ {pkg.quarterly_price?.toLocaleString()} {t('pages.advertise.for3Months')}</p>
-                    <p>$ {pkg.annual_price?.toLocaleString()} {t('pages.advertise.for1Year')}</p>
+                  <div className="border-t border-border pt-3 mt-4 space-y-1 text-xs text-muted-foreground">
+                    <p>6 Months: ${pkg.semiannual_price?.toLocaleString()}</p>
+                    <p className="font-semibold text-primary">1 Year: ${pkg.annual_price?.toLocaleString()} (Best Value!)</p>
                   </div>
 
                   <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
