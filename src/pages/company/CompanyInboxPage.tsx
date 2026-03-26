@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import InboxMessageDialog from "@/components/company/InboxMessageDialog";
 import { Search, Trash2, Eye, Mail, MessageSquare, Home, Lock, ExternalLink, MapPin, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
