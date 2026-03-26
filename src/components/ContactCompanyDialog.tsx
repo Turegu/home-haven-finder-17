@@ -71,6 +71,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   useEffect(() => {
     if (open) {
       setSent(false);
+      setSending(false);
       setSelectedUnitId('');
       setMessage(defaultMessages[listingType]);
       const loadUser = async () => {
@@ -91,6 +92,19 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       loadUser();
     }
   }, [open, listingType]);
+
+  // Deterministic success close flow: toast -> success state -> close after 1.5s
+  useEffect(() => {
+    if (!open || !sent) return;
+
+    const timer = window.setTimeout(() => {
+      onOpenChange(false);
+      setSent(false);
+      setSending(false);
+    }, 1500);
+
+    return () => window.clearTimeout(timer);
+  }, [open, sent, onOpenChange]);
 
   // Update message when unit selection changes
   useEffect(() => {
@@ -113,9 +127,11 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       toast.error('Please accept the Terms & Conditions.');
       return;
     }
+
     setSending(true);
     const selectedUnit = projectUnits?.find(u => u.id === selectedUnitId);
     const unitSuffix = selectedUnit ? `\n[Interested in unit: ${selectedUnit.unit_name} (${selectedUnit.unit_type})]` : '';
+
     try {
       // Save to user_inquiries (non-critical — don't block on failure)
       try {
@@ -140,8 +156,6 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
       }
 
       // Route to company inbox — if agent is assigned, include agent_id so company knows which agent it's for
-      // If no agent assigned, companyId will be set; if agent assigned, companyId is null
-      // We need to find the agent's company if only agentId is set
       let inboxCompanyId = companyId;
       if (!inboxCompanyId && agentId) {
         const { data: agentData } = await supabase
@@ -173,10 +187,6 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
 
       toast.success('Message sent successfully');
       setSent(true);
-      window.setTimeout(() => {
-        onOpenChange(false);
-        setSent(false);
-      }, 1500);
 
       void supabase.functions
         .invoke('send-inquiry-notification', {
