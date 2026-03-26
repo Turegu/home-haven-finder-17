@@ -94,6 +94,7 @@ const AgentInboxPage = () => {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("inquiry");
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>("");
   const [agentId, setAgentId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
   const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
