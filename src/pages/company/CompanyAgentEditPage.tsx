@@ -449,7 +449,7 @@ const CompanyAgentEditPage = () => {
                 <Label className="text-foreground font-medium flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {t("companyDashboard.phone")} *
                 </Label>
-                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" />
+                <Input value={form.phone} onChange={(e) => { updateField("phone", e.target.value); clearFieldError("phone"); }} className={`bg-secondary/50 ${fieldErrors.phone ? "border-destructive" : ""}`} placeholder="+1 234 567 8900" maxLength={20} />
                 {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
               </div>
             </div>
