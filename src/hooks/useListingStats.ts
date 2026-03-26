@@ -11,6 +11,18 @@ export interface ListingStats {
   emailClicks: number;
 }
 
+interface ClickRecord {
+  click_type: string;
+}
+
+interface ListingIdRecord {
+  listing_id: string;
+}
+
+interface PropertyIdRecord {
+  property_id: string;
+}
+
 export function useListingStats(listingId: string | undefined, listingType: 'property' | 'project' = 'property') {
   return useQuery({
     queryKey: ['listing-stats', listingId, listingType],
@@ -23,18 +35,18 @@ export function useListingStats(listingId: string | undefined, listingType: 'pro
         supabase.from('listing_inquiry_clicks').select('click_type').eq('listing_id', listingId).eq('listing_type', listingType),
         listingType === 'property'
           ? supabase.from('saved_properties').select('id', { count: 'exact', head: true }).eq('property_id', listingId)
-          : Promise.resolve({ count: 0 }),
+          : Promise.resolve({ count: 0, data: null, error: null }),
       ]);
 
-      const clicks = (clicksRes as any).data || [];
-      const whatsappClicks = clicks.filter((c: any) => c.click_type === 'whatsapp').length;
-      const callClicks = clicks.filter((c: any) => c.click_type === 'call').length;
-      const emailClicks = clicks.filter((c: any) => c.click_type === 'email').length;
+      const clicks = (clicksRes.data || []) as ClickRecord[];
+      const whatsappClicks = clicks.filter((c) => c.click_type === 'whatsapp').length;
+      const callClicks = clicks.filter((c) => c.click_type === 'call').length;
+      const emailClicks = clicks.filter((c) => c.click_type === 'email').length;
 
       return {
         impressions: impressionsRes.count || 0,
         views: viewsRes.count || 0,
-        saves: (savesRes as any).count || 0,
+        saves: savesRes.count || 0,
         inquiryClicks: clicks.length,
         whatsappClicks,
         callClicks,
@@ -59,24 +71,24 @@ export function useMultipleListingStats(listingIds: string[], listingType: 'prop
         supabase.from('listing_inquiry_clicks').select('listing_id, click_type').in('listing_id', listingIds).eq('listing_type', listingType),
         listingType === 'property'
           ? supabase.from('saved_properties').select('property_id').in('property_id', listingIds)
-          : Promise.resolve({ data: [] }),
+          : Promise.resolve({ data: [] as PropertyIdRecord[] }),
       ]);
 
       const result: Record<string, ListingStats> = {};
       listingIds.forEach(id => {
-        const imps = (impressionsRes.data || []).filter((r: any) => r.listing_id === id).length;
-        const views = (viewsRes.data || []).filter((r: any) => r.listing_id === id).length;
-        const clicks = (clicksRes.data || []).filter((r: any) => r.listing_id === id);
-        const saves = ((savesRes as any).data || []).filter((r: any) => r.property_id === id).length;
+        const imps = ((impressionsRes.data || []) as ListingIdRecord[]).filter((r) => r.listing_id === id).length;
+        const views = ((viewsRes.data || []) as ListingIdRecord[]).filter((r) => r.listing_id === id).length;
+        const clicks = ((clicksRes.data || []) as (ListingIdRecord & ClickRecord)[]).filter((r) => r.listing_id === id);
+        const saves = ((savesRes.data || []) as PropertyIdRecord[]).filter((r) => r.property_id === id).length;
 
         result[id] = {
           impressions: imps,
           views,
           saves,
           inquiryClicks: clicks.length,
-          whatsappClicks: clicks.filter((c: any) => c.click_type === 'whatsapp').length,
-          callClicks: clicks.filter((c: any) => c.click_type === 'call').length,
-          emailClicks: clicks.filter((c: any) => c.click_type === 'email').length,
+          whatsappClicks: clicks.filter((c) => c.click_type === 'whatsapp').length,
+          callClicks: clicks.filter((c) => c.click_type === 'call').length,
+          emailClicks: clicks.filter((c) => c.click_type === 'email').length,
         };
       });
       return result;

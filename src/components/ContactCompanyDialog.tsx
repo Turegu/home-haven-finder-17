@@ -171,7 +171,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         throw new Error('No company recipient found');
       }
 
-      const inboxData: any = {
+      const inboxData: Record<string, unknown> = {
         company_id: inboxCompanyId,
         agent_id: agentId || null,
         full_name: fullName.trim(),

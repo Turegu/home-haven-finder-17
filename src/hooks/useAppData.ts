@@ -97,7 +97,7 @@ export function useFilterCategories(context: string) {
 }
 
 // ─── CMS page content ───
-export function useCmsPage<T = Record<string, any>>(slug: string) {
+export function useCmsPage<T = Record<string, unknown>>(slug: string) {
   return useQuery({
     queryKey: ["cms-page", slug],
     queryFn: async () => {
@@ -107,7 +107,8 @@ export function useCmsPage<T = Record<string, any>>(slug: string) {
         .eq("page_slug", slug)
         .limit(1);
       if (error) throw error;
-      return (data?.[0] as any)?.content as T | undefined;
+      const row = data?.[0] as { content: unknown } | undefined;
+      return row?.content as T | undefined;
     },
     staleTime: 5 * 60 * 1000,
   });

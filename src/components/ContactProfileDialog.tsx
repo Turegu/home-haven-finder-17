@@ -112,14 +112,14 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
         throw new Error('No company recipient found');
       }
 
-      const { error: inboxError } = await (supabase as any).rpc('submit_company_inbox_message', {
-        p_company_id: inboxCompanyId,
-        p_full_name: fullName.trim(),
-        p_email: email.trim(),
-        p_agent_id: agentId || null,
-        p_phone: phone.trim() || null,
-        p_message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
-        p_inbox_type: INBOX_TYPES.MESSAGE,
+      const { error: inboxError } = await inboxService.submitMessage({
+        company_id: inboxCompanyId,
+        full_name: fullName.trim(),
+        email: email.trim(),
+        agent_id: agentId || null,
+        phone: phone.trim() || null,
+        message: `[${topic.trim()}]\n\n${message.trim()}\n\n[Preferred contact: ${preferredContact}]`,
+        inbox_type: INBOX_TYPES.MESSAGE,
       });
 
       if (inboxError) throw inboxError;
