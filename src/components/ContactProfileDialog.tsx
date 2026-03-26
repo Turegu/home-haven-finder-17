@@ -33,6 +33,17 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
   const [preferredContact, setPreferredContact] = useState('email');
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  // Deterministic success close flow
+  useEffect(() => {
+    if (!open || !sent) return;
+    const timer = window.setTimeout(() => {
+      onOpenChange(false);
+      setSent(false);
+      setSending(false);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [open, sent, onOpenChange]);
+
   useEffect(() => {
     if (open) {
       setSent(false);
@@ -119,13 +130,9 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
 
       toast.success('Message sent successfully');
       setSent(true);
-      window.setTimeout(() => {
-        onOpenChange(false);
-        setSent(false);
-      }, 1500);
-    } catch {
+    } catch (err) {
+      console.error('ContactProfileDialog send error:', err);
       toast.error('Something went wrong. Please try again.');
-    } finally {
       setSending(false);
     }
   };
@@ -148,7 +155,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
         <DialogHeader>
           <div className="flex items-center gap-3">
             {recipientLogo && (
@@ -162,81 +169,83 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
           </div>
         </DialogHeader>
 
-        {/* Topic */}
-        <Input
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          placeholder={t("contact.topicRequired")}
-          maxLength={200}
-        />
-
-        {/* Message */}
-        <Textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          rows={4}
-          className="resize-none"
-          placeholder={t("contact.writeMessage")}
-          maxLength={2000}
-        />
-
-        {/* Name & Email */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-4 overflow-y-auto flex-1 pr-1">
+          {/* Topic */}
           <Input
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder={t("contact.fullNameRequired")}
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder={t("contact.topicRequired")}
+            maxLength={200}
           />
-          <Input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email *"
-            type="email"
-          />
-        </div>
 
-        {/* Phone & Preferred contact */}
-        <div className="grid grid-cols-2 gap-3">
-          <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Enter Phone Number *"
+          {/* Message */}
+          <Textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            className="resize-none"
+            placeholder={t("contact.writeMessage")}
+            maxLength={2000}
           />
-          <div>
-            <p className="text-xs font-medium text-foreground mb-2">Preferred Method of Contact *</p>
-            <RadioGroup value={preferredContact} onValueChange={setPreferredContact} className="flex gap-4">
-              <div className="flex items-center gap-1.5">
-                <RadioGroupItem value="email" id="profile-pref-email" />
-                <Label htmlFor="profile-pref-email" className="text-xs">Email</Label>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <RadioGroupItem value="phone" id="profile-pref-phone" />
-                <Label htmlFor="profile-pref-phone" className="text-xs">Phone</Label>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <RadioGroupItem value="whatsapp" id="profile-pref-whatsapp" />
-                <Label htmlFor="profile-pref-whatsapp" className="text-xs">WhatsApp</Label>
-              </div>
-            </RadioGroup>
+
+          {/* Name & Email */}
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder={t("contact.fullNameRequired")}
+            />
+            <Input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email *"
+              type="email"
+            />
           </div>
-        </div>
 
-        {/* Terms */}
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="profile-accept-terms"
-            checked={acceptTerms}
-            onCheckedChange={(v) => setAcceptTerms(v === true)}
-          />
-          <Label htmlFor="profile-accept-terms" className="text-sm text-muted-foreground">
-            I accept the Terms & Conditions.
-          </Label>
-        </div>
+          {/* Phone & Preferred contact */}
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Enter Phone Number *"
+            />
+            <div>
+              <p className="text-xs font-medium text-foreground mb-2">Preferred Method of Contact *</p>
+              <RadioGroup value={preferredContact} onValueChange={setPreferredContact} className="flex gap-4">
+                <div className="flex items-center gap-1.5">
+                  <RadioGroupItem value="email" id="profile-pref-email" />
+                  <Label htmlFor="profile-pref-email" className="text-xs">Email</Label>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <RadioGroupItem value="phone" id="profile-pref-phone" />
+                  <Label htmlFor="profile-pref-phone" className="text-xs">Phone</Label>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <RadioGroupItem value="whatsapp" id="profile-pref-whatsapp" />
+                  <Label htmlFor="profile-pref-whatsapp" className="text-xs">WhatsApp</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
 
-        {/* Send */}
-        <Button className="w-full" onClick={handleSend} disabled={sending}>
-          {sending ? 'Sending...' : 'Send'}
-        </Button>
+          {/* Terms */}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="profile-accept-terms"
+              checked={acceptTerms}
+              onCheckedChange={(v) => setAcceptTerms(v === true)}
+            />
+            <Label htmlFor="profile-accept-terms" className="text-sm text-muted-foreground">
+              I accept the Terms & Conditions.
+            </Label>
+          </div>
+
+          {/* Send */}
+          <Button className="w-full" onClick={handleSend} disabled={sending}>
+            {sending ? 'Sending...' : 'Send'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
