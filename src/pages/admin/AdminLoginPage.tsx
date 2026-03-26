@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { LogIn, Lock, Eye, EyeOff } from "lucide-react";
 import PatternLock from "@/components/admin/PatternLock";
 import { useTranslation } from "react-i18next";
-import { useEffect as useEffectOnce } from "react";
 
 type LoginStep = "credentials" | "pattern";
 
