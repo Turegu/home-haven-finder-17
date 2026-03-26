@@ -96,7 +96,6 @@ const InboxTypeBadge = ({ type }: { type: string }) => {
 };
 
 const InboxMessageDialog = ({ item, open, onOpenChange, companyName }: InboxMessageDialogProps) => {
-  const { t } = useTranslation();
   if (!item) return null;
 
   const { subject, body, preferredContact } = parseMessage(item.message);
