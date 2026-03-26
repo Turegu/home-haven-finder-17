@@ -344,13 +344,13 @@ const CompanyInboxPage = () => {
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6">
         <TabsList className="bg-secondary/50">
-          <TabsTrigger value="inquiry" className="gap-2">
+          <TabsTrigger value={INBOX_TYPES.INQUIRY} className="gap-2">
             <MessageSquare className="h-4 w-4" /> {t("companyDashboard.inquiry")}
           </TabsTrigger>
-          <TabsTrigger value="message" className="gap-2">
+          <TabsTrigger value={INBOX_TYPES.MESSAGE} className="gap-2">
             <Mail className="h-4 w-4" /> {t("companyDashboard.message")}
           </TabsTrigger>
-          <TabsTrigger value="property_request" className="gap-2">
+          <TabsTrigger value={INBOX_TYPES.PROPERTY_REQUEST} className="gap-2">
             <Home className="h-4 w-4" /> {t("companyDashboard.propertyRequests")}
             {hasPropertyRequests === false && <Lock className="h-3 w-3 ml-1" />}
           </TabsTrigger>
