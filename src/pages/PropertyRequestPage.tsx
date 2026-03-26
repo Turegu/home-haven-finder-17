@@ -62,7 +62,7 @@ const PropertyRequestPage = () => {
   useEffect(() => {
     const loadCms = async () => {
       const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "property-request").limit(1);
-      if (data?.[0]) setCms(((data[0] as any).content?.data) || {});
+      if (data?.[0]) setCms(((data[0] as { content: { data?: Record<string, unknown> } }).content?.data) || {});
     };
     const loadProvinces = async () => {
       const { data } = await supabase.rpc("get_distinct_provinces");
