@@ -4,6 +4,7 @@ import {
   Search, SlidersHorizontal, Check, X,
   Building2, Car, Sofa, Calendar, TreePine, Lamp,
   Home, BedDouble, Bath, DollarSign, Ruler, Clock,
+  ClipboardList, Compass,
 } from 'lucide-react';
 import { turkishIncludes } from '@/lib/utils';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
