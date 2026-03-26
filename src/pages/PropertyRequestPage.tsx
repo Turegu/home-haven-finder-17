@@ -174,7 +174,7 @@ const PropertyRequestPage = () => {
   };
 
   const SelectField = ({ label, field, options, required = false, showAny = true }: { label: string; field: string; options: string[]; required?: boolean; showAny?: boolean }) => {
-    const currentValue = (formData as any)[field] ?? '';
+    const currentValue = formData[field as keyof typeof formData] as string ?? '';
     const hasAnyInOptions = options.some(o => o.toLowerCase() === 'any');
     const shouldShowAny = showAny && !hasAnyInOptions;
     return (
