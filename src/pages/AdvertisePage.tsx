@@ -19,7 +19,6 @@ import {
 
 const packageIcons: Record<string, React.ElementType> = {
   basic: Briefcase,
-  lite: Zap,
   plus: Star,
   pro: Crown,
 };
@@ -269,12 +268,12 @@ const AdvertisePage = () => {
       {/* Packages Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">{t('pages.advertise.ourPackages')}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Choose Your Plan</h2>
           <p className="text-muted-foreground text-center mb-12">
             {t('pages.advertise.flexiblePackages')}
           </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {packages?.map((pkg) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {packages?.filter((pkg) => pkg.package_type !== "lite").map((pkg) => (
               <Card
                 key={pkg.id}
                 className={`relative overflow-hidden transition-all hover:shadow-xl ${
@@ -303,6 +302,7 @@ const AdvertisePage = () => {
                     <span className="text-4xl font-bold text-foreground">${pkg.monthly_price}</span>
                     <span className="text-muted-foreground text-sm">/{t('pages.advertise.month')}</span>
                   </div>
+                  <p className="text-xs text-primary font-semibold mt-1">Billed Quarterly</p>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <FeatureLine value={`${pkg.max_agents}`} label={t('pages.advertise.agentsAllowed')} />
@@ -315,10 +315,9 @@ const AdvertisePage = () => {
                     positive={pkg.has_property_requests}
                   />
 
-                  <div className="border-t border-border pt-3 mt-4 space-y-2 text-xs text-muted-foreground">
-                    <p>$ {pkg.semiannual_price?.toLocaleString()} {t('pages.advertise.for6Months')}</p>
-                    <p>$ {pkg.quarterly_price?.toLocaleString()} {t('pages.advertise.for3Months')}</p>
-                    <p>$ {pkg.annual_price?.toLocaleString()} {t('pages.advertise.for1Year')}</p>
+                  <div className="border-t border-border pt-3 mt-4 space-y-1 text-xs text-muted-foreground">
+                    <p>6 Months: ${pkg.semiannual_price?.toLocaleString()}</p>
+                    <p className="font-semibold text-primary">1 Year: ${pkg.annual_price?.toLocaleString()} (Best Value!)</p>
                   </div>
 
                   <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
