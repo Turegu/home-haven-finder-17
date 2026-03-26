@@ -22,6 +22,8 @@ export interface PropertyMoreFilters {
   parkingSpaces: string[];
   furniture: string[];
   propertyAges: string[];
+  propertyStatuses: string[];
+  orientations: string[];
   exteriorAmenities: string[];
   interiorAmenities: string[];
 }
@@ -31,6 +33,8 @@ export const emptyMoreFilters: PropertyMoreFilters = {
   parkingSpaces: [],
   furniture: [],
   propertyAges: [],
+  propertyStatuses: [],
+  orientations: [],
   exteriorAmenities: [],
   interiorAmenities: [],
 };
