@@ -242,7 +242,7 @@ const CompanyInboxPage = () => {
   const handleView = async (item: InboxItem) => {
     setViewItem(item);
     if (!item.is_seen) {
-      await supabase.from("company_inbox").update({ is_seen: true }).eq("id", item.id);
+      await inboxService.markSeen(item.id);
       setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, is_seen: true } : i));
     }
   };
