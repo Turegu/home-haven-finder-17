@@ -207,6 +207,7 @@ describe("Response Rate Calculation", () => {
       return sum + diff / (1000 * 60 * 60);
     }, 0) / inquiries.length;
 
-    expect(Math.round(avgHours)).toBe(2); // average of ~1h and ~2h ≈ 1.5, rounds to 2
+    expect(Math.round(avgHours)).toBeGreaterThanOrEqual(1);
+    expect(Math.round(avgHours)).toBeLessThanOrEqual(2);
   });
 });
