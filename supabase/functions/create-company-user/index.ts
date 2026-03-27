@@ -138,6 +138,8 @@ Deno.serve(async (req) => {
       .single();
 
     if (insertError) {
+      // Roll back: delete the orphaned auth user
+      await supabaseAdmin.auth.admin.deleteUser(inviteData.user.id);
       return new Response(JSON.stringify({ error: insertError.message }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
