@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface MembershipLimits {
@@ -38,11 +38,10 @@ export function useMembershipLimits(companyId: string | null): UseMembershipLimi
   const [membership, setMembership] = useState("basic");
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!companyId) return;
     setLoading(true);
 
-    // Get company membership
     const { data: company } = await supabase
       .from("companies")
       .select("membership")
@@ -52,7 +51,6 @@ export function useMembershipLimits(companyId: string | null): UseMembershipLimi
     const mem = company?.membership || "basic";
     setMembership(mem);
 
-    // Get limits from membership_packages
     const { data: pkg } = await supabase
       .from("membership_packages")
       .select("max_properties, max_projects, max_events, max_agents")
@@ -61,7 +59,6 @@ export function useMembershipLimits(companyId: string | null): UseMembershipLimi
 
     setLimits(pkg || DEFAULT_LIMITS[mem] || DEFAULT_LIMITS.basic);
 
-    // Count active + draft listings (not inactive)
     const [propRes, projRes, evtRes, agentRes] = await Promise.all([
       supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["active", "draft"]),
       supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["active", "draft"]),
@@ -77,11 +74,11 @@ export function useMembershipLimits(companyId: string | null): UseMembershipLimi
     });
 
     setLoading(false);
-  };
+  }, [companyId]);
 
   useEffect(() => {
     fetchData();
-  }, [companyId]);
+  }, [fetchData]);
 
   const effectiveLimits = limits || DEFAULT_LIMITS[membership] || DEFAULT_LIMITS.basic;
 
