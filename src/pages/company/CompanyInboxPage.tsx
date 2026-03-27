@@ -138,7 +138,7 @@ const CompanyInboxPage = () => {
     if (!companyId) return;
     setLoading(true);
 
-    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, tabType);
+    const { data: inboxData, error } = await inboxService.getByCompany(companyId, tabType);
 
     if (error) {
       toast.error("Failed to load inbox");
@@ -146,7 +146,7 @@ const CompanyInboxPage = () => {
       return;
     }
 
-    const rows = (inboxRows || []) as InboxItem[];
+    const rows = (inboxData || []) as InboxItem[];
     const propertyIds = Array.from(new Set(rows.map((r) => r.property_id).filter(Boolean))) as string[];
     const projectIds = Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean))) as string[];
 
