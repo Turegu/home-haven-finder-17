@@ -90,14 +90,24 @@ const AgentDetailPage = () => {
         ]);
         setCounts({ buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 });
 
-        // Fetch agent response metrics
-        const { data: metrics } = await supabase
-          .from('agent_response_metrics' as any)
-          .select('response_rate, avg_response_hours')
-          .eq('agent_id', agentData.id)
+        // Check if response rate is visible
+        const { data: rrSetting } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'response_rate_visible')
           .maybeSingle();
-        if (metrics) {
-          setResponseMetrics(metrics as any);
+        const showRate = rrSetting?.setting_value !== 'false';
+        setResponseRateVisible(showRate);
+
+        if (showRate) {
+          const { data: metrics } = await supabase
+            .from('agent_response_metrics' as any)
+            .select('response_rate, avg_response_hours')
+            .eq('agent_id', agentData.id)
+            .maybeSingle();
+          if (metrics) {
+            setResponseMetrics(metrics as any);
+          }
         }
       }
       setLoading(false);

@@ -88,14 +88,24 @@ const CompanyDetailPage = () => {
           events: evtCount ?? 0,
         });
 
-        // Fetch response metrics
-        const { data: metrics } = await supabase
-          .from('company_response_metrics' as any)
-          .select('response_rate, avg_response_hours')
-          .eq('company_id', data.id)
+        // Check if response rate is visible
+        const { data: rrSetting } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'response_rate_visible')
           .maybeSingle();
-        if (metrics) {
-          setResponseMetrics(metrics as any);
+        const showRate = rrSetting?.setting_value !== 'false';
+        setResponseRateVisible(showRate);
+
+        if (showRate) {
+          const { data: metrics } = await supabase
+            .from('company_response_metrics' as any)
+            .select('response_rate, avg_response_hours')
+            .eq('company_id', data.id)
+            .maybeSingle();
+          if (metrics) {
+            setResponseMetrics(metrics as any);
+          }
         }
       }
       setLoading(false);
