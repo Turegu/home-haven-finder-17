@@ -57,6 +57,7 @@ const AgentDetailPage = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
+  const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
   const localizedLanguages = useLocalizedLanguages(agent?.languages);
   const localizedServiceAreas = useLocalizedServiceAreas(agent?.service_areas);
 
@@ -87,6 +88,16 @@ const AgentDetailPage = () => {
           supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
         ]);
         setCounts({ buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 });
+
+        // Fetch agent response metrics
+        const { data: metrics } = await supabase
+          .from('agent_response_metrics' as any)
+          .select('response_rate, avg_response_hours')
+          .eq('agent_id', agentData.id)
+          .maybeSingle();
+        if (metrics) {
+          setResponseMetrics(metrics as any);
+        }
       }
       setLoading(false);
     };
@@ -232,6 +243,25 @@ const AgentDetailPage = () => {
                       <MessageCircle className="h-3 w-3" /> {t('property.whatsApp')}
                     </a>
                   </div>
+
+                  {/* Response rate badge */}
+                  {responseMetrics.response_rate !== null && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
+                        responseMetrics.response_rate >= 80 ? 'bg-[hsl(142,70%,40%)]/10 text-[hsl(142,70%,40%)]' :
+                        responseMetrics.response_rate >= 50 ? 'bg-[hsl(45,93%,47%)]/10 text-[hsl(45,93%,47%)]' :
+                        'bg-muted text-muted-foreground'
+                      }`}>
+                        <Mail className="h-3 w-3" />
+                        {responseMetrics.response_rate}% {t('companyDetail.responseRate', 'response rate')}
+                      </span>
+                      {responseMetrics.avg_response_hours !== null && (
+                        <span className="text-xs text-muted-foreground">
+                          ~{responseMetrics.avg_response_hours}h {t('companyDetail.avgResponse', 'avg. response')}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
