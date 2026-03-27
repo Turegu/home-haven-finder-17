@@ -255,7 +255,7 @@ const CompanyLoginPage = () => {
           {showForgot ? (
             <form onSubmit={handleForgotPassword} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="forgot-email" className="text-foreground">Email Address</Label>
+                <Label htmlFor="forgot-email" className="text-foreground">{t("professionalLogin.emailAddress")}</Label>
                 <Input
                   id="forgot-email"
                   type="email"
