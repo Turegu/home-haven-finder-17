@@ -375,7 +375,7 @@ const AgentLoginPage = () => {
 
               <div className="flex items-center justify-center gap-4 mt-6">
                 <Link to="/" className="text-sm text-primary hover:underline">
-                  Login as Buyer
+                  {t("professionalLogin.loginAsBuyer")}
                 </Link>
                 <div className="flex items-center gap-1.5">
                   <Globe className="h-3.5 w-3.5 text-muted-foreground" />
