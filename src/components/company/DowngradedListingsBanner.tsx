@@ -48,12 +48,15 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
 
   if (count === 0) return null;
 
-  const entityMap: Record<DowngradedListingsBannerProps["tableName"], string> = {
-    properties: t("companyDashboard.bannerEntityListings"),
-    projects: t("companyDashboard.bannerEntityProjects"),
-    events: t("companyDashboard.bannerEntityEvents"),
-    agents: t("companyDashboard.bannerEntityAgents"),
+  const entityKeyMap: Record<DowngradedListingsBannerProps["tableName"], string> = {
+    properties: "companyDashboard.bannerEntityListings",
+    projects: "companyDashboard.bannerEntityProjects",
+    events: "companyDashboard.bannerEntityEvents",
+    agents: "companyDashboard.bannerEntityAgents",
   };
+  const entityMap: Record<DowngradedListingsBannerProps["tableName"], string> = Object.fromEntries(
+    Object.entries(entityKeyMap).map(([k, v]) => [k, t(v, { count })])
+  ) as Record<DowngradedListingsBannerProps["tableName"], string>;
 
   const statusLabel = tableName === "agents"
     ? t("companyDashboard.bannerStatusFrozen")
