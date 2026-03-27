@@ -245,7 +245,7 @@ const App = () => {
             <Route path="/agent/projects" element={<AgentProjectsPage />} />
             <Route path="/agent/events" element={<AgentEventsPage />} />
             <Route path="/agent/followers" element={<AgentFollowersPage />} />
-            <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
+            
             <Route path="/agent/inbox" element={<AgentInboxPage />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
