@@ -311,7 +311,7 @@ const PropertyDetailPage = () => {
       <SEOHead
         title={property.title}
         description={`${property.type} for ${property.propertyPurpose === 'rent' ? 'rent' : 'sale'} in ${property.location}. ${property.bedrooms} bed, ${property.bathrooms} bath, ${formatArea(property.area, property.areaUnit)}. Price: ${property.currency} ${property.price.toLocaleString()}.`}
-        image={property.images?.[0]}
+        image={getOptimizedImageUrl(property.images?.[0], 'og')}
         url={typeof window !== 'undefined' ? window.location.href : ''}
         type="product"
         jsonLd={{
