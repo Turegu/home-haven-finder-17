@@ -424,7 +424,7 @@ const CompareListPage = () => {
                   <tr key={item.id} className="border-b border-border hover:bg-muted/50">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <img src={item.property?.images?.[0] || "/placeholder.svg"} alt="" className="h-12 w-16 rounded object-cover" />
+                        <img src={item.property?.images?.[0] || "/placeholder.svg"} alt={item.property?.title || "Property"} className="h-12 w-16 rounded object-cover" />
                         <div className="min-w-0">
                           <Link to={`/property/${item.property_id}`} className="font-medium text-foreground hover:text-primary text-xs truncate block">{item.property?.title}</Link>
                           <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />{item.property?.location || "—"}</p>

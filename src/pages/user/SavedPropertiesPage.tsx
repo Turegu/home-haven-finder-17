@@ -95,7 +95,7 @@ const SavedPropertiesPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {paginatedItems.map(item => (
                 <div key={item.id} className="bg-card rounded-xl border border-border overflow-hidden flex">
-                  <img src={item.property?.images?.[0] || "/placeholder.svg"} alt="" className="w-32 h-full object-cover" />
+                  <img src={item.property?.images?.[0] || "/placeholder.svg"} alt={item.property?.title || "Saved property"} className="w-32 h-full object-cover" />
                   <div className="p-4 flex-1 flex flex-col justify-between min-w-0">
                     <div>
                       <p className="font-bold text-primary text-lg">{item.property?.currency || "$"} {item.property?.price?.toLocaleString()}</p>
