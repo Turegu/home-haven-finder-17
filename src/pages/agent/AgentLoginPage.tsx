@@ -63,7 +63,7 @@ const AgentLoginPage = () => {
     if (agentError) throw agentError;
     if (!agent) {
       await supabase.auth.signOut();
-      toast.error("No agent account found for this email.");
+      toast.error(t("professionalLogin.noAgentAccount"));
       return;
     }
     if ((agent.status === AGENT_STATUS.INACTIVE || agent.status === AGENT_STATUS.DEACTIVATED) && agent.downgraded_at) {
@@ -78,7 +78,7 @@ const AgentLoginPage = () => {
     }
     if (agent.status !== AGENT_STATUS.ACTIVE) {
       await supabase.auth.signOut();
-      toast.error("Your agent account is not active yet. Contact your company admin.");
+      toast.error(t("professionalLogin.agentNotActive"));
       return;
     }
 
@@ -94,11 +94,11 @@ const AgentLoginPage = () => {
       setSavedPattern(agentPatternData.pattern_code);
       setPendingRedirect("/agent");
       setStep("pattern");
-      toast.info("Please draw your pattern to continue.");
+      toast.info(t("professionalLogin.patternInfo"));
       return;
     }
 
-    toast.success("Welcome to your Agent Dashboard!");
+    toast.success(t("professionalLogin.welcomeAgent"));
     navigate("/agent");
   };
 
