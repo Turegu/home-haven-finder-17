@@ -153,20 +153,27 @@ const Index = () => {
 
   const featuredProjects = displayedProjects.length > 0 ? displayedProjects : mockProjects;
 
-  const hero = cms.hero || {};
-  const secondBanner = cms.second_banner || {};
-  const fp = cms.featured_properties || {};
-  const fpr = cms.featured_projects || {};
-  const fl = cms.featured_locations || {};
+  const hero = cms?.hero || {};
+  const secondBanner = cms?.second_banner || {};
+  const fp = cms?.featured_properties || {};
+  const fpr = cms?.featured_projects || {};
+  const fl = cms?.featured_locations || {};
+
+  // Check if CMS data is loaded (hero has images)
+  const heroReady = !!(hero?.hero_images?.length || hero?.image_url);
 
   return (
     <div className="min-h-screen bg-background">
       <title>Turegu – Your Property, Our Priority</title>
       <Header />
 
-      {/* Hero Banner */}
+      {/* Hero Banner — only render once CMS data is loaded */}
       <section className="container mx-auto px-4 pt-4">
-        <HeroBannerContent hero={hero} isMain />
+        {heroReady ? (
+          <HeroBannerContent hero={hero} isMain />
+        ) : (
+          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
+        )}
       </section>
 
       <HeroSearch />
