@@ -1,6 +1,7 @@
 import { MapPin, Calendar, ArrowUpRight, Building, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
+import { getOptimizedImageUrl } from '@/lib/imageUtils';
 
 interface FeaturedProjectCardProps {
   project: {
