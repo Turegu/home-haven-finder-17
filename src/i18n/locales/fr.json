@@ -2042,5 +2042,38 @@
   },
   "agentLogin": {
     "frozenMessage": "Votre compte agent a été temporairement gelé en raison de la rétrogradation du forfait de votre entreprise. Veuillez contacter votre entreprise pour mettre à niveau son forfait et restaurer votre compte. Si non restauré avant le {{date}}, votre compte sera définitivement supprimé."
+  },
+  "professionalLogin": {
+    "agent": "Agent",
+    "company": "Entreprise",
+    "agentLogin": "Connexion Agent",
+    "companyLogin": "Connexion Entreprise",
+    "signInAgent": "Connectez-vous à votre tableau de bord agent",
+    "signInCompany": "Connectez-vous à votre tableau de bord entreprise",
+    "patternUnlock": "Déverrouillage par motif",
+    "drawPattern": "Dessinez votre motif pour continuer",
+    "connectDots": "Connectez au moins 3 points pour déverrouiller",
+    "emailAddress": "Adresse e-mail",
+    "password": "Mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "logIn": "Se connecter",
+    "signingIn": "Connexion en cours...",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "enterEmailReset": "Entrez votre e-mail pour recevoir un lien de réinitialisation",
+    "sendResetLink": "Envoyer le lien",
+    "sending": "Envoi en cours...",
+    "backToLogin": "← Retour à la connexion",
+    "loginAsBuyer": "Se connecter en tant qu'acheteur",
+    "welcomeAgent": "Bienvenue sur votre tableau de bord agent !",
+    "welcomeCompany": "Bienvenue sur votre tableau de bord entreprise !",
+    "noAgentAccount": "Aucun compte agent trouvé pour cet e-mail.",
+    "agentNotActive": "Votre compte agent n'est pas encore actif. Contactez l'administrateur de votre entreprise.",
+    "noCompanyAccount": "Aucun compte entreprise trouvé pour cet e-mail.",
+    "patternInfo": "Veuillez dessiner votre motif pour continuer.",
+    "companyPatternInfo": "Veuillez dessiner le motif de l'entreprise pour continuer.",
+    "wrongPattern": "Motif incorrect. Réessayez.",
+    "resetLinkSent": "Lien de réinitialisation envoyé à votre e-mail !",
+    "loginFailed": "Échec de la connexion"
   }
 }

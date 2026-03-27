@@ -2046,5 +2046,38 @@
   },
   "agentLogin": {
     "frozenMessage": "Your agent account has been temporarily frozen because your company's plan was downgraded. Please contact your company to upgrade their plan and restore your account. If not restored by {{date}}, your account will be permanently deleted."
+  },
+  "professionalLogin": {
+    "agent": "Agent",
+    "company": "Company",
+    "agentLogin": "Agent Login",
+    "companyLogin": "Company Login",
+    "signInAgent": "Sign in to your agent dashboard",
+    "signInCompany": "Sign in to your company dashboard",
+    "patternUnlock": "Pattern Unlock",
+    "drawPattern": "Draw your pattern to continue",
+    "connectDots": "Connect at least 3 dots to unlock",
+    "emailAddress": "Email Address",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot Password?",
+    "logIn": "Log in",
+    "signingIn": "Signing in...",
+    "resetPassword": "Reset Password",
+    "enterEmailReset": "Enter your email to receive a reset link",
+    "sendResetLink": "Send Reset Link",
+    "sending": "Sending...",
+    "backToLogin": "← Back to login",
+    "loginAsBuyer": "Login as Buyer",
+    "welcomeAgent": "Welcome to your Agent Dashboard!",
+    "welcomeCompany": "Welcome to your Company Dashboard!",
+    "noAgentAccount": "No agent account found for this email.",
+    "agentNotActive": "Your agent account is not active yet. Contact your company admin.",
+    "noCompanyAccount": "No company account found for this email.",
+    "patternInfo": "Please draw your pattern to continue.",
+    "companyPatternInfo": "Please draw your company pattern to continue.",
+    "wrongPattern": "Wrong pattern. Try again.",
+    "resetLinkSent": "Password reset link sent to your email!",
+    "loginFailed": "Login failed"
   }
 }
