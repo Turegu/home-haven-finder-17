@@ -320,7 +320,7 @@ const CompanyInboxPage = () => {
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
                       {tab === "property_request" && (
-                        <TableCell className="text-sm font-medium text-foreground">{item.budget || "—"}</TableCell>
+                        <TableCell className="text-sm font-medium text-foreground">{item.budget ? item.budget.trim() : "—"}</TableCell>
                       )}
                       <TableCell>
                         <Badge
