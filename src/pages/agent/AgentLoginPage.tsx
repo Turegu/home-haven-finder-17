@@ -306,7 +306,7 @@ const AgentLoginPage = () => {
                 onClick={handlePatternBack}
                 className="text-sm text-primary hover:underline w-full text-center block"
               >
-                ← Back to login
+                {t("professionalLogin.backToLogin")}
               </button>
             </div>
           ) : (
