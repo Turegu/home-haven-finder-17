@@ -119,29 +119,33 @@ const AgentInboxPage = () => {
     init();
   }, []);
 
-  const fetchItems = async () => {
+  useEffect(() => {
     if (!companyId || !agentId) return;
-    setLoading(true);
-    const { data } = await supabase
-      .from("company_inbox")
-      .select("*, properties(title, listing_id, images, price, currency, location), projects(title, listing_id, images, min_price, currency, location)")
-      .eq("company_id", companyId)
-      .eq("agent_id", agentId)
-      .eq("inbox_type", tab)
-      .order("created_at", { ascending: false });
-    const mapped = (data || []).map((row: any) => ({
-      ...row,
-      listing_meta: row.properties
-        ? { title: row.properties.title, listing_id: row.properties.listing_id, images: row.properties.images, price: row.properties.price, currency: row.properties.currency, location: row.properties.location }
-        : row.projects
-        ? { title: row.projects.title, listing_id: row.projects.listing_id, images: row.projects.images, price: row.projects.min_price, currency: row.projects.currency, location: row.projects.location }
-        : null,
-    }));
-    setItems(mapped);
-    setLoading(false);
-  };
-
-  useEffect(() => { if (companyId && agentId) fetchItems(); }, [companyId, agentId, tab]);
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("company_inbox")
+        .select("*, properties(title, listing_id, images, price, currency, location), projects(title, listing_id, images, min_price, currency, location)")
+        .eq("company_id", companyId)
+        .eq("agent_id", agentId)
+        .eq("inbox_type", tab)
+        .order("created_at", { ascending: false });
+      if (cancelled) return;
+      const mapped = (data || []).map((row: any) => ({
+        ...row,
+        listing_meta: row.properties
+          ? { title: row.properties.title, listing_id: row.properties.listing_id, images: row.properties.images, price: row.properties.price, currency: row.properties.currency, location: row.properties.location }
+          : row.projects
+          ? { title: row.projects.title, listing_id: row.projects.listing_id, images: row.projects.images, price: row.projects.min_price, currency: row.projects.currency, location: row.projects.location }
+          : null,
+      }));
+      setItems(mapped);
+      setLoading(false);
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [companyId, agentId, tab]);
 
   const filtered = items.filter(
     (i) => turkishIncludes(i.full_name, search) || turkishIncludes(i.email, search)
