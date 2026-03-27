@@ -232,7 +232,6 @@ const App = () => {
             <Route path="/company/agents" element={<CompanyAgentsPage />} />
             <Route path="/company/agents/new" element={<CompanyAgentEditPage />} />
             <Route path="/company/agents/:id/edit" element={<CompanyAgentEditPage />} />
-            
             <Route path="/company/credits" element={<CompanyCreditHistoryPage />} />
             <Route path="/company/inbox" element={<CompanyInboxPage />} />
             <Route path="/company/followers" element={<CompanyFollowersPage />} />
@@ -245,7 +244,6 @@ const App = () => {
             <Route path="/agent/projects" element={<AgentProjectsPage />} />
             <Route path="/agent/events" element={<AgentEventsPage />} />
             <Route path="/agent/followers" element={<AgentFollowersPage />} />
-            
             <Route path="/agent/inbox" element={<AgentInboxPage />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
