@@ -106,6 +106,7 @@ const CompanyInboxPage = () => {
   const [activeTab, setActiveTab] = useState<InboxTab>(INBOX_TYPES.INQUIRY);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
   const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -133,68 +134,80 @@ const CompanyInboxPage = () => {
     init();
   }, []);
 
-  // stale closure fix — pass tabType explicitly
-  const fetchItems = async (tabType: InboxTab = activeTab) => {
+  useEffect(() => {
     if (!companyId) return;
-    setLoading(true);
+    let cancelled = false;
 
-    const { data: inboxData, error } = await inboxService.getByCompany(companyId, tabType);
+    const load = async () => {
+      setLoading(true);
 
-    if (error) {
-      toast.error("Failed to load inbox");
+      const { data, error } = await inboxService.getByCompany(companyId, activeTab);
+
+      if (cancelled) return;
+
+      if (error) {
+        toast.error("Failed to load inbox");
+        setLoading(false);
+        return;
+      }
+
+      const rows = (data || []) as InboxItem[];
+      const propertyIds = Array.from(new Set(rows.map((r) => r.property_id).filter(Boolean))) as string[];
+      const projectIds = Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean))) as string[];
+
+      const [propertiesRes, projectsRes] = await Promise.all([
+        propertyIds.length > 0
+          ? supabase.from("properties").select("id, title, listing_id, images, price, currency, location").in("id", propertyIds)
+          : Promise.resolve({ data: [] as any[], error: null }),
+        projectIds.length > 0
+          ? supabase.from("projects").select("id, title, listing_id, images, min_price, currency, location").in("id", projectIds)
+          : Promise.resolve({ data: [] as any[], error: null }),
+      ]);
+
+      if (cancelled) return;
+
+      const propertyMap = new Map<string, ListingMeta>(
+        ((propertiesRes.data || []) as any[]).map((p) => [p.id, {
+          title: p.title,
+          listing_id: p.listing_id,
+          images: p.images,
+          price: p.price,
+          currency: p.currency,
+          location: p.location,
+        }])
+      );
+
+      const projectMap = new Map<string, ListingMeta>(
+        ((projectsRes.data || []) as any[]).map((p) => [p.id, {
+          title: p.title,
+          listing_id: p.listing_id,
+          images: p.images,
+          price: p.min_price,
+          currency: p.currency,
+          location: p.location,
+        }])
+      );
+
+      const mapped = rows.map((row) => ({
+        ...row,
+        listing_meta: row.property_id
+          ? propertyMap.get(row.property_id) || null
+          : row.project_id
+          ? projectMap.get(row.project_id) || null
+          : null,
+      }));
+
+      setItems(mapped);
+      setSelected([]);
       setLoading(false);
-      return;
-    }
+    };
 
-    const rows = (inboxData || []) as InboxItem[];
-    const propertyIds = Array.from(new Set(rows.map((r) => r.property_id).filter(Boolean))) as string[];
-    const projectIds = Array.from(new Set(rows.map((r) => r.project_id).filter(Boolean))) as string[];
+    load();
 
-    const [propertiesRes, projectsRes] = await Promise.all([
-      propertyIds.length > 0
-        ? supabase.from("properties").select("id, title, listing_id, images, price, currency, location").in("id", propertyIds)
-        : Promise.resolve({ data: [] as any[], error: null }),
-      projectIds.length > 0
-        ? supabase.from("projects").select("id, title, listing_id, images, min_price, currency, location").in("id", projectIds)
-        : Promise.resolve({ data: [] as any[], error: null }),
-    ]);
-
-    const propertyMap = new Map<string, ListingMeta>(
-      ((propertiesRes.data || []) as any[]).map((p) => [p.id, {
-        title: p.title,
-        listing_id: p.listing_id,
-        images: p.images,
-        price: p.price,
-        currency: p.currency,
-        location: p.location,
-      }])
-    );
-    const projectMap = new Map<string, ListingMeta>(
-      ((projectsRes.data || []) as any[]).map((p) => [p.id, {
-        title: p.title,
-        listing_id: p.listing_id,
-        images: p.images,
-        price: p.min_price,
-        currency: p.currency,
-        location: p.location,
-      }])
-    );
-
-    const mapped = rows.map((row) => ({
-      ...row,
-      listing_meta: row.property_id
-        ? propertyMap.get(row.property_id) || null
-        : row.project_id
-        ? projectMap.get(row.project_id) || null
-        : null,
-    }));
-
-    setItems(mapped);
-    setSelected([]);
-    setLoading(false);
-  };
-
-  useEffect(() => { if (companyId) fetchItems(activeTab); }, [companyId, activeTab]);
+    return () => {
+      cancelled = true;
+    };
+  }, [companyId, activeTab, refreshCounter]);
 
   useEffect(() => {
     if (!companyId) return;
@@ -236,7 +249,7 @@ const CompanyInboxPage = () => {
     else {
       toast.success(`${selected.length} item(s) deleted`);
       setSelected([]);
-      fetchItems(activeTab);
+      setRefreshCounter((prev) => prev + 1);
     }
   };
 
