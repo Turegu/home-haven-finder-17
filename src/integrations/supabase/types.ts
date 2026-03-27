@@ -2646,6 +2646,24 @@ export type Database = {
       }
     }
     Views: {
+      agent_response_metrics: {
+        Row: {
+          agent_id: string | null
+          avg_response_hours: number | null
+          responded_count: number | null
+          response_rate: number | null
+          total_inquiries: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_inbox_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_response_metrics: {
         Row: {
           avg_response_hours: number | null
