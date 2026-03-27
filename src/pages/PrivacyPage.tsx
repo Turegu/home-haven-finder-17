@@ -21,7 +21,7 @@ const PrivacyPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <title>{t('pages.privacy.title')} – Turegu</title>
+      <SEOHead title={t('pages.privacy.title')} description="Read Turegu's privacy policy to understand how we collect, use, and protect your personal data." url={window.location.href} />
       <Header />
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">

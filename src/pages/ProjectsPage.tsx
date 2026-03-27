@@ -172,6 +172,11 @@ const ProjectsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="New Projects"
+        description="Explore new residential and commercial development projects. Find off-plan properties, compare units, and invest in upcoming developments."
+        url={window.location.href}
+      />
       <Header />
 
       {/* Search Bar + Filters */}

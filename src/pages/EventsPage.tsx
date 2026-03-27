@@ -100,6 +100,11 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Real Estate Events"
+        description="Discover upcoming real estate events, open houses, exhibitions, and seminars. Stay connected with the property community."
+        url={window.location.href}
+      />
       <Header />
 
       {/* Search Bar */}

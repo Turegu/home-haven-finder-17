@@ -286,6 +286,11 @@ const BuyPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={isRent ? 'Properties for Rent' : 'Properties for Sale'}
+        description={isRent ? 'Browse rental properties. Filter by location, price, and type to find your perfect home.' : 'Browse properties for sale. Filter by location, price, and type to find your dream home.'}
+        url={window.location.href}
+      />
       <Header />
 
       {/* Search Bar + Filters */}

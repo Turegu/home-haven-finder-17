@@ -165,7 +165,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <title>Turegu – Your Property, Our Priority</title>
+      <SEOHead
+        title="Turegu – Your Property, Our Priority"
+        description="Browse properties for sale and rent. Explore new projects, find trusted agents, and discover your dream home with Turegu."
+        url={window.location.href}
+        jsonLd={{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Turegu', url: window.location.origin, potentialAction: { '@type': 'SearchAction', target: `${window.location.origin}/buy?keyword={search_term_string}`, 'query-input': 'required name=search_term_string' } }}
+      />
       <Header />
 
       {/* Hero Banner — only render once CMS data is loaded */}

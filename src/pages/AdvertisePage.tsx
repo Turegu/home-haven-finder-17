@@ -116,6 +116,7 @@ const AdvertisePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEOHead title="Advertise With Us" description="List your properties on Turegu. Reach thousands of potential buyers and tenants with professional listing tools." url={window.location.href} />
       <Header />
 
       {/* Hero Section */}
