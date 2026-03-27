@@ -234,21 +234,21 @@ const CompanyLoginPage = () => {
           <div className="text-center mb-6">
             <h1 className="text-xl font-bold text-foreground">
               {showForgot
-                ? "Reset Password"
+                ? t("professionalLogin.resetPassword")
                 : step === "pattern"
-                ? "Pattern Unlock"
+                ? t("professionalLogin.patternUnlock")
                 : mode === "agent"
-                ? "Agent Login"
-                : "Company Login"}
+                ? t("professionalLogin.agentLogin")
+                : t("professionalLogin.companyLogin")}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {showForgot
-                ? "Enter your email to receive a reset link"
+                ? t("professionalLogin.enterEmailReset")
                 : step === "pattern"
-                ? "Draw your company pattern to continue"
+                ? t("professionalLogin.drawPattern")
                 : mode === "agent"
-                ? "Sign in to your agent dashboard"
-                : "Sign in to your company dashboard"}
+                ? t("professionalLogin.signInAgent")
+                : t("professionalLogin.signInCompany")}
             </p>
           </div>
 
