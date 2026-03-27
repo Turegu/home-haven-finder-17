@@ -133,11 +133,11 @@ const CompanyInboxPage = () => {
     init();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchItems = async (tabType: InboxTab = activeTab) => {
     if (!companyId) return;
     setLoading(true);
 
-    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, activeTab);
+    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, tabType);
 
     if (error) {
       toast.error("Failed to load inbox");
@@ -193,7 +193,7 @@ const CompanyInboxPage = () => {
     setLoading(false);
   };
 
-  useEffect(() => { if (companyId) fetchItems(); }, [companyId, activeTab]);
+  useEffect(() => { if (companyId) fetchItems(activeTab); }, [companyId, activeTab]);
 
   useEffect(() => {
     if (!companyId) return;
@@ -235,7 +235,7 @@ const CompanyInboxPage = () => {
     else {
       toast.success(`${selected.length} item(s) deleted`);
       setSelected([]);
-      fetchItems();
+      fetchItems(activeTab);
     }
   };
 
