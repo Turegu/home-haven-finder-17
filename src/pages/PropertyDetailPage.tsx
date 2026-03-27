@@ -387,7 +387,7 @@ const PropertyDetailPage = () => {
               );
               return visibleImages.map((img, i) => (
                 <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
-                  <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={i === 0 && currentImage === 0 ? getOptimizedImageUrl(img, 'hero') : getOptimizedImageUrl(img, 'hero')} alt={`${property.title} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : undefined} className="w-full h-full object-cover" />
                 </div>
               ));
             })()}
