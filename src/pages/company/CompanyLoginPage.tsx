@@ -308,7 +308,7 @@ const CompanyLoginPage = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-foreground">Password</Label>
+                  <Label htmlFor="password" className="text-foreground">{t("professionalLogin.password")}</Label>
                   <div className="relative">
                     <Input
                       id="password"
