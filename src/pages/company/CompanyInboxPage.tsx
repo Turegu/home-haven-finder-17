@@ -193,7 +193,7 @@ const CompanyInboxPage = () => {
     setLoading(false);
   };
 
-  useEffect(() => { if (companyId) fetchItems(); }, [companyId, activeTab]);
+  useEffect(() => { if (companyId) fetchItems(activeTab); }, [companyId, activeTab]);
 
   useEffect(() => {
     if (!companyId) return;
