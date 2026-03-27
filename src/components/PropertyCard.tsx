@@ -70,8 +70,10 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
     <div className="group bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
-          src={property.images[currentImage]}
+          src={getOptimizedImageUrl(property.images[currentImage], 'card')}
           alt={property.title}
+          width={400}
+          height={300}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />

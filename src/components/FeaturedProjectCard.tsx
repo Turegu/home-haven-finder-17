@@ -36,8 +36,10 @@ const FeaturedProjectCard = ({ project }: FeaturedProjectCardProps) => {
       {/* Full image background */}
       <div className="relative aspect-[6/7] overflow-hidden">
         <img
-          src={project.image}
+          src={getOptimizedImageUrl(project.image, 'card')}
           alt={project.title}
+          width={400}
+          height={467}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]"
         />

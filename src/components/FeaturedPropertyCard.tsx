@@ -72,8 +72,10 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
       {/* Full-bleed image */}
       <div className="relative aspect-[6/7] overflow-hidden">
         <img
-          src={property.images[currentImage]}
+          src={getOptimizedImageUrl(property.images[currentImage], 'card')}
           alt={property.title}
+          width={400}
+          height={467}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-[1.04]"
         />
