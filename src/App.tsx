@@ -95,7 +95,7 @@ const CompanyEventsPage = lazy(() => import("./pages/company/CompanyEventsPage.t
 const CompanyEventEditPage = lazy(() => import("./pages/company/CompanyEventEditPage.tsx"));
 const CompanyAgentsPage = lazy(() => import("./pages/company/CompanyAgentsPage.tsx"));
 const CompanyAgentEditPage = lazy(() => import("./pages/company/CompanyAgentEditPage.tsx"));
-const CompanyNotificationsPage = lazy(() => import("./pages/company/CompanyNotificationsPage.tsx"));
+
 const CompanyCreditHistoryPage = lazy(() => import("./pages/company/CompanyCreditHistoryPage.tsx"));
 const CompanyInboxPage = lazy(() => import("./pages/company/CompanyInboxPage.tsx"));
 const CompanyFollowersPage = lazy(() => import("./pages/company/CompanyFollowersPage.tsx"));
@@ -108,7 +108,7 @@ const AgentPropertiesPage = lazy(() => import("./pages/agent/AgentPropertiesPage
 const AgentProjectsPage = lazy(() => import("./pages/agent/AgentProjectsPage.tsx"));
 const AgentEventsPage = lazy(() => import("./pages/agent/AgentEventsPage.tsx"));
 const AgentFollowersPage = lazy(() => import("./pages/agent/AgentFollowersPage.tsx"));
-const AgentNotificationsPage = lazy(() => import("./pages/agent/AgentNotificationsPage.tsx"));
+
 const AgentInboxPage = lazy(() => import("./pages/agent/AgentInboxPage.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
@@ -232,7 +232,7 @@ const App = () => {
             <Route path="/company/agents" element={<CompanyAgentsPage />} />
             <Route path="/company/agents/new" element={<CompanyAgentEditPage />} />
             <Route path="/company/agents/:id/edit" element={<CompanyAgentEditPage />} />
-            <Route path="/company/notifications" element={<CompanyNotificationsPage />} />
+            
             <Route path="/company/credits" element={<CompanyCreditHistoryPage />} />
             <Route path="/company/inbox" element={<CompanyInboxPage />} />
             <Route path="/company/followers" element={<CompanyFollowersPage />} />
@@ -245,7 +245,7 @@ const App = () => {
             <Route path="/agent/projects" element={<AgentProjectsPage />} />
             <Route path="/agent/events" element={<AgentEventsPage />} />
             <Route path="/agent/followers" element={<AgentFollowersPage />} />
-            <Route path="/agent/notifications" element={<AgentNotificationsPage />} />
+            
             <Route path="/agent/inbox" element={<AgentInboxPage />} />
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

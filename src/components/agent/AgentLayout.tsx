@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, FolderKanban, Calendar,
-  UserCircle, Bell, Mail, LogOut, Menu, Users2
+  UserCircle, Mail, LogOut, Menu, Users2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -22,18 +22,6 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const mainLinks = [
-    { label: t("agentDashboard.dashboard"), path: "/agent", icon: LayoutDashboard },
-    { label: t("agentDashboard.properties"), path: "/agent/properties", icon: Building2 },
-    { label: t("agentDashboard.projects"), path: "/agent/projects", icon: FolderKanban },
-    { label: t("agentDashboard.events"), path: "/agent/events", icon: Calendar },
-    { label: t("agentDashboard.followers"), path: "/agent/followers", icon: Users2 },
-    { label: t("agentDashboard.notifications"), path: "/agent/notifications", icon: Bell },
-    { label: t("agentDashboard.inbox"), path: "/agent/inbox", icon: Mail },
-  ];
-
-  const settingsLink = { label: t("agentDashboard.profileSettings"), path: "/agent/profile", icon: UserCircle };
-
   const { data: agentData } = useQuery({
     queryKey: ['agent-layout-auth'],
     queryFn: async () => {
@@ -44,7 +32,7 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
       }
       const { data: agent } = await supabase
         .from("agents")
-        .select("name, avatar_url")
+        .select("id, name, avatar_url, company_id")
         .eq("user_id", session.user.id)
         .limit(1)
         .maybeSingle();
@@ -60,16 +48,62 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
     gcTime: 10 * 60 * 1000,
   });
 
+  const agentId = agentData?.id || null;
+  const companyId = agentData?.company_id || null;
   const agentName = agentData?.name || "";
   const agentAvatar = agentData?.avatar_url || null;
+
+  // Unseen inbox count (agent's assigned items across all tabs)
+  const { data: inboxUnseenCount } = useQuery({
+    queryKey: ['agent-sidebar-inbox-unseen', agentId],
+    queryFn: async () => {
+      if (!agentId) return 0;
+      const { count } = await supabase
+        .from("company_inbox")
+        .select("*", { count: "exact", head: true })
+        .eq("agent_id", agentId)
+        .eq("is_seen", false);
+      return count || 0;
+    },
+    enabled: !!agentId,
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+
+  // New followers in last 7 days (company followers visible to agent)
+  const { data: newFollowersCount } = useQuery({
+    queryKey: ['agent-sidebar-new-followers', companyId],
+    queryFn: async () => {
+      if (!companyId) return 0;
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await supabase
+        .from("company_followers")
+        .select("*", { count: "exact", head: true })
+        .eq("company_id", companyId)
+        .gte("created_at", sevenDaysAgo);
+      return count || 0;
+    },
+    enabled: !!companyId,
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
+
+  const mainLinks = [
+    { label: t("agentDashboard.dashboard"), path: "/agent", icon: LayoutDashboard, badge: 0 },
+    { label: t("agentDashboard.properties"), path: "/agent/properties", icon: Building2, badge: 0 },
+    { label: t("agentDashboard.projects"), path: "/agent/projects", icon: FolderKanban, badge: 0 },
+    { label: t("agentDashboard.events"), path: "/agent/events", icon: Calendar, badge: 0 },
+    { label: t("agentDashboard.followers"), path: "/agent/followers", icon: Users2, badge: newFollowersCount || 0 },
+    { label: t("agentDashboard.inbox"), path: "/agent/inbox", icon: Mail, badge: inboxUnseenCount || 0 },
+  ];
+
+  const settingsLink = { label: t("agentDashboard.profileSettings"), path: "/agent/profile", icon: UserCircle, badge: 0 };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/agent/login");
     toast.success(t("agentDashboard.logout"));
   };
-
-  // Language toggle handled by DashboardSidebarHeader
 
   const renderLink = (link: typeof settingsLink) => {
     const isActive = location.pathname === link.path;
@@ -85,7 +119,14 @@ const AgentLayout = ({ children }: AgentLayoutProps) => {
         }`}
       >
         <link.icon className="h-4 w-4 shrink-0" />
-        {link.label}
+        <span className="flex-1">{link.label}</span>
+        {link.badge > 0 && (
+          <span className={`min-w-[20px] h-5 flex items-center justify-center rounded-full text-[11px] font-bold px-1.5 ${
+            isActive ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary text-primary-foreground"
+          }`}>
+            {link.badge > 99 ? "99+" : link.badge}
+          </span>
+        )}
       </Link>
     );
   };
