@@ -86,6 +86,16 @@ const CompanyDetailPage = () => {
           projects: projCount ?? 0,
           events: evtCount ?? 0,
         });
+
+        // Fetch response metrics
+        const { data: metrics } = await supabase
+          .from('company_response_metrics' as any)
+          .select('response_rate, avg_response_hours')
+          .eq('company_id', data.id)
+          .maybeSingle();
+        if (metrics) {
+          setResponseMetrics(metrics as any);
+        }
       }
       setLoading(false);
     };
