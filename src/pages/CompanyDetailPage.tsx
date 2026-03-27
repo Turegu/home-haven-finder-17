@@ -141,6 +141,22 @@ const CompanyDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={company.name}
+        description={`${typeLabel(company.company_types)} in ${[company.neighbourhood, company.town, company.province].filter(Boolean).join(', ') || 'the Middle East'}. ${counts.buy + counts.rent} properties, ${counts.projects} projects.`}
+        image={company.logo_url || undefined}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="website"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateAgent',
+          name: company.name,
+          image: company.logo_url,
+          url: typeof window !== 'undefined' ? window.location.href : '',
+          telephone: company.phone,
+          email: company.email,
+        }}
+      />
       <Header />
 
       {/* Breadcrumb */}

@@ -59,6 +59,21 @@ const BlogDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={translation?.title || 'Blog'}
+        description={translation?.description?.replace(/<[^>]*>/g, '').slice(0, 160) || undefined}
+        image={blog.image_url || undefined}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: translation?.title,
+          image: blog.image_url,
+          datePublished: blog.created_at,
+          author: blog.author ? { '@type': 'Person', name: blog.author } : undefined,
+        }}
+      />
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">

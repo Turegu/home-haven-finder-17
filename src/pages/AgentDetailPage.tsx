@@ -123,6 +123,23 @@ const AgentDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={getLocalizedName(agent.name, agent.name_ar, agent.name_fr)}
+        description={`${getTranslatedLabel(dbDesignations, agent.designation, lang)} at ${agent.companies?.name || 'Turegu'}. ${counts.buy + counts.rent} properties, ${counts.projects} projects.`}
+        image={agent.avatar_url || agent.companies?.logo_url || undefined}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="website"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateAgent',
+          name: getLocalizedName(agent.name, agent.name_ar, agent.name_fr),
+          image: agent.avatar_url,
+          url: typeof window !== 'undefined' ? window.location.href : '',
+          telephone: agent.phone,
+          email: agent.email,
+          worksFor: agent.companies ? { '@type': 'Organization', name: agent.companies.name } : undefined,
+        }}
+      />
       <Header />
 
       {/* Breadcrumb */}
