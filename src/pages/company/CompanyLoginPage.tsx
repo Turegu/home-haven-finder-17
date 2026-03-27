@@ -226,7 +226,7 @@ const CompanyLoginPage = () => {
                 }`}
               >
                 <Building2 className="h-4 w-4" />
-                Company
+                {t("professionalLogin.company")}
               </button>
             </div>
           )}
