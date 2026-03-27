@@ -69,6 +69,17 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [selectedUnitId, setSelectedUnitId] = useState<string>('');
 
+  // Deterministic success close flow
+  useEffect(() => {
+    if (!open || !sent) return;
+    const timer = window.setTimeout(() => {
+      onOpenChange(false);
+      setSent(false);
+      setSending(false);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [open, sent, onOpenChange]);
+
   useEffect(() => {
     if (open) {
       setSent(false);
