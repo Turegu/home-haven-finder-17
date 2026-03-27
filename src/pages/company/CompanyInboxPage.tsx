@@ -248,9 +248,7 @@ const CompanyInboxPage = () => {
   };
 
   const handleTabChange = (value: string) => {
-    if (value === INBOX_TYPES.PROPERTY_REQUEST || value === INBOX_TYPES.INQUIRY || value === INBOX_TYPES.MESSAGE) {
-      setActiveTab(value);
-    }
+    setActiveTab(value as InboxTab);
   };
 
   const renderInboxTable = (tab: string) => {
