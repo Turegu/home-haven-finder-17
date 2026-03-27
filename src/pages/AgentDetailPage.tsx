@@ -88,6 +88,16 @@ const AgentDetailPage = () => {
           supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
         ]);
         setCounts({ buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 });
+
+        // Fetch agent response metrics
+        const { data: metrics } = await supabase
+          .from('agent_response_metrics' as any)
+          .select('response_rate, avg_response_hours')
+          .eq('agent_id', agentData.id)
+          .maybeSingle();
+        if (metrics) {
+          setResponseMetrics(metrics as any);
+        }
       }
       setLoading(false);
     };
