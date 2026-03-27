@@ -57,6 +57,7 @@ const AgentDetailPage = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
+  const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
   const localizedLanguages = useLocalizedLanguages(agent?.languages);
   const localizedServiceAreas = useLocalizedServiceAreas(agent?.service_areas);
 
