@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { ArrowRight, MapPin, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import FeaturedProjectCard from '@/components/FeaturedProjectCard';
 import FeaturedPropertyCard from '@/components/FeaturedPropertyCard';
