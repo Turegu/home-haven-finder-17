@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
     const { data: inviteData, error: inviteError } =
       await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
         data: { is_company: true },
-        redirectTo: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/company/login`,
+        redirectTo: `${Deno.env.get("SITE_URL") || "https://home-haven-finder-17.lovable.app"}/company/login`,
       });
 
     if (inviteError) {
