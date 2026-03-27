@@ -355,7 +355,7 @@ const AgentLoginPage = () => {
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                     />
                     <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
-                      Remember me
+                      {t("professionalLogin.rememberMe")}
                     </Label>
                   </div>
                   <button
