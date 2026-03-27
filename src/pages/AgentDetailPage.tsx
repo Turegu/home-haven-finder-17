@@ -58,6 +58,7 @@ const AgentDetailPage = () => {
   const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
   const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
+  const [responseRateVisible, setResponseRateVisible] = useState(false);
   const localizedLanguages = useLocalizedLanguages(agent?.languages);
   const localizedServiceAreas = useLocalizedServiceAreas(agent?.service_areas);
 
@@ -89,14 +90,24 @@ const AgentDetailPage = () => {
         ]);
         setCounts({ buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 });
 
-        // Fetch agent response metrics
-        const { data: metrics } = await supabase
-          .from('agent_response_metrics' as any)
-          .select('response_rate, avg_response_hours')
-          .eq('agent_id', agentData.id)
+        // Check if response rate is visible
+        const { data: rrSetting } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'response_rate_visible')
           .maybeSingle();
-        if (metrics) {
-          setResponseMetrics(metrics as any);
+        const showRate = rrSetting?.setting_value !== 'false';
+        setResponseRateVisible(showRate);
+
+        if (showRate) {
+          const { data: metrics } = await supabase
+            .from('agent_response_metrics' as any)
+            .select('response_rate, avg_response_hours')
+            .eq('agent_id', agentData.id)
+            .maybeSingle();
+          if (metrics) {
+            setResponseMetrics(metrics as any);
+          }
         }
       }
       setLoading(false);
@@ -245,7 +256,7 @@ const AgentDetailPage = () => {
                   </div>
 
                   {/* Response rate badge */}
-                  {responseMetrics.response_rate !== null && (
+                  {responseRateVisible && responseMetrics.response_rate !== null && (
                     <div className="flex items-center gap-2 mt-2">
                       <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
                         responseMetrics.response_rate >= 80 ? 'bg-[hsl(142,70%,40%)]/10 text-[hsl(142,70%,40%)]' :

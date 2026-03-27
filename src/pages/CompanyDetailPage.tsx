@@ -56,6 +56,7 @@ const CompanyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ agents: 0, buy: 0, rent: 0, projects: 0, events: 0 });
   const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
+  const [responseRateVisible, setResponseRateVisible] = useState(false);
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
@@ -87,14 +88,24 @@ const CompanyDetailPage = () => {
           events: evtCount ?? 0,
         });
 
-        // Fetch response metrics
-        const { data: metrics } = await supabase
-          .from('company_response_metrics' as any)
-          .select('response_rate, avg_response_hours')
-          .eq('company_id', data.id)
+        // Check if response rate is visible
+        const { data: rrSetting } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'response_rate_visible')
           .maybeSingle();
-        if (metrics) {
-          setResponseMetrics(metrics as any);
+        const showRate = rrSetting?.setting_value !== 'false';
+        setResponseRateVisible(showRate);
+
+        if (showRate) {
+          const { data: metrics } = await supabase
+            .from('company_response_metrics' as any)
+            .select('response_rate, avg_response_hours')
+            .eq('company_id', data.id)
+            .maybeSingle();
+          if (metrics) {
+            setResponseMetrics(metrics as any);
+          }
         }
       }
       setLoading(false);
@@ -249,7 +260,7 @@ const CompanyDetailPage = () => {
                   </div>
 
                   {/* Response rate badge */}
-                  {responseMetrics.response_rate !== null && (
+                  {responseRateVisible && responseMetrics.response_rate !== null && (
                     <div className="flex items-center gap-2 mt-2">
                       <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
                         responseMetrics.response_rate >= 80 ? 'bg-[hsl(142,70%,40%)]/10 text-[hsl(142,70%,40%)]' :
