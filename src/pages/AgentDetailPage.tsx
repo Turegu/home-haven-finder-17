@@ -256,7 +256,7 @@ const AgentDetailPage = () => {
                   </div>
 
                   {/* Response rate badge */}
-                  {responseMetrics.response_rate !== null && (
+                  {responseRateVisible && responseMetrics.response_rate !== null && (
                     <div className="flex items-center gap-2 mt-2">
                       <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
                         responseMetrics.response_rate >= 80 ? 'bg-[hsl(142,70%,40%)]/10 text-[hsl(142,70%,40%)]' :
