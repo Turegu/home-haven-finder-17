@@ -133,11 +133,11 @@ const CompanyInboxPage = () => {
     init();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchItems = async (tabType: InboxTab = activeTab) => {
     if (!companyId) return;
     setLoading(true);
 
-    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, activeTab);
+    const { data: inboxRows, error } = await inboxService.getByCompany(companyId, tabType);
 
     if (error) {
       toast.error("Failed to load inbox");
