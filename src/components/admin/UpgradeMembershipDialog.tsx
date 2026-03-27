@@ -95,7 +95,7 @@ const UpgradeMembershipDialog = ({
       const { error } = await supabase.rpc("admin_change_membership", {
         p_company_id: companyId,
         p_new_membership: selectedPackage,
-        p_new_end_date: newEndDate,
+        p_new_end_date: newEndDate!,
       });
 
       if (error) throw error;

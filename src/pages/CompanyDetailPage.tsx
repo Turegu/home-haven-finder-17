@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import SEOHead from '@/components/SEOHead';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Users, Building2, Calendar, Home } from 'lucide-react';
@@ -54,6 +55,7 @@ const CompanyDetailPage = () => {
   const [activeTab, setActiveTab] = useState('properties');
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ agents: 0, buy: 0, rent: 0, projects: 0, events: 0 });
+  const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
@@ -84,6 +86,16 @@ const CompanyDetailPage = () => {
           projects: projCount ?? 0,
           events: evtCount ?? 0,
         });
+
+        // Fetch response metrics
+        const { data: metrics } = await supabase
+          .from('company_response_metrics' as any)
+          .select('response_rate, avg_response_hours')
+          .eq('company_id', data.id)
+          .maybeSingle();
+        if (metrics) {
+          setResponseMetrics(metrics as any);
+        }
       }
       setLoading(false);
     };
@@ -140,6 +152,22 @@ const CompanyDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={company.name}
+        description={`${typeLabel(company.company_types)}. ${counts.buy + counts.rent} properties, ${counts.projects} projects.`}
+        image={company.logo_url || undefined}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+        type="website"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateAgent',
+          name: company.name,
+          image: company.logo_url,
+          url: typeof window !== 'undefined' ? window.location.href : '',
+          telephone: company.phone,
+          email: company.email,
+        }}
+      />
       <Header />
 
       {/* Breadcrumb */}
@@ -219,6 +247,25 @@ const CompanyDetailPage = () => {
                       </div>
                     ))}
                   </div>
+
+                  {/* Response rate badge */}
+                  {responseMetrics.response_rate !== null && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
+                        responseMetrics.response_rate >= 80 ? 'bg-[hsl(142,70%,40%)]/10 text-[hsl(142,70%,40%)]' :
+                        responseMetrics.response_rate >= 50 ? 'bg-[hsl(45,93%,47%)]/10 text-[hsl(45,93%,47%)]' :
+                        'bg-muted text-muted-foreground'
+                      }`}>
+                        <Mail className="h-3 w-3" />
+                        {responseMetrics.response_rate}% {t('companyDetail.responseRate', 'response rate')}
+                      </span>
+                      {responseMetrics.avg_response_hours !== null && (
+                        <span className="text-xs text-muted-foreground">
+                          ~{responseMetrics.avg_response_hours}h {t('companyDetail.avgResponse', 'avg. response')}
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   {/* Contact pills */}
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
