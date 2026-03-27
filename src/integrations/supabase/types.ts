@@ -624,6 +624,7 @@ export type Database = {
           phone: string | null
           project_id: string | null
           property_id: string | null
+          responded_at: string | null
         }
         Insert: {
           agent_id?: string | null
@@ -639,6 +640,7 @@ export type Database = {
           phone?: string | null
           project_id?: string | null
           property_id?: string | null
+          responded_at?: string | null
         }
         Update: {
           agent_id?: string | null
@@ -654,6 +656,7 @@ export type Database = {
           phone?: string | null
           project_id?: string | null
           property_id?: string | null
+          responded_at?: string | null
         }
         Relationships: [
           {
@@ -2643,7 +2646,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      company_response_metrics: {
+        Row: {
+          avg_response_hours: number | null
+          company_id: string | null
+          responded_count: number | null
+          response_rate: number | null
+          total_inquiries: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_inbox_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       admin_change_membership: {
