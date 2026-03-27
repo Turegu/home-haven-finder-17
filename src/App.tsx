@@ -108,7 +108,7 @@ const AgentPropertiesPage = lazy(() => import("./pages/agent/AgentPropertiesPage
 const AgentProjectsPage = lazy(() => import("./pages/agent/AgentProjectsPage.tsx"));
 const AgentEventsPage = lazy(() => import("./pages/agent/AgentEventsPage.tsx"));
 const AgentFollowersPage = lazy(() => import("./pages/agent/AgentFollowersPage.tsx"));
-const AgentNotificationsPage = lazy(() => import("./pages/agent/AgentNotificationsPage.tsx"));
+
 const AgentInboxPage = lazy(() => import("./pages/agent/AgentInboxPage.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
