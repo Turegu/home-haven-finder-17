@@ -82,11 +82,11 @@ const CompanyLoginPage = () => {
       setSavedPattern(agentPatternData.pattern_code);
       setPendingRedirect("/agent");
       setStep("pattern");
-      toast.info("Please draw your pattern to continue.");
+      toast.info(t("professionalLogin.patternInfo"));
       return;
     }
 
-    toast.success("Welcome to your Agent Dashboard!");
+    toast.success(t("professionalLogin.welcomeAgent"));
     navigate("/agent");
   };
 
