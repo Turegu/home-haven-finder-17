@@ -143,7 +143,7 @@ const CompanyDetailPage = () => {
     <div className="min-h-screen bg-background">
       <SEOHead
         title={company.name}
-        description={`${typeLabel(company.company_types)} in ${[company.neighbourhood, company.town, company.province].filter(Boolean).join(', ') || 'the Middle East'}. ${counts.buy + counts.rent} properties, ${counts.projects} projects.`}
+        description={`${typeLabel(company.company_types)}. ${counts.buy + counts.rent} properties, ${counts.projects} projects.`}
         image={company.logo_url || undefined}
         url={typeof window !== 'undefined' ? window.location.href : ''}
         type="website"
