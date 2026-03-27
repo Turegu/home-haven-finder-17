@@ -43,7 +43,7 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
       setEarliestDate(earliest);
     };
 
-    fetch();
+    loadBannerData();
   }, [companyId, tableName]);
 
   if (count === 0) return null;
