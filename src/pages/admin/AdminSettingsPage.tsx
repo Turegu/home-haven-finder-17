@@ -156,9 +156,33 @@ const AdminSettingsPage = () => {
         </div>
 
 
+        {/* Response Rate Visibility */}
         <div className="bg-card rounded-lg border border-border p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Bot className="h-5 w-5" /> {t("admin.aiPropertySearch")}
+            <Eye className="h-5 w-5" /> {t("admin.responseRateVisibility", "Response Rate Visibility")}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {t("admin.responseRateVisibilityDesc", "Show or hide the response rate badge on public agent and company profile pages.")}
+          </p>
+          <div className="space-y-2">
+            <Label>{t("admin.responseRateStatus", "Response Rate Display")}</Label>
+            <Select value={responseRateVisible ? 'true' : 'false'} onValueChange={(v) => setResponseRateVisible(v === 'true')}>
+              <SelectTrigger className="w-full max-w-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="true">{t("admin.visible", "Visible")}</SelectItem>
+                <SelectItem value="false">{t("admin.hidden", "Hidden")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-start gap-2 p-3 rounded-md bg-muted border border-border text-foreground text-sm">
+            <Info className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>{t("admin.responseRateHiddenInfo", "When hidden, the response rate and average response time badges will not appear on any public profile page. Data continues to be tracked internally.")}</span>
+          </div>
+        </div>
+
+
           </h2>
           <p className="text-sm text-muted-foreground">
             Enable or disable the AI Property Agent button across all pages.
