@@ -501,7 +501,7 @@ const PropertyDetailPage = () => {
             <ChevronLeft className="h-6 w-6 text-white" />
           </button>
           <img
-            src={property.images[currentImage]}
+            src={getOptimizedImageUrl(property.images[currentImage], 'hero')}
             alt={property.title}
             className="max-h-[90vh] max-w-[90vw] object-contain"
             onClick={(e) => e.stopPropagation()}
