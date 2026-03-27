@@ -62,12 +62,12 @@ const CompanyLoginPage = () => {
     if (agentError) throw agentError;
     if (!agent) {
       await supabase.auth.signOut();
-      toast.error("No agent account found for this email.");
+      toast.error(t("professionalLogin.noAgentAccount"));
       return;
     }
     if (agent.status !== "active") {
       await supabase.auth.signOut();
-      toast.error("Your agent account is not active yet. Contact your company admin.");
+      toast.error(t("professionalLogin.agentNotActive"));
       return;
     }
 
