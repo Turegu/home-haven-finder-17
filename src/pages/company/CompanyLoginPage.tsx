@@ -153,12 +153,12 @@ const CompanyLoginPage = () => {
     const patternStr = pattern.join(",");
     if (patternStr === savedPattern) {
       setPatternError(false);
-      const welcomeMsg = pendingRedirect === "/agent" ? "Welcome to your Agent Dashboard!" : "Welcome to your Company Dashboard!";
+      const welcomeMsg = pendingRedirect === "/agent" ? t("professionalLogin.welcomeAgent") : t("professionalLogin.welcomeCompany");
       toast.success(welcomeMsg);
       navigate(pendingRedirect);
     } else {
       setPatternError(true);
-      toast.error("Wrong pattern. Try again.");
+      toast.error(t("professionalLogin.wrongPattern"));
       setTimeout(() => setPatternError(false), 800);
     }
   };
