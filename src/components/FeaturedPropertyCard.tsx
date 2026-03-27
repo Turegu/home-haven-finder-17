@@ -3,6 +3,7 @@ import { MapPin, Heart, Layers, BedDouble, Bath, Maximize, Crown, Star, Tag, Che
 import { useQueryClient } from '@tanstack/react-query';
 import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyActions';
 import { useAreaUnit } from '@/hooks/useAreaUnit';
+import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import type { Property } from '@/data/mockProperties';
 import { useTranslation } from "react-i18next";
 
