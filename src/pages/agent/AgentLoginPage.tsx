@@ -284,7 +284,7 @@ const AgentLoginPage = () => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending..." : "Send Reset Link"}
+                {loading ? t("professionalLogin.sending") : t("professionalLogin.sendResetLink")}
               </Button>
               <button
                 type="button"
