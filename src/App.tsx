@@ -95,7 +95,7 @@ const CompanyEventsPage = lazy(() => import("./pages/company/CompanyEventsPage.t
 const CompanyEventEditPage = lazy(() => import("./pages/company/CompanyEventEditPage.tsx"));
 const CompanyAgentsPage = lazy(() => import("./pages/company/CompanyAgentsPage.tsx"));
 const CompanyAgentEditPage = lazy(() => import("./pages/company/CompanyAgentEditPage.tsx"));
-const CompanyNotificationsPage = lazy(() => import("./pages/company/CompanyNotificationsPage.tsx"));
+
 const CompanyCreditHistoryPage = lazy(() => import("./pages/company/CompanyCreditHistoryPage.tsx"));
 const CompanyInboxPage = lazy(() => import("./pages/company/CompanyInboxPage.tsx"));
 const CompanyFollowersPage = lazy(() => import("./pages/company/CompanyFollowersPage.tsx"));
