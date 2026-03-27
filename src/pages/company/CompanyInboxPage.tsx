@@ -133,6 +133,7 @@ const CompanyInboxPage = () => {
     init();
   }, []);
 
+  // stale closure fix — pass tabType explicitly
   const fetchItems = async (tabType: InboxTab = activeTab) => {
     if (!companyId) return;
     setLoading(true);
