@@ -167,6 +167,7 @@ const App = () => {
             <Route path="/advertise" element={<AdvertisePage />} />
             <Route path="/mortgage-bank-loan" element={<MortgageBanksPage />} />
             <Route path="/contact-us" element={<ContactUsPage />} />
+            <Route path="/install" element={<InstallPage />} />
 
             {/* User auth */}
             <Route path="/login" element={<UserLoginPage />} />
