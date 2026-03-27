@@ -49,6 +49,7 @@ const AdminSettingsPage = () => {
         setMapProvider(map.map_provider || "google");
         setAnalyticsPhase((map.analytics_display_phase as AnalyticsPhase) || "phase1");
         setAiSearchEnabled(map.ai_search_enabled !== 'false');
+        setResponseRateVisible(map.response_rate_visible !== 'false');
         setCurrentPattern(map.admin_pattern_code || "");
         setPatternActive(map.admin_pattern_active !== 'false');
       }
