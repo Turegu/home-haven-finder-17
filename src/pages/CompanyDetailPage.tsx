@@ -56,6 +56,7 @@ const CompanyDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState({ agents: 0, buy: 0, rent: 0, projects: 0, events: 0 });
   const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
+  const [responseRateVisible, setResponseRateVisible] = useState(false);
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
   useEffect(() => {
