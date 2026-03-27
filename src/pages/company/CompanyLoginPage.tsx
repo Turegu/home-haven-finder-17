@@ -178,10 +178,10 @@ const CompanyLoginPage = () => {
         redirectTo: `${window.location.origin}/company/reset-password`,
       });
       if (error) throw error;
-      toast.success("Password reset link sent to your email!");
+      toast.success(t("professionalLogin.resetLinkSent"));
       setShowForgot(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to send reset email");
+      toast.error(err.message || t("professionalLogin.loginFailed"));
     } finally {
       setLoading(false);
     }
