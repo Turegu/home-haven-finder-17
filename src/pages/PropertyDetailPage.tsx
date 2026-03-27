@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy } from 'react';
+import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useParams, useNavigate } from 'react-router-dom';
@@ -310,7 +311,7 @@ const PropertyDetailPage = () => {
       <SEOHead
         title={property.title}
         description={`${property.type} for ${property.propertyPurpose === 'rent' ? 'rent' : 'sale'} in ${property.location}. ${property.bedrooms} bed, ${property.bathrooms} bath, ${formatArea(property.area, property.areaUnit)}. Price: ${property.currency} ${property.price.toLocaleString()}.`}
-        image={property.images?.[0]}
+        image={getOptimizedImageUrl(property.images?.[0], 'og')}
         url={typeof window !== 'undefined' ? window.location.href : ''}
         type="product"
         jsonLd={{
@@ -386,7 +387,7 @@ const PropertyDetailPage = () => {
               );
               return visibleImages.map((img, i) => (
                 <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
-                  <img src={img} alt={`${property.title} ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={getOptimizedImageUrl(img, 'hero')} alt={`${property.title} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : undefined} className="w-full h-full object-cover" />
                 </div>
               ));
             })()}
@@ -500,7 +501,7 @@ const PropertyDetailPage = () => {
             <ChevronLeft className="h-6 w-6 text-white" />
           </button>
           <img
-            src={property.images[currentImage]}
+            src={getOptimizedImageUrl(property.images[currentImage], 'hero')}
             alt={property.title}
             className="max-h-[90vh] max-w-[90vw] object-contain"
             onClick={(e) => e.stopPropagation()}
