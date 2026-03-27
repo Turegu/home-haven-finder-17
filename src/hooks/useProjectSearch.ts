@@ -63,17 +63,17 @@ export function useProjectSearch(params: ProjectSearchParams) {
       const offset = (page - 1) * size;
 
       const { data, error } = await supabase.rpc("search_projects_by_units", {
-        p_province: params.province || null,
-        p_district: params.district || null,
-        p_neighborhood: params.neighborhood || null,
-        p_keyword: params.keyword?.trim() || null,
+        p_province: params.province ?? null,
+        p_district: params.district ?? null,
+        p_neighborhood: params.neighborhood ?? null,
+        p_keyword: params.keyword?.trim() ?? null,
         p_unit_types: params.unitTypes && params.unitTypes.length > 0 ? params.unitTypes.map(t => t.toLowerCase()) : null,
         p_min_price: params.minPrice ? Number(params.minPrice) : null,
         p_max_price: params.maxPrice ? Number(params.maxPrice) : null,
         p_min_area: params.minArea ? Number(params.minArea) : null,
         p_max_area: params.maxArea ? Number(params.maxArea) : null,
         p_rooms: params.rooms && params.rooms.length > 0 ? params.rooms : null,
-        p_project_status: params.projectStatus || null,
+        p_project_status: params.projectStatus ?? null,
         p_amenities: params.amenities && params.amenities.length > 0 ? params.amenities : null,
         p_sort_by: params.sortBy || "newest",
         p_offset: offset,
