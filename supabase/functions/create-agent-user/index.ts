@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     const { data: inviteData, error: inviteError } =
       await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
         data: { is_agent: true, agent_id: agentId },
-        redirectTo: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/agent/login`,
+        redirectTo: `${Deno.env.get("SITE_URL") || "https://home-haven-finder-17.lovable.app"}/agent/login`,
       });
 
     if (inviteError) {
