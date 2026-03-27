@@ -235,7 +235,7 @@ const CompanyInboxPage = () => {
     else {
       toast.success(`${selected.length} item(s) deleted`);
       setSelected([]);
-      fetchItems();
+      fetchItems(activeTab);
     }
   };
 
