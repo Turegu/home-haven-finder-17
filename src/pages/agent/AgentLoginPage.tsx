@@ -291,7 +291,7 @@ const AgentLoginPage = () => {
                 onClick={() => setShowForgot(false)}
                 className="text-sm text-primary hover:underline w-full text-center block mt-3"
               >
-                ← Back to login
+                {t("professionalLogin.backToLogin")}
               </button>
             </form>
           ) : step === "pattern" ? (
