@@ -298,7 +298,14 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   const { t, i18n } = useTranslation();
   const dir = useDirection();
   const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
-  const images = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
+  const rawImages = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
+  // Append ?width=1200 for Supabase storage images to serve optimized versions
+  const images = rawImages.map((url) =>
+    url.includes('/storage/v1/object/public/') && !url.includes('?')
+      ? `${url}?width=1200&quality=80`
+      : url
+  );
+  const slides: SlideContent[] = hero?.slides || [];
   const slides: SlideContent[] = hero?.slides || [];
 
   // Sequential start: read last shown slide from localStorage, start with next
