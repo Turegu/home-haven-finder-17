@@ -232,7 +232,7 @@ const App = () => {
             <Route path="/company/agents" element={<CompanyAgentsPage />} />
             <Route path="/company/agents/new" element={<CompanyAgentEditPage />} />
             <Route path="/company/agents/:id/edit" element={<CompanyAgentEditPage />} />
-            <Route path="/company/notifications" element={<CompanyNotificationsPage />} />
+            
             <Route path="/company/credits" element={<CompanyCreditHistoryPage />} />
             <Route path="/company/inbox" element={<CompanyInboxPage />} />
             <Route path="/company/followers" element={<CompanyFollowersPage />} />
