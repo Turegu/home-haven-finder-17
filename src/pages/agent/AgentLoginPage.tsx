@@ -313,7 +313,7 @@ const AgentLoginPage = () => {
             <>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground">Email Address</Label>
+                  <Label htmlFor="email" className="text-foreground">{t("professionalLogin.emailAddress")}</Label>
                   <Input
                     id="email"
                     type="email"
