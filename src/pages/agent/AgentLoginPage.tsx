@@ -229,7 +229,7 @@ const AgentLoginPage = () => {
                 }`}
               >
                 <UserCheck className="h-4 w-4" />
-                Agent
+                {t("professionalLogin.agent")}
               </button>
               <button
                 type="button"
