@@ -79,6 +79,7 @@ const AdminSettingsPage = () => {
       saveSetting("map_provider", mapProvider),
       saveSetting("analytics_display_phase", analyticsPhase),
       saveSetting("ai_search_enabled", aiSearchEnabled ? 'true' : 'false'),
+      saveSetting("response_rate_visible", responseRateVisible ? 'true' : 'false'),
     ]);
     const hasError = errors.some(e => e);
     if (hasError) {
