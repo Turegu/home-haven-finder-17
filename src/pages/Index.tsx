@@ -306,7 +306,6 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       : url
   );
   const slides: SlideContent[] = hero?.slides || [];
-  const slides: SlideContent[] = hero?.slides || [];
 
   // Sequential start: read last shown slide from localStorage, start with next
   const getInitialIndex = useCallback(() => {
