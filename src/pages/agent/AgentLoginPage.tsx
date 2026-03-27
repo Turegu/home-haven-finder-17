@@ -63,7 +63,7 @@ const AgentLoginPage = () => {
     if (agentError) throw agentError;
     if (!agent) {
       await supabase.auth.signOut();
-      toast.error("No agent account found for this email.");
+      toast.error(t("professionalLogin.noAgentAccount"));
       return;
     }
     if ((agent.status === AGENT_STATUS.INACTIVE || agent.status === AGENT_STATUS.DEACTIVATED) && agent.downgraded_at) {
@@ -78,7 +78,7 @@ const AgentLoginPage = () => {
     }
     if (agent.status !== AGENT_STATUS.ACTIVE) {
       await supabase.auth.signOut();
-      toast.error("Your agent account is not active yet. Contact your company admin.");
+      toast.error(t("professionalLogin.agentNotActive"));
       return;
     }
 
@@ -94,11 +94,11 @@ const AgentLoginPage = () => {
       setSavedPattern(agentPatternData.pattern_code);
       setPendingRedirect("/agent");
       setStep("pattern");
-      toast.info("Please draw your pattern to continue.");
+      toast.info(t("professionalLogin.patternInfo"));
       return;
     }
 
-    toast.success("Welcome to your Agent Dashboard!");
+    toast.success(t("professionalLogin.welcomeAgent"));
     navigate("/agent");
   };
 
@@ -113,7 +113,7 @@ const AgentLoginPage = () => {
     if (companyError) throw companyError;
     if (!company) {
       await supabase.auth.signOut();
-      toast.error("No company account found for this email.");
+      toast.error(t("professionalLogin.noCompanyAccount"));
       return;
     }
 
@@ -129,14 +129,11 @@ const AgentLoginPage = () => {
       setSavedPattern(patternData.pattern_code);
       setPendingRedirect("/company");
       setStep("pattern");
-      toast.info("Please draw your company pattern to continue.");
+      toast.info(t("professionalLogin.companyPatternInfo"));
       return;
     }
 
-    // New companies have no pattern — skip pattern lock entirely.
-    // They can set one later from their profile settings.
-
-    toast.success("Welcome to your Company Dashboard!");
+    toast.success(t("professionalLogin.welcomeCompany"));
     navigate("/company");
   };
 
@@ -159,7 +156,7 @@ const AgentLoginPage = () => {
         await handleCompanyLogin(data.user.id);
       }
     } catch (err: any) {
-      toast.error(err.message || "Login failed");
+      toast.error(err.message || t("professionalLogin.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -169,12 +166,12 @@ const AgentLoginPage = () => {
     const patternStr = pattern.join(",");
     if (patternStr === savedPattern) {
       setPatternError(false);
-      const welcomeMsg = pendingRedirect === "/agent" ? "Welcome to your Agent Dashboard!" : "Welcome to your Company Dashboard!";
+      const welcomeMsg = pendingRedirect === "/agent" ? t("professionalLogin.welcomeAgent") : t("professionalLogin.welcomeCompany");
       toast.success(welcomeMsg);
       navigate(pendingRedirect);
     } else {
       setPatternError(true);
-      toast.error("Wrong pattern. Try again.");
+      toast.error(t("professionalLogin.wrongPattern"));
       setTimeout(() => setPatternError(false), 800);
     }
   };
@@ -194,10 +191,10 @@ const AgentLoginPage = () => {
         redirectTo: `${window.location.origin}/company/reset-password`,
       });
       if (error) throw error;
-      toast.success("Password reset link sent to your email!");
+      toast.success(t("professionalLogin.resetLinkSent"));
       setShowForgot(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to send reset email");
+      toast.error(err.message || t("professionalLogin.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -232,7 +229,7 @@ const AgentLoginPage = () => {
                 }`}
               >
                 <UserCheck className="h-4 w-4" />
-                Agent
+                {t("professionalLogin.agent")}
               </button>
               <button
                 type="button"
@@ -244,7 +241,7 @@ const AgentLoginPage = () => {
                 }`}
               >
                 <Building2 className="h-4 w-4" />
-                Company
+                {t("professionalLogin.company")}
               </button>
             </div>
           )}
@@ -253,21 +250,21 @@ const AgentLoginPage = () => {
           <div className="text-center mb-6">
             <h1 className="text-xl font-bold text-foreground">
               {showForgot
-                ? "Reset Password"
+                ? t("professionalLogin.resetPassword")
                 : step === "pattern"
-                ? "Pattern Unlock"
+                ? t("professionalLogin.patternUnlock")
                 : mode === "agent"
-                ? "Agent Login"
-                : "Company Login"}
+                ? t("professionalLogin.agentLogin")
+                : t("professionalLogin.companyLogin")}
             </h1>
             <p className="text-muted-foreground text-sm mt-1">
               {showForgot
-                ? "Enter your email to receive a reset link"
+                ? t("professionalLogin.enterEmailReset")
                 : step === "pattern"
-                ? "Draw your company pattern to continue"
+                ? t("professionalLogin.drawPattern")
                 : mode === "agent"
-                ? "Sign in to your agent dashboard"
-                : "Sign in to your company dashboard"}
+                ? t("professionalLogin.signInAgent")
+                : t("professionalLogin.signInCompany")}
             </p>
           </div>
 
@@ -275,7 +272,7 @@ const AgentLoginPage = () => {
           {showForgot ? (
             <form onSubmit={handleForgotPassword} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="forgot-email" className="text-foreground">Email Address</Label>
+                <Label htmlFor="forgot-email" className="text-foreground">{t("professionalLogin.emailAddress")}</Label>
                 <Input
                   id="forgot-email"
                   type="email"
@@ -287,14 +284,14 @@ const AgentLoginPage = () => {
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending..." : "Send Reset Link"}
+                {loading ? t("professionalLogin.sending") : t("professionalLogin.sendResetLink")}
               </Button>
               <button
                 type="button"
                 onClick={() => setShowForgot(false)}
                 className="text-sm text-primary hover:underline w-full text-center block mt-3"
               >
-                ← Back to login
+                {t("professionalLogin.backToLogin")}
               </button>
             </form>
           ) : step === "pattern" ? (
@@ -302,21 +299,21 @@ const AgentLoginPage = () => {
               <PatternLock onPatternComplete={handlePatternComplete} error={patternError} />
               <p className="text-center text-xs text-muted-foreground">
                 <Lock className="inline h-3 w-3 mr-1" />
-                Connect at least 3 dots to unlock
+                {t("professionalLogin.connectDots")}
               </p>
               <button
                 type="button"
                 onClick={handlePatternBack}
                 className="text-sm text-primary hover:underline w-full text-center block"
               >
-                ← Back to login
+                {t("professionalLogin.backToLogin")}
               </button>
             </div>
           ) : (
             <>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground">Email Address</Label>
+                  <Label htmlFor="email" className="text-foreground">{t("professionalLogin.emailAddress")}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -328,7 +325,7 @@ const AgentLoginPage = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-foreground">Password</Label>
+                  <Label htmlFor="password" className="text-foreground">{t("professionalLogin.password")}</Label>
                   <div className="relative">
                     <Input
                       id="password"
@@ -358,7 +355,7 @@ const AgentLoginPage = () => {
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                     />
                     <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
-                      Remember me
+                      {t("professionalLogin.rememberMe")}
                     </Label>
                   </div>
                   <button
@@ -366,19 +363,19 @@ const AgentLoginPage = () => {
                     onClick={() => setShowForgot(true)}
                     className="text-sm text-primary hover:underline"
                   >
-                    Forgot Password?
+                    {t("professionalLogin.forgotPassword")}
                   </button>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>
                   <LogIn className="h-4 w-4 mr-2" />
-                  {loading ? "Signing in..." : "Log in"}
+                  {loading ? t("professionalLogin.signingIn") : t("professionalLogin.logIn")}
                 </Button>
               </form>
 
               <div className="flex items-center justify-center gap-4 mt-6">
                 <Link to="/" className="text-sm text-primary hover:underline">
-                  Login as Buyer
+                  {t("professionalLogin.loginAsBuyer")}
                 </Link>
                 <div className="flex items-center gap-1.5">
                   <Globe className="h-3.5 w-3.5 text-muted-foreground" />
