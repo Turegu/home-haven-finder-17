@@ -156,7 +156,7 @@ const AgentLoginPage = () => {
         await handleCompanyLogin(data.user.id);
       }
     } catch (err: any) {
-      toast.error(err.message || "Login failed");
+      toast.error(err.message || t("professionalLogin.loginFailed"));
     } finally {
       setLoading(false);
     }
