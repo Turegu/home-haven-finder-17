@@ -299,7 +299,7 @@ const AgentLoginPage = () => {
               <PatternLock onPatternComplete={handlePatternComplete} error={patternError} />
               <p className="text-center text-xs text-muted-foreground">
                 <Lock className="inline h-3 w-3 mr-1" />
-                Connect at least 3 dots to unlock
+                {t("professionalLogin.connectDots")}
               </p>
               <button
                 type="button"
