@@ -369,7 +369,7 @@ const AgentLoginPage = () => {
 
                 <Button type="submit" className="w-full" disabled={loading}>
                   <LogIn className="h-4 w-4 mr-2" />
-                  {loading ? "Signing in..." : "Log in"}
+                  {loading ? t("professionalLogin.signingIn") : t("professionalLogin.logIn")}
                 </Button>
               </form>
 
