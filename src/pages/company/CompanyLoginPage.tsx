@@ -101,7 +101,7 @@ const CompanyLoginPage = () => {
     if (companyError) throw companyError;
     if (!company) {
       await supabase.auth.signOut();
-      toast.error("No company account found for this email.");
+      toast.error(t("professionalLogin.noCompanyAccount"));
       return;
     }
 
@@ -116,14 +116,11 @@ const CompanyLoginPage = () => {
       setSavedPattern(patternData.pattern_code);
       setPendingRedirect("/company");
       setStep("pattern");
-      toast.info("Please draw your company pattern to continue.");
+      toast.info(t("professionalLogin.companyPatternInfo"));
       return;
     }
 
-    // New companies have no pattern — skip pattern lock entirely.
-    // They can set one later from their profile settings.
-
-    toast.success("Welcome to your Company Dashboard!");
+    toast.success(t("professionalLogin.welcomeCompany"));
     navigate("/company");
   };
 
