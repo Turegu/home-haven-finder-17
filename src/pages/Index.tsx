@@ -365,7 +365,8 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
           src={src}
           alt={`${slideTitle} ${idx + 1}`}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-          loading={idx === 0 ? "eager" : "lazy"}
+          loading={idx === currentIndex ? "eager" : "lazy"}
+          {...(idx === currentIndex ? { fetchPriority: "high" as any } : {})}
         />
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
