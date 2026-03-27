@@ -18,7 +18,7 @@ const DowngradedListingsBanner = ({ companyId, tableName }: DowngradedListingsBa
   useEffect(() => {
     if (!companyId) return;
 
-    const fetch = async () => {
+    const loadBannerData = async () => {
       const statusFilter = tableName === "agents" ? AGENT_STATUS.INACTIVE : "deactivated";
 
       const [countRes, earliestRes] = await Promise.all([
