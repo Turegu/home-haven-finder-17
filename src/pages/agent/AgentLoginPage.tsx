@@ -363,7 +363,7 @@ const AgentLoginPage = () => {
                     onClick={() => setShowForgot(true)}
                     className="text-sm text-primary hover:underline"
                   >
-                    Forgot Password?
+                    {t("professionalLogin.forgotPassword")}
                   </button>
                 </div>
 
