@@ -1,4 +1,5 @@
 /* Property Request Page */
+import SEOHead from '@/components/SEOHead';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
