@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -259,6 +260,7 @@ const ContactUsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Contact Us" description="Get in touch with the Turegu team. We're here to help with your real estate needs." url={window.location.href} />
       <Header />
 
       {/* Hero Section with Illustration */}

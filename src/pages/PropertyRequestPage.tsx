@@ -1,4 +1,5 @@
 /* Property Request Page */
+import SEOHead from '@/components/SEOHead';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -287,6 +288,7 @@ const PropertyRequestPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Submit Property Request" description="Tell us what you're looking for and let verified real estate agents contact you with matching properties." url={window.location.href} />
       <Header />
 
       {/* Hero */}

@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +21,7 @@ const TermsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <title>{t('pages.terms.termsAndConditions')} – Turegu</title>
+      <SEOHead title={t('pages.terms.termsAndConditions')} description="Review Turegu's terms and conditions for using our real estate platform." url={window.location.href} />
       <Header />
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">

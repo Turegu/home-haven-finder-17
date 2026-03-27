@@ -84,7 +84,7 @@ const FollowedAgentsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {paginatedItems.map(item => (
                 <div key={item.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
-                  <img src={item.agent?.avatar_url || "/placeholder.svg"} alt="" className="h-12 w-14 rounded-lg object-cover border border-border" />
+                  <img src={item.agent?.avatar_url || "/placeholder.svg"} alt={item.agent?.name || "Agent"} className="h-12 w-14 rounded-lg object-cover border border-border" />
                   <div className="flex-1 min-w-0">
                     <Link to={`/agents/${item.agent_id}`} className="font-semibold text-foreground text-sm hover:text-primary truncate block">{item.agent?.name}</Link>
                     <p className="text-xs text-muted-foreground truncate">{item.agent?.designation || "Agent"}</p>

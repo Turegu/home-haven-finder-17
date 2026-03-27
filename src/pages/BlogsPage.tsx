@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -64,6 +65,7 @@ const BlogsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Blog" description="Read the latest real estate news, market insights, and property tips on the Turegu blog." url={window.location.href} />
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">

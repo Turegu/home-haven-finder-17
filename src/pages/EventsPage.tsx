@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useState, useEffect, useCallback, useRef, lazy } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -99,6 +100,11 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Real Estate Events"
+        description="Discover upcoming real estate events, open houses, exhibitions, and seminars. Stay connected with the property community."
+        url={window.location.href}
+      />
       <Header />
 
       {/* Search Bar */}

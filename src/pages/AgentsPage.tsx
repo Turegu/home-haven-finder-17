@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useState, useEffect, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -266,6 +267,11 @@ const AgentsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Real Estate Agents & Companies"
+        description="Find trusted real estate agents and companies. Browse profiles, check ratings, and connect with property professionals."
+        url={window.location.href}
+      />
       <Header />
 
       {/* Hero Banner */}

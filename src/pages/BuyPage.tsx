@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useState, useEffect, useCallback, useRef, lazy } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
@@ -285,6 +286,11 @@ const BuyPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={isRent ? 'Properties for Rent' : 'Properties for Sale'}
+        description={isRent ? 'Browse rental properties. Filter by location, price, and type to find your perfect home.' : 'Browse properties for sale. Filter by location, price, and type to find your dream home.'}
+        url={window.location.href}
+      />
       <Header />
 
       {/* Search Bar + Filters */}

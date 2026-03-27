@@ -1,3 +1,4 @@
+import SEOHead from '@/components/SEOHead';
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -64,7 +65,7 @@ const FaqPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <title>{t('pages.faq.title')} – Turegu</title>
+      <SEOHead title={t('pages.faq.title')} description="Find answers to frequently asked questions about buying, selling, and renting properties on Turegu." url={window.location.href} />
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
