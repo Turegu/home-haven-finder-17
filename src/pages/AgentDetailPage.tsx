@@ -243,6 +243,25 @@ const AgentDetailPage = () => {
                       <MessageCircle className="h-3 w-3" /> {t('property.whatsApp')}
                     </a>
                   </div>
+
+                  {/* Response rate badge */}
+                  {responseMetrics.response_rate !== null && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
+                        responseMetrics.response_rate >= 80 ? 'bg-[hsl(142,70%,40%)]/10 text-[hsl(142,70%,40%)]' :
+                        responseMetrics.response_rate >= 50 ? 'bg-[hsl(45,93%,47%)]/10 text-[hsl(45,93%,47%)]' :
+                        'bg-muted text-muted-foreground'
+                      }`}>
+                        <Mail className="h-3 w-3" />
+                        {responseMetrics.response_rate}% {t('companyDetail.responseRate', 'response rate')}
+                      </span>
+                      {responseMetrics.avg_response_hours !== null && (
+                        <span className="text-xs text-muted-foreground">
+                          ~{responseMetrics.avg_response_hours}h {t('companyDetail.avgResponse', 'avg. response')}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
