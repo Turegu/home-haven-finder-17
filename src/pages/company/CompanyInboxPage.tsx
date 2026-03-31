@@ -109,7 +109,6 @@ const CompanyInboxPage = () => {
   const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
   const [refreshCounter, setRefreshCounter] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
-  const [refreshCounter, setRefreshCounter] = useState(0);
 
   useEffect(() => {
     const init = async () => {
