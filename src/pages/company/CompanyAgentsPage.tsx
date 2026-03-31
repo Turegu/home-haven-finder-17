@@ -95,6 +95,13 @@ const CompanyAgentsPage = () => {
     (a) => turkishIncludes(a.name, search) || turkishIncludes(a.email, search)
   );
 
+  const virtualizer = useVirtualizer({
+    count: filtered.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 56,
+    overscan: 5,
+  });
+
   const handleDelete = async (agentId: string) => {
     if (!confirm(t("companyDashboard.confirmDelete"))) return;
     const { error } = await agentsService.softDeactivate(agentId);
