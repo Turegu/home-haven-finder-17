@@ -86,13 +86,15 @@ const AgentLoginPage = () => {
     // Check agent-specific pattern
     const { data: agentPatternData } = await supabase
       .from("agent_pattern_codes")
-      .select("pattern_code, is_active")
+      .select("is_active")
       .eq("agent_id", agent.id)
+      .eq("is_active", true)
       .limit(1)
       .maybeSingle();
 
-    if (agentPatternData && agentPatternData.pattern_code && agentPatternData.is_active) {
-      setSavedPattern(agentPatternData.pattern_code);
+    if (agentPatternData) {
+      setPendingEntityId(agent.id);
+      setPendingEntityType("agent");
       setPendingRedirect("/agent");
       setStep("pattern");
       toast.info(t("professionalLogin.patternInfo"));
