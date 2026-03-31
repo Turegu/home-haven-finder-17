@@ -1933,6 +1933,7 @@ export type Database = {
           province: string | null
           rent_duration: string | null
           rooms: string | null
+          search_vector: unknown
           status: string
           title: string
           title_ar: string | null
@@ -1982,6 +1983,7 @@ export type Database = {
           province?: string | null
           rent_duration?: string | null
           rooms?: string | null
+          search_vector?: unknown
           status?: string
           title: string
           title_ar?: string | null
@@ -2031,6 +2033,7 @@ export type Database = {
           province?: string | null
           rent_duration?: string | null
           rooms?: string | null
+          search_vector?: unknown
           status?: string
           title?: string
           title_ar?: string | null
