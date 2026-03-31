@@ -2773,6 +2773,7 @@ export type Database = {
         Args: { p_keyword: string }
         Returns: {
           property_id: string
+          rank: number
         }[]
       }
       share_credits: {
