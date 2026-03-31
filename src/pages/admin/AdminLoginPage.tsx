@@ -62,20 +62,10 @@ const AdminLoginPage = () => {
         localStorage.removeItem("turegu_admin_email");
       }
 
-      // Fetch admin pattern and active status
-      const { data: patternSettings } = await supabase
-        .from("admin_settings")
-        .select("setting_key, setting_value")
-        .in("setting_key", ["admin_pattern_code", "admin_pattern_active"]);
+      // Check if admin pattern is required (server-side, no code exposed)
+      const { data: patternRequired } = await supabase.rpc('check_admin_pattern_required');
 
-      const settingsMap: Record<string, string> = {};
-      (patternSettings || []).forEach((s: any) => { settingsMap[s.setting_key] = s.setting_value; });
-
-      const patternCode = settingsMap.admin_pattern_code || "";
-      const patternIsActive = settingsMap.admin_pattern_active !== "false"; // default true if not set
-
-      if (patternCode && patternIsActive) {
-        setSavedPattern(patternCode);
+      if (patternRequired) {
         setStep("pattern");
         toast.info(t("admin.drawAdminPattern"));
       } else {
