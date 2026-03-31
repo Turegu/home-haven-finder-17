@@ -212,7 +212,7 @@ const CompanyAgentsPage = () => {
         <div className="px-6 py-4 border-b border-border">
           <h2 className="font-semibold text-foreground uppercase text-sm tracking-wider">{t("companyDashboard.agents")}</h2>
         </div>
-        <div className="overflow-x-auto">
+        <div ref={parentRef} style={{ maxHeight: '600px', overflowY: 'auto' }}>
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/5">
@@ -231,43 +231,52 @@ const CompanyAgentsPage = () => {
               ) : filtered.length === 0 ? (
                 <TableRow><TableCell colSpan={7} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noData")}</TableCell></TableRow>
               ) : (
-                filtered.map((agent) => (
-                  <TableRow key={agent.id} className="hover:bg-muted/30">
-                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
-                      {format(new Date(agent.created_at), "dd/MM/yyyy")}
-                    </TableCell>
-                    <TableCell className="font-medium text-foreground">{agent.name}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{agent.email}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{agent.phone || "—"}</TableCell>
-                    <TableCell className="text-sm font-semibold text-primary">{agent.credit_balance}</TableCell>
-                    <TableCell>
-                      <Badge className={statusColor(agent.status)} variant="secondary">
-                        {agent.status === "active" ? t("companyDashboard.active") : agent.status === "inactive" && agent.downgraded_at ? t("companyDashboard.frozen") : agent.status === "inactive" ? t("companyDashboard.inactive") : agent.status === "pending" ? t("common.pending") : agent.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => navigate(`/company/agents/${agent.id}/edit`)}>
-                            <Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
-                            <Coins className="h-4 w-4 mr-2" /> {t("companyDashboard.shareCredits")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setBoostAgent(agent)}>
-                            <Rocket className="h-4 w-4 mr-2" /> {t("companyDashboard.boostProfile")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
+                <>
+                  <tr style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
+                    <td colSpan={7} style={{ padding: 0, position: 'relative', height: virtualizer.getTotalSize() }}>
+                      {virtualizer.getVirtualItems().map((virtualRow) => {
+                        const agent = filtered[virtualRow.index];
+                        return (
+                          <TableRow key={agent.id} className="hover:bg-muted/30" style={{ position: 'absolute', top: virtualRow.start, width: '100%', display: 'table-row' }}>
+                            <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                              {format(new Date(agent.created_at), "dd/MM/yyyy")}
+                            </TableCell>
+                            <TableCell className="font-medium text-foreground">{agent.name}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{agent.email}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{agent.phone || "—"}</TableCell>
+                            <TableCell className="text-sm font-semibold text-primary">{agent.credit_balance}</TableCell>
+                            <TableCell>
+                              <Badge className={statusColor(agent.status)} variant="secondary">
+                                {agent.status === "active" ? t("companyDashboard.active") : agent.status === "inactive" && agent.downgraded_at ? t("companyDashboard.frozen") : agent.status === "inactive" ? t("companyDashboard.inactive") : agent.status === "pending" ? t("common.pending") : agent.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => navigate(`/company/agents/${agent.id}/edit`)}>
+                                    <Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => { setCreditDialog({ open: true, agent }); setCreditAmount(""); }}>
+                                    <Coins className="h-4 w-4 mr-2" /> {t("companyDashboard.shareCredits")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => setBoostAgent(agent)}>
+                                    <Rocket className="h-4 w-4 mr-2" /> {t("companyDashboard.boostProfile")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDelete(agent.id)} className="text-destructive">
+                                    <Trash2 className="h-4 w-4 mr-2" /> {t("companyDashboard.delete")}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </td>
+                  </tr>
+                </>
               )}
             </TableBody>
           </Table>
