@@ -37,7 +37,8 @@ const AgentLoginPage = () => {
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [patternError, setPatternError] = useState(false);
-  const [savedPattern, setSavedPattern] = useState("");
+  const [pendingEntityId, setPendingEntityId] = useState("");
+  const [pendingEntityType, setPendingEntityType] = useState<"agent" | "company">("agent");
   const [pendingRedirect, setPendingRedirect] = useState<PendingRedirect>("/agent");
 
   const storageKey = mode === "agent" ? "turegu_agent_email" : "turegu_company_email";
