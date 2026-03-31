@@ -109,15 +109,18 @@ const CompanyLoginPage = () => {
       return;
     }
 
+    // Check if company has active pattern (without exposing code)
     const { data: patternData } = await supabase
       .from("company_pattern_codes")
-      .select("pattern_code, is_active")
+      .select("is_active")
       .eq("company_id", company.id)
+      .eq("is_active", true)
       .limit(1)
       .maybeSingle();
 
-    if (patternData && patternData.pattern_code && patternData.is_active) {
-      setSavedPattern(patternData.pattern_code);
+    if (patternData) {
+      setPendingEntityId(company.id);
+      setPendingEntityType("company");
       setPendingRedirect("/company");
       setStep("pattern");
       toast.info(t("professionalLogin.companyPatternInfo"));
