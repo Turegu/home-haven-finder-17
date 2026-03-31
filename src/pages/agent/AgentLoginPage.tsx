@@ -214,7 +214,7 @@ const AgentLoginPage = () => {
     setMode(newMode);
     setStep("credentials");
     setShowForgot(false);
-    setSavedPattern("");
+    setPendingEntityId("");
   };
 
   return (
