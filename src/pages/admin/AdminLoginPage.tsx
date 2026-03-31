@@ -22,7 +22,6 @@ const AdminLoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [patternError, setPatternError] = useState(false);
-  const [savedPattern, setSavedPattern] = useState<string>("");
 
   // Force English for admin login
   useEffect(() => {
