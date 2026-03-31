@@ -91,7 +91,10 @@ export function usePropertySearch(params: PropertySearchParams) {
           p_keyword: params.keyword.trim(),
         });
         if (matchIds && matchIds.length > 0) {
-          query = query.in("id", matchIds.map((r: { property_id: string }) => r.property_id));
+          const orderedIds = [...matchIds]
+            .sort((a: { rank: number }, b: { rank: number }) => b.rank - a.rank)
+            .map((r: { property_id: string }) => r.property_id);
+          query = query.in("id", orderedIds);
         } else {
           // No matches — return empty
           query = query.in("id", ["00000000-0000-0000-0000-000000000000"]);
