@@ -54,6 +54,7 @@ const CompanyAgentsPage = () => {
   const [companyCredits, setCompanyCredits] = useState(0);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const parentRef = useRef<HTMLDivElement>(null);
 
   // Credit sharing dialog
   const [creditDialog, setCreditDialog] = useState<{ open: boolean; agent: Agent | null }>({ open: false, agent: null });

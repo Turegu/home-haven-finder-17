@@ -68,6 +68,7 @@ const CompanyPropertiesPage = () => {
   const [classificationFilter, setClassificationFilter] = useState<ClassificationFilter>("all");
   const [showFilters, setShowFilters] = useState(true);
   const [page, setPage] = useState(1);
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const [filterType, setFilterType] = useState("all");
   const [filterRooms, setFilterRooms] = useState("all");
