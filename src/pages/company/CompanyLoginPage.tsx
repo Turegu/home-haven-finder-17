@@ -36,7 +36,8 @@ const CompanyLoginPage = () => {
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [patternError, setPatternError] = useState(false);
-  const [savedPattern, setSavedPattern] = useState("");
+  const [pendingEntityId, setPendingEntityId] = useState("");
+  const [pendingEntityType, setPendingEntityType] = useState<"agent" | "company">("company");
   const [pendingRedirect, setPendingRedirect] = useState<PendingRedirect>("/company");
 
   const storageKey = mode === "agent" ? "turegu_agent_email" : "turegu_company_email";
@@ -71,15 +72,18 @@ const CompanyLoginPage = () => {
       return;
     }
 
+    // Check if agent has active pattern (without exposing code)
     const { data: agentPatternData } = await supabase
       .from("agent_pattern_codes")
-      .select("pattern_code, is_active")
+      .select("is_active")
       .eq("agent_id", agent.id)
+      .eq("is_active", true)
       .limit(1)
       .maybeSingle();
 
-    if (agentPatternData && agentPatternData.pattern_code && agentPatternData.is_active) {
-      setSavedPattern(agentPatternData.pattern_code);
+    if (agentPatternData) {
+      setPendingEntityId(agent.id);
+      setPendingEntityType("agent");
       setPendingRedirect("/agent");
       setStep("pattern");
       toast.info(t("professionalLogin.patternInfo"));
@@ -105,15 +109,18 @@ const CompanyLoginPage = () => {
       return;
     }
 
+    // Check if company has active pattern (without exposing code)
     const { data: patternData } = await supabase
       .from("company_pattern_codes")
-      .select("pattern_code, is_active")
+      .select("is_active")
       .eq("company_id", company.id)
+      .eq("is_active", true)
       .limit(1)
       .maybeSingle();
 
-    if (patternData && patternData.pattern_code && patternData.is_active) {
-      setSavedPattern(patternData.pattern_code);
+    if (patternData) {
+      setPendingEntityId(company.id);
+      setPendingEntityType("company");
       setPendingRedirect("/company");
       setStep("pattern");
       toast.info(t("professionalLogin.companyPatternInfo"));
@@ -149,9 +156,14 @@ const CompanyLoginPage = () => {
     }
   };
 
-  const handlePatternComplete = (pattern: number[]) => {
+  const handlePatternComplete = async (pattern: number[]) => {
     const patternStr = pattern.join(",");
-    if (patternStr === savedPattern) {
+    const { data: isValid } = await supabase.rpc('verify_pattern', {
+      p_entity_id: pendingEntityId,
+      p_entered_pattern: patternStr,
+      p_entity_type: pendingEntityType,
+    });
+    if (isValid) {
       setPatternError(false);
       const welcomeMsg = pendingRedirect === "/agent" ? t("professionalLogin.welcomeAgent") : t("professionalLogin.welcomeCompany");
       toast.success(welcomeMsg);
@@ -166,7 +178,7 @@ const CompanyLoginPage = () => {
   const handlePatternBack = async () => {
     await supabase.auth.signOut();
     setStep("credentials");
-    setSavedPattern("");
+    setPendingEntityId("");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -191,7 +203,7 @@ const CompanyLoginPage = () => {
     setMode(newMode);
     setStep("credentials");
     setShowForgot(false);
-    setSavedPattern("");
+    setPendingEntityId("");
   };
 
   return (

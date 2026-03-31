@@ -22,7 +22,6 @@ const AdminLoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [patternError, setPatternError] = useState(false);
-  const [savedPattern, setSavedPattern] = useState<string>("");
 
   // Force English for admin login
   useEffect(() => {
@@ -63,20 +62,10 @@ const AdminLoginPage = () => {
         localStorage.removeItem("turegu_admin_email");
       }
 
-      // Fetch admin pattern and active status
-      const { data: patternSettings } = await supabase
-        .from("admin_settings")
-        .select("setting_key, setting_value")
-        .in("setting_key", ["admin_pattern_code", "admin_pattern_active"]);
+      // Check if admin pattern is required (server-side, no code exposed)
+      const { data: patternRequired } = await supabase.rpc('check_admin_pattern_required');
 
-      const settingsMap: Record<string, string> = {};
-      (patternSettings || []).forEach((s: any) => { settingsMap[s.setting_key] = s.setting_value; });
-
-      const patternCode = settingsMap.admin_pattern_code || "";
-      const patternIsActive = settingsMap.admin_pattern_active !== "false"; // default true if not set
-
-      if (patternCode && patternIsActive) {
-        setSavedPattern(patternCode);
+      if (patternRequired) {
         setStep("pattern");
         toast.info(t("admin.drawAdminPattern"));
       } else {
@@ -90,9 +79,12 @@ const AdminLoginPage = () => {
     }
   };
 
-  const handlePatternComplete = (pattern: number[]) => {
+  const handlePatternComplete = async (pattern: number[]) => {
     const patternStr = pattern.join(",");
-    if (patternStr === savedPattern) {
+    const { data: isValid } = await supabase.rpc('verify_admin_pattern', {
+      p_entered_pattern: patternStr,
+    });
+    if (isValid) {
       setPatternError(false);
       toast.success(t("admin.welcomeBack"));
       navigate("/admin");
@@ -106,7 +98,6 @@ const AdminLoginPage = () => {
   const handlePatternBack = async () => {
     await supabase.auth.signOut();
     setStep("credentials");
-    setSavedPattern("");
   };
 
   return (
