@@ -79,9 +79,12 @@ const AdminLoginPage = () => {
     }
   };
 
-  const handlePatternComplete = (pattern: number[]) => {
+  const handlePatternComplete = async (pattern: number[]) => {
     const patternStr = pattern.join(",");
-    if (patternStr === savedPattern) {
+    const { data: isValid } = await supabase.rpc('verify_admin_pattern', {
+      p_entered_pattern: patternStr,
+    });
+    if (isValid) {
       setPatternError(false);
       toast.success(t("admin.welcomeBack"));
       navigate("/admin");
@@ -95,7 +98,6 @@ const AdminLoginPage = () => {
   const handlePatternBack = async () => {
     await supabase.auth.signOut();
     setStep("credentials");
-    setSavedPattern("");
   };
 
   return (
