@@ -203,7 +203,7 @@ const CompanyLoginPage = () => {
     setMode(newMode);
     setStep("credentials");
     setShowForgot(false);
-    setSavedPattern("");
+    setPendingEntityId("");
   };
 
   return (

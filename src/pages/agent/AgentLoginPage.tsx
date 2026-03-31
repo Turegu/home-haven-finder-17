@@ -167,9 +167,14 @@ const AgentLoginPage = () => {
     }
   };
 
-  const handlePatternComplete = (pattern: number[]) => {
+  const handlePatternComplete = async (pattern: number[]) => {
     const patternStr = pattern.join(",");
-    if (patternStr === savedPattern) {
+    const { data: isValid } = await supabase.rpc('verify_pattern', {
+      p_entity_id: pendingEntityId,
+      p_entered_pattern: patternStr,
+      p_entity_type: pendingEntityType,
+    });
+    if (isValid) {
       setPatternError(false);
       const welcomeMsg = pendingRedirect === "/agent" ? t("professionalLogin.welcomeAgent") : t("professionalLogin.welcomeCompany");
       toast.success(welcomeMsg);
@@ -184,7 +189,7 @@ const AgentLoginPage = () => {
   const handlePatternBack = async () => {
     await supabase.auth.signOut();
     setStep("credentials");
-    setSavedPattern("");
+    setPendingEntityId("");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
