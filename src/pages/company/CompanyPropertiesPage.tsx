@@ -504,8 +504,19 @@ const CompanyPropertiesPage = () => {
             </TableBody>
           </Table>
         </div>
+      </div>
 
-      {/* Dialogs */}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <Button variant="ghost" size="icon" disabled={page === 1} onClick={() => setPage(p => p - 1)}><ChevronLeft className="h-4 w-4" /></Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Button key={p} variant={p === page ? "default" : "ghost"} size="sm" onClick={() => setPage(p)} className="w-8 h-8">{p}</Button>
+          ))}
+          <Button variant="ghost" size="icon" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}><ChevronRight className="h-4 w-4" /></Button>
+        </div>
+      )}
+
       {upgradeDialog.property && companyId && (
         <UpgradeListingDialog
           open={upgradeDialog.open}
