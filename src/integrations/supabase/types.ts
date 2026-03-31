@@ -2695,6 +2695,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_admin_pattern_required: { Args: never; Returns: boolean }
       check_contact_rate_limit: { Args: { p_email: string }; Returns: boolean }
       check_property_request_rate_limit: {
         Args: { p_email: string }
@@ -2800,6 +2801,18 @@ export type Database = {
       unaccent: { Args: { "": string }; Returns: string }
       unaccent_match: {
         Args: { haystack: string; needle: string }
+        Returns: boolean
+      }
+      verify_admin_pattern: {
+        Args: { p_entered_pattern: string }
+        Returns: boolean
+      }
+      verify_pattern: {
+        Args: {
+          p_entered_pattern: string
+          p_entity_id: string
+          p_entity_type: string
+        }
         Returns: boolean
       }
     }
