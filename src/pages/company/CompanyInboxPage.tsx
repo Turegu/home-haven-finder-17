@@ -191,12 +191,6 @@ const CompanyInboxPage = () => {
     (item) => turkishIncludes(item.full_name, search) || turkishIncludes(item.email, search)
   );
 
-  const virtualizer = useVirtualizer({
-    count: filtered.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 56,
-    overscan: 5,
-  });
 
   const toggleSelect = (id: string) =>
     setSelected((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
