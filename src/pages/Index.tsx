@@ -317,6 +317,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       ? `${url}?width=1200&quality=80`
       : url
   );
+  const imagesKey = images.join('|');
 
   // Preload the first hero image via <link rel="preload"> for faster LCP
   useEffect(() => {
@@ -344,7 +345,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
     setCurrentIndex(0);
     setLoadedIndices(new Set());
     setHeroLoaded(false);
-  }, [images.length]);
+  }, [imagesKey]);
 
   // Auto-rotate with 9s interval, pause on hover
   useEffect(() => {
@@ -404,7 +405,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
               next.add(idx);
               return next;
             });
-            if (idx === 0) setHeroLoaded(true);
+            setHeroLoaded(true);
           }}
         />
       ))}
