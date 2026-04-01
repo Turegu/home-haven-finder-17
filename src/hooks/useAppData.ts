@@ -113,6 +113,15 @@ export function useCmsPage<T = Record<string, unknown>>(
       const row = data?.[0] as { content: unknown } | undefined;
       return row?.content as T | undefined;
     },
+    initialData: () => {
+      if (slug === "home") {
+        const prefetch = (window as any).__CMS_HOME_PREFETCH__;
+        if (Array.isArray(prefetch) && prefetch[0]?.content) {
+          return prefetch[0].content as T;
+        }
+      }
+      return undefined;
+    },
     staleTime: options?.staleTime ?? 30 * 60 * 1000,
     refetchOnMount: options?.refetchOnMount,
   });
