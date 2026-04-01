@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface MembershipLimits {
@@ -33,53 +34,50 @@ const DEFAULT_LIMITS: Record<string, MembershipLimits> = {
 };
 
 export function useMembershipLimits(companyId: string | null): UseMembershipLimitsReturn {
-  const [limits, setLimits] = useState<MembershipLimits | null>(null);
-  const [usage, setUsage] = useState<MembershipUsage>({ properties: 0, projects: 0, events: 0, agents: 0 });
-  const [membership, setMembership] = useState("basic");
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchData = useCallback(async () => {
-    if (!companyId) return;
-    setLoading(true);
+  const { data, isLoading } = useQuery({
+    queryKey: ["membership-limits", companyId],
+    queryFn: async () => {
+      const { data: company } = await supabase
+        .from("companies")
+        .select("membership")
+        .eq("id", companyId!)
+        .maybeSingle();
 
-    const { data: company } = await supabase
-      .from("companies")
-      .select("membership")
-      .eq("id", companyId)
-      .maybeSingle();
+      const mem = company?.membership || "basic";
 
-    const mem = company?.membership || "basic";
-    setMembership(mem);
+      const { data: pkg } = await supabase
+        .from("membership_packages")
+        .select("max_properties, max_projects, max_events, max_agents")
+        .eq("package_type", mem)
+        .maybeSingle();
 
-    const { data: pkg } = await supabase
-      .from("membership_packages")
-      .select("max_properties, max_projects, max_events, max_agents")
-      .eq("package_type", mem)
-      .maybeSingle();
+      const [propRes, projRes, evtRes, agentRes] = await Promise.all([
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyId!).in("status", ["active", "draft"]),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyId!).in("status", ["active", "draft"]),
+        supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyId!).in("status", ["active", "draft"]),
+        supabase.from("agents").select("id", { count: "exact", head: true }).eq("company_id", companyId!).in("status", ["active", "pending"]),
+      ]);
 
-    setLimits(pkg || DEFAULT_LIMITS[mem] || DEFAULT_LIMITS.basic);
+      return {
+        membership: mem,
+        limits: (pkg as MembershipLimits | null) || DEFAULT_LIMITS[mem] || DEFAULT_LIMITS.basic,
+        usage: {
+          properties: propRes.count || 0,
+          projects: projRes.count || 0,
+          events: evtRes.count || 0,
+          agents: agentRes.count || 0,
+        },
+      };
+    },
+    enabled: !!companyId,
+    staleTime: 30_000,
+  });
 
-    const [propRes, projRes, evtRes, agentRes] = await Promise.all([
-      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["active", "draft"]),
-      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["active", "draft"]),
-      supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["active", "draft"]),
-      supabase.from("agents").select("id", { count: "exact", head: true }).eq("company_id", companyId).in("status", ["active", "pending"]),
-    ]);
-
-    setUsage({
-      properties: propRes.count || 0,
-      projects: projRes.count || 0,
-      events: evtRes.count || 0,
-      agents: agentRes.count || 0,
-    });
-
-    setLoading(false);
-  }, [companyId]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
+  const membership = data?.membership || "basic";
+  const limits = data?.limits || null;
+  const usage = data?.usage || { properties: 0, projects: 0, events: 0, agents: 0 };
   const effectiveLimits = limits || DEFAULT_LIMITS[membership] || DEFAULT_LIMITS.basic;
 
   const canCreate = (type: "properties" | "projects" | "events" | "agents") => {
@@ -92,5 +90,9 @@ export function useMembershipLimits(companyId: string | null): UseMembershipLimi
     return Math.max(0, effectiveLimits[maxKey] - usage[type]);
   };
 
-  return { limits, usage, membership, loading, canCreate, remainingSlots, refresh: fetchData };
+  const refresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ["membership-limits", companyId] });
+  }, [queryClient, companyId]);
+
+  return { limits, usage, membership, loading: isLoading, canCreate, remainingSlots, refresh };
 }

@@ -1,11 +1,13 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { turkishIncludes } from "@/lib/utils";
 import { AGENT_STATUS } from "@/constants/agent";
 import { supabase } from "@/integrations/supabase/client";
 import { agentsService } from "@/services/agents.service";
+import { useCompanyId } from "@/hooks/useCompanyId";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import DowngradedListingsBanner from "@/components/company/DowngradedListingsBanner";
 import { Button } from "@/components/ui/button";
@@ -48,48 +50,38 @@ interface Agent {
 const CompanyAgentsPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [companyId, setCompanyId] = useState<string | null>(null);
-  const [companyCredits, setCompanyCredits] = useState(0);
+  const queryClient = useQueryClient();
+  const { data: companyData } = useCompanyId();
+  const companyId = companyData?.id || null;
+  const companyCredits = companyData?.credit_balance || 0;
+
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Credit sharing dialog
   const [creditDialog, setCreditDialog] = useState<{ open: boolean; agent: Agent | null }>({ open: false, agent: null });
   const [creditAmount, setCreditAmount] = useState("");
-  const [sharingCredits, setSharingCredits] = useState(false);
-  const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
   const [boostAgent, setBoostAgent] = useState<Agent | null>(null);
+  const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
   const atLimit = !canCreate("agents");
   const maxAgents = limits?.max_agents || 1;
   const usagePercent = Math.min(100, (usage.agents / maxAgents) * 100);
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: company } = await supabase
-        .from("companies").select("id, credit_balance").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) {
-        setCompanyId(company.id);
-        setCompanyCredits(company.credit_balance);
-      }
-    };
-    init();
-  }, []);
+  const { data: agents = [], isLoading: loading } = useQuery({
+    queryKey: ["agents", companyId, sortOrder],
+    queryFn: async () => {
+      const { data, error } = await agentsService.getByCompany(companyId!, sortOrder === "oldest");
+      if (error) { toast.error("Failed to fetch agents"); return []; }
+      return (data as Agent[]) || [];
+    },
+    enabled: !!companyId,
+    staleTime: 30_000,
+  });
 
-  const fetchAgents = async () => {
-    if (!companyId) return;
-    setLoading(true);
-    const { data, error } = await agentsService.getByCompany(companyId, sortOrder === "oldest");
-    if (error) toast.error("Failed to fetch agents");
-    else setAgents((data as Agent[]) || []);
-    setLoading(false);
+  const invalidateAgents = () => {
+    queryClient.invalidateQueries({ queryKey: ["agents", companyId] });
+    queryClient.invalidateQueries({ queryKey: ["company-id-for-owner"] });
   };
-
-  useEffect(() => { if (companyId) fetchAgents(); }, [companyId, sortOrder]);
 
   const filtered = agents.filter(
     (a) => turkishIncludes(a.name, search) || turkishIncludes(a.email, search)
@@ -102,38 +94,45 @@ const CompanyAgentsPage = () => {
     overscan: 5,
   });
 
-  const handleDelete = async (agentId: string) => {
+  const deleteMutation = useMutation({
+    mutationFn: async (agentId: string) => {
+      const { error } = await agentsService.softDeactivate(agentId);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("Agent deactivated"); invalidateAgents(); },
+    onError: () => toast.error("Deactivation failed"),
+  });
+
+  const handleDelete = (agentId: string) => {
     if (!confirm(t("companyDashboard.confirmDelete"))) return;
-    const { error } = await agentsService.softDeactivate(agentId);
-    if (error) toast.error("Deactivation failed");
-    else { toast.success("Agent deactivated"); fetchAgents(); }
+    deleteMutation.mutate(agentId);
   };
 
-  const handleShareCredits = async () => {
+  const shareCredits = useMutation({
+    mutationFn: async ({ agentId, amount }: { agentId: string; amount: number }) => {
+      const { error } = await supabase.rpc("share_credits", {
+        p_company_id: companyId!,
+        p_agent_id: agentId,
+        p_amount: amount,
+      });
+      if (error) throw error;
+      return amount;
+    },
+    onSuccess: (amount) => {
+      toast.success(`${amount} credits shared with ${creditDialog.agent!.name}`);
+      setCreditDialog({ open: false, agent: null });
+      setCreditAmount("");
+      invalidateAgents();
+    },
+    onError: (err: Error) => toast.error(err.message || "Failed to share credits"),
+  });
+
+  const handleShareCredits = () => {
     if (!creditDialog.agent || !creditAmount) return;
     const amount = parseFloat(creditAmount);
     if (isNaN(amount) || amount <= 0) { toast.error("Enter a valid amount"); return; }
     if (amount > companyCredits) { toast.error("Insufficient company credits"); return; }
-
-    setSharingCredits(true);
-    try {
-      const { error } = await supabase.rpc("share_credits", {
-        p_company_id: companyId!,
-        p_agent_id: creditDialog.agent.id,
-        p_amount: amount,
-      });
-      if (error) throw error;
-
-      setCompanyCredits((prev) => prev - amount);
-      toast.success(`${amount} credits shared with ${creditDialog.agent!.name}`);
-      setCreditDialog({ open: false, agent: null });
-      setCreditAmount("");
-      fetchAgents();
-    } catch (err: any) {
-      toast.error(err.message || "Failed to share credits");
-    } finally {
-      setSharingCredits(false);
-    }
+    shareCredits.mutate({ agentId: creditDialog.agent.id, amount });
   };
 
   const statusColor = (s: string) => {
@@ -177,7 +176,7 @@ const CompanyAgentsPage = () => {
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="whitespace-nowrap">{t("companyDashboard.sortByDate")}</span>
-          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
+          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "newest" | "oldest")}>
             <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">{t("companyDashboard.newestToOldest")}</SelectItem>
@@ -311,8 +310,8 @@ const CompanyAgentsPage = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreditDialog({ open: false, agent: null })}>{t("companyDashboard.cancel")}</Button>
-            <Button onClick={handleShareCredits} disabled={sharingCredits}>
-              <Coins className="h-4 w-4 mr-2" /> {sharingCredits ? t("companyDashboard.sharingCredits") : t("companyDashboard.shareCredits")}
+            <Button onClick={handleShareCredits} disabled={shareCredits.isPending}>
+              <Coins className="h-4 w-4 mr-2" /> {shareCredits.isPending ? t("companyDashboard.sharingCredits") : t("companyDashboard.shareCredits")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -330,7 +329,7 @@ const CompanyAgentsPage = () => {
           balanceSourceId={companyId}
           currentClassification={boostAgent.profile_classification || "standard"}
           boostEndDate={boostAgent.boost_end_date}
-          onBoosted={fetchAgents}
+          onBoosted={invalidateAgents}
         />
       )}
     </CompanyLayout>

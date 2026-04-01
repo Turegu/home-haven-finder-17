@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
+import { useCompanyId } from "@/hooks/useCompanyId";
 import CompanyLayout from "@/components/company/CompanyLayout";
 
 import { Button } from "@/components/ui/button";
@@ -22,23 +24,6 @@ const membershipIcons: Record<string, React.ElementType> = {
   pro: Crown,
 };
 
-interface CompanyData {
-  id: string;
-  name: string;
-  logo_url: string | null;
-  membership: string;
-  package_end_date: string | null;
-  credit_balance: number;
-  profile_classification: string;
-  boost_end_date: string | null;
-}
-
-interface ListingCounts {
-  properties: number;
-  projects: number;
-  events: number;
-}
-
 interface CreditUsage {
   premium_properties: number;
   featured_properties: number;
@@ -47,55 +32,49 @@ interface CreditUsage {
 }
 
 const CompanyDashboardPage = () => {
-  const [company, setCompany] = useState<CompanyData | null>(null);
-  const [counts, setCounts] = useState<ListingCounts>({ properties: 0, projects: 0, events: 0 });
-  const [creditUsage, setCreditUsage] = useState<CreditUsage>({ premium_properties: 0, featured_properties: 0, premium_projects: 0, featured_projects: 0 });
-  const [creditTopups, setCreditTopups] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [boostOpen, setBoostOpen] = useState(false);
   const { t } = useTranslation();
-  const { usage, limits } = useMembershipLimits(company?.id || null);
+  const { data: companyData, isLoading: companyLoading } = useCompanyId();
+  const companyId = companyData?.id || null;
+  const { usage, limits } = useMembershipLimits(companyId);
   const { openSalesWhatsApp } = useSalesContact();
 
-  const fetchData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+  const { data: dashData, isLoading: dashLoading } = useQuery({
+    queryKey: ["company-dashboard", companyId],
+    queryFn: async () => {
+      const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyId!),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyId!),
+        supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyId!),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyId!).eq("property_classification", "premium"),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyId!).eq("property_classification", "featured"),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyId!).eq("property_classification", "premium"),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyId!).eq("property_classification", "featured"),
+        supabase.from("credit_transactions").select("amount").eq("company_id", companyId!).gt("amount", 0),
+      ]);
 
-    const { data: companyData } = await supabase
-      .from("companies")
-      .select("id, name, logo_url, membership, package_end_date, credit_balance, profile_classification, boost_end_date")
-      .eq("owner_user_id", user.id)
-      .limit(1)
-      .maybeSingle();
+      const topups = (txRes.data || []).reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
 
-    if (!companyData) return;
-    setCompany(companyData as CompanyData);
+      return {
+        counts: { properties: propRes.count || 0, projects: projRes.count || 0, events: eventRes.count || 0 },
+        creditUsage: {
+          premium_properties: premPropRes.count || 0,
+          featured_properties: featPropRes.count || 0,
+          premium_projects: premProjRes.count || 0,
+          featured_projects: featProjRes.count || 0,
+        } as CreditUsage,
+        creditTopups: topups,
+      };
+    },
+    enabled: !!companyId,
+    staleTime: 30_000,
+  });
 
-    const [propRes, projRes, eventRes, premPropRes, featPropRes, premProjRes, featProjRes, txRes] = await Promise.all([
-      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
-      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
-      supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", companyData.id),
-      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
-      supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
-      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "premium"),
-      supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", companyData.id).eq("property_classification", "featured"),
-      supabase.from("credit_transactions").select("amount").eq("company_id", companyData.id).gt("amount", 0),
-    ]);
-
-    setCounts({ properties: propRes.count || 0, projects: projRes.count || 0, events: eventRes.count || 0 });
-    setCreditUsage({
-      premium_properties: premPropRes.count || 0,
-      featured_properties: featPropRes.count || 0,
-      premium_projects: premProjRes.count || 0,
-      featured_projects: featProjRes.count || 0,
-    });
-
-    const topups = (txRes.data || []).reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
-    setCreditTopups(topups);
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchData(); }, []);
+  const loading = companyLoading || dashLoading;
+  const company = companyData;
+  const counts = dashData?.counts || { properties: 0, projects: 0, events: 0 };
+  const creditUsage = dashData?.creditUsage || { premium_properties: 0, featured_properties: 0, premium_projects: 0, featured_projects: 0 };
+  const creditTopups = dashData?.creditTopups || 0;
 
   const membershipConfig: Record<string, { color: string; bg: string }> = {
     pro: { color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
@@ -331,7 +310,7 @@ const CompanyDashboardPage = () => {
           balanceSourceId={company.id}
           currentClassification={company.profile_classification}
           boostEndDate={company.boost_end_date}
-          onBoosted={() => { setBoostOpen(false); fetchData(); }}
+          onBoosted={() => { setBoostOpen(false); }}
         />
       )}
     </CompanyLayout>

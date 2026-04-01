@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
+import { useAgentIdentity } from "@/hooks/useAgentIdentity";
 import AgentLayout from "@/components/agent/AgentLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -67,9 +69,7 @@ const ListingCard = ({ item }: { item: InboxItem }) => {
         )}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground truncate">{meta.title}</p>
-          {meta.listing_id && (
-            <p className="text-xs text-muted-foreground">Ref: {meta.listing_id}</p>
-          )}
+          {meta.listing_id && <p className="text-xs text-muted-foreground">Ref: {meta.listing_id}</p>}
           {meta.location && (
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
               <MapPin className="h-3 w-3" /> <span className="truncate">{meta.location}</span>
@@ -89,63 +89,57 @@ const ListingCard = ({ item }: { item: InboxItem }) => {
 
 const AgentInboxPage = () => {
   const { t } = useTranslation();
-  const [items, setItems] = useState<InboxItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: agentData } = useAgentIdentity();
+  const agentId = agentData?.id || null;
+  const companyId = agentData?.company_id || null;
+
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("inquiry");
-  const [companyId, setCompanyId] = useState<string | null>(null);
-  const [companyName, setCompanyName] = useState<string>("");
-  const [agentId, setAgentId] = useState<string | null>(null);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
-  const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: agent } = await supabase.from("agents").select("id, company_id").eq("user_id", user.id).limit(1).maybeSingle();
-      if (agent) {
-        setCompanyId(agent.company_id);
-        setAgentId(agent.id);
+  const { data: companyInfo } = useQuery({
+    queryKey: ["agent-company-info", companyId],
+    queryFn: async () => {
+      const { data } = await supabase.from("companies").select("name, membership").eq("id", companyId!).maybeSingle();
+      return data;
+    },
+    enabled: !!companyId,
+    staleTime: 5 * 60 * 1000,
+  });
 
-        const { data: company } = await supabase.from("companies").select("name, membership").eq("id", agent.company_id).maybeSingle();
-        if (company) {
-          setCompanyName(company.name || "");
-          const { data: pkg } = await supabase.from("membership_packages").select("has_property_requests").eq("package_type", company.membership).maybeSingle();
-          setHasPropertyRequests(pkg?.has_property_requests ?? false);
-        }
-      }
-    };
-    init();
-  }, []);
+  const { data: hasPropertyRequests } = useQuery({
+    queryKey: ["has-property-requests", companyInfo?.membership],
+    queryFn: async () => {
+      const { data: pkg } = await supabase.from("membership_packages").select("has_property_requests").eq("package_type", companyInfo!.membership).maybeSingle();
+      return pkg?.has_property_requests ?? false;
+    },
+    enabled: !!companyInfo?.membership,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    if (!companyId || !agentId) return;
-    let cancelled = false;
-    const load = async () => {
-      setLoading(true);
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ["agent-inbox", companyId, agentId, tab],
+    queryFn: async () => {
       const { data } = await supabase
         .from("company_inbox")
         .select("*, properties(title, listing_id, images, price, currency, location), projects(title, listing_id, images, min_price, currency, location)")
-        .eq("company_id", companyId)
-        .eq("agent_id", agentId)
+        .eq("company_id", companyId!)
+        .eq("agent_id", agentId!)
         .eq("inbox_type", tab)
         .order("created_at", { ascending: false });
-      if (cancelled) return;
-      const mapped = (data || []).map((row: any) => ({
+      return (data || []).map((row: any) => ({
         ...row,
         listing_meta: row.properties
           ? { title: row.properties.title, listing_id: row.properties.listing_id, images: row.properties.images, price: row.properties.price, currency: row.properties.currency, location: row.properties.location }
           : row.projects
           ? { title: row.projects.title, listing_id: row.projects.listing_id, images: row.projects.images, price: row.projects.min_price, currency: row.projects.currency, location: row.projects.location }
           : null,
-      }));
-      setItems(mapped);
-      setLoading(false);
-    };
-    load();
-    return () => { cancelled = true; };
-  }, [companyId, agentId, tab]);
+      })) as InboxItem[];
+    },
+    enabled: !!companyId && !!agentId,
+    staleTime: 0,
+  });
 
   const filtered = items.filter(
     (i) => turkishIncludes(i.full_name, search) || turkishIncludes(i.email, search)
@@ -155,7 +149,7 @@ const AgentInboxPage = () => {
     setViewItem(item);
     if (!item.is_seen) {
       await supabase.from("company_inbox").update({ is_seen: true, responded_at: new Date().toISOString() } as any).eq("id", item.id);
-      setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, is_seen: true } : i));
+      queryClient.invalidateQueries({ queryKey: ["agent-inbox", companyId, agentId] });
     }
   };
 
@@ -269,7 +263,7 @@ const AgentInboxPage = () => {
         item={viewItem}
         open={!!viewItem}
         onOpenChange={(open) => !open && setViewItem(null)}
-        companyName={companyName}
+        companyName={companyInfo?.name || ""}
       />
     </AgentLayout>
   );
