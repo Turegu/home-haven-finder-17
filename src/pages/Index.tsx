@@ -173,13 +173,9 @@ const Index = () => {
       />
       <Header />
 
-      {/* Hero Banner — only render once CMS data is loaded */}
+      {/* Hero Banner — render immediately with defaults while CMS loads */}
       <section className="container mx-auto px-4 pt-4">
-        {heroReady ? (
-          <HeroBannerContent hero={hero} isMain />
-        ) : (
-          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
-        )}
+        <HeroBannerContent hero={heroReady ? hero : undefined} isMain />
       </section>
 
       <HeroSearch />
@@ -311,6 +307,20 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       ? `${url}?width=1200&quality=80`
       : url
   );
+
+  // Preload the first hero image via <link rel="preload"> for faster LCP
+  useEffect(() => {
+    const firstImg = images[0];
+    if (!firstImg || firstImg === defaultBg) return;
+    const existing = document.querySelector(`link[rel="preload"][href="${firstImg}"]`);
+    if (existing) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = firstImg;
+    document.head.appendChild(link);
+    return () => { link.remove(); };
+  }, [images[0]]);
   const slides: SlideContent[] = hero?.slides || [];
 
   // Sequential start: read last shown slide from localStorage, start with next
