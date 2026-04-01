@@ -60,6 +60,16 @@
 </head>
 
   <body>
+    <script>
+      (function() {
+        var url = 'https://xlueciwbkbozwenwiwbg.supabase.co/rest/v1/cms_pages?select=content&page_slug=eq.home&limit=1';
+        var key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdWVjaXdia2Jvendlbndpd2JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2OTgwMTUsImV4cCI6MjA4OTI3NDAxNX0.y4pnsmel_3NZvFFX0clC7w12m5Hv3teHkbm3DbaPNHM';
+        fetch(url, { headers: { 'apikey': key, 'Authorization': 'Bearer ' + key } })
+          .then(function(r) { return r.json(); })
+          .then(function(data) { window.__CMS_HOME_PREFETCH__ = data; })
+          .catch(function() {});
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
