@@ -1,4 +1,5 @@
-import { useState, useEffect, lazy } from 'react';
+import { useState, useEffect, useMemo, lazy } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
