@@ -155,14 +155,15 @@ const Index = () => {
 
   const featuredProjects = displayedProjects.length > 0 ? displayedProjects : mockProjects;
 
-  const hero = cms?.hero || {};
+  const hero = cms?.hero;
   const secondBanner = cms?.second_banner || {};
   const fp = cms?.featured_properties || {};
   const fpr = cms?.featured_projects || {};
   const fl = cms?.featured_locations || {};
 
   const heroHasImage = !!(hero?.hero_images?.length || hero?.image_url);
-  const heroLoading = !heroHasImage && (cmsQuery.isLoading || cmsQuery.isFetching);
+  const showHeroBanner = cmsQuery.isSuccess && heroHasImage;
+  const showHeroSkeleton = !cmsQuery.isSuccess;
 
   return (
     <div className="min-h-screen bg-background">
@@ -176,9 +177,9 @@ const Index = () => {
 
       {/* Hero Banner */}
       <section className="container mx-auto px-4 pt-4">
-        {heroHasImage ? (
+        {showHeroBanner ? (
           <HeroBannerContent hero={hero} isMain />
-        ) : heroLoading ? (
+        ) : showHeroSkeleton ? (
           <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
         ) : null}
       </section>
@@ -303,7 +304,10 @@ const Index = () => {
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const { t, i18n } = useTranslation();
   const dir = useDirection();
-  const rawImages = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : []);
+  const isUnsplashFallback = (url: string) => url.includes("images.unsplash.com");
+  const cmsHeroImages = (hero?.hero_images ?? []).filter((url): url is string => !!url && !isUnsplashFallback(url));
+  const cmsSingleImage = hero?.image_url && !isUnsplashFallback(hero.image_url) ? [hero.image_url] : [];
+  const rawImages = cmsHeroImages.length > 0 ? cmsHeroImages : cmsSingleImage;
   // Append ?width=1200 for Supabase storage images to serve optimized versions
   const images = rawImages.map((url) =>
     url.includes('/storage/v1/object/public/') && !url.includes('?')
@@ -329,12 +333,14 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [loadedIndices, setLoadedIndices] = useState<Set<number>>(new Set());
+  const [heroLoaded, setHeroLoaded] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Reset loading/slide state when hero images change
   useEffect(() => {
     setCurrentIndex(0);
     setLoadedIndices(new Set());
+    setHeroLoaded(false);
   }, [images.length]);
 
   // Auto-rotate with 9s interval, pause on hover
@@ -377,7 +383,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {visibleIndex === -1 && (
+      {(visibleIndex === -1 || !heroLoaded) && (
         <div className="absolute inset-0 bg-muted animate-pulse" />
       )}
       {images.map((src, idx) => (
@@ -385,7 +391,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
           key={src}
           src={src}
           alt={`${slideTitle} ${idx + 1}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === visibleIndex ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out ${idx === visibleIndex && heroLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading={idx === 0 || idx === currentIndex ? "eager" : "lazy"}
           {...(idx === 0 || idx === currentIndex ? { fetchPriority: "high" as any } : {})}
           onLoad={() => {
@@ -395,6 +401,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
               next.add(idx);
               return next;
             });
+            if (idx === 0) setHeroLoaded(true);
           }}
         />
       ))}
