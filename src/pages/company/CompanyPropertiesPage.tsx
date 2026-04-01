@@ -150,12 +150,6 @@ const CompanyPropertiesPage = () => {
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-  const virtualizer = useVirtualizer({
-    count: paginated.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 56,
-    overscan: 5,
-  });
 
   const activeFilterCount = [filterType, filterRooms, filterFurniture, filterStatus].filter(f => f !== "all").length;
 
