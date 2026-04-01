@@ -188,12 +188,16 @@ export function usePropertySearch(params: PropertySearchParams) {
         return 2;
       };
 
-      // Only apply client-side tier re-sort for default sort
+      // Sort: keyword rank first, then tier for default, else DB order
       let sorted = data ?? [];
-      if (isDefaultSort) {
-        sorted = [...sorted].sort((a: any, b: any) => {
-          return tierOrder(a.property_classification) - tierOrder(b.property_classification);
-        });
+      if (keywordIdOrder) {
+        sorted = [...sorted].sort((a: any, b: any) =>
+          (keywordIdOrder!.get(a.id) ?? 999) - (keywordIdOrder!.get(b.id) ?? 999)
+        );
+      } else if (isDefaultSort) {
+        sorted = [...sorted].sort((a: any, b: any) =>
+          tierOrder(a.property_classification) - tierOrder(b.property_classification)
+        );
       }
 
       return {

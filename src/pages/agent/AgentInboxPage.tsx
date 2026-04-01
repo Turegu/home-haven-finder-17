@@ -148,7 +148,8 @@ const AgentInboxPage = () => {
   const handleView = async (item: InboxItem) => {
     setViewItem(item);
     if (!item.is_seen) {
-      await supabase.from("company_inbox").update({ is_seen: true, responded_at: new Date().toISOString() } as any).eq("id", item.id);
+      await supabase.from("company_inbox").update({ is_seen: true }).eq("id", item.id);
+      await supabase.from("company_inbox").update({ responded_at: new Date().toISOString() } as any).eq("id", item.id).is("responded_at", null);
       queryClient.invalidateQueries({ queryKey: ["agent-inbox", companyId, agentId] });
     }
   };

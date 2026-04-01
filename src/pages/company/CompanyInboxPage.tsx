@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
