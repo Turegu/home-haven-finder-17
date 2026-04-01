@@ -30,7 +30,7 @@ const DEFAULT_LIMITS: Record<string, MembershipLimits> = {
   basic: { max_properties: 1, max_projects: 1, max_events: 1, max_agents: 1 },
   lite: { max_properties: 2, max_projects: 2, max_events: 2, max_agents: 2 },
   plus: { max_properties: 3, max_projects: 3, max_events: 3, max_agents: 3 },
-  pro: { max_properties: 60, max_projects: 60, max_events: 60, max_agents: 1000 },
+  pro: { max_properties: 9999, max_projects: 9999, max_events: 9999, max_agents: 9999 },
 };
 
 export function useMembershipLimits(companyId: string | null): UseMembershipLimitsReturn {

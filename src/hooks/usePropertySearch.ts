@@ -86,6 +86,7 @@ export function usePropertySearch(params: PropertySearchParams) {
       if (params.neighborhood) query = query.eq("neighbourhood", params.neighborhood);
 
       // Keyword search — accent-insensitive via DB function
+      let keywordIdOrder: Map<string, number> | null = null;
       if (params.keyword?.trim()) {
         const { data: matchIds } = await supabase.rpc("search_property_ids_by_keyword", {
           p_keyword: params.keyword.trim(),
@@ -95,6 +96,7 @@ export function usePropertySearch(params: PropertySearchParams) {
             .sort((a: { rank: number }, b: { rank: number }) => b.rank - a.rank)
             .map((r: { property_id: string }) => r.property_id);
           query = query.in("id", orderedIds);
+          keywordIdOrder = new Map(orderedIds.map((id: string, i: number) => [id, i]));
         } else {
           // No matches — return empty
           query = query.in("id", ["00000000-0000-0000-0000-000000000000"]);
@@ -186,12 +188,16 @@ export function usePropertySearch(params: PropertySearchParams) {
         return 2;
       };
 
-      // Only apply client-side tier re-sort for default sort
+      // Sort: keyword rank first, then tier for default, else DB order
       let sorted = data ?? [];
-      if (isDefaultSort) {
-        sorted = [...sorted].sort((a: any, b: any) => {
-          return tierOrder(a.property_classification) - tierOrder(b.property_classification);
-        });
+      if (keywordIdOrder) {
+        sorted = [...sorted].sort((a: any, b: any) =>
+          (keywordIdOrder!.get(a.id) ?? 999) - (keywordIdOrder!.get(b.id) ?? 999)
+        );
+      } else if (isDefaultSort) {
+        sorted = [...sorted].sort((a: any, b: any) =>
+          tierOrder(a.property_classification) - tierOrder(b.property_classification)
+        );
       }
 
       return {

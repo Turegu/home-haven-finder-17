@@ -10,7 +10,11 @@ export const inboxService = {
       .order('created_at', { ascending: false });
   },
   async markSeen(id: string) {
-    return supabase.from('company_inbox').update({ is_seen: true, responded_at: new Date().toISOString() } as any).eq('id', id);
+    await supabase.from('company_inbox').update({ is_seen: true }).eq('id', id);
+    return supabase.from('company_inbox')
+      .update({ responded_at: new Date().toISOString() } as any)
+      .eq('id', id)
+      .is('responded_at', null);
   },
   async deleteMany(ids: string[]) {
     return supabase.from('company_inbox').delete().in('id', ids);
