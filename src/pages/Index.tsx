@@ -15,7 +15,7 @@ import { useCmsPage, useFeaturedLocations } from '@/hooks/useAppData';
 import { useSavedPropertyIds, useComparedPropertyIds } from '@/hooks/usePropertyActions';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { useDirection } from '@/hooks/useDirection';
 
 interface SlideContent {
@@ -298,8 +298,7 @@ const Index = () => {
   );
 };
 
-// Hero banner slideshow component with per-slide content, 9s rotation, localStorage sequential start, pause on hover, RTL
-const HERO_STORAGE_KEY = 'turegu_hero_last_slide';
+// Hero banner slideshow component with per-slide content, 9s rotation, pause on hover, RTL
 
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const { t, i18n } = useTranslation();
@@ -327,23 +326,16 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   }, [images[0]]);
   const slides: SlideContent[] = hero?.slides || [];
 
-  // Sequential start: read last shown slide from localStorage, start with next
-  const getInitialIndex = useCallback(() => {
-    if (images.length <= 1) return 0;
-    try {
-      const last = parseInt(localStorage.getItem(HERO_STORAGE_KEY) || '0', 10);
-      return (last + 1) % images.length;
-    } catch { return 0; }
-  }, [images.length]);
-
-  const [currentIndex, setCurrentIndex] = useState(getInitialIndex);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(new Set());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Save current index to localStorage when it changes
+  // Reset loading/slide state when hero images change
   useEffect(() => {
-    try { localStorage.setItem(HERO_STORAGE_KEY, String(currentIndex)); } catch {}
-  }, [currentIndex]);
+    setCurrentIndex(0);
+    setLoadedIndices(new Set());
+  }, [images.length]);
 
   // Auto-rotate with 9s interval, pause on hover
   useEffect(() => {
@@ -357,6 +349,10 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   const goTo = (idx: number) => setCurrentIndex(idx);
   const goPrev = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   const goNext = () => setCurrentIndex((prev) => (prev + 1) % images.length);
+
+  const visibleIndex = loadedIndices.has(currentIndex)
+    ? currentIndex
+    : (loadedIndices.has(0) ? 0 : -1);
 
   // Get localized field for current slide
   const lang = i18n.language;
@@ -381,14 +377,25 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
+      {visibleIndex === -1 && (
+        <div className="absolute inset-0 bg-muted animate-pulse" />
+      )}
       {images.map((src, idx) => (
         <img
           key={src}
           src={src}
           alt={`${slideTitle} ${idx + 1}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-          loading={idx === currentIndex ? "eager" : "lazy"}
-          {...(idx === currentIndex ? { fetchPriority: "high" as any } : {})}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${idx === visibleIndex ? 'opacity-100' : 'opacity-0'}`}
+          loading={idx === 0 || idx === currentIndex ? "eager" : "lazy"}
+          {...(idx === 0 || idx === currentIndex ? { fetchPriority: "high" as any } : {})}
+          onLoad={() => {
+            setLoadedIndices((prev) => {
+              if (prev.has(idx)) return prev;
+              const next = new Set(prev);
+              next.add(idx);
+              return next;
+            });
+          }}
         />
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
