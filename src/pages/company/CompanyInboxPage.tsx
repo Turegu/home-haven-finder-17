@@ -237,7 +237,7 @@ const CompanyInboxPage = () => {
 
     return (
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <div ref={parentRef} style={{ maxHeight: '600px', overflowY: 'auto' }}>
+        <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/5">
@@ -265,54 +265,45 @@ const CompanyInboxPage = () => {
                 <TableRow>
                   <TableCell colSpan={colCount} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noDataFound")}</TableCell>
                 </TableRow>
-              ) : (
-                <>
-                  <tr style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-                    <td colSpan={colCount} style={{ padding: 0, position: 'relative', height: virtualizer.getTotalSize() }}>
-                      {virtualizer.getVirtualItems().map((virtualRow) => {
-                        const item = filtered[virtualRow.index];
-                        const title = getListingTitle(item);
-                        const link = getListingLink(item);
-                        return (
-                          <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`} style={{ position: 'absolute', top: virtualRow.start, width: '100%', display: 'table-row' }}>
-                            <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{virtualRow.index + 1}</TableCell>
-                            <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
-                            <TableCell className="text-sm">
-                              {title && link ? (
-                                <Link to={link} className="text-primary hover:underline flex items-center gap-1 max-w-[220px]">
-                                  <span className="truncate">{title}</span>
-                                  <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                                </Link>
-                              ) : (
-                                <span className="text-muted-foreground">—</span>
-                              )}
-                            </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
-                            {tab === "property_request" && (
-                              <TableCell className="text-sm font-medium text-foreground">{item.budget ? item.budget.trim() : "—"}</TableCell>
-                            )}
-                            <TableCell>
-                              <Badge
-                                className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
-                                variant="secondary"
-                              >
-                                {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}>
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </td>
-                  </tr>
-                </>
-              )}
+              ) : filtered.map((item, index) => {
+                const title = getListingTitle(item);
+                const link = getListingLink(item);
+                return (
+                  <TableRow key={item.id} className={`hover:bg-muted/30 ${!item.is_seen ? "bg-primary/5" : ""}`}>
+                    <TableCell><Checkbox checked={selected.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} /></TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{index + 1}</TableCell>
+                    <TableCell className="font-medium text-foreground">{item.full_name}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{item.email}</TableCell>
+                    <TableCell className="text-sm">
+                      {title && link ? (
+                        <Link to={link} className="text-primary hover:underline flex items-center gap-1 max-w-[220px]">
+                          <span className="truncate">{title}</span>
+                          <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{item.phone || "—"}</TableCell>
+                    {tab === "property_request" && (
+                      <TableCell className="text-sm font-medium text-foreground">{item.budget ? item.budget.trim() : "—"}</TableCell>
+                    )}
+                    <TableCell>
+                      <Badge
+                        className={item.is_seen ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}
+                        variant="secondary"
+                      >
+                        {item.is_seen ? t("companyDashboard.seen") : t("companyDashboard.unseen")}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleView(item)}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
