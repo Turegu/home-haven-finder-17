@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,7 +23,9 @@ interface BannerDisplayProps {
 }
 
 const BannerDisplay = memo(({ pageName, bannerType, position, className = "" }: BannerDisplayProps) => {
-  const { data: banner } = useQuery({
+  const [loaded, setLoaded] = useState(false);
+
+  const { data: banner, isLoading } = useQuery({
     queryKey: ["banner", pageName, bannerType, position ?? "any"],
     queryFn: async () => {
       let query = supabase
@@ -45,8 +47,23 @@ const BannerDisplay = memo(({ pageName, bannerType, position, className = "" }: 
       if (!b.image_url && !b.banner_text) return null;
       return b;
     },
-    staleTime: 30 * 60 * 1000, // 30 min — banner content rarely changes
+    staleTime: 30 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   });
+
+  if (isLoading && !banner) {
+    return (
+      <div className={className}>
+        <div
+          className={`rounded-lg bg-muted animate-pulse ${
+            bannerType === "horizontal"
+              ? "h-[120px] sm:h-[160px] md:h-[206px]"
+              : "h-[300px] sm:h-[400px] md:h-[513px]"
+          }`}
+        />
+      </div>
+    );
+  }
 
   if (!banner) return null;
 
@@ -57,7 +74,10 @@ const BannerDisplay = memo(({ pageName, bannerType, position, className = "" }: 
           src={banner.image_url}
           alt={banner.name}
           loading="lazy"
-          className={`w-full h-auto object-cover ${
+          onLoad={() => setLoaded(true)}
+          className={`w-full h-auto object-cover transition-opacity duration-300 ${
+            loaded ? "opacity-100" : "opacity-0"
+          } ${
             bannerType === "horizontal"
               ? "max-h-[120px] sm:max-h-[160px] md:max-h-[206px]"
               : "max-h-[300px] sm:max-h-[400px] md:max-h-[513px] w-full"
