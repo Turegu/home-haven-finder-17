@@ -1,9 +1,11 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useCompanyId } from "@/hooks/useCompanyId";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,10 +60,11 @@ const ITEMS_PER_PAGE = 10;
 const CompanyPropertiesPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const { data: analyticsPhase } = useAnalyticsPhase();
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [companyId, setCompanyId] = useState<string | null>(null);
+  const { data: companyData } = useCompanyId();
+  const companyId = companyData?.id || null;
+
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [selected, setSelected] = useState<string[]>([]);
@@ -82,29 +85,18 @@ const CompanyPropertiesPage = () => {
   const { options: filterOpts } = useFilterOptions("property");
   const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: company } = await supabase
-        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) setCompanyId(company.id);
-    };
-    init();
-  }, []);
+  const { data: properties = [], isLoading: loading } = useQuery({
+    queryKey: ["properties", companyId, sortOrder],
+    queryFn: async () => {
+      const ascending = sortOrder === "oldest";
+      const { data, error } = await supabase
+        .from("properties")
+        .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture, agent_id, agents(name)")
+        .eq("company_id", companyId!)
+        .order("created_at", { ascending });
 
-  const fetchProperties = async () => {
-    if (!companyId) return;
-    setLoading(true);
-    const ascending = sortOrder === "oldest";
-    const { data, error } = await supabase
-      .from("properties")
-      .select("id, listing_id, title, property_status, property_purpose, property_type, property_classification, location, status, created_at, display_on_homepage, rooms, bathrooms, furniture, agent_id, agents(name)")
-      .eq("company_id", companyId)
-      .order("created_at", { ascending });
+      if (error) { toast.error("Failed to fetch properties"); return []; }
 
-    if (error) toast.error("Failed to fetch properties");
-    else {
       let results = (data || []).map((p: any) => ({
         ...p,
         agent_name: p.agents?.name || null,
@@ -120,14 +112,15 @@ const CompanyPropertiesPage = () => {
           return order(a.property_classification) - order(b.property_classification);
         });
       }
-      setProperties(results);
-    }
-    setLoading(false);
-  };
+      return results as Property[];
+    },
+    enabled: !!companyId,
+    staleTime: 30_000,
+  });
 
-  useEffect(() => {
-    if (companyId) fetchProperties();
-  }, [companyId, sortOrder]);
+  const invalidateProperties = () => {
+    queryClient.invalidateQueries({ queryKey: ["properties", companyId] });
+  };
 
   const stats = useMemo(() => ({
     total: properties.length,
@@ -179,22 +172,47 @@ const CompanyPropertiesPage = () => {
     else setSelected(paginated.map((p) => p.id));
   };
 
-  const handleDelete = async () => {
+  const deleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from("properties").delete().in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (count) => {
+      toast.success(`${count} property(ies) deleted`);
+      setSelected([]);
+      invalidateProperties();
+      refreshLimits();
+    },
+    onError: () => toast.error("Delete failed"),
+  });
+
+  const handleDelete = () => {
     if (selected.length === 0) return;
-    const { error } = await supabase.from("properties").delete().in("id", selected);
-    if (error) toast.error("Delete failed");
-    else { toast.success(`${selected.length} property(ies) deleted`); setSelected([]); fetchProperties(); refreshLimits(); }
+    deleteMutation.mutate(selected);
   };
 
-  const handleDeactivate = async (prop: Property) => {
+  const deactivateMutation = useMutation({
+    mutationFn: async ({ id, newStatus }: { id: string; newStatus: string }) => {
+      const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", id);
+      if (error) throw error;
+      return newStatus;
+    },
+    onSuccess: (newStatus) => {
+      toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`);
+      invalidateProperties();
+      refreshLimits();
+    },
+    onError: () => toast.error("Failed to update status"),
+  });
+
+  const handleDeactivate = (prop: Property) => {
     const newStatus = prop.status === "active" ? "inactive" : "active";
     if (newStatus === "active" && !canCreate("properties")) {
       toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
       return;
     }
-    const { error } = await supabase.from("properties").update({ status: newStatus }).eq("id", prop.id);
-    if (error) toast.error("Failed to update status");
-    else { toast.success(`Property ${newStatus === "active" ? "activated" : "deactivated"}`); fetchProperties(); refreshLimits(); }
+    deactivateMutation.mutate({ id: prop.id, newStatus });
   };
 
   const statusColor = (s: string) => {
@@ -280,7 +298,7 @@ const CompanyPropertiesPage = () => {
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="whitespace-nowrap">{t("companyDashboard.sortBy")}</span>
-          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
+          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as typeof sortOrder)}>
             <SelectTrigger className="w-[190px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">{t("companyDashboard.newestToOldest")}</SelectItem>
@@ -479,7 +497,7 @@ const CompanyPropertiesPage = () => {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem onClick={() => navigate(`/property/${prop.id}`)}><Eye className="h-4 w-4 mr-2" /> {t("companyDashboard.view")}</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => fetchProperties()}><RefreshCw className="h-4 w-4 mr-2" /> {t("companyDashboard.refresh")}</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => invalidateProperties()}><RefreshCw className="h-4 w-4 mr-2" /> {t("companyDashboard.refresh")}</DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => navigate(`/company/properties/${prop.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}</DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => handleDeactivate(prop)}><Ban className="h-4 w-4 mr-2" /> {prop.status === "active" ? t("companyDashboard.deactivate") : t("companyDashboard.activate")}</DropdownMenuItem>
                                   <DropdownMenuSeparator />
@@ -526,7 +544,7 @@ const CompanyPropertiesPage = () => {
           listingType="property"
           companyId={companyId}
           currentClassification={upgradeDialog.property.property_classification}
-          onUpgraded={fetchProperties}
+          onUpgraded={invalidateProperties}
         />
       )}
       {assignDialog.property && companyId && (
@@ -538,7 +556,7 @@ const CompanyPropertiesPage = () => {
           listingType="property"
           companyId={companyId}
           currentAgentId={assignDialog.property.agent_id}
-          onAssigned={fetchProperties}
+          onAssigned={invalidateProperties}
         />
       )}
       {insightsDialog.property && (

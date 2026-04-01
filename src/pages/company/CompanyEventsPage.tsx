@@ -1,8 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { turkishIncludes } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useCompanyId } from "@/hooks/useCompanyId";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,9 +44,10 @@ const ITEMS_PER_PAGE = 10;
 const CompanyEventsPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [events, setEvents] = useState<EventRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [companyId, setCompanyId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { data: companyData } = useCompanyId();
+  const companyId = companyData?.id || null;
+
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [selected, setSelected] = useState<string[]>([]);
@@ -54,31 +57,24 @@ const CompanyEventsPage = () => {
   const [page, setPage] = useState(1);
   const { canCreate, membership, usage, limits, remainingSlots, refresh: refreshLimits } = useMembershipLimits(companyId);
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: company } = await supabase
-        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) setCompanyId(company.id);
-    };
-    init();
-  }, []);
+  const { data: events = [], isLoading: loading } = useQuery({
+    queryKey: ["events", companyId, sortOrder],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("id, listing_id, title, event_type, location, status, created_at, entry_type, agent_id, agents(name)")
+        .eq("company_id", companyId!)
+        .order("created_at", { ascending: sortOrder === "oldest" });
+      if (error) { toast.error("Failed to fetch events"); return []; }
+      return (data || []).map((e: any) => ({ ...e, agent_name: e.agents?.name || null })) as EventRow[];
+    },
+    enabled: !!companyId,
+    staleTime: 30_000,
+  });
 
-  const fetchEvents = async () => {
-    if (!companyId) return;
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("events")
-      .select("id, listing_id, title, event_type, location, status, created_at, entry_type, agent_id, agents(name)")
-      .eq("company_id", companyId)
-      .order("created_at", { ascending: sortOrder === "oldest" });
-    if (error) toast.error("Failed to fetch events");
-    else setEvents((data || []).map((e: any) => ({ ...e, agent_name: e.agents?.name || null })) as EventRow[]);
-    setLoading(false);
+  const invalidateEvents = () => {
+    queryClient.invalidateQueries({ queryKey: ["events", companyId] });
   };
-
-  useEffect(() => { if (companyId) fetchEvents(); }, [companyId, sortOrder]);
 
   const stats = useMemo(() => ({
     total: events.length,
@@ -108,22 +104,47 @@ const CompanyEventsPage = () => {
     else setSelected(paginated.map((e) => e.id));
   };
 
-  const handleDelete = async () => {
+  const deleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from("events").delete().in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (count) => {
+      toast.success(`${count} event(s) deleted`);
+      setSelected([]);
+      invalidateEvents();
+      refreshLimits();
+    },
+    onError: () => toast.error("Delete failed"),
+  });
+
+  const handleDelete = () => {
     if (selected.length === 0) return;
-    const { error } = await supabase.from("events").delete().in("id", selected);
-    if (error) toast.error("Delete failed");
-    else { toast.success(`${selected.length} event(s) deleted`); setSelected([]); fetchEvents(); refreshLimits(); }
+    deleteMutation.mutate(selected);
   };
 
-  const handleDeactivate = async (evt: EventRow) => {
+  const deactivateMutation = useMutation({
+    mutationFn: async ({ id, newStatus }: { id: string; newStatus: string }) => {
+      const { error } = await supabase.from("events").update({ status: newStatus }).eq("id", id);
+      if (error) throw error;
+      return newStatus;
+    },
+    onSuccess: (newStatus) => {
+      toast.success(`Event ${newStatus === "active" ? "activated" : "deactivated"}`);
+      invalidateEvents();
+      refreshLimits();
+    },
+    onError: () => toast.error("Failed to update status"),
+  });
+
+  const handleDeactivate = (evt: EventRow) => {
     const newStatus = evt.status === "active" ? "inactive" : "active";
     if (newStatus === "active" && !canCreate("events")) {
       toast.error(t("companyDashboard.noUpgradeAllowed", { membership }));
       return;
     }
-    const { error } = await supabase.from("events").update({ status: newStatus }).eq("id", evt.id);
-    if (error) toast.error("Failed to update status");
-    else { toast.success(`Event ${newStatus === "active" ? "activated" : "deactivated"}`); fetchEvents(); refreshLimits(); }
+    deactivateMutation.mutate({ id: evt.id, newStatus });
   };
 
   const statusColor = (s: string) => {
@@ -186,7 +207,7 @@ const CompanyEventsPage = () => {
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="whitespace-nowrap">{t("companyDashboard.sortByDate")}</span>
-          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
+          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "newest" | "oldest")}>
             <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">{t("companyDashboard.newestToOldest")}</SelectItem>
