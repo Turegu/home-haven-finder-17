@@ -97,7 +97,10 @@ export function useFilterCategories(context: string) {
 }
 
 // ─── CMS page content ───
-export function useCmsPage<T = Record<string, unknown>>(slug: string) {
+export function useCmsPage<T = Record<string, unknown>>(
+  slug: string,
+  options?: { staleTime?: number; refetchOnMount?: boolean | "always" }
+) {
   return useQuery({
     queryKey: ["cms-page", slug],
     queryFn: async () => {
@@ -110,7 +113,8 @@ export function useCmsPage<T = Record<string, unknown>>(slug: string) {
       const row = data?.[0] as { content: unknown } | undefined;
       return row?.content as T | undefined;
     },
-    staleTime: 30 * 60 * 1000, // 30 min — CMS content rarely changes
+    staleTime: options?.staleTime ?? 30 * 60 * 1000,
+    refetchOnMount: options?.refetchOnMount,
   });
 }
 

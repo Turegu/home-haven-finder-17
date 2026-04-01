@@ -163,6 +163,7 @@ const Index = () => {
 
   // Check if CMS data is loaded (hero has images)
   const heroReady = !!(hero?.hero_images?.length || hero?.image_url);
+  const heroFreshReady = heroReady && (!cmsQuery.isFetching || cmsQuery.isFetchedAfterMount);
 
   return (
     <div className="min-h-screen bg-background">
@@ -174,9 +175,9 @@ const Index = () => {
       />
       <Header />
 
-      {/* Hero Banner — show skeleton while CMS loads, then real content */}
+      {/* Hero Banner — avoid stale cached hero flash by waiting for fresh fetch */}
       <section className="container mx-auto px-4 pt-4">
-        {heroReady ? (
+        {heroFreshReady ? (
           <HeroBannerContent hero={hero} isMain />
         ) : (
           <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
