@@ -1,4 +1,5 @@
-import { useState, useEffect, lazy } from 'react';
+import { useState, useEffect, useMemo, lazy } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -104,158 +105,158 @@ const PropertyDetailPage = () => {
   const { formatArea } = useAreaUnit();
   const isMobile = useIsMobile();
   useTrackPageView(id, 'property');
-  const [property, setProperty] = useState(emptyPropertyState);
-  const [loading, setLoading] = useState(true);
-  const [realAgentId, setRealAgentId] = useState<string | null>(null);
-  const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
-  const [contactPhone, setContactPhone] = useState<string | null>(null);
-  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
-  const [contactName, setContactName] = useState<string>('');
-  const [companyVerified, setCompanyVerified] = useState(false);
-  const [pinLocation, setPinLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
+
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [propertyPaymentPlans, setPropertyPaymentPlans] = useState<{ id: string; plan_name: string; steps: { id: string; percentage: number; title: string; subtitle: string | null }[] }[]>([]);
+  const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('photos');
 
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    setPinLocation(null);
-
-    const fetchProperty = async () => {
+  // ─── Property detail query ───
+  const { data: detailData, isLoading: loading } = useQuery({
+    queryKey: ['property-detail', id],
+    queryFn: async () => {
       const { data } = await supabase
         .from("properties")
         .select("*, agents(id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
-        .eq("id", id)
+        .eq("id", id!)
         .maybeSingle();
-      if (data) {
-        const p = data as any;
-        setProperty((prev) => ({
-          ...prev,
-          id: p.id,
-          title: p.title || mockPropertyDetail.title,
-          price: p.price || mockPropertyDetail.price,
-          currency: p.currency || 'USD',
-          location: p.location || mockPropertyDetail.location,
-          city: p.province || mockPropertyDetail.city,
-          province: p.province || '',
-          town: p.town || '',
-          neighbourhood: p.neighbourhood || '',
-          propertyPurpose: p.property_purpose || 'buy',
-          type: p.property_type || mockPropertyDetail.type,
-          area: p.area || mockPropertyDetail.area,
-          areaUnit: p.area_unit || 'm²',
-          bedrooms: p.bedrooms ?? mockPropertyDetail.bedrooms,
-          bathrooms: p.bathrooms ?? mockPropertyDetail.bathrooms,
-          parkingSpaces: p.parking_spaces ?? 0,
-          floorLevel: p.floor_level || '—',
-          propertyAge: p.property_age || '—',
-          titleDeed: p.title_deed || '—',
-          propertyStatus: p.property_status || 'New',
-          furniture: p.furniture || '—',
-          orientation: p.property_orientation ? [p.property_orientation] : [],
-          listingId: p.listing_id || '',
-          listingDate: p.created_at?.slice(0, 10) || '',
-          listingType: (p.property_purpose || 'buy') as 'buy' | 'rent',
-          rentDuration: p.rent_duration || null,
-          images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
-          description: p.description || mockPropertyDetail.description,
-          interiorAmenities: p.interior_amenities || [],
-          exteriorAmenities: p.exterior_amenities || [],
-          plans: p.plans && p.plans.length > 0 ? p.plans : [
-            'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&h=800&fit=crop',
-            'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&h=800&fit=crop',
-          ],
-          videoLink: p.video_link || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-          view360Link: p.view_360_link || 'https://my.matterport.com/show/?m=SxQL3iGyvPk',
-          agentName: i18n.language === 'ar' && p.agents?.name_ar ? p.agents.name_ar : i18n.language === 'fr' && p.agents?.name_fr ? p.agents.name_fr : p.agents?.name || '',
-          agentLogo: p.agents?.avatar_url || '',
-          agentDesignation: getDesignationLabel(p.agents?.designation, i18n.language),
-          agentLanguages: p.agents?.languages || [],
-          agentCompany: p.companies?.name || p.agents?.companies?.name || '',
-          companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
-          hasAgent: !!p.agents,
-        }));
-        setRealAgentId(p.agents?.id || null);
-        setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
-        setCompanyVerified(p.companies?.is_verified || p.agents?.companies?.is_verified || false);
-        // Set contact info: agent takes priority over company
-        if (p.agents) {
-          setContactPhone(p.agents.phone || null);
-          setContactWhatsapp(p.agents.whatsapp || null);
-          setContactName(p.agents.name || '');
-        } else {
-          setContactPhone(p.companies?.phone || null);
-          setContactWhatsapp(p.companies?.whatsapp || null);
-          setContactName(p.companies?.name || '');
-        }
-        setPinLocation(parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null));
+      if (!data) return null;
 
-        // Fetch similar properties
-        const { data: similar } = await supabase
+      const p = data as any;
+
+      // Fetch payment plans in parallel with similar properties
+      const [similarResult, plansResult] = await Promise.all([
+        supabase
           .from('properties')
           .select('*, agents(name, avatar_url), companies(name, logo_url)')
           .eq('status', 'active')
           .eq('property_type', p.property_type)
           .neq('id', p.id)
-          .limit(3);
-        if (similar) {
-          setSimilarProperties(similar.map((s: any) => ({
-            id: s.id,
-            title: s.title,
-            price: s.price ?? 0,
-            currency: s.currency ?? 'USD',
-            location: s.location || [s.neighbourhood, s.town, s.province].filter(Boolean).join(', ') || 'N/A',
-            city: s.town ?? '',
-            type: s.property_type,
-            area: s.area ?? 0,
-            areaUnit: s.area_unit ?? 'm²',
-            bedrooms: s.bedrooms ?? 0,
-            bathrooms: s.bathrooms ?? 0,
-            images: (s.images?.length > 0) ? s.images : ['/placeholder.svg'],
-            agentLogo: s.companies?.logo_url ?? '',
-            agentName: s.agents?.name ?? '',
-            agentAvatar: s.agents?.avatar_url ?? '',
-            companyName: s.companies?.name ?? '',
-            isFeatured: s.display_on_homepage,
-            listingTier: 'standard' as const,
-            listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
-            rentDuration: s.rent_duration ?? null,
-            advertisingTags: s.advertising_tags ?? [],
-          })));
-        }
-
-        // Fetch property payment plans
-        const { data: plans } = await supabase
+          .limit(3),
+        supabase
           .from("property_payment_plans")
           .select("*")
-          .eq("property_id", id)
+          .eq("property_id", id!)
           .eq("is_active", true)
+          .order("sort_order"),
+      ]);
+
+      let paymentPlans: { id: string; plan_name: string; steps: { id: string; percentage: number; title: string; subtitle: string | null }[] }[] = [];
+      if (plansResult.data && plansResult.data.length > 0) {
+        const planIds = plansResult.data.map((pl: any) => pl.id);
+        const { data: steps } = await supabase
+          .from("property_payment_plan_steps")
+          .select("*")
+          .in("plan_id", planIds)
           .order("sort_order");
-        if (plans && plans.length > 0) {
-          const planIds = plans.map((pl: any) => pl.id);
-          const { data: steps } = await supabase
-            .from("property_payment_plan_steps")
-            .select("*")
-            .in("plan_id", planIds)
-            .order("sort_order");
-          setPropertyPaymentPlans(plans.map((pl: any) => ({
-            id: pl.id,
-            plan_name: pl.plan_name,
-            steps: (steps || []).filter((s: any) => s.plan_id === pl.id).map((s: any) => ({
-              id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
-            })),
-          })));
-        }
+        paymentPlans = plansResult.data.map((pl: any) => ({
+          id: pl.id,
+          plan_name: pl.plan_name,
+          steps: (steps || []).filter((s: any) => s.plan_id === pl.id).map((s: any) => ({
+            id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
+          })),
+        }));
       }
-      setLoading(false);
+
+      const similar: Property[] = (similarResult.data ?? []).map((s: any) => ({
+        id: s.id,
+        title: s.title,
+        price: s.price ?? 0,
+        currency: s.currency ?? 'USD',
+        location: s.location || [s.neighbourhood, s.town, s.province].filter(Boolean).join(', ') || 'N/A',
+        city: s.town ?? '',
+        type: s.property_type,
+        area: s.area ?? 0,
+        areaUnit: s.area_unit ?? 'm²',
+        bedrooms: s.bedrooms ?? 0,
+        bathrooms: s.bathrooms ?? 0,
+        images: (s.images?.length > 0) ? s.images : ['/placeholder.svg'],
+        agentLogo: s.companies?.logo_url ?? '',
+        agentName: s.agents?.name ?? '',
+        agentAvatar: s.agents?.avatar_url ?? '',
+        companyName: s.companies?.name ?? '',
+        isFeatured: s.display_on_homepage,
+        listingTier: 'standard' as const,
+        listingType: (s.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
+        rentDuration: s.rent_duration ?? null,
+        advertisingTags: s.advertising_tags ?? [],
+      }));
+
+      return { raw: p, similar, paymentPlans };
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
+
+  // ─── Derive property state from query data ───
+  const property = useMemo(() => {
+    if (!detailData) return emptyPropertyState;
+    const p = detailData.raw;
+    return {
+      ...emptyPropertyState,
+      id: p.id,
+      title: p.title || mockPropertyDetail.title,
+      price: p.price || mockPropertyDetail.price,
+      currency: p.currency || 'USD',
+      location: p.location || mockPropertyDetail.location,
+      city: p.province || mockPropertyDetail.city,
+      province: p.province || '',
+      town: p.town || '',
+      neighbourhood: p.neighbourhood || '',
+      propertyPurpose: p.property_purpose || 'buy',
+      type: p.property_type || mockPropertyDetail.type,
+      area: p.area || mockPropertyDetail.area,
+      areaUnit: p.area_unit || 'm²',
+      bedrooms: p.bedrooms ?? mockPropertyDetail.bedrooms,
+      bathrooms: p.bathrooms ?? mockPropertyDetail.bathrooms,
+      parkingSpaces: p.parking_spaces ?? 0,
+      floorLevel: p.floor_level || '—',
+      propertyAge: p.property_age || '—',
+      titleDeed: p.title_deed || '—',
+      propertyStatus: p.property_status || 'New',
+      furniture: p.furniture || '—',
+      orientation: p.property_orientation ? [p.property_orientation] : [],
+      listingId: p.listing_id || '',
+      listingDate: p.created_at?.slice(0, 10) || '',
+      listingType: (p.property_purpose || 'buy') as 'buy' | 'rent',
+      rentDuration: p.rent_duration || null,
+      images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
+      description: p.description || mockPropertyDetail.description,
+      interiorAmenities: p.interior_amenities || [],
+      exteriorAmenities: p.exterior_amenities || [],
+      plans: p.plans && p.plans.length > 0 ? p.plans : [
+        'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&h=800&fit=crop',
+        'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&h=800&fit=crop',
+      ],
+      videoLink: p.video_link || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      view360Link: p.view_360_link || 'https://my.matterport.com/show/?m=SxQL3iGyvPk',
+      agentName: i18n.language === 'ar' && p.agents?.name_ar ? p.agents.name_ar : i18n.language === 'fr' && p.agents?.name_fr ? p.agents.name_fr : p.agents?.name || '',
+      agentLogo: p.agents?.avatar_url || '',
+      agentDesignation: getDesignationLabel(p.agents?.designation, i18n.language),
+      agentLanguages: p.agents?.languages || [],
+      agentCompany: p.companies?.name || p.agents?.companies?.name || '',
+      companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
+      hasAgent: !!p.agents,
     };
-    fetchProperty();
-  }, [id]);
-  const [currentImage, setCurrentImage] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('photos');
+  }, [detailData, i18n.language]);
+
+  const realAgentId = detailData?.raw?.agents?.id || null;
+  const realCompanyId = detailData?.raw?.companies?.id || detailData?.raw?.agents?.companies?.id || null;
+  const companyVerified = detailData?.raw?.companies?.is_verified || detailData?.raw?.agents?.companies?.is_verified || false;
+  const similarProperties = detailData?.similar ?? [];
+  const propertyPaymentPlans = detailData?.paymentPlans ?? [];
+
+  const contactPhone = detailData?.raw?.agents?.phone || detailData?.raw?.companies?.phone || null;
+  const contactWhatsapp = detailData?.raw?.agents?.whatsapp || detailData?.raw?.companies?.whatsapp || null;
+  const contactName = detailData?.raw?.agents?.name || detailData?.raw?.companies?.name || '';
+
+  const pinLocation = useMemo(() => {
+    if (!detailData) return null;
+    const p = detailData.raw;
+    return parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null);
+  }, [detailData]);
+
   const [loanValues, setLoanValues] = useState({
     propertyValue: 0,
     loanPeriod: 20,
@@ -385,7 +386,7 @@ const PropertyDetailPage = () => {
                   ? property.images.slice(0, (currentImage + visibleCount) - property.images.length)
                   : []
               );
-              return visibleImages.map((img, i) => (
+              return visibleImages.map((img: string, i: number) => (
                 <div key={`${currentImage}-${i}`} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setCurrentImage((currentImage + i) % property.images.length); setLightboxOpen(true); }}>
                   <img src={getOptimizedImageUrl(img, 'hero')} alt={`${property.title} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} fetchPriority={i === 0 ? 'high' : undefined} className="w-full h-full object-cover" />
                 </div>
@@ -408,7 +409,7 @@ const PropertyDetailPage = () => {
         <div className={activeTab === 'plans' ? 'h-full' : 'hidden'}>
           {property.plans.length > 0 ? (
             <div className="flex h-full">
-              {property.plans.map((plan, i) => (
+              {property.plans.map((plan: string, i: number) => (
                 <div key={i} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setLightboxOpen(true); }}>
                   <img src={plan} alt={`Floor Plan ${i + 1}`} className="w-full h-full object-contain bg-white" />
                 </div>
@@ -631,7 +632,7 @@ const PropertyDetailPage = () => {
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.interiorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {property.interiorAmenities.map((a) => {
+                    {property.interiorAmenities.map((a: string) => {
                       const Icon = getIcon(a, 'interior');
                       return (
                         <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -645,7 +646,7 @@ const PropertyDetailPage = () => {
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.exteriorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {property.exteriorAmenities.map((a) => {
+                    {property.exteriorAmenities.map((a: string) => {
                       const Icon = getIcon(a, 'exterior');
                       return (
                         <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
