@@ -1,10 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
 import { INBOX_TYPES, type InboxType } from "@/constants/inbox";
 import { inboxService } from "@/services/inbox.service";
+import { useCompanyId } from "@/hooks/useCompanyId";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,60 +100,36 @@ const ListingCard = ({ item }: { item: InboxItem }) => {
 
 const CompanyInboxPage = () => {
   const { t } = useTranslation();
-  const [items, setItems] = useState<InboxItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [companyId, setCompanyId] = useState<string | null>(null);
-  const [companyName, setCompanyName] = useState<string>("");
+  const queryClient = useQueryClient();
+  const { data: companyData } = useCompanyId();
+  const companyId = companyData?.id || null;
+  const companyName = companyData?.name || "";
+
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<InboxTab>(INBOX_TYPES.INQUIRY);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
-  const [hasPropertyRequests, setHasPropertyRequests] = useState<boolean | null>(null);
-  const [refreshCounter, setRefreshCounter] = useState(0);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: company } = await supabase
-        .from("companies")
-        .select("id, name, membership")
-        .eq("owner_user_id", user.id)
-        .limit(1)
+  const { data: hasPropertyRequests } = useQuery({
+    queryKey: ["has-property-requests", companyData?.membership],
+    queryFn: async () => {
+      const { data: pkg } = await supabase
+        .from("membership_packages")
+        .select("has_property_requests")
+        .eq("package_type", companyData!.membership)
         .maybeSingle();
+      return pkg?.has_property_requests ?? false;
+    },
+    enabled: !!companyData?.membership,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      if (company) {
-        setCompanyId(company.id);
-        setCompanyName(company.name || "");
-        const { data: pkg } = await supabase
-          .from("membership_packages")
-          .select("has_property_requests")
-          .eq("package_type", company.membership)
-          .maybeSingle();
-        setHasPropertyRequests(pkg?.has_property_requests ?? false);
-      }
-    };
-
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (!companyId) return;
-    let cancelled = false;
-
-    const load = async () => {
-      setLoading(true);
-
-      const { data, error } = await inboxService.getByCompany(companyId, activeTab);
-
-      if (cancelled) return;
-
-      if (error) {
-        toast.error("Failed to load inbox");
-        setLoading(false);
-        return;
-      }
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ["company-inbox", companyId, activeTab],
+    queryFn: async () => {
+      const { data, error } = await inboxService.getByCompany(companyId!, activeTab);
+      if (error) { toast.error("Failed to load inbox"); return []; }
 
       const rows = (data || []) as InboxItem[];
       const propertyIds = Array.from(new Set(rows.map((r) => r.property_id).filter(Boolean))) as string[];
@@ -166,31 +144,21 @@ const CompanyInboxPage = () => {
           : Promise.resolve({ data: [] as any[], error: null }),
       ]);
 
-      if (cancelled) return;
-
       const propertyMap = new Map<string, ListingMeta>(
         ((propertiesRes.data || []) as any[]).map((p) => [p.id, {
-          title: p.title,
-          listing_id: p.listing_id,
-          images: p.images,
-          price: p.price,
-          currency: p.currency,
-          location: p.location,
+          title: p.title, listing_id: p.listing_id, images: p.images,
+          price: p.price, currency: p.currency, location: p.location,
         }])
       );
 
       const projectMap = new Map<string, ListingMeta>(
         ((projectsRes.data || []) as any[]).map((p) => [p.id, {
-          title: p.title,
-          listing_id: p.listing_id,
-          images: p.images,
-          price: p.min_price,
-          currency: p.currency,
-          location: p.location,
+          title: p.title, listing_id: p.listing_id, images: p.images,
+          price: p.min_price, currency: p.currency, location: p.location,
         }])
       );
 
-      const mapped = rows.map((row) => ({
+      return rows.map((row) => ({
         ...row,
         listing_meta: row.property_id
           ? propertyMap.get(row.property_id) || null
@@ -198,19 +166,12 @@ const CompanyInboxPage = () => {
           ? projectMap.get(row.project_id) || null
           : null,
       }));
+    },
+    enabled: !!companyId,
+    staleTime: 0,
+  });
 
-      setItems(mapped);
-      setSelected([]);
-      setLoading(false);
-    };
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [companyId, activeTab, refreshCounter]);
-
+  // Realtime subscription for new inbox items
   useEffect(() => {
     if (!companyId) return;
 
@@ -221,16 +182,13 @@ const CompanyInboxPage = () => {
         schema: "public",
         table: "company_inbox",
         filter: `company_id=eq.${companyId}`,
-      }, (payload) => {
-        const newItem = payload.new as InboxItem;
-        if (newItem.inbox_type === activeTab) {
-          setItems((prev) => [{ ...newItem, listing_meta: null }, ...prev]);
-        }
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ["company-inbox", companyId] });
       })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [companyId, activeTab]);
+  }, [companyId, queryClient]);
 
   const filtered = items.filter(
     (item) => turkishIncludes(item.full_name, search) || turkishIncludes(item.email, search)
@@ -251,27 +209,36 @@ const CompanyInboxPage = () => {
     else setSelected(filtered.map((i) => i.id));
   };
 
-  const handleDelete = async () => {
-    if (selected.length === 0) return;
-    const { error } = await inboxService.deleteMany(selected);
-    if (error) toast.error("Delete failed");
-    else {
-      toast.success(`${selected.length} item(s) deleted`);
+  const deleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await inboxService.deleteMany(ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (count) => {
+      toast.success(`${count} item(s) deleted`);
       setSelected([]);
-      setRefreshCounter((prev) => prev + 1);
-    }
+      queryClient.invalidateQueries({ queryKey: ["company-inbox", companyId] });
+    },
+    onError: () => toast.error("Delete failed"),
+  });
+
+  const handleDelete = () => {
+    if (selected.length === 0) return;
+    deleteMutation.mutate(selected);
   };
 
   const handleView = async (item: InboxItem) => {
     setViewItem(item);
     if (!item.is_seen) {
       await inboxService.markSeen(item.id);
-      setItems((prev) => prev.map((i) => i.id === item.id ? { ...i, is_seen: true } : i));
+      queryClient.invalidateQueries({ queryKey: ["company-inbox", companyId] });
     }
   };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as InboxTab);
+    setSelected([]);
   };
 
   const renderInboxTable = (tab: string) => {
