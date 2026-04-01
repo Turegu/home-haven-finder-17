@@ -108,8 +108,6 @@ const CompanyInboxPage = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<InboxTab>(INBOX_TYPES.INQUIRY);
   const [viewItem, setViewItem] = useState<InboxItem | null>(null);
-  const parentRef = useRef<HTMLDivElement>(null);
-
   const { data: hasPropertyRequests } = useQuery({
     queryKey: ["has-property-requests", companyData?.membership],
     queryFn: async () => {
