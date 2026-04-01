@@ -86,6 +86,7 @@ export function usePropertySearch(params: PropertySearchParams) {
       if (params.neighborhood) query = query.eq("neighbourhood", params.neighborhood);
 
       // Keyword search — accent-insensitive via DB function
+      let keywordIdOrder: Map<string, number> | null = null;
       if (params.keyword?.trim()) {
         const { data: matchIds } = await supabase.rpc("search_property_ids_by_keyword", {
           p_keyword: params.keyword.trim(),
@@ -95,6 +96,7 @@ export function usePropertySearch(params: PropertySearchParams) {
             .sort((a: { rank: number }, b: { rank: number }) => b.rank - a.rank)
             .map((r: { property_id: string }) => r.property_id);
           query = query.in("id", orderedIds);
+          keywordIdOrder = new Map(orderedIds.map((id: string, i: number) => [id, i]));
         } else {
           // No matches — return empty
           query = query.in("id", ["00000000-0000-0000-0000-000000000000"]);
