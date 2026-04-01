@@ -161,9 +161,8 @@ const Index = () => {
   const fpr = cms?.featured_projects || {};
   const fl = cms?.featured_locations || {};
 
-  // Check if CMS data is loaded (hero has images)
-  const heroReady = !!(hero?.hero_images?.length || hero?.image_url);
-  const heroFreshReady = heroReady && (!cmsQuery.isFetching || cmsQuery.isFetchedAfterMount);
+  const heroHasImage = !!(hero?.hero_images?.length || hero?.image_url);
+  const heroLoading = cmsQuery.isLoading || (cmsQuery.isFetching && !cmsQuery.isFetchedAfterMount);
 
   return (
     <div className="min-h-screen bg-background">
@@ -175,13 +174,13 @@ const Index = () => {
       />
       <Header />
 
-      {/* Hero Banner — avoid stale cached hero flash by waiting for fresh fetch */}
+      {/* Hero Banner */}
       <section className="container mx-auto px-4 pt-4">
-        {heroFreshReady ? (
-          <HeroBannerContent hero={hero} isMain />
-        ) : (
+        {heroLoading ? (
           <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
-        )}
+        ) : heroHasImage ? (
+          <HeroBannerContent hero={hero} isMain />
+        ) : null}
       </section>
 
       <HeroSearch />
@@ -305,8 +304,7 @@ const HERO_STORAGE_KEY = 'turegu_hero_last_slide';
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const { t, i18n } = useTranslation();
   const dir = useDirection();
-  const defaultBg = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop";
-  const rawImages = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : [defaultBg]);
+  const rawImages = hero?.hero_images?.length ? hero.hero_images : (hero?.image_url ? [hero.image_url] : []);
   // Append ?width=1200 for Supabase storage images to serve optimized versions
   const images = rawImages.map((url) =>
     url.includes('/storage/v1/object/public/') && !url.includes('?')
@@ -317,7 +315,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   // Preload the first hero image via <link rel="preload"> for faster LCP
   useEffect(() => {
     const firstImg = images[0];
-    if (!firstImg || firstImg === defaultBg) return;
+    if (!firstImg) return;
     const existing = document.querySelector(`link[rel="preload"][href="${firstImg}"]`);
     if (existing) return;
     const link = document.createElement('link');
@@ -374,6 +372,8 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   const slideSubtitle = getLocalizedField('subtitle') || hero?.subtitle || t('hero.defaultSubtitle');
   const slideLinkUrl = currentSlide.link_url || '';
   const slideLinkText = getLocalizedField('link_text') || '';
+
+  if (images.length === 0) return null;
 
   const slideContent = (
     <div
