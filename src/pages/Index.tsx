@@ -161,7 +161,10 @@ const Index = () => {
   const fpr = cms?.featured_projects || {};
   const fl = cms?.featured_locations || {};
 
-  const heroHasImage = !!(hero?.hero_images?.length || hero?.image_url);
+  const isUnsplashFallback = (url: string) => url.includes("images.unsplash.com");
+  const heroCmsImages = (hero?.hero_images ?? []).filter((url): url is string => !!url && !isUnsplashFallback(url));
+  const heroFallbackImage = hero?.image_url && !isUnsplashFallback(hero.image_url) ? hero.image_url : null;
+  const heroHasImage = heroCmsImages.length > 0 || !!heroFallbackImage;
   const showHeroBanner = cmsQuery.isSuccess && heroHasImage;
   const showHeroSkeleton = !cmsQuery.isSuccess;
 
