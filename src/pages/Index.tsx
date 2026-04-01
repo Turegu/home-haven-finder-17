@@ -46,7 +46,8 @@ interface CmsContent {
 // Homepage component
 const Index = () => {
   const { t } = useTranslation();
-  const { data: cms = {} } = useCmsPage<CmsContent>("home");
+  const cmsQuery = useCmsPage<CmsContent>("home", { staleTime: 60_000, refetchOnMount: "always" });
+  const cms = cmsQuery.data ?? {};
   const { data: locations = [] } = useFeaturedLocations();
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
