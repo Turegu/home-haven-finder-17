@@ -409,7 +409,7 @@ const PropertyDetailPage = () => {
         <div className={activeTab === 'plans' ? 'h-full' : 'hidden'}>
           {property.plans.length > 0 ? (
             <div className="flex h-full">
-              {property.plans.map((plan, i) => (
+              {property.plans.map((plan: string, i: number) => (
                 <div key={i} className="h-full flex-1 min-w-0 px-[1px] first:pl-0 last:pr-0 cursor-pointer" onClick={() => { setLightboxOpen(true); }}>
                   <img src={plan} alt={`Floor Plan ${i + 1}`} className="w-full h-full object-contain bg-white" />
                 </div>
