@@ -646,7 +646,7 @@ const PropertyDetailPage = () => {
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.exteriorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {property.exteriorAmenities.map((a) => {
+                    {property.exteriorAmenities.map((a: string) => {
                       const Icon = getIcon(a, 'exterior');
                       return (
                         <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
