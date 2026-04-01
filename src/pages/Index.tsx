@@ -162,7 +162,7 @@ const Index = () => {
   const fl = cms?.featured_locations || {};
 
   const heroHasImage = !!(hero?.hero_images?.length || hero?.image_url);
-  const heroLoading = cmsQuery.isLoading || (cmsQuery.isFetching && !cmsQuery.isFetchedAfterMount);
+  const heroLoading = !heroHasImage && (cmsQuery.isLoading || cmsQuery.isFetching);
 
   return (
     <div className="min-h-screen bg-background">
@@ -176,10 +176,10 @@ const Index = () => {
 
       {/* Hero Banner */}
       <section className="container mx-auto px-4 pt-4">
-        {heroLoading ? (
-          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
-        ) : heroHasImage ? (
+        {heroHasImage ? (
           <HeroBannerContent hero={hero} isMain />
+        ) : heroLoading ? (
+          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
         ) : null}
       </section>
 
