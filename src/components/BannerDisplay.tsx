@@ -45,7 +45,7 @@ const BannerDisplay = memo(({ pageName, bannerType, position, className = "" }: 
       if (!b.image_url && !b.banner_text) return null;
       return b;
     },
-    staleTime: 5 * 60 * 1000, // 5 min cache
+    staleTime: 30 * 60 * 1000, // 30 min — banner content rarely changes
   });
 
   if (!banner) return null;
