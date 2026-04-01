@@ -632,7 +632,7 @@ const PropertyDetailPage = () => {
                 <div>
                   <h3 className="font-semibold text-foreground text-sm mb-2">{t('property.interiorAmenities')}</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {property.interiorAmenities.map((a) => {
+                    {property.interiorAmenities.map((a: string) => {
                       const Icon = getIcon(a, 'interior');
                       return (
                         <span key={a} className="flex items-center gap-1.5 text-sm text-muted-foreground">
