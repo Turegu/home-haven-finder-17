@@ -173,13 +173,9 @@ const Index = () => {
       />
       <Header />
 
-      {/* Hero Banner — only render once CMS data is loaded */}
+      {/* Hero Banner — render immediately with defaults while CMS loads */}
       <section className="container mx-auto px-4 pt-4">
-        {heroReady ? (
-          <HeroBannerContent hero={hero} isMain />
-        ) : (
-          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
-        )}
+        <HeroBannerContent hero={heroReady ? hero : undefined} isMain />
       </section>
 
       <HeroSearch />
