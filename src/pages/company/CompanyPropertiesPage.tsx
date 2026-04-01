@@ -425,102 +425,89 @@ const CompanyPropertiesPage = () => {
 
       {/* Table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <div ref={parentRef} style={{ maxHeight: '600px', overflowY: 'auto' }}>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-primary/5">
-                <TableHead className="w-10"><Checkbox checked={paginated.length > 0 && selected.length === paginated.length} onCheckedChange={toggleAll} /></TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.id")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.creationDate")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.propertyStatus")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.contractType")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.type")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.tier")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.title")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.assignedAgent")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.location")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.homepage")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.status")}</TableHead>
-                <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-primary/5">
+              <TableHead className="w-10"><Checkbox checked={paginated.length > 0 && selected.length === paginated.length} onCheckedChange={toggleAll} /></TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.id")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.creationDate")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.propertyStatus")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.contractType")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.type")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.tier")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.title")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.assignedAgent")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.location")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.homepage")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold">{t("companyDashboard.status")}</TableHead>
+              <TableHead className="text-xs uppercase tracking-wider font-semibold text-right">{t("companyDashboard.options")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow><TableCell colSpan={13} className="text-center py-12 text-muted-foreground">{t("companyDashboard.loading")}</TableCell></TableRow>
+            ) : paginated.length === 0 ? (
+              <TableRow><TableCell colSpan={13} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noData")}</TableCell></TableRow>
+            ) : paginated.map((prop) => (
+              <TableRow key={prop.id} className="hover:bg-muted/30">
+                <TableCell><Checkbox checked={selected.includes(prop.id)} onCheckedChange={() => toggleSelect(prop.id)} /></TableCell>
+                <TableCell className="text-sm font-mono text-muted-foreground">{prop.listing_id}</TableCell>
+                <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{format(new Date(prop.created_at), "dd/MM/yyyy hh:mm a")}</TableCell>
+                <TableCell>
+                  <Badge className={propStatusColor(prop.property_status)} variant="secondary">
+                    {prop.property_status.charAt(0).toUpperCase() + prop.property_status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-sm capitalize">{prop.property_purpose}</TableCell>
+                <TableCell className="text-sm capitalize">{prop.property_type}</TableCell>
+                <TableCell>
+                  {prop.property_classification === "premium" ? (
+                    <Badge className="bg-purple-100 text-purple-800 gap-1" variant="secondary"><Crown className="h-3 w-3" /> {t("companyDashboard.premium")}</Badge>
+                  ) : prop.property_classification === "featured" ? (
+                    <Badge className="bg-teal-100 text-teal-800 gap-1" variant="secondary"><Star className="h-3 w-3" /> {t("companyDashboard.featured")}</Badge>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">{t("companyDashboard.standard")}</span>
+                  )}
+                </TableCell>
+                <TableCell className="font-medium text-foreground max-w-[200px] truncate">{prop.title}</TableCell>
+                <TableCell className="text-sm text-muted-foreground max-w-[120px] truncate">{prop.agent_name || "—"}</TableCell>
+                <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
+                <TableCell>
+                  {prop.display_on_homepage ? (
+                    <Badge className="bg-amber-100 text-amber-800 gap-1" variant="secondary"><Home className="h-3 w-3" /> {t("companyDashboard.featured")}</Badge>
+                  ) : <span className="text-xs text-muted-foreground">—</span>}
+                </TableCell>
+                <TableCell>
+                  <Badge className={statusColor(prop.status)} variant="secondary">
+                    {prop.status === "draft" ? t("companyDashboard.unpublished") : prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => navigate(`/property/${prop.id}`)}><Eye className="h-4 w-4 mr-2" /> {t("companyDashboard.view")}</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => invalidateProperties()}><RefreshCw className="h-4 w-4 mr-2" /> {t("companyDashboard.refresh")}</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate(`/company/properties/${prop.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeactivate(prop)}><Ban className="h-4 w-4 mr-2" /> {prop.status === "active" ? t("companyDashboard.deactivate") : t("companyDashboard.activate")}</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setAssignDialog({ open: true, property: prop })}><UserPlus className="h-4 w-4 mr-2" /> {t("companyDashboard.assignToAgent")}</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: prop })}><ArrowUpCircle className="h-4 w-4 mr-2" /> {t("companyDashboard.upgradeToPremiumFeatured")}</DropdownMenuItem>
+                      {analyticsPhase !== 'off' && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: prop })}><BarChart3 className="h-4 w-4 mr-2" /> {t("companyDashboard.performanceInsights")}</DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow><TableCell colSpan={13} className="text-center py-12 text-muted-foreground">{t("companyDashboard.loading")}</TableCell></TableRow>
-              ) : paginated.length === 0 ? (
-                <TableRow><TableCell colSpan={13} className="text-center py-12 text-muted-foreground">{t("companyDashboard.noData")}</TableCell></TableRow>
-              ) : (
-                <>
-                  <tr style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
-                    <td colSpan={13} style={{ padding: 0, position: 'relative', height: virtualizer.getTotalSize() }}>
-                      {virtualizer.getVirtualItems().map((virtualRow) => {
-                        const prop = paginated[virtualRow.index];
-                        return (
-                          <TableRow key={prop.id} className="hover:bg-muted/30" style={{ position: 'absolute', top: virtualRow.start, width: '100%', display: 'table-row' }}>
-                            <TableCell><Checkbox checked={selected.includes(prop.id)} onCheckedChange={() => toggleSelect(prop.id)} /></TableCell>
-                            <TableCell className="text-sm font-mono text-muted-foreground">{prop.listing_id}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{format(new Date(prop.created_at), "dd/MM/yyyy hh:mm a")}</TableCell>
-                            <TableCell>
-                              <Badge className={propStatusColor(prop.property_status)} variant="secondary">
-                                {prop.property_status.charAt(0).toUpperCase() + prop.property_status.slice(1)}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-sm capitalize">{prop.property_purpose}</TableCell>
-                            <TableCell className="text-sm capitalize">{prop.property_type}</TableCell>
-                            <TableCell>
-                              {prop.property_classification === "premium" ? (
-                                <Badge className="bg-purple-100 text-purple-800 gap-1" variant="secondary"><Crown className="h-3 w-3" /> {t("companyDashboard.premium")}</Badge>
-                              ) : prop.property_classification === "featured" ? (
-                                <Badge className="bg-teal-100 text-teal-800 gap-1" variant="secondary"><Star className="h-3 w-3" /> {t("companyDashboard.featured")}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground">{t("companyDashboard.standard")}</span>
-                              )}
-                            </TableCell>
-                            <TableCell className="font-medium text-foreground max-w-[200px] truncate">{prop.title}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground max-w-[120px] truncate">{prop.agent_name || "—"}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">{prop.location || "—"}</TableCell>
-                            <TableCell>
-                              {prop.display_on_homepage ? (
-                                <Badge className="bg-amber-100 text-amber-800 gap-1" variant="secondary"><Home className="h-3 w-3" /> {t("companyDashboard.featured")}</Badge>
-                              ) : <span className="text-xs text-muted-foreground">—</span>}
-                            </TableCell>
-                            <TableCell>
-                              <Badge className={statusColor(prop.status)} variant="secondary">
-                                {prop.status === "draft" ? t("companyDashboard.unpublished") : prop.status.charAt(0).toUpperCase() + prop.status.slice(1)}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4" /></Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => navigate(`/property/${prop.id}`)}><Eye className="h-4 w-4 mr-2" /> {t("companyDashboard.view")}</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => invalidateProperties()}><RefreshCw className="h-4 w-4 mr-2" /> {t("companyDashboard.refresh")}</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => navigate(`/company/properties/${prop.id}/edit`)}><Pencil className="h-4 w-4 mr-2" /> {t("companyDashboard.edit")}</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDeactivate(prop)}><Ban className="h-4 w-4 mr-2" /> {prop.status === "active" ? t("companyDashboard.deactivate") : t("companyDashboard.activate")}</DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem onClick={() => setAssignDialog({ open: true, property: prop })}><UserPlus className="h-4 w-4 mr-2" /> {t("companyDashboard.assignToAgent")}</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => setUpgradeDialog({ open: true, property: prop })}><ArrowUpCircle className="h-4 w-4 mr-2" /> {t("companyDashboard.upgradeToPremiumFeatured")}</DropdownMenuItem>
-                                  {analyticsPhase !== 'off' && (
-                                    <>
-                                      <DropdownMenuSeparator />
-                                      <DropdownMenuItem onClick={() => setInsightsDialog({ open: true, property: prop })}><BarChart3 className="h-4 w-4 mr-2" /> {t("companyDashboard.performanceInsights")}</DropdownMenuItem>
-                                    </>
-                                  )}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </td>
-                  </tr>
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination */}
