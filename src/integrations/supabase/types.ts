@@ -2744,6 +2744,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      insert_company_notification: {
+        Args: {
+          p_company_id: string
+          p_message?: string
+          p_notification_type?: string
+          p_posted_by?: string
+          p_title: string
+        }
+        Returns: string
+      }
       search_event_ids_by_keyword: {
         Args: { p_keyword: string }
         Returns: {
