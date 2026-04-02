@@ -181,10 +181,10 @@ const Index = () => {
 
       {/* Hero Banner */}
       <section className="container mx-auto px-4 pt-4">
-        {showHeroBanner ? (
+      {showHeroBanner ? (
           <HeroBannerContent hero={hero} isMain />
         ) : showHeroSkeleton ? (
-          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
+          <div className="w-full rounded-2xl bg-muted animate-pulse" style={{ aspectRatio: '21/9' }} />
         ) : null}
       </section>
 
