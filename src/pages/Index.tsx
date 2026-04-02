@@ -165,8 +165,9 @@ const Index = () => {
   const heroCmsImages = (hero?.hero_images ?? []).filter((url): url is string => !!url && !isUnsplashFallback(url));
   const heroFallbackImage = hero?.image_url && !isUnsplashFallback(hero.image_url) ? hero.image_url : null;
   const heroHasImage = heroCmsImages.length > 0 || !!heroFallbackImage;
-  const showHeroBanner = cmsQuery.isSuccess && heroHasImage;
-  const showHeroSkeleton = !cmsQuery.isSuccess;
+  // Show banner if we have data (from cache, prefetch, or fetch)
+  const showHeroBanner = heroHasImage;
+  const showHeroSkeleton = !cmsQuery.isSuccess && !heroHasImage;
 
   return (
     <div className="min-h-screen bg-background">
