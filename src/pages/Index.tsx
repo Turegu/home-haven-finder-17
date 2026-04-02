@@ -427,15 +427,22 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {(visibleIndex === -1 || !heroLoaded) && (
+      {/* Warm-start: show cached image as CSS background while fresh images load */}
+      {cachedImages.length > 0 && !heroLoaded && (
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+          style={{ backgroundImage: `url(${cachedImages[currentIndex % cachedImages.length] || cachedImages[0]})` }}
+        />
+      )}
+      {(visibleIndex === -1 && !heroLoaded && cachedImages.length === 0) && (
         <div className="absolute inset-0 bg-muted animate-pulse" />
       )}
-      {images.map((src, idx) => (
+      {displayImages.map((src, idx) => (
         <img
           key={src}
           src={src}
           alt={`${slideTitle} ${idx + 1}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ease-in-out ${idx === visibleIndex && heroLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${idx === visibleIndex && heroLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading={idx === 0 || idx === currentIndex ? "eager" : "lazy"}
           {...(idx === 0 || idx === currentIndex ? { fetchPriority: "high" as any } : {})}
           onLoad={() => {
