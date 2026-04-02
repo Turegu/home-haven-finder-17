@@ -2,6 +2,7 @@
 import SEOHead from '@/components/SEOHead';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   FileText, Send, Handshake, ChevronDown, Check, Loader2,
 } from 'lucide-react';
@@ -29,18 +30,23 @@ interface CmsData {
   steps?: { image_url?: string; title?: string; description?: string }[];
 }
 
-const ENQUIRY_TYPES = [
-  { value: 'residential_buy', label: 'Residential to Buy' },
-  { value: 'residential_rent', label: 'Residential to Rent' },
-  { value: 'commercial_buy', label: 'Commercial to Buy' },
-  { value: 'commercial_rent', label: 'Commercial to Rent' },
-];
-
-const CONTACT_METHODS = ['Phone', 'Email', 'WhatsApp'];
-
 const PropertyRequestPage = () => {
+  const { t } = useTranslation();
   const [cms, setCms] = useState<CmsData>({});
   const { options: filterOpts, isLoading: filtersLoading } = useFilterOptions("property");
+
+  const ENQUIRY_TYPES = [
+    { value: 'residential_buy', label: t('pages.propertyRequest.residentialBuy') },
+    { value: 'residential_rent', label: t('pages.propertyRequest.residentialRent') },
+    { value: 'commercial_buy', label: t('pages.propertyRequest.commercialBuy') },
+    { value: 'commercial_rent', label: t('pages.propertyRequest.commercialRent') },
+  ];
+
+  const CONTACT_METHODS = [
+    { value: 'Phone', label: t('pages.propertyRequest.contactPhone') },
+    { value: 'Email', label: t('pages.propertyRequest.contactEmail') },
+    { value: 'WhatsApp', label: t('pages.propertyRequest.contactWhatsApp') },
+  ];
 
   // Location cascading
   const [provinces, setProvinces] = useState<string[]>([]);
@@ -120,7 +126,7 @@ const PropertyRequestPage = () => {
 
   const handleSubmit = async () => {
     if (!formData.fullName || !formData.email || !formData.phone || !formData.enquiryType || !formData.propertyType || !formData.province || !formData.areaSqm || !formData.budget) {
-      toast({ title: "Missing fields", description: "Please fill in all required fields.", variant: "destructive" });
+      toast({ title: t('pages.propertyRequest.missingFields'), description: t('pages.propertyRequest.fillRequired'), variant: "destructive" });
       return;
     }
 
@@ -128,10 +134,10 @@ const PropertyRequestPage = () => {
     try {
       const { data: { user } } = await supabase.auth.getSession().then(r => ({ data: { user: r.data.session?.user ?? null } }));
 
-      // Rate limit: max 5 requests per 24 hours per email
+      // Rate limit: max 1 request per 24 hours per email
       const { data: allowed } = await supabase.rpc('check_property_request_rate_limit', { p_email: formData.email });
       if (!allowed) {
-        toast({ title: "Rate limit reached", description: "You can only submit 1 property request per 24 hours. Please try again tomorrow.", variant: "destructive" });
+        toast({ title: t('pages.propertyRequest.rateLimitTitle'), description: t('pages.propertyRequest.rateLimitDesc'), variant: "destructive" });
         setSubmitting(false);
         return;
       }
@@ -164,8 +170,7 @@ const PropertyRequestPage = () => {
 
       if (error) throw error;
 
-      toast({ title: "Request submitted!", description: "Your property request has been sent to qualified agencies." });
-      // Reset form
+      toast({ title: t('pages.propertyRequest.requestSubmitted'), description: t('pages.propertyRequest.requestSentToAgencies') });
       setFormData({
         fullName: '', email: '', phone: '', contactMethod: '',
         enquiryType: '', propertyType: '', province: '', district: '', neighbourhood: '',
@@ -176,7 +181,7 @@ const PropertyRequestPage = () => {
         additionalRequests: '',
       });
     } catch {
-      toast({ title: "Error", description: "Failed to submit request. Please try again.", variant: "destructive" });
+      toast({ title: t('pages.propertyRequest.error'), description: t('pages.propertyRequest.failedToSubmit'), variant: "destructive" });
     } finally {
       setSubmitting(false);
     }
@@ -195,9 +200,29 @@ const PropertyRequestPage = () => {
             onChange={(e) => handleChange(field, e.target.value)}
             className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
           >
-            <option value="" disabled hidden>Select</option>
-            {shouldShowAny && <option value="" className="text-foreground">Any</option>}
+            <option value="" disabled hidden>{t('pages.propertyRequest.select')}</option>
+            {shouldShowAny && <option value="" className="text-foreground">{t('pages.propertyRequest.any')}</option>}
             {options.map((o) => <option key={o} value={o} className="text-foreground">{o}</option>)}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        </div>
+      </div>
+    );
+  };
+
+  const SelectFieldWithLabels = ({ label, field, options, required = false }: { label: string; field: keyof typeof formData; options: { value: string; label: string }[]; required?: boolean }) => {
+    const currentValue = formData[field] as string ?? '';
+    return (
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1.5">{label}{required && '*'}</label>
+        <div className="relative">
+          <select
+            value={currentValue}
+            onChange={(e) => handleChange(field, e.target.value)}
+            className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
+          >
+            <option value="" disabled hidden>{t('pages.propertyRequest.select')}</option>
+            {options.map((o) => <option key={o.value} value={o.value} className="text-foreground">{o.label}</option>)}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         </div>
@@ -218,7 +243,7 @@ const PropertyRequestPage = () => {
               className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm text-left flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-ring ${selected.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               <span className="truncate">
-                {selected.length > 0 ? `${selected.length} selected` : 'Select'}
+                {selected.length > 0 ? `${selected.length} ${t('pages.propertyRequest.selected')}` : t('pages.propertyRequest.select')}
               </span>
               <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             </button>
@@ -258,7 +283,7 @@ const PropertyRequestPage = () => {
     const currentValue = formData.enquiryType;
     return (
       <div>
-        <label className="block text-sm font-medium text-foreground mb-1.5">Enquiry Type*</label>
+        <label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.enquiryType')}*</label>
         <div className="relative">
           <select
             value={currentValue}
@@ -268,8 +293,8 @@ const PropertyRequestPage = () => {
             }}
             className={`w-full h-10 rounded-md border border-input bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-ring ${currentValue ? 'text-foreground' : 'text-muted-foreground'}`}
           >
-            <option value="" disabled hidden>Select</option>
-            {ENQUIRY_TYPES.map((t) => <option key={t.value} value={t.value} className="text-foreground">{t.label}</option>)}
+            <option value="" disabled hidden>{t('pages.propertyRequest.select')}</option>
+            {ENQUIRY_TYPES.map((et) => <option key={et.value} value={et.value} className="text-foreground">{et.label}</option>)}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         </div>
@@ -279,16 +304,16 @@ const PropertyRequestPage = () => {
 
 
   const defaultSteps = [
-    { icon: FileText, title: 'Fill the form', desc: 'Fill the form with dream home requirements' },
-    { icon: Send, title: 'Submit the form', desc: 'Your request is sent to qualified agencies' },
-    { icon: Handshake, title: 'Get your deal', desc: 'Top agents contact you with matching properties' },
+    { icon: FileText, title: t('pages.propertyRequest.fillForm'), desc: t('pages.propertyRequest.fillFormDesc') },
+    { icon: Send, title: t('pages.propertyRequest.submitForm'), desc: t('pages.propertyRequest.submitFormDesc') },
+    { icon: Handshake, title: t('pages.propertyRequest.getYourDeal'), desc: t('pages.propertyRequest.getYourDealDesc') },
   ];
 
   const stepsData = cms.steps || [];
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Submit Property Request" description="Tell us what you're looking for and let verified real estate agents contact you with matching properties." url={window.location.href} />
+      <SEOHead title={t('pages.propertyRequest.title')} description={t('pages.propertyRequest.subtitle')} url={window.location.href} />
       <Header />
 
       {/* Hero */}
@@ -300,17 +325,17 @@ const PropertyRequestPage = () => {
       >
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative text-center text-white z-10 px-4">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">{cms.title || "You Dream it, We Find it"}</h1>
-          <p className="text-sm sm:text-lg opacity-90 mb-1">{cms.description1 || "You didn't find your dream home you looking for?"}</p>
-          <p className="text-sm sm:text-lg opacity-90">{cms.description2 || "Let our network of top agents in the country find it for you"}</p>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">{cms.title || t('pages.propertyRequest.heroTitle')}</h1>
+          <p className="text-sm sm:text-lg opacity-90 mb-1">{cms.description1 || t('pages.propertyRequest.heroDesc1')}</p>
+          <p className="text-sm sm:text-lg opacity-90">{cms.description2 || t('pages.propertyRequest.heroDesc2')}</p>
         </div>
       </div>
 
       {/* How it Works */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-foreground mb-2">{cms.main_title || "How it Works"}</h2>
-          <p className="text-muted-foreground">{cms.subtitle || "Handpicked properties by our team"}</p>
+          <h2 className="text-3xl font-bold text-foreground mb-2">{cms.main_title || t('pages.propertyRequest.howItWorks')}</h2>
+          <p className="text-muted-foreground">{cms.subtitle || t('pages.propertyRequest.handpicked')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {defaultSteps.map(({ icon: Icon, title, desc }, i) => (
@@ -333,40 +358,40 @@ const PropertyRequestPage = () => {
       <div className="container mx-auto px-4 pb-16">
         <div className="max-w-4xl mx-auto bg-card border border-border rounded-xl p-6 md:p-10">
           {/* Contact Details */}
-          <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Contact Details</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">{t('pages.propertyRequest.contactDetails')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Full Name*</label><Input value={formData.fullName} onChange={(e) => handleChange('fullName', e.target.value)} placeholder="Full Name" maxLength={100} /></div>
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Email*</label><Input type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder="Email" maxLength={254} /></div>
-            <div><label className="block text-sm font-medium text-foreground mb-1.5">Phone Number*</label><Input value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Phone" maxLength={20} /></div>
-            <SelectField label="Preferred Method of Contact" field="contactMethod" options={CONTACT_METHODS} />
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.fullName')}*</label><Input value={formData.fullName} onChange={(e) => handleChange('fullName', e.target.value)} placeholder={t('pages.propertyRequest.enterFullName')} maxLength={100} /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.email')}*</label><Input type="email" value={formData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder={t('pages.propertyRequest.enterEmail')} maxLength={254} /></div>
+            <div><label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.phoneNumber')}*</label><Input value={formData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder={t('pages.propertyRequest.enterPhone')} maxLength={20} /></div>
+            <SelectFieldWithLabels label={t('pages.propertyRequest.preferredContact')} field="contactMethod" options={CONTACT_METHODS} />
           </div>
 
           {/* Property Requirement */}
-          <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Property Requirement</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">{t('pages.propertyRequest.propertyRequirement')}</h3>
           {filtersLoading ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground py-8 justify-center">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading filters...
+              <Loader2 className="h-4 w-4 animate-spin" /> {t('pages.propertyRequest.loadingFilters')}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               <EnquirySelect />
-              <SelectField label="Property Type" field="propertyType" options={propertyTypeOptions} required showAny={false} />
-              <SelectField label="Province / City" field="province" options={provinces} required showAny={false} />
-              <SelectField label="District" field="district" options={districts} showAny={false} />
-              <SelectField label="Neighbourhood" field="neighbourhood" options={neighbourhoods} showAny={false} />
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area, Street</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder="Area, Street" maxLength={300} /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Budget*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder="e.g. $100,000 - $200,000" maxLength={100} /></div>
-              <div><label className="block text-sm font-medium text-foreground mb-1.5">Area (M²)*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder="Area in m²" maxLength={20} /></div>
-              <MultiSelectField label="Rooms" field="rooms" options={filterOpts['rooms'] || []} />
-              <MultiSelectField label="Bathrooms" field="bathrooms" options={filterOpts['bathrooms'] || []} />
-              <MultiSelectField label="Furnishing" field="furnishing" options={filterOpts['furniture'] || []} />
-              <MultiSelectField label="Floor Level" field="floorLevel" options={filterOpts['floor_level'] || []} />
-              <MultiSelectField label="Property Status" field="propertyStatus" options={filterOpts['property_status'] || []} />
-              <MultiSelectField label="Parking Space" field="parkingSpace" options={filterOpts['parking'] || []} />
-              <MultiSelectField label="View & Orientation" field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
+              <SelectField label={t('pages.propertyRequest.propertyType')} field="propertyType" options={propertyTypeOptions} required showAny={false} />
+              <SelectField label={t('pages.propertyRequest.provinceCity')} field="province" options={provinces} required showAny={false} />
+              <SelectField label={t('pages.propertyRequest.district')} field="district" options={districts} showAny={false} />
+              <SelectField label={t('pages.propertyRequest.neighbourhood')} field="neighbourhood" options={neighbourhoods} showAny={false} />
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.areaStreet')}</label><Input value={formData.areaStreet} onChange={(e) => handleChange('areaStreet', e.target.value)} placeholder={t('pages.propertyRequest.areaStreetPlaceholder')} maxLength={300} /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.budget')}*</label><Input value={formData.budget} onChange={(e) => handleChange('budget', e.target.value)} placeholder={t('pages.propertyRequest.budgetPlaceholder')} maxLength={100} /></div>
+              <div><label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.areaSqm')}*</label><Input value={formData.areaSqm} onChange={(e) => handleChange('areaSqm', e.target.value)} placeholder={t('pages.propertyRequest.areaSqmPlaceholder')} maxLength={20} /></div>
+              <MultiSelectField label={t('pages.propertyRequest.rooms')} field="rooms" options={filterOpts['rooms'] || []} />
+              <MultiSelectField label={t('pages.propertyRequest.bathrooms')} field="bathrooms" options={filterOpts['bathrooms'] || []} />
+              <MultiSelectField label={t('pages.propertyRequest.furnishing')} field="furnishing" options={filterOpts['furniture'] || []} />
+              <MultiSelectField label={t('pages.propertyRequest.floorLevel')} field="floorLevel" options={filterOpts['floor_level'] || []} />
+              <MultiSelectField label={t('pages.propertyRequest.propertyStatus')} field="propertyStatus" options={filterOpts['property_status'] || []} />
+              <MultiSelectField label={t('pages.propertyRequest.parkingSpace')} field="parkingSpace" options={filterOpts['parking'] || []} />
+              <MultiSelectField label={t('pages.propertyRequest.viewOrientation')} field="viewOrientation" options={[...(filterOpts['views'] || []), ...(filterOpts['orientation'] || [])]} />
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">Amenities</label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">{t('pages.propertyRequest.amenities')}</label>
                 <AmenitiesPickerDialog
                   interiorOptions={filterOpts['interior_amenities'] || []}
                   exteriorOptions={filterOpts['exterior_amenities'] || []}
@@ -380,14 +405,14 @@ const PropertyRequestPage = () => {
           )}
 
           {/* Additional */}
-          <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">Additional Requests</h3>
-          <Textarea value={formData.additionalRequests} onChange={(e) => handleChange('additionalRequests', e.target.value)} placeholder="Any additional requirements..." className="mb-6" rows={4} maxLength={2000} />
+          <h3 className="text-lg font-semibold text-foreground mb-6 pb-3 border-b border-border">{t('pages.propertyRequest.additionalRequests')}</h3>
+          <Textarea value={formData.additionalRequests} onChange={(e) => handleChange('additionalRequests', e.target.value)} placeholder={t('pages.propertyRequest.additionalPlaceholder')} className="mb-6" rows={4} maxLength={2000} />
           <p className="text-sm text-muted-foreground mb-4">
-            By Submitting a request, you agree to our{' '}
-            <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+            {t('pages.propertyRequest.privacyAgreement')}{' '}
+            <Link to="/privacy" className="text-primary hover:underline">{t('pages.propertyRequest.privacyPolicy')}</Link>
           </p>
           <Button className="w-full md:w-auto px-8" onClick={handleSubmit} disabled={submitting}>
-            {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Submitting...</> : 'Submit Request'}
+            {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> {t('pages.propertyRequest.submitting')}</> : t('pages.propertyRequest.submitRequest')}
           </Button>
         </div>
       </div>

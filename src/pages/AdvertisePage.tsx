@@ -79,7 +79,7 @@ const AdvertisePage = () => {
       return;
     }
     if (!turnstileToken) {
-      toast.error('Please complete the human verification.');
+      toast.error(t('pages.advertise.completeVerification'));
       return;
     }
     setSubmitting(true);
@@ -104,19 +104,19 @@ const AdvertisePage = () => {
   };
 
   const features = [
-    { icon: Home, label: t('pages.advertise.photos'), desc: "Showcase your listings with professional photos" },
-    { icon: FolderKanban, label: t('pages.advertise.floorPlansLabel'), desc: "Detailed floor plans for every listing" },
-    { icon: CalendarDays, label: t('pages.advertise.videos'), desc: "Virtual tours and video walkthroughs" },
-    { icon: Image, label: t('pages.advertise.panoramicViews'), desc: "360° panoramic view experiences" },
-    { icon: Search, label: t('pages.advertise.mapsNearbys'), desc: "Interactive maps with nearby amenities" },
-    { icon: Users, label: t('pages.advertise.agentNetwork'), desc: "Build your professional agent network" },
-    { icon: MessageSquare, label: t('pages.advertise.inquiries'), desc: "Receive inquiries & property requests" },
-    { icon: Building2, label: t('pages.advertise.companyProfile'), desc: "Professional company profile & mini website" },
+    { icon: Home, label: t('pages.advertise.photos'), desc: t('pages.advertise.photosDesc') },
+    { icon: FolderKanban, label: t('pages.advertise.floorPlansLabel'), desc: t('pages.advertise.floorPlansDesc') },
+    { icon: CalendarDays, label: t('pages.advertise.videos'), desc: t('pages.advertise.videosDesc') },
+    { icon: Image, label: t('pages.advertise.panoramicViews'), desc: t('pages.advertise.panoramicViewsDesc') },
+    { icon: Search, label: t('pages.advertise.mapsNearbys'), desc: t('pages.advertise.mapsNearbysDesc') },
+    { icon: Users, label: t('pages.advertise.agentNetwork'), desc: t('pages.advertise.agentNetworkDesc') },
+    { icon: MessageSquare, label: t('pages.advertise.inquiries'), desc: t('pages.advertise.inquiriesDesc') },
+    { icon: Building2, label: t('pages.advertise.companyProfile'), desc: t('pages.advertise.companyProfileDesc') },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <SEOHead title="Advertise With Us" description="List your properties on Turegu. Reach thousands of potential buyers and tenants with professional listing tools." url={window.location.href} />
+      <SEOHead title={t('pages.advertise.title')} description={t('pages.advertise.subtitle')} url={window.location.href} />
       <Header />
 
       {/* Hero Section */}
@@ -156,7 +156,7 @@ const AdvertisePage = () => {
                     <Label htmlFor="company_name">{t('pages.advertise.companyName')}</Label>
                     <Input
                       id="company_name"
-                      placeholder="Enter Your Company Name"
+                      placeholder={t('pages.advertise.enterCompanyName')}
                       value={form.company_name}
                       onChange={(e) => setForm({ ...form, company_name: e.target.value })}
                       required
@@ -168,7 +168,7 @@ const AdvertisePage = () => {
                       <Label htmlFor="first_name">{t('pages.advertise.firstName')}</Label>
                       <Input
                         id="first_name"
-                        placeholder="Enter Your First Name"
+                        placeholder={t('pages.advertise.enterFirstName')}
                         value={form.first_name}
                         onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                         required
@@ -179,7 +179,7 @@ const AdvertisePage = () => {
                       <Label htmlFor="last_name">{t('pages.advertise.lastName')}</Label>
                       <Input
                         id="last_name"
-                        placeholder="Enter Your Last Name"
+                        placeholder={t('pages.advertise.enterLastName')}
                         value={form.last_name}
                         onChange={(e) => setForm({ ...form, last_name: e.target.value })}
                         required
@@ -192,7 +192,7 @@ const AdvertisePage = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Enter Your Email"
+                      placeholder={t('pages.advertise.enterEmail')}
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       required
@@ -204,7 +204,7 @@ const AdvertisePage = () => {
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="Enter your phone number"
+                      placeholder={t('pages.advertise.enterPhone')}
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       required
@@ -215,7 +215,7 @@ const AdvertisePage = () => {
                     <Label htmlFor="message">{t('pages.advertise.messageOptional')}</Label>
                     <Textarea
                       id="message"
-                      placeholder="Tell us about your advertising needs..."
+                      placeholder={t('pages.advertise.advertisingNeeds')}
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       maxLength={1000}
@@ -278,9 +278,9 @@ const AdvertisePage = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t('pages.advertise.keepInTouch')}</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { icon: Users, title: t('pages.advertise.buildNetwork'), desc: "Create your own network of clients & followers and let them be notified with your updates" },
-              { icon: MessageSquare, title: t('pages.advertise.receiveInquiries'), desc: "Get inquiries & property requests directly from interested buyers and tenants" },
-              { icon: Search, title: t('pages.advertise.claimSpot'), desc: "Appear in agent search results and let people discover your company" },
+              { icon: Users, title: t('pages.advertise.buildNetwork'), desc: t('pages.advertise.buildNetworkDesc') },
+              { icon: MessageSquare, title: t('pages.advertise.receiveInquiries'), desc: t('pages.advertise.receiveInquiriesDesc') },
+              { icon: Search, title: t('pages.advertise.claimSpot'), desc: t('pages.advertise.claimSpotDesc') },
             ].map((item) => (
               <div key={item.title} className="flex flex-col items-center text-center p-6">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -297,7 +297,7 @@ const AdvertisePage = () => {
       {/* Packages Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Choose Your Plan</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">{t('pages.advertise.chooseYourPlan')}</h2>
           <p className="text-muted-foreground text-center mb-12">
             {t('pages.advertise.flexiblePackages')}
           </p>
@@ -331,7 +331,7 @@ const AdvertisePage = () => {
                     <span className="text-4xl font-bold text-foreground">${pkg.monthly_price}</span>
                     <span className="text-muted-foreground text-sm">/{t('pages.advertise.month')}</span>
                   </div>
-                  <p className="text-xs text-primary font-semibold mt-1">Billed Quarterly</p>
+                  <p className="text-xs text-primary font-semibold mt-1">{t('pages.advertise.billedQuarterly')}</p>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                   <FeatureLine value={`${pkg.max_agents}`} label={t('pages.advertise.agentsAllowed')} />
@@ -345,8 +345,8 @@ const AdvertisePage = () => {
                   />
 
                   <div className="border-t border-border pt-3 mt-4 space-y-1 text-xs text-muted-foreground">
-                    <p>6 Months: ${pkg.semiannual_price?.toLocaleString()}</p>
-                    <p className="font-semibold text-primary">1 Year: ${pkg.annual_price?.toLocaleString()} (Best Value!)</p>
+                    <p>{t('pages.advertise.sixMonths')}: ${pkg.semiannual_price?.toLocaleString()}</p>
+                    <p className="font-semibold text-primary">{t('pages.advertise.oneYear')}: ${pkg.annual_price?.toLocaleString()} ({t('pages.advertise.bestValue')})</p>
                   </div>
 
                   <Button className="w-full mt-4" variant={pkg.package_type === "pro" ? "default" : "outline"} onClick={scrollToForm}>
