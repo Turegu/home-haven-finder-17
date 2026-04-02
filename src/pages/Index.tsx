@@ -374,18 +374,17 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   const [heroLoaded, setHeroLoaded] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Reset loading/slide state when hero images change
+  // Track previous imagesKey to detect actual image changes (not initial load)
+  const prevImagesKeyRef = useRef(imagesKey);
   useEffect(() => {
+    if (imagesKey === prevImagesKeyRef.current) return; // same images, skip
+    prevImagesKeyRef.current = imagesKey;
     if (displayImages.length > 0) {
-      try {
-        const stored = parseInt(localStorage.getItem('hero_next_slide') || '0', 10);
-        const idx = isNaN(stored) ? 0 : stored % displayImages.length;
-        setCurrentIndex(idx);
-        localStorage.setItem('hero_next_slide', String((idx + 1) % displayImages.length));
-      } catch { setCurrentIndex(0); }
+      // Images actually changed (CMS update), reset to slide 0
+      setCurrentIndex(0);
+      setLoadedIndices(new Set());
+      setHeroLoaded(false);
     }
-    setLoadedIndices(new Set());
-    setHeroLoaded(false);
   }, [imagesKey]);
 
   // Auto-rotate with 9s interval, pause on hover
