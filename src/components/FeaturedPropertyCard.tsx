@@ -95,22 +95,12 @@ const FeaturedPropertyCard = memo(({ property, isSaved = false, isCompared = fal
           </>
         )}
 
-        {/* Top-left: tier + tags */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-          {property.listingTier === 'premium' && (
-            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-amber-500 shadow-md" title="Premium">
-              <Crown className="h-4 w-4 text-white" />
-            </span>
-          )}
-          {property.listingTier === 'featured' && (
-            <span className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-gray-400 shadow-md" title="Featured">
-              <Star className="h-4 w-4 text-white" />
-            </span>
-          )}
-          {property.agentLogo && (
+        {/* Top-left: agent logo */}
+        {property.agentLogo && (
+          <div className="absolute top-3 left-3 z-10">
             <img src={property.agentLogo} alt={property.companyName} className="h-7 w-auto max-w-[64px] object-contain rounded bg-white shadow-sm px-1.5 py-1" />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Top-right: actions + tag */}
         <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-10">
