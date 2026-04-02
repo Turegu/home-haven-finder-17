@@ -165,8 +165,9 @@ const Index = () => {
   const heroCmsImages = (hero?.hero_images ?? []).filter((url): url is string => !!url && !isUnsplashFallback(url));
   const heroFallbackImage = hero?.image_url && !isUnsplashFallback(hero.image_url) ? hero.image_url : null;
   const heroHasImage = heroCmsImages.length > 0 || !!heroFallbackImage;
-  const showHeroBanner = cmsQuery.isSuccess && heroHasImage;
-  const showHeroSkeleton = !cmsQuery.isSuccess;
+  // Show banner if we have data (from cache, prefetch, or fetch)
+  const showHeroBanner = heroHasImage;
+  const showHeroSkeleton = !cmsQuery.isSuccess && !heroHasImage;
 
   return (
     <div className="min-h-screen bg-background">
@@ -180,10 +181,10 @@ const Index = () => {
 
       {/* Hero Banner */}
       <section className="container mx-auto px-4 pt-4">
-        {showHeroBanner ? (
+      {showHeroBanner ? (
           <HeroBannerContent hero={hero} isMain />
         ) : showHeroSkeleton ? (
-          <div className="w-full aspect-[4/3] sm:aspect-[21/9] rounded-2xl bg-muted animate-pulse" />
+          <div className="w-full rounded-2xl bg-muted animate-pulse" style={{ aspectRatio: '21/9' }} />
         ) : null}
       </section>
 
@@ -401,7 +402,8 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
 
   const slideContent = (
     <div
-      className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}
+      className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl bg-muted`}
+      style={isMain ? { backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

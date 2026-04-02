@@ -101,6 +101,8 @@ export function useCmsPage<T = Record<string, unknown>>(
   slug: string,
   options?: { staleTime?: number; refetchOnMount?: boolean | "always" }
 ) {
+  const cacheKey = `cms_cache_${slug}`;
+
   return useQuery({
     queryKey: ["cms-page", slug],
     queryFn: async () => {
@@ -111,15 +113,28 @@ export function useCmsPage<T = Record<string, unknown>>(
         .limit(1);
       if (error) throw error;
       const row = data?.[0] as { content: unknown } | undefined;
-      return row?.content as T | undefined;
+      const content = row?.content as T | undefined;
+
+      // Persist to localStorage so next page load has instant data
+      if (content) {
+        try { localStorage.setItem(cacheKey, JSON.stringify(content)); } catch {}
+      }
+
+      return content;
     },
     initialData: () => {
+      // 1st priority: inline prefetch from index.html (fastest)
       if (slug === "home") {
         const prefetch = (window as any).__CMS_HOME_PREFETCH__;
         if (Array.isArray(prefetch) && prefetch[0]?.content) {
           return prefetch[0].content as T;
         }
       }
+      // 2nd priority: localStorage cache from previous visit
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) return JSON.parse(cached) as T;
+      } catch {}
       return undefined;
     },
     staleTime: options?.staleTime ?? 30 * 60 * 1000,
