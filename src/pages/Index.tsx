@@ -305,6 +305,8 @@ const Index = () => {
 
 // Hero banner slideshow component with per-slide content, 9s rotation, pause on hover, RTL
 
+const HERO_CACHE_KEY = 'hero_cached_images';
+
 const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?: boolean }) => {
   const { t, i18n } = useTranslation();
   const dir = useDirection();
@@ -320,9 +322,24 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   );
   const imagesKey = images.join('|');
 
+  // --- Warm-start: read cached image URLs from localStorage ---
+  const cachedImages = useMemo(() => {
+    try {
+      const stored = localStorage.getItem(HERO_CACHE_KEY);
+      return stored ? (JSON.parse(stored) as string[]) : [];
+    } catch { return []; }
+  }, []);
+
+  // Persist current images to localStorage whenever they change
+  useEffect(() => {
+    if (images.length > 0) {
+      try { localStorage.setItem(HERO_CACHE_KEY, JSON.stringify(images)); } catch {}
+    }
+  }, [imagesKey]);
+
   // Preload the first hero image via <link rel="preload"> for faster LCP
   useEffect(() => {
-    const firstImg = images[0];
+    const firstImg = images[0] || cachedImages[0];
     if (!firstImg) return;
     const existing = document.querySelector(`link[rel="preload"][href="${firstImg}"]`);
     if (existing) return;
@@ -332,16 +349,19 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
     link.href = firstImg;
     document.head.appendChild(link);
     return () => { link.remove(); };
-  }, [images[0]]);
+  }, [images[0], cachedImages[0]]);
   const slides: SlideContent[] = hero?.slides || [];
+
+  // Use cached images as warm-start placeholder if fresh images aren't ready yet
+  const displayImages = images.length > 0 ? images : cachedImages;
 
   // Sequential rotation: each page load starts on the next slide
   const getInitialSlide = () => {
-    if (images.length <= 1) return 0;
+    if (displayImages.length <= 1) return 0;
     try {
       const stored = parseInt(localStorage.getItem('hero_next_slide') || '0', 10);
-      const idx = isNaN(stored) ? 0 : stored % images.length;
-      localStorage.setItem('hero_next_slide', String((idx + 1) % images.length));
+      const idx = isNaN(stored) ? 0 : stored % displayImages.length;
+      localStorage.setItem('hero_next_slide', String((idx + 1) % displayImages.length));
       return idx;
     } catch { return 0; }
   };
@@ -354,12 +374,12 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
 
   // Reset loading/slide state when hero images change
   useEffect(() => {
-    if (images.length > 0) {
+    if (displayImages.length > 0) {
       try {
         const stored = parseInt(localStorage.getItem('hero_next_slide') || '0', 10);
-        const idx = isNaN(stored) ? 0 : stored % images.length;
+        const idx = isNaN(stored) ? 0 : stored % displayImages.length;
         setCurrentIndex(idx);
-        localStorage.setItem('hero_next_slide', String((idx + 1) % images.length));
+        localStorage.setItem('hero_next_slide', String((idx + 1) % displayImages.length));
       } catch { setCurrentIndex(0); }
     }
     setLoadedIndices(new Set());
@@ -368,16 +388,16 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
 
   // Auto-rotate with 9s interval, pause on hover
   useEffect(() => {
-    if (images.length <= 1 || isPaused) return;
+    if (displayImages.length <= 1 || isPaused) return;
     intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
+      setCurrentIndex((prev) => (prev + 1) % displayImages.length);
     }, 9000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [images.length, isPaused]);
+  }, [displayImages.length, isPaused]);
 
   const goTo = (idx: number) => setCurrentIndex(idx);
-  const goPrev = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  const goNext = () => setCurrentIndex((prev) => (prev + 1) % images.length);
+  const goPrev = () => setCurrentIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
+  const goNext = () => setCurrentIndex((prev) => (prev + 1) % displayImages.length);
 
   const visibleIndex = loadedIndices.has(currentIndex)
     ? currentIndex
@@ -398,7 +418,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   const slideLinkUrl = currentSlide.link_url || '';
   const slideLinkText = getLocalizedField('link_text') || '';
 
-  if (images.length === 0) return null;
+  if (displayImages.length === 0) return null;
 
   const slideContent = (
     <div
