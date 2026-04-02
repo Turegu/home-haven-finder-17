@@ -334,7 +334,18 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
   }, [images[0]]);
   const slides: SlideContent[] = hero?.slides || [];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // Sequential rotation: each page load starts on the next slide
+  const getInitialSlide = () => {
+    if (images.length <= 1) return 0;
+    try {
+      const stored = parseInt(localStorage.getItem('hero_next_slide') || '0', 10);
+      const idx = isNaN(stored) ? 0 : stored % images.length;
+      localStorage.setItem('hero_next_slide', String((idx + 1) % images.length));
+      return idx;
+    } catch { return 0; }
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(getInitialSlide);
   const [isPaused, setIsPaused] = useState(false);
   const [loadedIndices, setLoadedIndices] = useState<Set<number>>(new Set());
   const [heroLoaded, setHeroLoaded] = useState(false);
@@ -342,7 +353,14 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
 
   // Reset loading/slide state when hero images change
   useEffect(() => {
-    setCurrentIndex(0);
+    if (images.length > 0) {
+      try {
+        const stored = parseInt(localStorage.getItem('hero_next_slide') || '0', 10);
+        const idx = isNaN(stored) ? 0 : stored % images.length;
+        setCurrentIndex(idx);
+        localStorage.setItem('hero_next_slide', String((idx + 1) % images.length));
+      } catch { setCurrentIndex(0); }
+    }
     setLoadedIndices(new Set());
     setHeroLoaded(false);
   }, [imagesKey]);
