@@ -402,7 +402,8 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
 
   const slideContent = (
     <div
-      className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl`}
+      className={`relative w-full ${isMain ? "aspect-[4/3] sm:aspect-[21/9]" : "min-h-[200px]"} flex flex-col justify-end overflow-hidden rounded-2xl bg-muted`}
+      style={isMain ? { backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
