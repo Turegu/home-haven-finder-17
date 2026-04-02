@@ -165,9 +165,11 @@ const Index = () => {
   const heroCmsImages = (hero?.hero_images ?? []).filter((url): url is string => !!url && !isUnsplashFallback(url));
   const heroFallbackImage = hero?.image_url && !isUnsplashFallback(hero.image_url) ? hero.image_url : null;
   const heroHasImage = heroCmsImages.length > 0 || !!heroFallbackImage;
+  // Also check localStorage cache for warm-start
+  const hasCachedHeroImages = (() => { try { const c = localStorage.getItem('hero_cached_images'); return c && JSON.parse(c).length > 0; } catch { return false; } })();
   // Show banner if we have data (from cache, prefetch, or fetch)
-  const showHeroBanner = heroHasImage;
-  const showHeroSkeleton = !cmsQuery.isSuccess && !heroHasImage;
+  const showHeroBanner = heroHasImage || hasCachedHeroImages;
+  const showHeroSkeleton = !cmsQuery.isSuccess && !heroHasImage && !hasCachedHeroImages;
 
   return (
     <div className="min-h-screen bg-background">
