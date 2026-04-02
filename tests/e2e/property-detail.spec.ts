@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Property detail page — SEO and contact", () => {
   test("has correct SEO meta tags and contact CTA", async ({ page }) => {
-    await page.goto("/property/29693715");
+    await page.goto("/property/47fd4eee-5413-4302-bbaa-cace89412f74");
     await page.waitForLoadState("domcontentloaded");
 
     // Page title should contain something meaningful
