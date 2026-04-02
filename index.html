@@ -62,6 +62,25 @@
   <body>
     <script>
       (function() {
+        // Preload cached hero image from localStorage immediately
+        try {
+          var cached = localStorage.getItem('cms_cache_home');
+          if (cached) {
+            var cms = JSON.parse(cached);
+            var imgs = (cms.hero && cms.hero.hero_images) || [];
+            var firstImg = imgs[0] || (cms.hero && cms.hero.image_url);
+            if (firstImg && firstImg.indexOf('unsplash') === -1) {
+              var preload = document.createElement('link');
+              preload.rel = 'preload';
+              preload.as = 'image';
+              preload.href = firstImg.indexOf('?') === -1 && firstImg.indexOf('/storage/v1/object/public/') !== -1
+                ? firstImg + '?width=1200&quality=80' : firstImg;
+              document.head.appendChild(preload);
+            }
+          }
+        } catch(e) {}
+
+        // Prefetch CMS home data from API
         var url = 'https://xlueciwbkbozwenwiwbg.supabase.co/rest/v1/cms_pages?select=content&page_slug=eq.home&limit=1';
         var key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsdWVjaXdia2Jvendlbndpd2JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2OTgwMTUsImV4cCI6MjA4OTI3NDAxNX0.y4pnsmel_3NZvFFX0clC7w12m5Hv3teHkbm3DbaPNHM';
         fetch(url, { headers: { 'apikey': key, 'Authorization': 'Bearer ' + key } })
