@@ -472,7 +472,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       </div>
 
       {/* Navigation arrows — RTL aware */}
-      {images.length > 1 && (
+      {displayImages.length > 1 && (
         <>
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); dir === 'rtl' ? goNext() : goPrev(); }}
@@ -492,9 +492,9 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
       )}
 
       {/* Slide indicators */}
-      {images.length > 1 && (
+      {displayImages.length > 1 && (
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
-          {images.map((_, idx) => (
+          {displayImages.map((_, idx) => (
             <button
               key={idx}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); goTo(idx); }}
