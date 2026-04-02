@@ -2754,6 +2754,10 @@ export type Database = {
         }
         Returns: string
       }
+      listing_exists: {
+        Args: { p_listing_id: string; p_listing_type: string }
+        Returns: boolean
+      }
       search_event_ids_by_keyword: {
         Args: { p_keyword: string }
         Returns: {
@@ -2794,6 +2798,7 @@ export type Database = {
         Args: { p_agent_id: string; p_amount: number; p_company_id: string }
         Returns: undefined
       }
+      storage_user_owns_path: { Args: { file_name: string }; Returns: boolean }
       submit_company_inbox_message: {
         Args: {
           p_agent_id?: string
