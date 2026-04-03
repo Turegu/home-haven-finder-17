@@ -93,6 +93,7 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
 
 export default function AdminLocationsPage() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
   const [districts, setDistricts] = useState<{ name: string; ar: string }[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
@@ -101,7 +102,6 @@ export default function AdminLocationsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const [settings, setSettings] = useState<LocationSetting[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [uploadPreview, setUploadPreview] = useState<any[] | null>(null);
