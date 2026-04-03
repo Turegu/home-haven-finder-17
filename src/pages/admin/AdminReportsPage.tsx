@@ -32,7 +32,7 @@ const AdminReportsPage = () => {
     queryKey: ["admin-reports"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("property_reports" as any)
+        .from("property_reports")
         .select("*")
         .order("created_at", { ascending: false });
 
