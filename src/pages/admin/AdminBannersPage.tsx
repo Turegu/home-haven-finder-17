@@ -75,8 +75,7 @@ const emptyForm = {
 const AdminBannersPage = () => {
   const { isTestMode } = useTestMode();
   const { t } = useTranslation();
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Banner | null>(null);
@@ -86,17 +85,19 @@ const AdminBannersPage = () => {
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const fetchBanners = async () => {
-    setLoading(true);
-    const { data } = await supabase
-      .from("banners")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setBanners((data as Banner[]) || []);
-    setLoading(false);
-  };
+  const { data: banners = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "banners"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("banners")
+        .select("*")
+        .order("created_at", { ascending: false });
+      return (data as Banner[]) || [];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchBanners(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "banners"] });
 
   const openCreate = () => {
     setEditing(null);
