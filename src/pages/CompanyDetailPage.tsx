@@ -447,8 +447,8 @@ const CompanyDetailPage = () => {
 const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
   const [filters, setFilters] = useState<ProfileFilters>({ purpose: 'all', propertyType: 'all', rooms: 'all', minPrice: '', maxPrice: '' });
   type PropertyWithJoins = Database["public"]["Tables"]["properties"]["Row"] & {
-    agents?: { name?: string; avatar_url?: string; phone?: string; whatsapp?: string } | null;
-    companies?: { name?: string; logo_url?: string; phone?: string; whatsapp?: string } | null;
+    agents?: { name: string; avatar_url: string | null; phone: string | null; whatsapp: string | null } | null;
+    companies?: { name: string; logo_url: string | null; phone: string | null; whatsapp: string | null } | null;
   };
   const [properties, setProperties] = useState<PropertyWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
