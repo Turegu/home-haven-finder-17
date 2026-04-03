@@ -108,7 +108,7 @@ const MortgageBanksPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Mortgage Calculator & Banks" description="Compare mortgage rates, calculate monthly payments, and find the best bank financing options for your property purchase." url={window.location.href} />
+      <SEOHead title="Mortgage Calculator & Banks" description="Compare mortgage rates, calculate monthly payments, and find the best bank financing options for your property purchase." url={`${window.location.origin}/mortgage-bank-loan`} />
       <Header />
 
       {/* Hero Section */}

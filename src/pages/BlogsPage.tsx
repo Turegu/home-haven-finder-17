@@ -65,7 +65,7 @@ const BlogsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Blog" description="Read the latest real estate news, market insights, and property tips on the Turegu blog." url={window.location.href} />
+      <SEOHead title="Blog" description="Read the latest real estate news, market insights, and property tips on the Turegu blog." url={`${window.location.origin}/blog`} />
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
