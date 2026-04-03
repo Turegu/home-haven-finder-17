@@ -125,7 +125,6 @@ const AdminCrudsPage = () => {
   const handleSave = async () => {
     if (!formTitle.trim()) { toast.error(t("admin.titleRequired")); return; }
     setSaving(true);
-    const payload: Record<string, unknown> = { title: formTitle.trim(), status: formStatus, translations: formTranslations };
 
     if (standaloneTab) {
       if (editItem) {
@@ -148,7 +147,6 @@ const AdminCrudsPage = () => {
         const { error } = await supabase.from("filter_options").insert({ category_id: filterCategory.id, title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never>, sort_order: sortOrder });
         if (error) toast.error(error.message);
         else { toast.success(t("admin.create")); setDialogOpen(false); invalidateItems(); }
-      }
       }
     }
     setSaving(false);
