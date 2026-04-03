@@ -391,7 +391,7 @@ export default function AdminLocationsPage() {
 
         {/* Content */}
         <div className="bg-card rounded-lg border border-border">
-          {loading && !selectedProvince ? (
+          {(loading || searching) && !selectedProvince ? (
             <div className="flex items-center justify-center py-16 text-muted-foreground">{t("admin.loadingProvinces")}</div>
           ) : !selectedProvince && neighborhoods.length === 0 ? (
             /* Province list */
