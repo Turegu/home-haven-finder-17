@@ -162,6 +162,7 @@ const App = () => {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/blog" element={<BlogsPage />} />
+            <Route path="/blogs" element={<Navigate to="/blog" replace />} />
             <Route path="/blog/:slug" element={<BlogDetailPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/advertise" element={<AdvertisePage />} />
