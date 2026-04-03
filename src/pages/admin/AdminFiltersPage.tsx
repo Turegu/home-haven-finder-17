@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,10 +45,8 @@ interface FilterOption {
 
 const AdminFiltersPage = () => {
   const { t } = useTranslation();
-  const [categories, setCategories] = useState<FilterCategory[]>([]);
-  const [options, setOptions] = useState<FilterOption[]>([]);
+  const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState<FilterCategory | null>(null);
-  const [loading, setLoading] = useState(true);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -60,41 +59,35 @@ const AdminFiltersPage = () => {
   const [excelDialogOpen, setExcelDialogOpen] = useState(false);
   const [categoryExcelOpen, setCategoryExcelOpen] = useState(false);
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCategory) fetchOptions(selectedCategory.id);
-  }, [selectedCategory]);
-
-  async function fetchCategories() {
-    const { data, error } = await supabase
-      .from("filter_categories")
-      .select("*")
-      .order("sort_order");
-    if (error) {
-      toast.error(t("admin.failedToLoadCategories"));
-    } else {
+  const { data: categories = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "filter-categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("filter_categories")
+        .select("*")
+        .order("sort_order");
+      if (error) { toast.error(t("admin.failedToLoadCategories")); return []; }
       const cats = (data || []) as unknown as FilterCategory[];
-      setCategories(cats);
       if (!selectedCategory && cats.length > 0) setSelectedCategory(cats[0]);
-    }
-    setLoading(false);
-  }
+      return cats;
+    },
+    staleTime: 30_000,
+  });
 
-  async function fetchOptions(categoryId: string) {
-    const { data, error } = await supabase
-      .from("filter_options")
-      .select("*")
-      .eq("category_id", categoryId)
-      .order("sort_order");
-    if (error) {
-      toast.error(t("admin.failedToLoadOptions"));
-    } else {
-      setOptions((data || []) as unknown as FilterOption[]);
-    }
-  }
+  const { data: options = [] } = useQuery({
+    queryKey: ["admin", "filter-options", selectedCategory?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("filter_options")
+        .select("*")
+        .eq("category_id", selectedCategory!.id)
+        .order("sort_order");
+      if (error) { toast.error(t("admin.failedToLoadOptions")); return []; }
+      return (data || []) as unknown as FilterOption[];
+    },
+    enabled: !!selectedCategory,
+    staleTime: 30_000,
+  });
 
   function openAddOption() {
     setDialogType("option");
@@ -152,7 +145,7 @@ const AdminFiltersPage = () => {
         if (error) toast.error(t("admin.failedToAddOption"));
         else toast.success(t("admin.optionAdded"));
       }
-      if (selectedCategory) fetchOptions(selectedCategory.id);
+      queryClient.invalidateQueries({ queryKey: ["admin", "filter-options", selectedCategory?.id] });
     } else {
       if (editingItem) {
         const { error } = await supabase
@@ -162,7 +155,7 @@ const AdminFiltersPage = () => {
         if (error) toast.error(t("admin.failedToUpdate"));
         else toast.success(t("admin.categoryUpdated"));
       }
-      fetchCategories();
+      queryClient.invalidateQueries({ queryKey: ["admin", "filter-categories"] });
     }
 
     setDialogOpen(false);
@@ -175,7 +168,7 @@ const AdminFiltersPage = () => {
     if (error) toast.error(t("admin.failedToDelete"));
     else {
       toast.success(t("admin.optionDeleted"));
-      if (selectedCategory) fetchOptions(selectedCategory.id);
+      queryClient.invalidateQueries({ queryKey: ["admin", "filter-options", selectedCategory?.id] });
     }
   }
 
@@ -397,12 +390,12 @@ const AdminFiltersPage = () => {
       <FilterExcelUpload
         open={excelDialogOpen}
         onOpenChange={setExcelDialogOpen}
-        onImportComplete={() => { fetchCategories(); }}
+        onImportComplete={() => { queryClient.invalidateQueries({ queryKey: ["admin", "filter-categories"] }); }}
       />
       <FilterExcelUpload
         open={categoryExcelOpen}
         onOpenChange={setCategoryExcelOpen}
-        onImportComplete={() => { if (selectedCategory) fetchOptions(selectedCategory.id); }}
+        onImportComplete={() => { queryClient.invalidateQueries({ queryKey: ["admin", "filter-options", selectedCategory?.id] }); }}
         targetCategory={selectedCategory ? { id: selectedCategory.id, title: selectedCategory.title, category_key: selectedCategory.category_key } : null}
       />
     </AdminLayout>

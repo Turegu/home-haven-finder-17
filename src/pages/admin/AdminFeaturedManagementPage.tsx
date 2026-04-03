@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,17 +39,24 @@ interface AgentRow {
   companies: { name: string } | null;
 }
 
+interface BoostTarget {
+  type: "company" | "agent";
+  data: CompanyRow | AgentRow;
+}
+
+const DEFAULT_SETTINGS: CreditSetting[] = [
+  { key: "premium_1_month_credits", label: "Premium - 1 Month", value: "20" },
+  { key: "premium_3_months_credits", label: "Premium - 3 Months", value: "50" },
+  { key: "featured_1_month_credits", label: "Featured - 1 Month", value: "10" },
+  { key: "featured_3_months_credits", label: "Featured - 3 Months", value: "25" },
+];
+
 const isBoosted = (cls: string, endDate: string | null) =>
   cls === "boosted" && endDate && new Date(endDate) > new Date();
 
 const AdminFeaturedManagementPage = () => {
-  const [settings, setSettings] = useState<CreditSetting[]>([
-    { key: "premium_1_month_credits", label: "Premium - 1 Month", value: "20" },
-    { key: "premium_3_months_credits", label: "Premium - 3 Months", value: "50" },
-    { key: "featured_1_month_credits", label: "Featured - 1 Month", value: "10" },
-    { key: "featured_3_months_credits", label: "Featured - 3 Months", value: "25" },
-  ]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const [settings, setSettings] = useState<CreditSetting[]>(DEFAULT_SETTINGS);
   const [saving, setSaving] = useState(false);
 
   // Boost pricing
@@ -60,45 +68,48 @@ const AdminFeaturedManagementPage = () => {
   const [boostAgent12, setBoostAgent12] = useState("45");
   const [savingBoost, setSavingBoost] = useState(false);
 
-  // Boost section
-  const [companies, setCompanies] = useState<CompanyRow[]>([]);
-  const [agents, setAgents] = useState<AgentRow[]>([]);
   const [searchCompany, setSearchCompany] = useState("");
   const [searchAgent, setSearchAgent] = useState("");
-  const [boostTarget, setBoostTarget] = useState<{ type: "company" | "agent"; data: any } | null>(null);
+  const [boostTarget, setBoostTarget] = useState<BoostTarget | null>(null);
 
-  const fetchAll = async () => {
-    setLoading(true);
-    const [settingsRes, compRes, agentRes] = await Promise.all([
-      supabase.from("admin_settings").select("setting_key, setting_value"),
-      supabase.from("companies").select("id, name, logo_url, profile_classification, boost_end_date, credit_balance").eq("is_verified", true).order("name"),
-      supabase.from("agents").select("id, name, avatar_url, profile_classification, boost_end_date, credit_balance, company_id, companies(name)").eq("status", "active").order("name"),
-    ]);
+  const { data: fetchedData, isLoading: loading } = useQuery({
+    queryKey: ["admin", "featured-management"],
+    queryFn: async () => {
+      const [settingsRes, compRes, agentRes] = await Promise.all([
+        supabase.from("admin_settings").select("setting_key, setting_value"),
+        supabase.from("companies").select("id, name, logo_url, profile_classification, boost_end_date, credit_balance").eq("is_verified", true).order("name"),
+        supabase.from("agents").select("id, name, avatar_url, profile_classification, boost_end_date, credit_balance, company_id, companies(name)").eq("status", "active").order("name"),
+      ]);
 
-    if (settingsRes.data) {
-      const map: Record<string, string> = {};
-      settingsRes.data.forEach((d) => { map[d.setting_key] = d.setting_value; });
+      const companies = (compRes.data || []) as CompanyRow[];
+      const agents = (agentRes.data || []) as unknown as AgentRow[];
 
-      setSettings(prev =>
-        prev.map(s => {
-          const found = settingsRes.data.find((d) => d.setting_key === s.key);
-          return found ? { ...s, value: found.setting_value } : s;
-        })
-      );
+      if (settingsRes.data) {
+        const map: Record<string, string> = {};
+        settingsRes.data.forEach((d) => { map[d.setting_key] = d.setting_value; });
 
-      setBoostCompany3(map.boost_company_3_months_credits || "20");
-      setBoostCompany6(map.boost_company_6_months_credits || "35");
-      setBoostCompany12(map.boost_company_12_months_credits || "60");
-      setBoostAgent3(map.boost_agent_3_months_credits || "15");
-      setBoostAgent6(map.boost_agent_6_months_credits || "25");
-      setBoostAgent12(map.boost_agent_12_months_credits || "45");
-    }
-    setCompanies((compRes.data || []) as CompanyRow[]);
-    setAgents((agentRes.data || []) as unknown as AgentRow[]);
-    setLoading(false);
-  };
+        setSettings(prev =>
+          prev.map(s => {
+            const found = settingsRes.data.find((d) => d.setting_key === s.key);
+            return found ? { ...s, value: found.setting_value } : s;
+          })
+        );
 
-  useEffect(() => { fetchAll(); }, []);
+        setBoostCompany3(map.boost_company_3_months_credits || "20");
+        setBoostCompany6(map.boost_company_6_months_credits || "35");
+        setBoostCompany12(map.boost_company_12_months_credits || "60");
+        setBoostAgent3(map.boost_agent_3_months_credits || "15");
+        setBoostAgent6(map.boost_agent_6_months_credits || "25");
+        setBoostAgent12(map.boost_agent_12_months_credits || "45");
+      }
+
+      return { companies, agents };
+    },
+    staleTime: 30_000,
+  });
+
+  const companies = fetchedData?.companies || [];
+  const agents = fetchedData?.agents || [];
 
   const updateValue = (key: string, value: string) => {
     setSettings(prev => prev.map(s => s.key === key ? { ...s, value } : s));
@@ -144,6 +155,10 @@ const AdminFeaturedManagementPage = () => {
     } finally {
       setSavingBoost(false);
     }
+  };
+
+  const handleBoosted = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin", "featured-management"] });
   };
 
   const filteredCompanies = companies.filter(c => !searchCompany || turkishIncludes(c.name, searchCompany));
@@ -342,7 +357,7 @@ const AdminFeaturedManagementPage = () => {
                           )}
                           <div className="min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{a.name}</p>
-                            <p className="text-xs text-muted-foreground">{a.companies?.name} · {a.credit_balance} credits</p>
+                            <p className="text-xs text-muted-foreground">{(a as AgentRow).companies?.name} · {a.credit_balance} credits</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
@@ -377,7 +392,7 @@ const AdminFeaturedManagementPage = () => {
           balanceSourceId={boostTarget.data.id}
           currentClassification={boostTarget.data.profile_classification || "standard"}
           boostEndDate={boostTarget.data.boost_end_date || null}
-          onBoosted={fetchAll}
+          onBoosted={handleBoosted}
           isAdminBoost
         />
       )}
