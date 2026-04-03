@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,50 +54,53 @@ interface FilterCategory {
 
 const AdminCrudsPage = () => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("");
-  const [items, setItems] = useState<CrudItem[]>([]);
-  const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState<CrudItem | null>(null);
   const [formTitle, setFormTitle] = useState("");
   const [formStatus, setFormStatus] = useState("active");
   const [formTranslations, setFormTranslations] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
-  const [filterCategories, setFilterCategories] = useState<FilterCategory[]>([]);
+
+  const { data: filterCategories = [] } = useQuery({
+    queryKey: ["admin", "crud-categories"],
+    queryFn: async () => {
+      const { data } = await supabase.from("filter_categories").select("*").order("sort_order");
+      const cats = (data || []) as unknown as FilterCategory[];
+      if (cats.length > 0 && !activeTab) setActiveTab(cats[0].category_key);
+      return cats;
+    },
+    staleTime: 30_000,
+  });
 
   const standaloneTab = STANDALONE_TABS.find(s => s.key === activeTab);
   const filterCategory = filterCategories.find(c => c.category_key === activeTab);
 
-  useEffect(() => {
-    supabase.from("filter_categories").select("*").order("sort_order").then(({ data }) => {
-      const cats = (data as FilterCategory[]) || [];
-      setFilterCategories(cats);
-      if (cats.length > 0) setActiveTab(cats[0].category_key);
-    });
-  }, []);
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "crud-items", activeTab, filterCategory?.id],
+    queryFn: async () => {
+      if (standaloneTab) {
+        const { data, error } = await supabase.from(standaloneTab.table).select("*").order("sort_order", { ascending: true });
+        if (error) { toast.error(error.message); return []; }
+        return (data || []) as CrudItem[];
+      }
+      if (filterCategory) {
+        const { data, error } = await supabase.from("filter_options").select("*").eq("category_id", filterCategory.id).order("sort_order", { ascending: true });
+        if (error) { toast.error(error.message); return []; }
+        return (data || []) as CrudItem[];
+      }
+      return [];
+    },
+    enabled: !!activeTab && (!!standaloneTab || !!filterCategory),
+    staleTime: 30_000,
+  });
 
   const allTabs = useMemo(() => {
     const filterTabs = filterCategories.map(c => ({ key: c.category_key, label: c.title }));
     const standalone = STANDALONE_TABS.map(s => ({ key: s.key, label: s.label }));
     return [...filterTabs, ...standalone];
   }, [filterCategories]);
-
-  const fetchItems = async () => {
-    if (!activeTab) return;
-    setLoading(true);
-    if (standaloneTab) {
-      const { data, error } = await supabase.from(standaloneTab.table).select("*").order("sort_order", { ascending: true });
-      if (error) toast.error(error.message);
-      else setItems((data as any[]) || []);
-    } else if (filterCategory) {
-      const { data, error } = await supabase.from("filter_options").select("*").eq("category_id", filterCategory.id).order("sort_order", { ascending: true });
-      if (error) toast.error(error.message);
-      else setItems((data as any[]) || []);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchItems(); }, [activeTab, filterCategories]);
 
   const openCreate = () => {
     setEditItem(null);
@@ -114,33 +118,35 @@ const AdminCrudsPage = () => {
     setDialogOpen(true);
   };
 
+  const invalidateItems = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin", "crud-items", activeTab] });
+  };
+
   const handleSave = async () => {
     if (!formTitle.trim()) { toast.error(t("admin.titleRequired")); return; }
     setSaving(true);
-    const payload: any = { title: formTitle.trim(), status: formStatus, translations: formTranslations };
 
     if (standaloneTab) {
       if (editItem) {
-        const { error } = await supabase.from(standaloneTab.table).update(payload).eq("id", editItem.id);
+        const { error } = await supabase.from(standaloneTab.table).update({ title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never> }).eq("id", editItem.id);
         if (error) toast.error(error.message);
-        else { toast.success(t("admin.update")); setDialogOpen(false); fetchItems(); }
+        else { toast.success(t("admin.update")); setDialogOpen(false); invalidateItems(); }
       } else {
-        payload.sort_order = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
-        const { error } = await supabase.from(standaloneTab.table).insert(payload);
+        const sortOrder = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
+        const { error } = await supabase.from(standaloneTab.table).insert({ title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never>, sort_order: sortOrder });
         if (error) toast.error(error.message);
-        else { toast.success(t("admin.create")); setDialogOpen(false); fetchItems(); }
+        else { toast.success(t("admin.create")); setDialogOpen(false); invalidateItems(); }
       }
     } else if (filterCategory) {
-      payload.category_id = filterCategory.id;
       if (editItem) {
-        const { error } = await supabase.from("filter_options").update(payload).eq("id", editItem.id);
+        const { error } = await supabase.from("filter_options").update({ title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never> }).eq("id", editItem.id);
         if (error) toast.error(error.message);
-        else { toast.success(t("admin.update")); setDialogOpen(false); fetchItems(); }
+        else { toast.success(t("admin.update")); setDialogOpen(false); invalidateItems(); }
       } else {
-        payload.sort_order = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
-        const { error } = await supabase.from("filter_options").insert(payload);
+        const sortOrder = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
+        const { error } = await supabase.from("filter_options").insert({ category_id: filterCategory.id, title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never>, sort_order: sortOrder });
         if (error) toast.error(error.message);
-        else { toast.success(t("admin.create")); setDialogOpen(false); fetchItems(); }
+        else { toast.success(t("admin.create")); setDialogOpen(false); invalidateItems(); }
       }
     }
     setSaving(false);
@@ -151,7 +157,7 @@ const AdminCrudsPage = () => {
     const table = standaloneTab ? standaloneTab.table : "filter_options";
     const { error } = await supabase.from(table).delete().eq("id", id);
     if (error) toast.error(error.message);
-    else { toast.success(t("admin.delete")); fetchItems(); }
+    else { toast.success(t("admin.delete")); invalidateItems(); }
   };
 
   const currentTabLabel = allTabs.find(tb => tb.key === activeTab)?.label || activeTab;
