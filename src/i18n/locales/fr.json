@@ -1378,7 +1378,11 @@
     "followedOn": "Suivi le",
     "newestToOldest": "Du plus récent au plus ancien",
     "oldestToNewest": "Du plus ancien au plus récent",
-    "searchByName": "Rechercher par nom..."
+    "searchByName": "Rechercher par nom...",
+    "expires": "Expire le",
+    "daysLeft": "jours restants",
+    "expired": "Expiré",
+    "noExpirySet": "Aucune date d'expiration définie"
   },
   "projectsPage": {
     "searchKeyword": "Rechercher un mot-clé...",

@@ -1378,7 +1378,11 @@
     "followedOn": "تاريخ المتابعة",
     "newestToOldest": "الأحدث إلى الأقدم",
     "oldestToNewest": "الأقدم إلى الأحدث",
-    "searchByName": "البحث بالاسم..."
+    "searchByName": "البحث بالاسم...",
+    "expires": "ينتهي",
+    "daysLeft": "يوم متبقي",
+    "expired": "منتهي",
+    "noExpirySet": "لم يتم تحديد تاريخ انتهاء"
   },
   "projectsPage": {
     "searchKeyword": "بحث بكلمة مفتاحية...",
