@@ -15,7 +15,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, Pencil, Search, ImageIcon, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Pencil, Search, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";

@@ -12,7 +12,7 @@ import {
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Plus, Search, Pencil, Trash2, Power, ArrowUpDown } from "lucide-react";
+import { MoreVertical, Plus, Search, Pencil, Trash2, Power } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
