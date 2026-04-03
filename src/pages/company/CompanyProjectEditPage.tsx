@@ -246,7 +246,8 @@ const CompanyProjectEditPage = () => {
   const [uploadingPlans, setUploadingPlans] = useState(false);
 
   // Units state
-  const [units, setUnits] = useState<any[]>([]);
+  type ProjectUnitRow = Database["public"]["Tables"]["project_units"]["Row"];
+  const [units, setUnits] = useState<ProjectUnitRow[]>([]);
   const [unitDialogOpen, setUnitDialogOpen] = useState(false);
   const [editingUnitId, setEditingUnitId] = useState<string | null>(null);
   const [unitForm, setUnitForm] = useState<UnitForm>({ ...emptyUnit });
