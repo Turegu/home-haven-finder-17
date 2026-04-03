@@ -42,7 +42,7 @@ const AdminReportsPage = () => {
       }
 
       const rows = (data || []);
-      const propertyIds = [...new Set(rows.map((r: any) => r.property_id))];
+      const propertyIds = [...new Set(rows.map((r) => r.property_id))];
       const { data: properties } = await supabase
         .from("properties")
         .select("id, title, listing_id")
