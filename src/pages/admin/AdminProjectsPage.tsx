@@ -41,7 +41,7 @@ const AdminProjectsPage = () => {
 
   const renderCell = (item: ListingItem, key: string) => {
     if (key === "created_at" || key === "updated_at") {
-      const val = (item as any)[key];
+      const val = item[key];
       return val ? new Date(val).toLocaleDateString() : "—";
     }
     if (key === "project_status") {
@@ -60,7 +60,7 @@ const AdminProjectsPage = () => {
     if (key === "project_type") {
       return (item.project_type || "—").charAt(0).toUpperCase() + (item.project_type || "").slice(1);
     }
-    return (item as any)[key] ?? "—";
+    return item[key] ?? "—";
   };
 
   return (

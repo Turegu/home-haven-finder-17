@@ -38,14 +38,14 @@ const AdminEventsPage = () => {
 
   const renderCell = (item: ListingItem, key: string) => {
     if (key === "created_at" || key === "updated_at") {
-      const val = (item as any)[key];
+      const val = item[key];
       return val ? new Date(val).toLocaleDateString() : "—";
     }
     if (key === "event_type") {
       const val = (item.event_type || "—").replace(/_/g, " ");
       return val.charAt(0).toUpperCase() + val.slice(1);
     }
-    return (item as any)[key] ?? "—";
+    return item[key] ?? "—";
   };
 
   return (

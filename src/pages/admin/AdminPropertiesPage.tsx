@@ -42,7 +42,7 @@ const AdminPropertiesPage = () => {
 
   const renderCell = (item: ListingItem, key: string) => {
     if (key === "created_at" || key === "updated_at") {
-      const val = (item as any)[key];
+      const val = item[key];
       return val ? new Date(val).toLocaleDateString() : "—";
     }
     if (key === "property_status") {
@@ -64,7 +64,7 @@ const AdminPropertiesPage = () => {
     if (key === "property_type") {
       return (item.property_type || "—").charAt(0).toUpperCase() + (item.property_type || "").slice(1);
     }
-    return (item as any)[key] ?? "—";
+    return item[key] ?? "—";
   };
 
   return (
