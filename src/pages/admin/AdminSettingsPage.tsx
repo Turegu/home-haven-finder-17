@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,6 @@ import { useTranslation } from "react-i18next";
 const AdminSettingsPage = () => {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [salesPhone, setSalesPhone] = useState("");
@@ -29,15 +29,15 @@ const AdminSettingsPage = () => {
   const [adminEmail, setAdminEmail] = useState("");
   const [patternActive, setPatternActive] = useState(true);
 
-
   // Pattern
   const [currentPattern, setCurrentPattern] = useState("");
   const [newPattern, setNewPattern] = useState<number[] | null>(null);
   const [patternStep, setPatternStep] = useState<'view' | 'draw' | 'confirm'>('view');
   const [_confirmPattern, setConfirmPattern] = useState<number[] | null>(null);
 
-  useEffect(() => {
-    const fetchSettings = async () => {
+  const { isLoading: loading } = useQuery({
+    queryKey: ["admin-settings"],
+    queryFn: async () => {
       const { data } = await supabase.from("admin_settings").select("setting_key, setting_value");
       if (data) {
         const map: Record<string, string> = {};
@@ -56,10 +56,10 @@ const AdminSettingsPage = () => {
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) setAdminEmail(user.email || "");
-      setLoading(false);
-    };
-    fetchSettings();
-  }, []);
+      return true;
+    },
+    staleTime: 30_000,
+  });
 
   const saveSetting = async (key: string, value: string) => {
     const { error } = await supabase

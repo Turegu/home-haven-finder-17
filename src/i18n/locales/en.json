@@ -1382,7 +1382,11 @@
     "followedOn": "Followed On",
     "newestToOldest": "Newest to Oldest",
     "oldestToNewest": "Oldest to Newest",
-    "searchByName": "Search by name..."
+    "searchByName": "Search by name...",
+    "expires": "Expires",
+    "daysLeft": "days left",
+    "expired": "Expired",
+    "noExpirySet": "No expiry set"
   },
   "projectsPage": {
     "searchKeyword": "Search keyword...",

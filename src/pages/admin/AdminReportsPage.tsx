@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Badge } from "@/components/ui/badge";
@@ -24,45 +25,39 @@ interface Report {
 }
 
 const AdminReportsPage = () => {
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState("all");
 
-  const fetchReports = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("property_reports" as any)
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data: reports = [], isLoading: loading } = useQuery({
+    queryKey: ["admin-reports"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("property_reports" as any)
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      toast.error("Failed to load reports");
-      setLoading(false);
-      return;
-    }
+      if (error) {
+        toast.error("Failed to load reports");
+        return [];
+      }
 
-    const rows = (data as any[]) || [];
+      const rows = (data as any[]) || [];
+      const propertyIds = [...new Set(rows.map((r: any) => r.property_id))];
+      const { data: properties } = await supabase
+        .from("properties")
+        .select("id, title, listing_id")
+        .in("id", propertyIds);
 
-    // Fetch property titles
-    const propertyIds = [...new Set(rows.map((r: any) => r.property_id))];
-    const { data: properties } = await supabase
-      .from("properties")
-      .select("id, title, listing_id")
-      .in("id", propertyIds);
+      const propMap = new Map((properties || []).map((p) => [p.id, p]));
 
-    const propMap = new Map((properties || []).map((p) => [p.id, p]));
-
-    setReports(
-      rows.map((r: any) => ({
+      return rows.map((r: any) => ({
         ...r,
         property_title: propMap.get(r.property_id)?.title || "Unknown",
         property_listing_id: propMap.get(r.property_id)?.listing_id || "",
-      }))
-    );
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchReports(); }, []);
+      })) as Report[];
+    },
+    staleTime: 30_000,
+  });
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase
@@ -72,7 +67,7 @@ const AdminReportsPage = () => {
 
     if (error) { toast.error("Failed to update status"); return; }
     toast.success(`Report marked as ${status}`);
-    setReports((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+    queryClient.invalidateQueries({ queryKey: ["admin-reports"] });
   };
 
   const deleteReport = async (id: string) => {
@@ -83,7 +78,7 @@ const AdminReportsPage = () => {
 
     if (error) { toast.error("Failed to delete report"); return; }
     toast.success("Report deleted");
-    setReports((prev) => prev.filter((r) => r.id !== id));
+    queryClient.invalidateQueries({ queryKey: ["admin-reports"] });
   };
 
   const filtered = filter === "all" ? reports : reports.filter((r) => r.status === filter);

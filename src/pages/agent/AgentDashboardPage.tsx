@@ -144,8 +144,8 @@ const AgentDashboardPage = () => {
               <p className={`text-xl font-bold ${mem.color} capitalize`}>{company?.membership}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 {company?.package_end_date
-                  ? `Expires ${format(new Date(company.package_end_date), "do MMM yyyy")}${daysLeft !== null && daysLeft >= 0 ? ` (${daysLeft} days left)` : daysLeft !== null ? " (Expired)" : ""}`
-                  : "No expiry set"}
+                  ? `${t("agentDashboard.expires")} ${format(new Date(company.package_end_date), "do MMM yyyy")}${daysLeft !== null && daysLeft >= 0 ? ` (${daysLeft} ${t("agentDashboard.daysLeft")})` : daysLeft !== null ? ` (${t("agentDashboard.expired")})` : ""}`
+                  : t("agentDashboard.noExpirySet")}
               </p>
             </div>
           );
