@@ -40,6 +40,8 @@ interface CompanyData {
 interface AgentData {
   id: string;
   name: string;
+  name_ar?: string | null;
+  name_fr?: string | null;
   designation: string | null;
   avatar_url: string | null;
   languages: string[] | null;
