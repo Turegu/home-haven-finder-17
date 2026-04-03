@@ -61,8 +61,8 @@ const AdminReportsPage = () => {
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase
-      .from("property_reports" as any)
-      .update({ status } as any)
+      .from("property_reports")
+      .update({ status })
       .eq("id", id);
 
     if (error) { toast.error("Failed to update status"); return; }
