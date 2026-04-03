@@ -1,7 +1,7 @@
 import SEOHead from '@/components/SEOHead';
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BannerDisplay from "@/components/BannerDisplay";
@@ -19,11 +19,10 @@ interface BlogItem {
 
 const BlogsPage = () => {
   const { t, i18n } = useTranslation();
-  const [blogs, setBlogs] = useState<BlogItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
+  const { data: blogs = [], isLoading: loading } = useQuery({
+    queryKey: ['blogs', 'list', i18n.language],
+    queryFn: async () => {
       const langCode = i18n.language === 'ar' ? 'ar' : 'en';
       const { data } = await supabase
         .from("blogs")
@@ -31,31 +30,34 @@ const BlogsPage = () => {
         .eq("status", "published")
         .order("created_at", { ascending: false });
 
-      if (data && data.length > 0) {
-        const { data: trans } = await supabase
-          .from("blog_translations")
-          .select("blog_id, title, description, language_code")
-          .in("language_code", [langCode, "en"])
-          .in("blog_id", data.map(b => b.id));
+      if (!data || data.length === 0) return [] as BlogItem[];
 
-        const transMap: Record<string, { title: string; description: string }> = {};
-        if (trans) {
-          (trans as any[]).filter((t: any) => t.language_code === 'en').forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
-          if (langCode !== 'en') {
-            (trans as any[]).filter((t: any) => t.language_code === langCode).forEach((t: any) => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
-          }
+      const { data: trans } = await supabase
+        .from("blog_translations")
+        .select("blog_id, title, description, language_code")
+        .in("language_code", [langCode, "en"])
+        .in("blog_id", data.map(b => b.id));
+
+      const transMap: Record<string, { title: string; description: string }> = {};
+      if (trans) {
+        (trans as { blog_id: string; title: string; description: string; language_code: string }[])
+          .filter(t => t.language_code === 'en')
+          .forEach(t => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
+        if (langCode !== 'en') {
+          (trans as { blog_id: string; title: string; description: string; language_code: string }[])
+            .filter(t => t.language_code === langCode)
+            .forEach(t => { transMap[t.blog_id] = { title: t.title, description: t.description }; });
         }
-
-        setBlogs(data.map(b => ({
-          ...b,
-          title: transMap[b.id]?.title || "Untitled",
-          description: transMap[b.id]?.description || "",
-        })));
       }
-      setLoading(false);
-    };
-    fetchBlogs();
-  }, [i18n.language]);
+
+      return data.map(b => ({
+        ...b,
+        title: transMap[b.id]?.title || "Untitled",
+        description: transMap[b.id]?.description || "",
+      })) as BlogItem[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const stripHtml = (html: string) => {
     const tmp = document.createElement("div");

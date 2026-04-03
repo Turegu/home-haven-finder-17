@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import SEOHead from '@/components/SEOHead';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Phone, Mail, MessageCircle, ChevronRight, Printer, Share2, MapPin, Globe, Building2, Calendar, Home } from 'lucide-react';
 import ContactProfileDialog from '@/components/ContactProfileDialog';
 import VerifiedBadge from '@/components/VerifiedBadge';
@@ -46,23 +47,68 @@ interface AgentData {
   } | null;
 }
 
+interface AgentDetailData {
+  agent: AgentData;
+  counts: { buy: number; rent: number; projects: number; events: number };
+  responseRateVisible: boolean;
+  responseMetrics: { response_rate: number | null; avg_response_hours: number | null };
+}
+
 const AgentDetailPage = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const { data: dbCompanyTypes = [] } = useCompanyTypes();
   const { data: dbDesignations = [] } = useDesignations();
-  const [agent, setAgent] = useState<AgentData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('properties');
-  const [counts, setCounts] = useState({ buy: 0, rent: 0, projects: 0, events: 0 });
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
-  const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
-  const [responseRateVisible, setResponseRateVisible] = useState(false);
+
+  const { data: detailData, isLoading: loading } = useQuery({
+    queryKey: ['agent-detail', id],
+    queryFn: async (): Promise<AgentDetailData | null> => {
+      if (!id) return null;
+      const { data } = await agentsService.getPublicById(id);
+      const agentData = data as unknown as AgentData | null;
+      if (!agentData) return null;
+
+      const [buyRes, rentRes, projRes, evtRes, rrSetting] = await Promise.all([
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "buy"),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "rent"),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
+        supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
+        supabase.from('admin_settings').select('setting_value').eq('setting_key', 'response_rate_visible').maybeSingle(),
+      ]);
+
+      const counts = { buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 };
+      const showRate = rrSetting.data?.setting_value !== 'false';
+
+      let responseMetrics = { response_rate: null as number | null, avg_response_hours: null as number | null };
+      if (showRate) {
+        const { data: metrics } = await supabase
+          .from('agent_response_metrics' as 'admin_settings')
+          .select('response_rate, avg_response_hours' as '*')
+          .eq('agent_id' as 'setting_key', agentData.id)
+          .maybeSingle();
+        if (metrics) {
+          const m = metrics as unknown as { response_rate: number; avg_response_hours: number };
+          responseMetrics = { response_rate: m.response_rate, avg_response_hours: m.avg_response_hours };
+        }
+      }
+
+      return { agent: agentData, counts, responseRateVisible: showRate, responseMetrics };
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
+
+  const agent = detailData?.agent ?? null;
+  const counts = detailData?.counts ?? { buy: 0, rent: 0, projects: 0, events: 0 };
+  const responseRateVisible = detailData?.responseRateVisible ?? false;
+  const responseMetrics = detailData?.responseMetrics ?? { response_rate: null, avg_response_hours: null };
+
   const localizedLanguages = useLocalizedLanguages(agent?.languages);
   const localizedServiceAreas = useLocalizedServiceAreas(agent?.service_areas);
 
-  
   const getLocalizedName = (name: string, name_ar?: string | null, name_fr?: string | null) => {
     if (lang === 'ar' && name_ar) return name_ar;
     if (lang === 'fr' && name_fr) return name_fr;
@@ -73,47 +119,6 @@ const AgentDetailPage = () => {
     if (lang === 'fr' && desc_fr) return desc_fr;
     return desc;
   };
-
-  useEffect(() => {
-    if (!id) return;
-    const fetchAgent = async () => {
-      const { data } = await agentsService.getPublicById(id);
-      const agentData = data as unknown as AgentData | null;
-      setAgent(agentData);
-
-      if (agentData) {
-        const [buyRes, rentRes, projRes, evtRes] = await Promise.all([
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "buy"),
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active").eq("property_purpose", "rent"),
-          supabase.from("projects").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
-          supabase.from("events").select("id", { count: "exact", head: true }).eq("agent_id", agentData.id).eq("status", "active"),
-        ]);
-        setCounts({ buy: buyRes.count ?? 0, rent: rentRes.count ?? 0, projects: projRes.count ?? 0, events: evtRes.count ?? 0 });
-
-        // Check if response rate is visible
-        const { data: rrSetting } = await supabase
-          .from('admin_settings')
-          .select('setting_value')
-          .eq('setting_key', 'response_rate_visible')
-          .maybeSingle();
-        const showRate = rrSetting?.setting_value !== 'false';
-        setResponseRateVisible(showRate);
-
-        if (showRate) {
-          const { data: metrics } = await supabase
-            .from('agent_response_metrics' as any)
-            .select('response_rate, avg_response_hours')
-            .eq('agent_id', agentData.id)
-            .maybeSingle();
-          if (metrics) {
-            setResponseMetrics(metrics as any);
-          }
-        }
-      }
-      setLoading(false);
-    };
-    fetchAgent();
-  }, [id]);
 
   const tabs = [
     { key: 'properties', label: t('detail.properties'), icon: Home },
@@ -171,11 +176,11 @@ const AgentDetailPage = () => {
           <ChevronRight className="h-3 w-3" />
           <Link to="/agents" className="hover:text-primary transition-colors">{t('nav.agents')}</Link>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground font-medium">{agent ? getLocalizedName(agent.name, agent.name_ar, agent.name_fr) : ''}</span>
+          <span className="text-foreground font-medium">{getLocalizedName(agent.name, agent.name_ar, agent.name_fr)}</span>
         </div>
       </div>
 
-      {/* ── Banner: company cover inherited — compact height ── */}
+      {/* Banner */}
       <div className="container mx-auto px-4 mb-6">
         <div className="relative rounded-2xl overflow-hidden bg-muted h-[120px] sm:h-[140px] lg:h-[160px]">
           {companyCover ? (
@@ -183,7 +188,6 @@ const AgentDetailPage = () => {
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-primary/15 via-muted to-accent/10" />
           )}
-          {/* Utility buttons */}
           <div className="absolute top-3 right-3 flex gap-1.5">
             <button className="p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors">
               <Printer className="h-4 w-4 text-white" />
@@ -195,14 +199,12 @@ const AgentDetailPage = () => {
         </div>
       </div>
 
-      {/* ── Floating identity card ── */}
+      {/* Floating identity card */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
           <div className="flex flex-col lg:flex-row">
-            {/* Left: agent info */}
             <div className="flex-1 p-5 sm:p-6">
               <div className="flex items-start gap-4">
-                {/* Avatar */}
                 <div className="shrink-0 w-20 h-20 sm:w-32 sm:h-32 rounded-xl bg-background border border-border shadow-sm overflow-hidden">
                   {agent.avatar_url ? (
                     <img src={agent.avatar_url} alt={agent.name} className="w-full h-full object-cover" />
@@ -224,7 +226,6 @@ const AgentDetailPage = () => {
                     <p className="text-sm text-muted-foreground">{getTranslatedLabel(dbDesignations, agent.designation, lang)}</p>
                   </div>
 
-                  {/* Stats */}
                   <div className="flex items-center gap-4 mt-3 flex-wrap">
                      {[
                       { icon: Home, label: t('detail.sale'), value: counts.buy },
@@ -240,7 +241,6 @@ const AgentDetailPage = () => {
                     ))}
                   </div>
 
-                  {/* Contact pills */}
                   <div className="flex items-center gap-2 mt-3 flex-wrap">
                     {agent.phone && (
                       <a href={`tel:${agent.phone}`} className="inline-flex items-center gap-1.5 text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
@@ -255,7 +255,6 @@ const AgentDetailPage = () => {
                     </a>
                   </div>
 
-                  {/* Response rate badge */}
                   {responseRateVisible && responseMetrics.response_rate !== null && (
                     <div className="flex items-center gap-2 mt-2">
                       <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full font-medium ${
@@ -277,7 +276,6 @@ const AgentDetailPage = () => {
               </div>
             </div>
 
-            {/* Right: Company badge */}
             {agent.companies && (
               <Link
                 to={`/company/${agent.companies.id}`}
@@ -308,7 +306,7 @@ const AgentDetailPage = () => {
         </div>
       </div>
 
-      {/* ── About section — full-width prominent ── */}
+      {/* About section */}
       <div className="container mx-auto px-4 mb-6">
         <div className="bg-card rounded-xl border border-border p-6">
           <h2 className="text-lg font-bold text-foreground mb-2">{t('detail.about')} {getLocalizedName(agent.name, agent.name_ar, agent.name_fr)}</h2>
@@ -318,13 +316,12 @@ const AgentDetailPage = () => {
         </div>
       </div>
 
-      {/* ── Body content ── */}
+      {/* Body content */}
       <div className="container mx-auto px-4 pb-8">
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Sidebar */}
           <aside className="w-full lg:w-[280px] shrink-0 space-y-5">
-            {/* Languages */}
             {localizedLanguages.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
@@ -334,7 +331,6 @@ const AgentDetailPage = () => {
               </div>
             )}
 
-            {/* Service areas */}
             {localizedServiceAreas.length > 0 && (
               <div className="bg-card rounded-xl border border-border p-5">
                 <h3 className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
@@ -347,7 +343,6 @@ const AgentDetailPage = () => {
 
           {/* Main content */}
           <div className="flex-1 min-w-0">
-            {/* Tabs */}
             <div className="border-b border-border mb-6">
               <div className="flex items-center gap-0 -mb-px overflow-x-auto">
                 {tabs.map((tab) => {
@@ -370,7 +365,6 @@ const AgentDetailPage = () => {
               </div>
             </div>
 
-            {/* Tab content */}
             {activeTab === 'properties' && <AgentPropertiesTab agentId={agent.id} />}
             {activeTab === 'projects' && <AgentProjectsTab agentId={agent.id} />}
             {activeTab === 'events' && <div className="text-center py-12 text-muted-foreground text-sm">{t('detail.noEventsForAgent')}</div>}
@@ -393,32 +387,51 @@ const AgentDetailPage = () => {
   );
 };
 
+interface AgentProperty {
+  id: string;
+  title: string;
+  price: number | null;
+  currency: string | null;
+  location: string | null;
+  neighbourhood: string | null;
+  town: string | null;
+  province: string | null;
+  property_type: string;
+  area: number | null;
+  area_unit: string | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  images: string[] | null;
+  property_purpose: string;
+  advertising_tags: string[] | null;
+  agents: { name: string; avatar_url: string | null } | null;
+  companies: { name: string; logo_url: string | null } | null;
+}
+
 const AgentPropertiesTab = ({ agentId }: { agentId: string }) => {
   const [filters, setFilters] = useState<ProfileFilters>({ purpose: 'all', propertyType: 'all', rooms: 'all', minPrice: '', maxPrice: '' });
-  const [properties, setProperties] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const fetchProperties = useCallback(async () => {
-    setLoading(true);
-    let query = supabase
-      .from('properties')
-      .select('*, agents(name, avatar_url), companies(name, logo_url)')
-      .eq('agent_id', agentId)
-      .eq('status', 'active')
-      .limit(50);
+  const { data: properties = [], isLoading: loading } = useQuery({
+    queryKey: ['agent-properties', agentId, filters],
+    queryFn: async () => {
+      let query = supabase
+        .from('properties')
+        .select('*, agents(name, avatar_url), companies(name, logo_url)')
+        .eq('agent_id', agentId)
+        .eq('status', 'active')
+        .limit(50);
 
-    if (filters.purpose !== 'all') query = query.eq('property_purpose', filters.purpose);
-    if (filters.propertyType !== 'all') query = query.eq('property_type', filters.propertyType);
-    if (filters.rooms !== 'all') query = query.eq('rooms', filters.rooms);
-    if (filters.minPrice) query = query.gte('price', Number(filters.minPrice));
-    if (filters.maxPrice) query = query.lte('price', Number(filters.maxPrice));
+      if (filters.purpose !== 'all') query = query.eq('property_purpose', filters.purpose);
+      if (filters.propertyType !== 'all') query = query.eq('property_type', filters.propertyType);
+      if (filters.rooms !== 'all') query = query.eq('rooms', filters.rooms);
+      if (filters.minPrice) query = query.gte('price', Number(filters.minPrice));
+      if (filters.maxPrice) query = query.lte('price', Number(filters.maxPrice));
 
-    const { data } = await query.order('created_at', { ascending: false });
-    setProperties(data || []);
-    setLoading(false);
-  }, [agentId, filters]);
-
-  useEffect(() => { fetchProperties(); }, [fetchProperties]);
+      const { data } = await query.order('created_at', { ascending: false });
+      return (data || []) as unknown as AgentProperty[];
+    },
+    staleTime: 60_000,
+  });
 
   return (
     <>
@@ -444,7 +457,7 @@ const AgentPropertiesTab = ({ agentId }: { agentId: string }) => {
                   areaUnit: p.area_unit ?? 'm²',
                   bedrooms: p.bedrooms ?? 0,
                   bathrooms: p.bathrooms ?? 0,
-                  images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
+                  images: p.images && p.images.length > 0 ? p.images : ['/placeholder.svg'],
                   agentLogo: p.companies?.logo_url ?? '',
                   agentName: p.agents?.name ?? '',
                   agentAvatar: p.agents?.avatar_url ?? '',
@@ -465,28 +478,26 @@ const AgentPropertiesTab = ({ agentId }: { agentId: string }) => {
 
 const AgentProjectsTab = ({ agentId }: { agentId: string }) => {
   const [filters, setFilters] = useState<ProjectFilters>({ status: 'all', minPrice: '', maxPrice: '' });
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const fetchProjects = useCallback(async () => {
-    setLoading(true);
-    let query = supabase
-      .from('projects')
-      .select('*, companies(name, logo_url, phone, whatsapp), agents(name, avatar_url, phone, whatsapp)')
-      .eq('agent_id', agentId)
-      .eq('status', 'active')
-      .limit(50);
+  const { data: projects = [], isLoading: loading } = useQuery({
+    queryKey: ['agent-projects', agentId, filters],
+    queryFn: async () => {
+      let query = supabase
+        .from('projects')
+        .select('*, companies(name, logo_url, phone, whatsapp), agents(name, avatar_url, phone, whatsapp)')
+        .eq('agent_id', agentId)
+        .eq('status', 'active')
+        .limit(50);
 
-    if (filters.status !== 'all') query = query.eq('project_status', filters.status);
-    if (filters.minPrice) query = query.gte('min_price', Number(filters.minPrice));
-    if (filters.maxPrice) query = query.lte('min_price', Number(filters.maxPrice));
+      if (filters.status !== 'all') query = query.eq('project_status', filters.status);
+      if (filters.minPrice) query = query.gte('min_price', Number(filters.minPrice));
+      if (filters.maxPrice) query = query.lte('min_price', Number(filters.maxPrice));
 
-    const { data } = await query.order('created_at', { ascending: false });
-    setProjects(data || []);
-    setLoading(false);
-  }, [agentId, filters]);
-
-  useEffect(() => { fetchProjects(); }, [fetchProjects]);
+      const { data } = await query.order('created_at', { ascending: false });
+      return data || [];
+    },
+    staleTime: 60_000,
+  });
 
   return (
     <>

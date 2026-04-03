@@ -2,6 +2,7 @@ import SEOHead from '@/components/SEOHead';
 import { useState, useEffect, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { turkishIncludes } from '@/lib/utils';
 import { useCompanyTypes, useDesignations, getTranslatedLabel, formatCompanyTypesFromDb } from '@/hooks/useTranslatableCruds';
 import { MapPin, Search, Home, Globe, Building2, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -14,9 +15,9 @@ import { Input } from '@/components/ui/input';
 import LanguageSearchDropdown from '@/components/LanguageSearchDropdown';
 import { supabase } from '@/integrations/supabase/client';
 
-const ROWS_PER_PAGE = 12; // 4 rows x 3 cols
+const ROWS_PER_PAGE = 12;
 const COLS = 3;
-const BANNER_EVERY_ROWS = 4; // insert banner every 4 rows
+const BANNER_EVERY_ROWS = 4;
 
 function PaginatedCardGrid<T extends { id: string }>({
   items,
@@ -30,8 +31,6 @@ function PaginatedCardGrid<T extends { id: string }>({
   bannerPageName: string;
 }) {
   const [page, setPage] = useState(1);
-
-  // Reset page when items change
   useEffect(() => { setPage(1); }, [items.length]);
 
   const totalPages = Math.ceil(items.length / ROWS_PER_PAGE);
@@ -41,14 +40,12 @@ function PaginatedCardGrid<T extends { id: string }>({
     return <div className="col-span-full text-center py-12 text-muted-foreground text-sm">{emptyMessage}</div>;
   }
 
-  // Split into rows of COLS, insert banner after every BANNER_EVERY_ROWS rows
   const rows: T[][] = [];
   for (let i = 0; i < pageItems.length; i += COLS) {
     rows.push(pageItems.slice(i, i + COLS));
   }
 
   let bannerPosition = 0;
-  // If 4 or fewer rows, show banner after 2nd row; otherwise every 4 rows
   const bannerInterval = rows.length <= 4 ? 2 : BANNER_EVERY_ROWS;
 
   return (
@@ -68,36 +65,20 @@ function PaginatedCardGrid<T extends { id: string }>({
         ))}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-8">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-9 w-9"
-            disabled={page === 1}
-            onClick={() => { setPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          >
+          <Button variant="outline" size="icon" className="h-9 w-9" disabled={page === 1}
+            onClick={() => { setPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Button
-              key={p}
-              variant={p === page ? 'default' : 'outline'}
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            >
+            <Button key={p} variant={p === page ? 'default' : 'outline'} size="icon" className="h-9 w-9"
+              onClick={() => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
               {p}
             </Button>
           ))}
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-9 w-9"
-            disabled={page === totalPages}
-            onClick={() => { setPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          >
+          <Button variant="outline" size="icon" className="h-9 w-9" disabled={page === totalPages}
+            onClick={() => { setPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -139,6 +120,16 @@ interface AgentRow {
   companies: { name: string; name_ar: string | null; logo_url: string | null; is_verified?: boolean } | null;
 }
 
+interface PropertyCount {
+  agent_id: string | null;
+  company_id: string | null;
+  property_purpose: string;
+}
+
+interface AgentCompanyCount {
+  company_id: string;
+}
+
 const isBoosted = (cls?: string, endDate?: string | null) =>
   cls === "boosted" && endDate && new Date(endDate) > new Date();
 
@@ -160,87 +151,96 @@ const AgentsPage = () => {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedTown, setSelectedTown] = useState('');
-  const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
-  const [towns, setTowns] = useState<{ name: string; ar: string }[]>([]);
-  const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop');
-  const [companies, setCompanies] = useState<CompanyRow[]>([]);
-  const [agents, setAgents] = useState<AgentRow[]>([]);
-  const [companyCounts, setCompanyCounts] = useState<Record<string, { agents: number; buy: number; rent: number }>>({});
-  const [agentCounts, setAgentCounts] = useState<Record<string, { buy: number; rent: number }>>({});
 
-  useEffect(() => {
-    supabase.rpc('get_distinct_provinces').then(({ data }) => {
-      if (data) setProvinces(data);
-    });
-  }, []);
+  // Provinces
+  const { data: provinces = [] } = useQuery({
+    queryKey: ['agents', 'provinces'],
+    queryFn: async () => {
+      const { data } = await supabase.rpc('get_distinct_provinces');
+      return (data || []) as { name: string; ar: string }[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    if (!selectedProvince) { setTowns([]); setSelectedTown(''); return; }
-    supabase.rpc('get_distinct_districts', { p_province: selectedProvince }).then(({ data }) => {
-      if (data) setTowns(data);
-    });
-    setSelectedTown('');
-  }, [selectedProvince]);
+  // Towns (dependent on province)
+  const { data: towns = [] } = useQuery({
+    queryKey: ['agents', 'towns', selectedProvince],
+    queryFn: async () => {
+      const { data } = await supabase.rpc('get_distinct_districts', { p_province: selectedProvince });
+      return (data || []) as { name: string; ar: string }[];
+    },
+    enabled: !!selectedProvince,
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      // Fire all primary queries in parallel
-      const [cmsRes, compRes, agentRes] = await Promise.all([
-        supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1),
+  // Reset town when province changes
+  useEffect(() => { setSelectedTown(''); }, [selectedProvince]);
+
+  // CMS hero image
+  const { data: heroImage = 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop' } = useQuery({
+    queryKey: ['cms', 'agents-page'],
+    queryFn: async () => {
+      const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "agents").limit(1);
+      const content = data?.[0]?.content as Record<string, Record<string, string>> | undefined;
+      return content?.hero?.image_url || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&h=300&fit=crop';
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  // Agents list with counts
+  const { data: agentsData } = useQuery({
+    queryKey: ['agents', 'list'],
+    queryFn: async () => {
+      const [compRes, agentRes] = await Promise.all([
         supabase.from("companies").select("id, name, company_types, logo_url, cover_url, languages, service_areas, province, town, neighbourhood, profile_classification, boost_end_date, is_verified"),
         supabase.from("agents").select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, company_id, languages, service_areas, profile_classification, boost_end_date, companies(name, name_ar, logo_url, is_verified)").eq("status", "active"),
       ]);
 
-      if (cmsRes.data?.[0]) {
-        const c = (cmsRes.data[0] as any).content;
-        if (c?.hero?.image_url) setHeroImage(c.hero.image_url);
-      }
-
-      const compData = compRes.data ?? [];
-      const agentData = agentRes.data ?? [];
-      setCompanies(compData as CompanyRow[]);
-      setAgents(agentData as unknown as AgentRow[]);
-
-      // Fire count queries in parallel
-      const agentIds = agentData.map((a: any) => a.id);
+      const compData = (compRes.data ?? []) as CompanyRow[];
+      const agentData = (agentRes.data ?? []) as unknown as AgentRow[];
+      const agentIds = agentData.map(a => a.id);
       const compIds = compData.map(c => c.id);
 
       const [agentPropsRes, compAgentsRes, compPropsRes] = await Promise.all([
         agentIds.length > 0
           ? supabase.from("properties").select("agent_id, property_purpose").eq("status", "active").in("agent_id", agentIds)
-          : Promise.resolve({ data: [] }),
+          : Promise.resolve({ data: [] as PropertyCount[] }),
         compIds.length > 0
           ? supabase.from("agents").select("company_id").eq("status", "active").in("company_id", compIds)
-          : Promise.resolve({ data: [] }),
+          : Promise.resolve({ data: [] as AgentCompanyCount[] }),
         compIds.length > 0
           ? supabase.from("properties").select("company_id, property_purpose").eq("status", "active").in("company_id", compIds)
-          : Promise.resolve({ data: [] }),
+          : Promise.resolve({ data: [] as PropertyCount[] }),
       ]);
-      if (agentIds.length > 0) {
-        const aCounts: Record<string, { buy: number; rent: number }> = {};
-        agentIds.forEach((id: string) => { aCounts[id] = { buy: 0, rent: 0 }; });
-        ((agentPropsRes as any)?.data ?? []).forEach((p: any) => {
-          if (!aCounts[p.agent_id]) return;
-          if (p.property_purpose === 'rent') aCounts[p.agent_id].rent++;
-          else aCounts[p.agent_id].buy++;
-        });
-        setAgentCounts(aCounts);
-      }
 
-      if (compIds.length > 0) {
-        const counts: Record<string, { agents: number; buy: number; rent: number }> = {};
-        compIds.forEach(id => { counts[id] = { agents: 0, buy: 0, rent: 0 }; });
-        ((compAgentsRes as any)?.data ?? []).forEach((a: any) => { if (counts[a.company_id]) counts[a.company_id].agents++; });
-        ((compPropsRes as any)?.data ?? []).forEach((p: any) => {
-          if (!counts[p.company_id]) return;
-          if (p.property_purpose === 'rent') counts[p.company_id].rent++;
-          else counts[p.company_id].buy++;
-        });
-        setCompanyCounts(counts);
-      }
-    };
-    fetchData();
-  }, []);
+      const agentCounts: Record<string, { buy: number; rent: number }> = {};
+      agentIds.forEach(id => { agentCounts[id] = { buy: 0, rent: 0 }; });
+      ((agentPropsRes.data ?? []) as PropertyCount[]).forEach(p => {
+        if (!p.agent_id || !agentCounts[p.agent_id]) return;
+        if (p.property_purpose === 'rent') agentCounts[p.agent_id].rent++;
+        else agentCounts[p.agent_id].buy++;
+      });
+
+      const companyCounts: Record<string, { agents: number; buy: number; rent: number }> = {};
+      compIds.forEach(id => { companyCounts[id] = { agents: 0, buy: 0, rent: 0 }; });
+      ((compAgentsRes.data ?? []) as AgentCompanyCount[]).forEach(a => {
+        if (companyCounts[a.company_id]) companyCounts[a.company_id].agents++;
+      });
+      ((compPropsRes.data ?? []) as PropertyCount[]).forEach(p => {
+        if (!p.company_id || !companyCounts[p.company_id]) return;
+        if (p.property_purpose === 'rent') companyCounts[p.company_id].rent++;
+        else companyCounts[p.company_id].buy++;
+      });
+
+      return { companies: compData, agents: agentData, agentCounts, companyCounts };
+    },
+    staleTime: 60_000,
+  });
+
+  const companies = agentsData?.companies ?? [];
+  const agents = agentsData?.agents ?? [];
+  const companyCounts = agentsData?.companyCounts ?? {};
+  const agentCounts = agentsData?.agentCounts ?? {};
 
   const filteredCompanies = companies.filter(c => {
     if (searchQuery && !turkishIncludes(c.name, searchQuery)) return false;

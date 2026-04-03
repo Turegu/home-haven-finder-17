@@ -1,45 +1,64 @@
-import { useState, useEffect } from "react";
 import SEOHead from '@/components/SEOHead';
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
+interface BlogRow {
+  id: string;
+  slug: string;
+  image_url: string | null;
+  author: string | null;
+  created_at: string;
+  status: string;
+}
+
+interface BlogTranslation {
+  title: string;
+  description: string;
+  language_code: string;
+}
+
 const BlogDetailPage = () => {
   const { t, i18n } = useTranslation();
   const { slug } = useParams();
-  const [blog, setBlog] = useState<any>(null);
-  const [translation, setTranslation] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchBlog = async () => {
-      if (!slug) return;
-      const { data } = await supabase
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ['blog', slug, i18n.language],
+    queryFn: async () => {
+      if (!slug) return null;
+      const { data: blogData } = await supabase
         .from("blogs")
         .select("*")
         .eq("slug", slug)
         .eq("status", "published")
         .single();
 
-      if (data) {
-        setBlog(data);
-        const langCode = i18n.language === 'ar' ? 'ar' : 'en';
-        const { data: allTrans } = await supabase
-          .from("blog_translations")
-          .select("title, description, language_code")
-          .eq("blog_id", data.id)
-          .in("language_code", [langCode, "en"]);
-        const preferred = allTrans?.find(t => t.language_code === langCode);
-        const fallback = allTrans?.find(t => t.language_code === 'en');
-        setTranslation(preferred || fallback || null);
-      }
-      setLoading(false);
-    };
-    fetchBlog();
-  }, [slug, i18n.language]);
+      if (!blogData) return null;
+
+      const langCode = i18n.language === 'ar' ? 'ar' : 'en';
+      const { data: allTrans } = await supabase
+        .from("blog_translations")
+        .select("title, description, language_code")
+        .eq("blog_id", blogData.id)
+        .in("language_code", [langCode, "en"]);
+
+      const translations = (allTrans || []) as BlogTranslation[];
+      const preferred = translations.find(t => t.language_code === langCode);
+      const fallback = translations.find(t => t.language_code === 'en');
+      const translation = preferred || fallback || null;
+
+      return { blog: blogData as BlogRow, translation };
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const blog = data?.blog ?? null;
+  const translation = data?.translation ?? null;
 
   if (loading) return (
     <div className="min-h-screen bg-background">
