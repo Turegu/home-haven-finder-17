@@ -1,36 +1,24 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
 
-interface Stats {
-  totalCompanies: number;
-  basicCompanies: number;
-  liteCompanies: number;
-  plusCompanies: number;
-  proCompanies: number;
-}
-
 const AdminDashboardPage = () => {
-  const [stats, setStats] = useState<Stats>({
-    totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0,
-  });
-
-  useEffect(() => {
-    const fetchStats = async () => {
+  const { data: stats = { totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0 } } = useQuery({
+    queryKey: ["admin-dashboard-stats"],
+    queryFn: async () => {
       const { data: companies } = await supabase.from("companies").select("membership");
-      if (companies) {
-        setStats({
-          totalCompanies: companies.length,
-          basicCompanies: companies.filter(c => c.membership === "basic").length,
-          liteCompanies: companies.filter(c => c.membership === "lite").length,
-          plusCompanies: companies.filter(c => c.membership === "plus").length,
-          proCompanies: companies.filter(c => c.membership === "pro").length,
-        });
-      }
-    };
-    fetchStats();
-  }, []);
+      if (!companies) return { totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0 };
+      return {
+        totalCompanies: companies.length,
+        basicCompanies: companies.filter(c => c.membership === "basic").length,
+        liteCompanies: companies.filter(c => c.membership === "lite").length,
+        plusCompanies: companies.filter(c => c.membership === "plus").length,
+        proCompanies: companies.filter(c => c.membership === "pro").length,
+      };
+    },
+    staleTime: 30_000,
+  });
 
   const summaryCards = [
     { label: "Properties", count: 0, icon: Home, bg: "bg-sky-50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800", iconColor: "text-sky-600 dark:text-sky-400", barBg: "bg-sky-200 dark:bg-sky-800", barFill: "bg-sky-500" },
