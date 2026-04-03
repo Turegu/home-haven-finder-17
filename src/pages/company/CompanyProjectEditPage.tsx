@@ -529,8 +529,8 @@ const CompanyProjectEditPage = () => {
       toast.success(editingUnitId ? t("companyDashboard.unitUpdated") : t("companyDashboard.unitAdded"));
       setUnitDialogOpen(false);
       fetchUnits(projId);
-    } catch (err: any) {
-      toast.error(err.message || t("companyDashboard.saveFailed"));
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t("companyDashboard.saveFailed"));
     } finally { setSavingUnit(false); }
   };
 
