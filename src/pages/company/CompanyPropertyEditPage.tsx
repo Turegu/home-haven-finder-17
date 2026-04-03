@@ -411,7 +411,7 @@ const CompanyPropertyEditPage = () => {
       toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       navigate("/company/properties");
     } catch (err: unknown) {
-      toast.error(err.message || "Save failed");
+      toast.error(err instanceof Error ? err.message : "Save failed");
     } finally {
       setLoading(false);
     }
