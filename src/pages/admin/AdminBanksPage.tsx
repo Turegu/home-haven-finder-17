@@ -156,14 +156,14 @@ const AdminBanksPage = () => {
 
     setSaving(false);
     setDialogOpen(false);
-    fetchBanks();
+    refetch();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("admin.deleteThisBank"))) return;
     await supabase.from("banks").delete().eq("id", id);
     toast.success(t("admin.bankDeleted"));
-    fetchBanks();
+    refetch();
   };
 
   const filtered = banks.filter(
