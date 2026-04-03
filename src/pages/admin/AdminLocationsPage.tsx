@@ -101,7 +101,7 @@ export default function AdminLocationsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadPreview, setUploadPreview] = useState<Array<Record<string, string>> | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<Array<{ province: string; province_ar: string; district: string; district_ar: string; neighborhood: string; neighborhood_ar: string }> | null>(null);
   const [uploading, setUploading] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newEntry, setNewEntry] = useState({ province: "", province_ar: "", district: "", district_ar: "", neighborhood: "", neighborhood_ar: "" });
