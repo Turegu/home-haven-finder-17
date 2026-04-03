@@ -459,7 +459,8 @@ const CompanyProjectEditPage = () => {
     const projId = savedProjectId;
     if (!projId) { toast.error(t("companyDashboard.saveProjectFirst")); return; }
     setSavingUnit(true);
-    const payload: any = {
+    type UnitInsert = Database["public"]["Tables"]["project_units"]["Insert"];
+    const payload: UnitInsert = {
       unit_name: unitForm.unit_name.trim(), unit_type: unitForm.unit_type,
       rooms: unitForm.rooms || null,
       bathrooms: unitForm.bathrooms ? parseInt(unitForm.bathrooms) : null,
