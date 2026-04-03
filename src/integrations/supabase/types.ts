@@ -2754,10 +2754,13 @@ export type Database = {
         }
         Returns: string
       }
+      is_agent_of_company: { Args: { p_company_id: string }; Returns: boolean }
+      is_company_verified: { Args: { p_company_id: string }; Returns: boolean }
       listing_exists: {
         Args: { p_listing_id: string; p_listing_type: string }
         Returns: boolean
       }
+      owns_company: { Args: { p_company_id: string }; Returns: boolean }
       search_event_ids_by_keyword: {
         Args: { p_keyword: string }
         Returns: {
