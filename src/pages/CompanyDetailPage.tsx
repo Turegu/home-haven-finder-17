@@ -99,12 +99,12 @@ const CompanyDetailPage = () => {
 
         if (showRate) {
           const { data: metrics } = await supabase
-            .from('company_response_metrics' as any)
+            .from('company_response_metrics')
             .select('response_rate, avg_response_hours')
             .eq('company_id', data.id)
             .maybeSingle();
           if (metrics) {
-            setResponseMetrics(metrics as any);
+            setResponseMetrics(metrics as { response_rate: number | null; avg_response_hours: number | null });
           }
         }
       }
