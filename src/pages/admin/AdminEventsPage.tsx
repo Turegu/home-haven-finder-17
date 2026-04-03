@@ -38,7 +38,7 @@ const AdminEventsPage = () => {
 
   const renderCell = (item: ListingItem, key: string) => {
     if (key === "created_at" || key === "updated_at") {
-      const val = item[key];
+      const val = item[key] as string | undefined;
       return val ? new Date(val).toLocaleDateString() : "—";
     }
     if (key === "event_type") {
