@@ -230,7 +230,7 @@ const EditableRow = ({
       <td key={p.id} className="p-3 text-center">
         <Input
           type={type}
-          value={editData[p.id]?.[field] as any ?? ""}
+          value={String(editData[p.id]?.[field] ?? "") ?? ""}
           onChange={(e) =>
             update(p.id, field, type === "number" ? Number(e.target.value) : e.target.value)
           }
@@ -282,7 +282,7 @@ const PriceRow = ({
           <span className="text-muted-foreground text-sm">$</span>
           <Input
             type="number"
-            value={editData[p.id]?.[field] as any ?? 0}
+            value={String(editData[p.id]?.[field] ?? "") ?? 0}
             onChange={(e) => update(p.id, field, Number(e.target.value))}
             className="text-center w-24"
           />
