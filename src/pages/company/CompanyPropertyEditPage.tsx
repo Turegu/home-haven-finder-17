@@ -212,17 +212,17 @@ const CompanyPropertyEditPage = () => {
         .eq("property_id", id)
         .order("sort_order");
       if (plansData && plansData.length > 0) {
-        const planIds = plansData.map((p: any) => p.id);
+        const planIds = plansData.map((p) => p.id);
         const { data: stepsData } = await supabase
           .from("property_payment_plan_steps")
           .select("*")
           .in("plan_id", planIds)
           .order("sort_order");
-        setPaymentPlans(plansData.map((p: any) => ({
+        setPaymentPlans(plansData.map((p) => ({
           id: p.id,
           plan_name: p.plan_name,
           is_active: p.is_active,
-          steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+          steps: (stepsData || []).filter((s) => s.plan_id === p.id).map((s) => ({
             id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
           })),
         })));
