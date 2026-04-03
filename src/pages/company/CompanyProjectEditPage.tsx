@@ -390,7 +390,7 @@ const CompanyProjectEditPage = () => {
     setUnits(data || []);
   };
 
-  const updateUnitField = (field: string, value: any) => setUnitForm((prev) => ({ ...prev, [field]: value }));
+  const updateUnitField = (field: keyof UnitForm, value: string | string[] | LocalPaymentPlan[]) => setUnitForm((prev) => ({ ...prev, [field]: value }));
 
   const toggleUnitAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
     setUnitForm((prev) => ({
