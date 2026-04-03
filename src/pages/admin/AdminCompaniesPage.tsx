@@ -157,7 +157,7 @@ const AdminCompaniesPage = () => {
     } else {
       toast.success(`${selected.length} company(ies) deleted`);
       setSelected([]);
-      fetchCompanies();
+      refetchCompanies();
     }
   };
 
@@ -168,7 +168,7 @@ const AdminCompaniesPage = () => {
       toast.error(t("admin.failedToUpdateVerification"));
     } else {
       toast.success(`${company.name} ${newValue ? "verified" : "unverified"}`);
-      fetchCompanies();
+      refetchCompanies();
     }
   };
 
@@ -426,7 +426,7 @@ const AdminCompaniesPage = () => {
           companyName={upgradeCompany.name}
           currentMembership={upgradeCompany.membership}
           packageEndDate={upgradeCompany.package_end_date}
-          onUpgraded={fetchCompanies}
+          onUpgraded={refetchCompanies}
         />
       )}
 
@@ -438,7 +438,7 @@ const AdminCompaniesPage = () => {
           companyId={creditsCompany.id}
           companyName={creditsCompany.name}
           currentBalance={creditsCompany.credit_balance}
-          onUpdated={fetchCompanies}
+          onUpdated={refetchCompanies}
         />
       )}
 
