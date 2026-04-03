@@ -4,7 +4,7 @@ import { useDirection } from "@/hooks/useDirection";
 import { Sentry } from "@/lib/sentry";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -162,6 +162,7 @@ const App = () => {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/blog" element={<BlogsPage />} />
+            <Route path="/blogs" element={<Navigate to="/blog" replace />} />
             <Route path="/blog/:slug" element={<BlogDetailPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/advertise" element={<AdvertisePage />} />
