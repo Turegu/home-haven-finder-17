@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -92,18 +93,15 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
 
 export default function AdminLocationsPage() {
   const { t } = useTranslation();
-  const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
-  const [districts, setDistricts] = useState<{ name: string; ar: string }[]>([]);
+  const queryClient = useQueryClient();
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const [settings, setSettings] = useState<LocationSetting[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadPreview, setUploadPreview] = useState<any[] | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<Array<{ province: string; province_ar: string; district: string; district_ar: string; neighborhood: string; neighborhood_ar: string }> | null>(null);
   const [uploading, setUploading] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newEntry, setNewEntry] = useState({ province: "", province_ar: "", district: "", district_ar: "", neighborhood: "", neighborhood_ar: "" });
@@ -124,40 +122,56 @@ export default function AdminLocationsPage() {
   const [newNeighborhoodName, setNewNeighborhoodName] = useState("");
   const [newNeighborhoodAr, setNewNeighborhoodAr] = useState("");
 
-  // Use RPC for fast province loading
-  const loadProvinces = useCallback(async () => {
-    setLoading(true);
-    const [rpcResult, countResult] = await Promise.all([
-      supabase.rpc("get_distinct_provinces"),
-      supabase.from("locations").select("id", { count: "exact", head: true }).eq("status", "active"),
-    ]);
-    if (rpcResult.error) {
-      console.error("Failed to load provinces:", rpcResult.error);
-      // Fallback: get distinct provinces via direct query
-      const { data: fallback } = await supabase
-        .from("locations")
-        .select("province, province_ar")
-        .eq("status", "active")
-        .limit(1000);
-      if (fallback) {
-        const uniqueMap = new Map<string, string>();
-        fallback.forEach((l: any) => uniqueMap.set(l.province, l.province_ar || ""));
-        const uniqueProvs = Array.from(uniqueMap.entries()).map(([name, ar]) => ({ name, ar }));
-        setProvinces(uniqueProvs.sort((a, b) => a.name.localeCompare(b.name)));
+  // Query: provinces
+  const { data: provinces = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "provinces"],
+    queryFn: async () => {
+      const [rpcResult, countResult] = await Promise.all([
+        supabase.rpc("get_distinct_provinces"),
+        supabase.from("locations").select("id", { count: "exact", head: true }).eq("status", "active"),
+      ]);
+      if (countResult.count != null) setTotalCount(countResult.count);
+      if (rpcResult.error) {
+        console.error("Failed to load provinces:", rpcResult.error);
+        const { data: fallback } = await supabase
+          .from("locations")
+          .select("province, province_ar")
+          .eq("status", "active")
+          .limit(1000);
+        if (fallback) {
+          const uniqueMap = new Map<string, string>();
+          fallback.forEach((l) => uniqueMap.set(l.province, l.province_ar || ""));
+          return Array.from(uniqueMap.entries()).map(([name, ar]) => ({ name, ar })).sort((a, b) => a.name.localeCompare(b.name));
+        }
+        return [];
       }
-    } else if (rpcResult.data) {
-      setProvinces((rpcResult.data as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
-    }
-    if (countResult.count != null) setTotalCount(countResult.count);
-    setLoading(false);
-  }, []);
+      return ((rpcResult.data || []) as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    staleTime: 30_000,
+  });
 
-  // Use RPC for fast district loading
-  const loadDistricts = useCallback(async (province: string) => {
-    const { data } = await supabase.rpc("get_distinct_districts", { p_province: province });
-    if (data) setDistricts((data as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
-  }, []);
+  // Query: districts (dependent on selectedProvince)
+  const { data: districts = [] } = useQuery({
+    queryKey: ["admin", "districts", selectedProvince],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("get_distinct_districts", { p_province: selectedProvince! });
+      return ((data || []) as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    enabled: !!selectedProvince,
+    staleTime: 30_000,
+  });
 
+  // Query: settings
+  const { data: settings = [] } = useQuery({
+    queryKey: ["admin", "location-settings"],
+    queryFn: async () => {
+      const { data } = await supabase.from("location_settings").select("*");
+      return (data || []) as LocationSetting[];
+    },
+    staleTime: 30_000,
+  });
+
+  // Neighborhoods loaded imperatively (due to search + cascade)
   const loadNeighborhoods = useCallback(async (province: string, district: string) => {
     const { data } = await supabase
       .from("locations").select("*")
@@ -166,30 +180,21 @@ export default function AdminLocationsPage() {
     if (data) setNeighborhoods(data as Location[]);
   }, []);
 
-  const loadSettings = useCallback(async () => {
-    const { data } = await supabase.from("location_settings").select("*");
-    if (data) setSettings(data as LocationSetting[]);
-  }, []);
-
-  useEffect(() => { loadProvinces(); loadSettings(); }, [loadProvinces, loadSettings]);
-
-  useEffect(() => {
-    if (selectedProvince) { setSelectedDistrict(null); setNeighborhoods([]); loadDistricts(selectedProvince); }
-  }, [selectedProvince, loadDistricts]);
-
-  useEffect(() => {
-    if (selectedProvince && selectedDistrict) loadNeighborhoods(selectedProvince, selectedDistrict);
-  }, [selectedProvince, selectedDistrict, loadNeighborhoods]);
+  const [searching, setSearching] = useState(false);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
-    setLoading(true);
+    setSearching(true);
     const q = searchQuery.trim();
     const { data } = await supabase.from("locations").select("*").eq("status", "active")
       .or(`province.ilike.%${q}%,district.ilike.%${q}%,neighborhood.ilike.%${q}%`).limit(100);
     if (data) { setNeighborhoods(data as Location[]); setSelectedProvince(null); setSelectedDistrict(null); }
-    setLoading(false);
+    setSearching(false);
   };
+
+  const invalidateProvinces = () => queryClient.invalidateQueries({ queryKey: ["admin", "provinces"] });
+  const invalidateDistricts = () => queryClient.invalidateQueries({ queryKey: ["admin", "districts", selectedProvince] });
+  const invalidateSettings = () => queryClient.invalidateQueries({ queryKey: ["admin", "location-settings"] });
 
   const handleDeleteNeighborhood = async (id: string) => {
     const { error } = await supabase.from("locations").delete().eq("id", id);
@@ -203,7 +208,7 @@ export default function AdminLocationsPage() {
     const { error } = await supabase.from("locations").delete().eq("province", province).eq("district", district);
     if (error) { toast.error(t("admin.deleteFailed")); return; }
     toast.success(`Deleted all in ${district}`);
-    setSelectedDistrict(null); setNeighborhoods([]); loadDistricts(province);
+    setSelectedDistrict(null); setNeighborhoods([]); invalidateDistricts();
   };
 
   const handleDeleteProvince = async (province: string) => {
@@ -211,10 +216,9 @@ export default function AdminLocationsPage() {
     const { error } = await supabase.from("locations").delete().eq("province", province);
     if (error) { toast.error(t("admin.deleteFailed")); return; }
     toast.success(`Deleted all in ${province}`);
-    setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); setDistricts([]); loadProvinces();
+    setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); invalidateProvinces();
   };
 
-  // Edit district: rename all rows matching old district name in province
   const handleSaveDistrictEdit = async (oldName: string) => {
     if (!editDistrictName.trim()) { toast.error(t("admin.districtRequired")); return; }
     const { error } = await supabase.from("locations")
@@ -223,10 +227,9 @@ export default function AdminLocationsPage() {
     if (error) { toast.error(error.message); return; }
     toast.success(t("admin.districtUpdated"));
     setEditingDistrict(null);
-    loadDistricts(selectedProvince!);
+    invalidateDistricts();
   };
 
-  // Add new district (creates one placeholder neighborhood row)
   const handleAddDistrict = async () => {
     if (!newDistrictName.trim()) { toast.error(t("admin.districtRequired")); return; }
     const province = provinces.find(p => p.name === selectedProvince);
@@ -241,10 +244,9 @@ export default function AdminLocationsPage() {
     if (error) { toast.error(error.message); return; }
     toast.success(t("admin.districtAdded"));
     setShowAddDistrict(false); setNewDistrictName(""); setNewDistrictAr("");
-    loadDistricts(selectedProvince!);
+    invalidateDistricts();
   };
 
-  // Edit neighborhood
   const handleSaveNeighborhoodEdit = async (id: string) => {
     if (!editNeighborhoodName.trim()) { toast.error(t("admin.neighborhoodRequired")); return; }
     const { error } = await supabase.from("locations")
@@ -256,7 +258,6 @@ export default function AdminLocationsPage() {
     loadNeighborhoods(selectedProvince!, selectedDistrict!);
   };
 
-  // Add neighborhood
   const handleAddNeighborhood = async () => {
     if (!newNeighborhoodName.trim()) { toast.error(t("admin.neighborhoodRequired")); return; }
     const province = provinces.find(p => p.name === selectedProvince);
@@ -278,7 +279,7 @@ export default function AdminLocationsPage() {
   const handleUpdateSetting = async (key: string, value: string) => {
     const { error } = await supabase.from("location_settings").update({ setting_value: value }).eq("setting_key", key);
     if (error) toast.error(t("admin.failedToUpdateSetting"));
-    else { toast.success(t("admin.settingUpdated")); loadSettings(); }
+    else { toast.success(t("admin.settingUpdated")); invalidateSettings(); }
   };
 
   const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -288,8 +289,8 @@ export default function AdminLocationsPage() {
     reader.onload = (evt) => {
       const wb = XLSX.read(evt.target?.result, { type: "binary" });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json<any>(ws, { header: 1 });
-      const data = rows.slice(1).filter((r: any[]) => r[0] && r[2] && r[4]).map((r: any[]) => ({
+      const rows = XLSX.utils.sheet_to_json<string[]>(ws, { header: 1 });
+      const data = rows.slice(1).filter((r) => r[0] && r[2] && r[4]).map((r) => ({
         province: String(r[0] || "").trim(), province_ar: String(r[1] || "").trim(),
         district: String(r[2] || "").trim(), district_ar: String(r[3] || "").trim(),
         neighborhood: String(r[4] || "").trim(), neighborhood_ar: String(r[5] || "").trim(),
@@ -315,8 +316,8 @@ export default function AdminLocationsPage() {
         if (error) { toast.error(`Batch ${Math.floor(i / batchSize) + 1} failed: ${error.message}`); setUploading(false); return; }
       }
       toast.success(`Imported ${uploadPreview.length} locations`);
-      setUploadPreview(null); setShowUpload(false); setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); loadProvinces();
-    } catch (err: any) { toast.error(err.message); }
+      setUploadPreview(null); setShowUpload(false); setSelectedProvince(null); setSelectedDistrict(null); setNeighborhoods([]); invalidateProvinces();
+    } catch (err: unknown) { toast.error(err instanceof Error ? err.message : "Upload failed"); }
     setUploading(false);
   };
 
@@ -329,7 +330,7 @@ export default function AdminLocationsPage() {
     toast.success(t("admin.locationAdded"));
     setShowAddDialog(false);
     setNewEntry({ province: "", province_ar: "", district: "", district_ar: "", neighborhood: "", neighborhood_ar: "" });
-    loadProvinces();
+    invalidateProvinces();
     if (selectedProvince === newEntry.province && selectedDistrict === newEntry.district) {
       loadNeighborhoods(newEntry.province, newEntry.district);
     }
@@ -390,7 +391,7 @@ export default function AdminLocationsPage() {
 
         {/* Content */}
         <div className="bg-card rounded-lg border border-border">
-          {loading && !selectedProvince ? (
+          {(loading || searching) && !selectedProvince ? (
             <div className="flex items-center justify-center py-16 text-muted-foreground">{t("admin.loadingProvinces")}</div>
           ) : !selectedProvince && neighborhoods.length === 0 ? (
             /* Province list */
