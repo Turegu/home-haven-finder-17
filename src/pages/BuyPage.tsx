@@ -161,10 +161,10 @@ const BuyPage = () => {
   const trackedPageRef = useRef<string>('');
   useEffect(() => {
     if (allProperties.length > 0) {
-      const key = allProperties.map((p: any) => p.id).join(',');
+      const key = allProperties.map((p) => p.id).join(',');
       if (key !== trackedPageRef.current) {
         trackedPageRef.current = key;
-        trackImpressions(allProperties.map((p: any) => p.id), 'property');
+        trackImpressions(allProperties.map((p) => p.id), 'property');
       }
     }
   }, [allProperties]);
