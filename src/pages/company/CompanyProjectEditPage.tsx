@@ -413,7 +413,7 @@ const CompanyProjectEditPage = () => {
     setUnitDialogOpen(true);
   };
 
-  const openEditUnit = async (unit: any) => {
+  const openEditUnit = async (unit: ProjectUnitRow) => {
     setEditingUnitId(unit.id);
     // Fetch existing payment plans for this unit
     let existingPlans: LocalPaymentPlan[] = [];
