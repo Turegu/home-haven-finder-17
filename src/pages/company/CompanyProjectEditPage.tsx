@@ -621,8 +621,8 @@ const CompanyProjectEditPage = () => {
         toast.success(publishStatus === "active" ? t("companyDashboard.projectPublished") : t("companyDashboard.projectSavedDraft"));
       }
       navigate("/company/projects");
-    } catch (err: any) {
-      toast.error(err.message || t("companyDashboard.saveFailed"));
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t("companyDashboard.saveFailed"));
     } finally { setLoading(false); }
   };
 
