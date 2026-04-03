@@ -72,7 +72,7 @@ const AdminReportsPage = () => {
 
   const deleteReport = async (id: string) => {
     const { error } = await supabase
-      .from("property_reports" as any)
+      .from("property_reports")
       .delete()
       .eq("id", id);
 

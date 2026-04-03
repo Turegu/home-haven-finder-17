@@ -524,7 +524,11 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
 const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
   const { t } = useTranslation();
   const [filters, setFilters] = useState<ProjectFilters>({ status: 'all', minPrice: '', maxPrice: '' });
-  const [projects, setProjects] = useState<any[]>([]);
+  type ProjectWithJoins = Database["public"]["Tables"]["projects"]["Row"] & {
+    companies?: { name?: string; logo_url?: string; phone?: string; whatsapp?: string } | null;
+    agents?: { name?: string; avatar_url?: string; phone?: string; whatsapp?: string } | null;
+  };
+  const [projects, setProjects] = useState<ProjectWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProjects = useCallback(async () => {

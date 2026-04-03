@@ -91,7 +91,7 @@ const AdminCompanyEditPage = () => {
     })();
   }, [id]);
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: keyof typeof form, value: string | string[] | MembershipType) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
