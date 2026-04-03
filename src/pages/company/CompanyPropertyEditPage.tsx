@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { Database } from "@/integrations/supabase/types";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
@@ -110,7 +111,7 @@ const CompanyPropertyEditPage = () => {
   const commercialPropertyTypes = filterOpts["commercial_property_types"] || [];
   const availablePropertyTypes = isCommercial ? commercialPropertyTypes : residentialPropertyTypes;
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: keyof typeof form, value: string | string[]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     clearError(field);
   };
@@ -157,7 +158,7 @@ const CompanyPropertyEditPage = () => {
 
       // Derive contract_type from purpose + classification
       const purpose = data.property_purpose || "buy";
-      const classification = (data as any).property_classification || "residential";
+      const classification = data.property_classification || "residential";
       let contractType = "residential_sale";
       if (classification === "commercial" && purpose === "rent") contractType = "commercial_rent";
       else if (classification === "commercial") contractType = "commercial_sale";
@@ -165,45 +166,45 @@ const CompanyPropertyEditPage = () => {
 
       setForm({
         title: data.title || "",
-        title_ar: (data as any).title_ar || "",
-        title_fr: (data as any).title_fr || "",
+        title_ar: data.title_ar || "",
+        title_fr: data.title_fr || "",
         description: data.description || "",
-        description_ar: (data as any).description_ar || "",
-        description_fr: (data as any).description_fr || "",
+        description_ar: data.description_ar || "",
+        description_fr: data.description_fr || "",
         contract_type: contractType,
         property_purpose: purpose,
         property_classification: classification,
-        rent_duration: (data as any).rent_duration || "",
+        rent_duration: data.rent_duration || "",
         property_type: data.property_type || "Apartment",
         price: data.price?.toString() || "",
         area: data.area?.toString() || "",
         area_unit: data.area_unit || "m²",
         currency: data.currency || "USD",
-        rooms: (data as any).rooms || "",
+        rooms: data.rooms || "",
         bedrooms: data.bedrooms?.toString() || "",
         bathrooms: data.bathrooms?.toString() || "",
-        floor_level: (data as any).floor_level || "",
-        furniture: (data as any).furniture || "",
-        parking_spaces: (data as any).parking_spaces?.toString() || "0",
-        property_age: (data as any).property_age || "",
-        property_orientation: (data as any).property_orientation || "",
-        title_deed: (data as any).title_deed || "",
+        floor_level: data.floor_level || "",
+        furniture: data.furniture || "",
+        parking_spaces: data.parking_spaces?.toString() || "0",
+        property_age: data.property_age || "",
+        property_orientation: data.property_orientation || "",
+        title_deed: data.title_deed || "",
         property_status: data.property_status || "new",
-        interior_amenities: (data as any).interior_amenities || [],
-        exterior_amenities: (data as any).exterior_amenities || [],
-        advertising_tags: (data as any).advertising_tags || [],
-        province: (data as any).province || "",
-        town: (data as any).town || "",
-        neighbourhood: (data as any).neighbourhood || "",
-        pin_location: (data as any).pin_location || "",
+        interior_amenities: data.interior_amenities || [],
+        exterior_amenities: data.exterior_amenities || [],
+        advertising_tags: data.advertising_tags || [],
+        province: data.province || "",
+        town: data.town || "",
+        neighbourhood: data.neighbourhood || "",
+        pin_location: data.pin_location || "",
         location: data.location || "",
-        video_link: (data as any).video_link || "",
-        view_360_link: (data as any).view_360_link || "",
-        open_house_start: (data as any).open_house_start || "",
-        open_house_end: (data as any).open_house_end || "",
+        video_link: data.video_link || "",
+        view_360_link: data.view_360_link || "",
+        open_house_start: data.open_house_start || "",
+        open_house_end: data.open_house_end || "",
       });
       setImages(data.images || []);
-      setPlanFiles((data as any).plans || []);
+      setPlanFiles(data.plans || []);
 
       // Load payment plans
       const { data: plansData } = await supabase
@@ -212,17 +213,17 @@ const CompanyPropertyEditPage = () => {
         .eq("property_id", id)
         .order("sort_order");
       if (plansData && plansData.length > 0) {
-        const planIds = plansData.map((p: any) => p.id);
+        const planIds = plansData.map((p) => p.id);
         const { data: stepsData } = await supabase
           .from("property_payment_plan_steps")
           .select("*")
           .in("plan_id", planIds)
           .order("sort_order");
-        setPaymentPlans(plansData.map((p: any) => ({
+        setPaymentPlans(plansData.map((p) => ({
           id: p.id,
           plan_name: p.plan_name,
           is_active: p.is_active,
-          steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+          steps: (stepsData || []).filter((s) => s.plan_id === p.id).map((s) => ({
             id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
           })),
         })));
@@ -313,7 +314,8 @@ const CompanyPropertyEditPage = () => {
     }
     setLoading(true);
 
-    const payload: any = {
+    type PropertyInsert = Database["public"]["Tables"]["properties"]["Insert"];
+    const payload: PropertyInsert = {
       title: form.title.trim(),
       title_ar: form.title_ar || null,
       title_fr: form.title_fr || null,
@@ -401,7 +403,7 @@ const CompanyPropertyEditPage = () => {
       if (isEdit && propertyId) {
         const { data: dbPlans } = await supabase.from("property_payment_plans").select("id").eq("property_id", propertyId);
         const keptIds = paymentPlans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
-        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        const toDelete = (dbPlans || []).filter((p) => !keptIds.includes(p.id));
         for (const d of toDelete) {
           await supabase.from("property_payment_plan_steps").delete().eq("plan_id", d.id);
           await supabase.from("property_payment_plans").delete().eq("id", d.id);
@@ -410,8 +412,8 @@ const CompanyPropertyEditPage = () => {
 
       toast.success(publishStatus === "active" ? "Property published!" : "Property saved as draft!");
       navigate("/company/properties");
-    } catch (err: any) {
-      toast.error(err.message || "Save failed");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Save failed");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { Database } from "@/integrations/supabase/types";
 import SEOHead from '@/components/SEOHead';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,8 @@ interface CompanyData {
 interface AgentData {
   id: string;
   name: string;
+  name_ar?: string | null;
+  name_fr?: string | null;
   designation: string | null;
   avatar_url: string | null;
   languages: string[] | null;
@@ -99,12 +102,12 @@ const CompanyDetailPage = () => {
 
         if (showRate) {
           const { data: metrics } = await supabase
-            .from('company_response_metrics' as any)
+            .from('company_response_metrics')
             .select('response_rate, avg_response_hours')
             .eq('company_id', data.id)
             .maybeSingle();
           if (metrics) {
-            setResponseMetrics(metrics as any);
+            setResponseMetrics(metrics as { response_rate: number | null; avg_response_hours: number | null });
           }
         }
       }
@@ -410,7 +413,7 @@ const CompanyDetailPage = () => {
                       <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold ring-2 ring-border">{agent.name.charAt(0)}</div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && (agent as any).name_ar ? (agent as any).name_ar : i18n.language === 'fr' && (agent as any).name_fr ? (agent as any).name_fr : agent.name}</h4>
+                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && agent.name_ar ? agent.name_ar : i18n.language === 'fr' && agent.name_fr ? agent.name_fr : agent.name}</h4>
                       <p className="text-sm text-muted-foreground">{getTranslatedLabel(dbDesignations, agent.designation, i18n.language)}</p>
                       {agent.languages && <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).map(l => t(`languageNames.${l}`, l)).join(', ')}</p>}
                     </div>
@@ -443,7 +446,11 @@ const CompanyDetailPage = () => {
 
 const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
   const [filters, setFilters] = useState<ProfileFilters>({ purpose: 'all', propertyType: 'all', rooms: 'all', minPrice: '', maxPrice: '' });
-  const [properties, setProperties] = useState<any[]>([]);
+  type PropertyWithJoins = Database["public"]["Tables"]["properties"]["Row"] & {
+    agents?: { name: string; avatar_url: string | null; phone: string | null; whatsapp: string | null } | null;
+    companies?: { name: string; logo_url: string | null; phone: string | null; whatsapp: string | null } | null;
+  };
+  const [properties, setProperties] = useState<PropertyWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProperties = useCallback(async () => {
@@ -492,7 +499,7 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
                 areaUnit: p.area_unit ?? 'm²',
                 bedrooms: p.bedrooms ?? 0,
                 bathrooms: p.bathrooms ?? 0,
-                images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
+                images: (p.images && p.images.length > 0) ? p.images : ['/placeholder.svg'],
                 agentLogo: p.companies?.logo_url ?? '',
                 agentName: p.agents?.name ?? '',
                 agentAvatar: p.agents?.avatar_url ?? '',
@@ -517,7 +524,11 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
 const CompanyProjectsTab = ({ companyId }: { companyId: string }) => {
   const { t } = useTranslation();
   const [filters, setFilters] = useState<ProjectFilters>({ status: 'all', minPrice: '', maxPrice: '' });
-  const [projects, setProjects] = useState<any[]>([]);
+  type ProjectWithJoins = Database["public"]["Tables"]["projects"]["Row"] & {
+    companies?: { name: string; logo_url: string | null; phone: string | null; whatsapp: string | null } | null;
+    agents?: { name: string; avatar_url: string | null; phone: string | null; whatsapp: string | null } | null;
+  };
+  const [projects, setProjects] = useState<ProjectWithJoins[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProjects = useCallback(async () => {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { Database } from "@/integrations/supabase/types";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
@@ -245,7 +246,8 @@ const CompanyProjectEditPage = () => {
   const [uploadingPlans, setUploadingPlans] = useState(false);
 
   // Units state
-  const [units, setUnits] = useState<any[]>([]);
+  type ProjectUnitRow = Database["public"]["Tables"]["project_units"]["Row"];
+  const [units, setUnits] = useState<ProjectUnitRow[]>([]);
   const [unitDialogOpen, setUnitDialogOpen] = useState(false);
   const [editingUnitId, setEditingUnitId] = useState<string | null>(null);
   const [unitForm, setUnitForm] = useState<UnitForm>({ ...emptyUnit });
@@ -269,7 +271,7 @@ const CompanyProjectEditPage = () => {
     location: "", video_link: "", view_360_link: "",
   });
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: keyof typeof form, value: string | string[]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     clearError(field);
   };
@@ -297,33 +299,33 @@ const CompanyProjectEditPage = () => {
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error(t("companyDashboard.projectNotFound")); return; }
       setForm({
-        title: data.title || "", title_ar: (data as any).title_ar || "", title_fr: (data as any).title_fr || "",
-        tagline: (data as any).tagline || "",
-        description: data.description || "", description_ar: (data as any).description_ar || "", description_fr: (data as any).description_fr || "",
+        title: data.title || "", title_ar: data.title_ar || "", title_fr: data.title_fr || "",
+        tagline: data.tagline || "",
+        description: data.description || "", description_ar: data.description_ar || "", description_fr: data.description_fr || "",
         developer: data.developer || "",
         project_type: data.project_type || "residential",
         min_price: data.min_price?.toString() || "", max_price: data.max_price?.toString() || "",
         currency: data.currency || "USD",
         min_units: data.min_units?.toString() || "", max_units: data.max_units?.toString() || "",
-        min_area: (data as any).min_area?.toString() || "", max_area: (data as any).max_area?.toString() || "",
-        area_unit: (data as any).area_unit || "m²",
+        min_area: data.min_area?.toString() || "", max_area: data.max_area?.toString() || "",
+        area_unit: data.area_unit || "m²",
         project_status: data.project_status || "new",
-        interior_amenities: (data as any).interior_amenities || [],
-        exterior_amenities: (data as any).exterior_amenities || [],
-        advertising_tags: (data as any).advertising_tags || [],
-        property_classification: (data as any).property_classification || "",
-        province: (data as any).province || "", town: (data as any).town || "",
-        neighbourhood: (data as any).neighbourhood || "", pin_location: (data as any).pin_location || "",
+        interior_amenities: data.interior_amenities || [],
+        exterior_amenities: data.exterior_amenities || [],
+        advertising_tags: data.advertising_tags || [],
+        property_classification: data.property_classification || "",
+        province: data.province || "", town: data.town || "",
+        neighbourhood: data.neighbourhood || "", pin_location: data.pin_location || "",
         location: data.location || "",
-        video_link: (data as any).video_link || "", view_360_link: (data as any).view_360_link || "",
+        video_link: data.video_link || "", view_360_link: data.view_360_link || "",
       });
       setImages(data.images || []);
-      setPlanFiles((data as any).plans || []);
-      setLogoUrl((data as any).logo_url || "");
-      const devLogo = (data as any).developer_logo_url || "";
+      setPlanFiles(data.plans || []);
+      setLogoUrl(data.logo_url || "");
+      const devLogo = data.developer_logo_url || "";
       setDeveloperLogoUrl(devLogo);
       setIsDifferentDeveloper(!!devLogo);
-      setPdfUrl((data as any).pdf_catalogue_url || "");
+      setPdfUrl(data.pdf_catalogue_url || "");
       // Fetch units for existing project
       fetchUnits(id as string);
     };
@@ -388,7 +390,7 @@ const CompanyProjectEditPage = () => {
     setUnits(data || []);
   };
 
-  const updateUnitField = (field: string, value: any) => setUnitForm((prev) => ({ ...prev, [field]: value }));
+  const updateUnitField = (field: keyof UnitForm, value: string | string[] | LocalPaymentPlan[]) => setUnitForm((prev) => ({ ...prev, [field]: value }));
 
   const toggleUnitAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
     setUnitForm((prev) => ({
@@ -411,7 +413,7 @@ const CompanyProjectEditPage = () => {
     setUnitDialogOpen(true);
   };
 
-  const openEditUnit = async (unit: any) => {
+  const openEditUnit = async (unit: ProjectUnitRow) => {
     setEditingUnitId(unit.id);
     // Fetch existing payment plans for this unit
     let existingPlans: LocalPaymentPlan[] = [];
@@ -421,17 +423,17 @@ const CompanyProjectEditPage = () => {
       .eq("unit_id", unit.id)
       .order("sort_order");
     if (plansData && plansData.length > 0) {
-      const planIds = plansData.map((p: any) => p.id);
+      const planIds = plansData.map((p) => p.id);
       const { data: stepsData } = await supabase
         .from("unit_payment_plan_steps")
         .select("*")
         .in("plan_id", planIds)
         .order("sort_order");
-      existingPlans = plansData.map((p: any) => ({
+      existingPlans = plansData.map((p) => ({
         id: p.id,
         plan_name: p.plan_name,
         is_active: p.is_active,
-        steps: (stepsData || []).filter((s: any) => s.plan_id === p.id).map((s: any) => ({
+        steps: (stepsData || []).filter((s) => s.plan_id === p.id).map((s) => ({
           id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle || "",
         })),
       }));
@@ -444,7 +446,7 @@ const CompanyProjectEditPage = () => {
       area_unit: unit.area_unit || "m²",
       interior_amenities: unit.interior_amenities || [],
       exterior_amenities: unit.exterior_amenities || [],
-      advertising_tags: (unit as any).advertising_tags || [],
+      advertising_tags: unit.advertising_tags || [],
       images: unit.images || [],
       status: unit.status || "available",
       payment_plans: existingPlans,
@@ -457,7 +459,8 @@ const CompanyProjectEditPage = () => {
     const projId = savedProjectId;
     if (!projId) { toast.error(t("companyDashboard.saveProjectFirst")); return; }
     setSavingUnit(true);
-    const payload: any = {
+    type UnitInsert = Database["public"]["Tables"]["project_units"]["Insert"];
+    const payload: UnitInsert = {
       unit_name: unitForm.unit_name.trim(), unit_type: unitForm.unit_type,
       rooms: unitForm.rooms || null,
       bathrooms: unitForm.bathrooms ? parseInt(unitForm.bathrooms) : null,
@@ -516,7 +519,7 @@ const CompanyProjectEditPage = () => {
       if (editingUnitId) {
         const { data: dbPlans } = await supabase.from("unit_payment_plans").select("id").eq("unit_id", editingUnitId);
         const keptIds = paymentPlans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
-        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        const toDelete = (dbPlans || []).filter((p) => !keptIds.includes(p.id));
         for (const d of toDelete) {
           await supabase.from("unit_payment_plan_steps").delete().eq("plan_id", d.id);
           await supabase.from("unit_payment_plans").delete().eq("id", d.id);
@@ -526,8 +529,8 @@ const CompanyProjectEditPage = () => {
       toast.success(editingUnitId ? t("companyDashboard.unitUpdated") : t("companyDashboard.unitAdded"));
       setUnitDialogOpen(false);
       fetchUnits(projId);
-    } catch (err: any) {
-      toast.error(err.message || t("companyDashboard.saveFailed"));
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t("companyDashboard.saveFailed"));
     } finally { setSavingUnit(false); }
   };
 
@@ -577,7 +580,8 @@ const CompanyProjectEditPage = () => {
       if (!form.title.trim()) { toast.error("Project name is required"); return; }
     }
 
-    const payload: any = {
+    type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
+    const payload: ProjectInsert = {
       title: form.title.trim(), title_ar: form.title_ar || null, title_fr: form.title_fr || null,
       description: form.description || null, description_ar: form.description_ar || null, description_fr: form.description_fr || null,
       tagline: form.tagline || null, developer: form.developer || null,
@@ -617,8 +621,8 @@ const CompanyProjectEditPage = () => {
         toast.success(publishStatus === "active" ? t("companyDashboard.projectPublished") : t("companyDashboard.projectSavedDraft"));
       }
       navigate("/company/projects");
-    } catch (err: any) {
-      toast.error(err.message || t("companyDashboard.saveFailed"));
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t("companyDashboard.saveFailed"));
     } finally { setLoading(false); }
   };
 

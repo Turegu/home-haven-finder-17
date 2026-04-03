@@ -161,10 +161,10 @@ const BuyPage = () => {
   const trackedPageRef = useRef<string>('');
   useEffect(() => {
     if (allProperties.length > 0) {
-      const key = allProperties.map((p: any) => p.id).join(',');
+      const key = allProperties.map((p) => p.id).join(',');
       if (key !== trackedPageRef.current) {
         trackedPageRef.current = key;
-        trackImpressions(allProperties.map((p: any) => p.id), 'property');
+        trackImpressions(allProperties.map((p) => p.id), 'property');
       }
     }
   }, [allProperties]);
@@ -255,6 +255,11 @@ const BuyPage = () => {
       premium: 'premium',
       featured: 'featured',
     };
+    type JoinedProperty = typeof p & {
+      companies?: { logo_url?: string; name?: string; phone?: string; whatsapp?: string } | null;
+      agents?: { name?: string; avatar_url?: string; phone?: string; whatsapp?: string } | null;
+    };
+    const jp = p as JoinedProperty;
     return {
       id: p.id,
       title: p.title,
@@ -268,17 +273,17 @@ const BuyPage = () => {
       bedrooms: p.bedrooms ?? 0,
       bathrooms: p.bathrooms ?? 0,
       images: (p.images && p.images.length > 0) ? p.images : ['/placeholder.svg'],
-      agentLogo: (p as any).companies?.logo_url ?? '',
-      agentName: (p as any).agents?.name ?? '',
-      agentAvatar: (p as any).agents?.avatar_url ?? '',
-      companyName: (p as any).companies?.name ?? '',
+      agentLogo: jp.companies?.logo_url ?? '',
+      agentName: jp.agents?.name ?? '',
+      agentAvatar: jp.agents?.avatar_url ?? '',
+      companyName: jp.companies?.name ?? '',
       isFeatured: p.display_on_homepage,
       listingTier: tierMap[p.property_classification ?? ''] ?? 'standard' as const,
       listingType: (p.property_purpose === 'rent' ? 'rent' : 'buy') as 'buy' | 'rent',
       rentDuration: p.rent_duration,
       advertisingTags: p.advertising_tags ?? [],
-      contactPhone: (p as any).agents?.phone ?? (p as any).companies?.phone ?? null,
-      contactWhatsapp: (p as any).agents?.whatsapp ?? (p as any).companies?.whatsapp ?? null,
+      contactPhone: jp.agents?.phone ?? jp.companies?.phone ?? null,
+      contactWhatsapp: jp.agents?.whatsapp ?? jp.companies?.whatsapp ?? null,
       companyId: p.company_id ?? null,
       agentId: p.agent_id ?? null,
     };

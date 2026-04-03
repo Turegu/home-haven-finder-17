@@ -32,7 +32,7 @@ const AdminReportsPage = () => {
     queryKey: ["admin-reports"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("property_reports" as any)
+        .from("property_reports")
         .select("*")
         .order("created_at", { ascending: false });
 
@@ -41,8 +41,8 @@ const AdminReportsPage = () => {
         return [];
       }
 
-      const rows = (data as any[]) || [];
-      const propertyIds = [...new Set(rows.map((r: any) => r.property_id))];
+      const rows = (data || []);
+      const propertyIds = [...new Set(rows.map((r) => r.property_id))];
       const { data: properties } = await supabase
         .from("properties")
         .select("id, title, listing_id")
@@ -50,7 +50,7 @@ const AdminReportsPage = () => {
 
       const propMap = new Map((properties || []).map((p) => [p.id, p]));
 
-      return rows.map((r: any) => ({
+      return rows.map((r) => ({
         ...r,
         property_title: propMap.get(r.property_id)?.title || "Unknown",
         property_listing_id: propMap.get(r.property_id)?.listing_id || "",
@@ -61,8 +61,8 @@ const AdminReportsPage = () => {
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase
-      .from("property_reports" as any)
-      .update({ status } as any)
+      .from("property_reports")
+      .update({ status })
       .eq("id", id);
 
     if (error) { toast.error("Failed to update status"); return; }
@@ -72,7 +72,7 @@ const AdminReportsPage = () => {
 
   const deleteReport = async (id: string) => {
     const { error } = await supabase
-      .from("property_reports" as any)
+      .from("property_reports")
       .delete()
       .eq("id", id);
 
