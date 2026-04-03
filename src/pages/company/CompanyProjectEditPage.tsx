@@ -271,7 +271,7 @@ const CompanyProjectEditPage = () => {
     location: "", video_link: "", view_360_link: "",
   });
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: keyof typeof form, value: string | string[]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     clearError(field);
   };
