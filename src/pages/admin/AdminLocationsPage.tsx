@@ -93,18 +93,15 @@ const CountryCombobox = ({ value, onSelect }: { value: string; onSelect: (countr
 
 export default function AdminLocationsPage() {
   const { t } = useTranslation();
-  const [provinces, setProvinces] = useState<{ name: string; ar: string }[]>([]);
-  const [districts, setDistricts] = useState<{ name: string; ar: string }[]>([]);
+  const queryClient = useQueryClient();
   const [neighborhoods, setNeighborhoods] = useState<Location[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const [settings, setSettings] = useState<LocationSetting[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
-  const [uploadPreview, setUploadPreview] = useState<any[] | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<Array<Record<string, string>> | null>(null);
   const [uploading, setUploading] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newEntry, setNewEntry] = useState({ province: "", province_ar: "", district: "", district_ar: "", neighborhood: "", neighborhood_ar: "" });
@@ -125,40 +122,56 @@ export default function AdminLocationsPage() {
   const [newNeighborhoodName, setNewNeighborhoodName] = useState("");
   const [newNeighborhoodAr, setNewNeighborhoodAr] = useState("");
 
-  // Use RPC for fast province loading
-  const loadProvinces = useCallback(async () => {
-    setLoading(true);
-    const [rpcResult, countResult] = await Promise.all([
-      supabase.rpc("get_distinct_provinces"),
-      supabase.from("locations").select("id", { count: "exact", head: true }).eq("status", "active"),
-    ]);
-    if (rpcResult.error) {
-      console.error("Failed to load provinces:", rpcResult.error);
-      // Fallback: get distinct provinces via direct query
-      const { data: fallback } = await supabase
-        .from("locations")
-        .select("province, province_ar")
-        .eq("status", "active")
-        .limit(1000);
-      if (fallback) {
-        const uniqueMap = new Map<string, string>();
-        fallback.forEach((l: any) => uniqueMap.set(l.province, l.province_ar || ""));
-        const uniqueProvs = Array.from(uniqueMap.entries()).map(([name, ar]) => ({ name, ar }));
-        setProvinces(uniqueProvs.sort((a, b) => a.name.localeCompare(b.name)));
+  // Query: provinces
+  const { data: provinces = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "provinces"],
+    queryFn: async () => {
+      const [rpcResult, countResult] = await Promise.all([
+        supabase.rpc("get_distinct_provinces"),
+        supabase.from("locations").select("id", { count: "exact", head: true }).eq("status", "active"),
+      ]);
+      if (countResult.count != null) setTotalCount(countResult.count);
+      if (rpcResult.error) {
+        console.error("Failed to load provinces:", rpcResult.error);
+        const { data: fallback } = await supabase
+          .from("locations")
+          .select("province, province_ar")
+          .eq("status", "active")
+          .limit(1000);
+        if (fallback) {
+          const uniqueMap = new Map<string, string>();
+          fallback.forEach((l) => uniqueMap.set(l.province, l.province_ar || ""));
+          return Array.from(uniqueMap.entries()).map(([name, ar]) => ({ name, ar })).sort((a, b) => a.name.localeCompare(b.name));
+        }
+        return [];
       }
-    } else if (rpcResult.data) {
-      setProvinces((rpcResult.data as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
-    }
-    if (countResult.count != null) setTotalCount(countResult.count);
-    setLoading(false);
-  }, []);
+      return ((rpcResult.data || []) as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    staleTime: 30_000,
+  });
 
-  // Use RPC for fast district loading
-  const loadDistricts = useCallback(async (province: string) => {
-    const { data } = await supabase.rpc("get_distinct_districts", { p_province: province });
-    if (data) setDistricts((data as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name)));
-  }, []);
+  // Query: districts (dependent on selectedProvince)
+  const { data: districts = [] } = useQuery({
+    queryKey: ["admin", "districts", selectedProvince],
+    queryFn: async () => {
+      const { data } = await supabase.rpc("get_distinct_districts", { p_province: selectedProvince! });
+      return ((data || []) as { name: string; ar: string }[]).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    enabled: !!selectedProvince,
+    staleTime: 30_000,
+  });
 
+  // Query: settings
+  const { data: settings = [] } = useQuery({
+    queryKey: ["admin", "location-settings"],
+    queryFn: async () => {
+      const { data } = await supabase.from("location_settings").select("*");
+      return (data || []) as LocationSetting[];
+    },
+    staleTime: 30_000,
+  });
+
+  // Neighborhoods loaded imperatively (due to search + cascade)
   const loadNeighborhoods = useCallback(async (province: string, district: string) => {
     const { data } = await supabase
       .from("locations").select("*")
@@ -166,21 +179,6 @@ export default function AdminLocationsPage() {
       .order("neighborhood");
     if (data) setNeighborhoods(data as Location[]);
   }, []);
-
-  const loadSettings = useCallback(async () => {
-    const { data } = await supabase.from("location_settings").select("*");
-    if (data) setSettings(data as LocationSetting[]);
-  }, []);
-
-  useEffect(() => { loadProvinces(); loadSettings(); }, [loadProvinces, loadSettings]);
-
-  useEffect(() => {
-    if (selectedProvince) { setSelectedDistrict(null); setNeighborhoods([]); loadDistricts(selectedProvince); }
-  }, [selectedProvince, loadDistricts]);
-
-  useEffect(() => {
-    if (selectedProvince && selectedDistrict) loadNeighborhoods(selectedProvince, selectedDistrict);
-  }, [selectedProvince, selectedDistrict, loadNeighborhoods]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
