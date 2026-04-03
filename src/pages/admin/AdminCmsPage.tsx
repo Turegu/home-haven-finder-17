@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -16,21 +16,19 @@ interface CmsPage {
 }
 
 const AdminCmsPage = () => {
-  const [pages, setPages] = useState<CmsPage[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetch = async () => {
+  const { data: pages = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "cms"],
+    queryFn: async () => {
       const { data } = await supabase
         .from("cms_pages")
         .select("id, page_slug, page_title, updated_at")
         .order("created_at");
-      setPages((data as CmsPage[]) || []);
-      setLoading(false);
-    };
-    fetch();
-  }, []);
+      return (data || []) as CmsPage[];
+    },
+    staleTime: 30_000,
+  });
 
   return (
     <AdminLayout>

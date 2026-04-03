@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -27,8 +28,7 @@ interface Currency {
 }
 
 const AdminCurrenciesPage = () => {
-  const [currencies, setCurrencies] = useState<Currency[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -44,22 +44,26 @@ const AdminCurrenciesPage = () => {
   const [newCode, setNewCode] = useState("");
   const [newSymbol, setNewSymbol] = useState("");
 
-  const fetchCurrencies = async () => {
-    const { data, error } = await supabase
-      .from("currencies")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (!error && data) setCurrencies(data as Currency[]);
-    setLoading(false);
-  };
+  const { data: currencies = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "currencies"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("currencies")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return (data || []) as Currency[];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchCurrencies(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "currencies"] });
 
   const toggleStatus = async (c: Currency) => {
     const newStatus = c.status === "active" ? "inactive" : "active";
     const { error } = await supabase.from("currencies").update({ status: newStatus }).eq("id", c.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: newStatus === "active" ? t("admin.active") : t("admin.inactive") }); fetchCurrencies(); }
+    else { toast({ title: newStatus === "active" ? t("admin.active") : t("admin.inactive") }); refetch(); }
   };
 
   const openEdit = (c: Currency) => {
@@ -70,7 +74,7 @@ const AdminCurrenciesPage = () => {
     if (!selected) return;
     const { error } = await supabase.from("currencies").update({ name: editName, code: editCode, symbol: editSymbol }).eq("id", selected.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("admin.currencyUpdated") }); setEditDialog(false); fetchCurrencies(); }
+    else { toast({ title: t("admin.currencyUpdated") }); setEditDialog(false); refetch(); }
   };
 
   const openOrder = (c: Currency) => { setSelected(c); setEditOrder(String(c.sort_order)); setOrderDialog(true); };
@@ -79,14 +83,14 @@ const AdminCurrenciesPage = () => {
     if (!selected) return;
     const { error } = await supabase.from("currencies").update({ sort_order: Number(editOrder) }).eq("id", selected.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("admin.orderUpdated") }); setOrderDialog(false); fetchCurrencies(); }
+    else { toast({ title: t("admin.orderUpdated") }); setOrderDialog(false); refetch(); }
   };
 
   const addCurrency = async () => {
     const maxOrder = currencies.length > 0 ? Math.max(...currencies.map(c => c.sort_order)) : 0;
     const { error } = await supabase.from("currencies").insert({ name: newName, code: newCode.toUpperCase(), symbol: newSymbol, sort_order: maxOrder + 1 });
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("admin.currencyAdded") }); setAddDialog(false); setNewName(""); setNewCode(""); setNewSymbol(""); fetchCurrencies(); }
+    else { toast({ title: t("admin.currencyAdded") }); setAddDialog(false); setNewName(""); setNewCode(""); setNewSymbol(""); refetch(); }
   };
 
   return (
@@ -144,7 +148,6 @@ const AdminCurrenciesPage = () => {
         </div>
       </div>
 
-      {/* Edit Dialog */}
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>{t("admin.editCurrency")}</DialogTitle></DialogHeader>
@@ -160,7 +163,6 @@ const AdminCurrenciesPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Order Dialog */}
       <Dialog open={orderDialog} onOpenChange={setOrderDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>{t("admin.editOrder")}</DialogTitle></DialogHeader>
@@ -172,7 +174,6 @@ const AdminCurrenciesPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add Dialog */}
       <Dialog open={addDialog} onOpenChange={setAddDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>{t("admin.addCurrency")}</DialogTitle></DialogHeader>

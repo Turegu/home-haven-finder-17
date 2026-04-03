@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -11,7 +12,7 @@ import {
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Plus, Search, Pencil, Trash2, Power, ArrowUpDown } from "lucide-react";
+import { MoreVertical, Plus, Search, Pencil, Trash2, Power } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 
@@ -24,27 +25,23 @@ interface Faq {
 }
 
 const AdminFaqsPage = () => {
-  const [faqs, setFaqs] = useState<Faq[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const { toast } = useToast();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const fetchFaqs = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("faqs")
-      .select("*")
-      .order("sort_order", { ascending: true });
+  const { data: faqs = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "faqs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("faqs")
+        .select("*")
+        .order("sort_order", { ascending: true });
 
-    if (error) {
-      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-      setLoading(false);
-      return;
-    }
+      if (error) throw error;
+      if (!data || data.length === 0) return [];
 
-    if (data && data.length > 0) {
       const { data: translations } = await supabase
         .from("faq_translations")
         .select("faq_id, question")
@@ -52,35 +49,33 @@ const AdminFaqsPage = () => {
         .in("faq_id", data.map(f => f.id));
 
       const qMap: Record<string, string> = {};
-      if (translations) (translations as any[]).forEach((t: any) => { qMap[t.faq_id] = t.question; });
+      if (translations) translations.forEach((tr) => { qMap[tr.faq_id] = tr.question; });
 
-      setFaqs(data.map(f => ({ ...f, question: qMap[f.id] || "(No English question)" })));
-    } else {
-      setFaqs([]);
-    }
-    setLoading(false);
-  };
+      return data.map(f => ({ ...f, question: qMap[f.id] || "(No English question)" })) as Faq[];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchFaqs(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "faqs"] });
 
   const toggleStatus = async (faq: Faq) => {
     const newStatus = faq.status === "active" ? "inactive" : "active";
     const { error } = await supabase.from("faqs").update({ status: newStatus }).eq("id", faq.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: newStatus === "active" ? t("admin.faqActivated") : t("admin.faqDeactivated") }); fetchFaqs(); }
+    else { toast({ title: newStatus === "active" ? t("admin.faqActivated") : t("admin.faqDeactivated") }); refetch(); }
   };
 
   const deleteFaq = async (faq: Faq) => {
     if (!confirm(t("admin.deleteFaqConfirm"))) return;
     const { error } = await supabase.from("faqs").delete().eq("id", faq.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("admin.faqDeleted") }); fetchFaqs(); }
+    else { toast({ title: t("admin.faqDeleted") }); refetch(); }
   };
 
   const updateOrder = async (faq: Faq, newOrder: number) => {
     const { error } = await supabase.from("faqs").update({ sort_order: newOrder }).eq("id", faq.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else fetchFaqs();
+    else refetch();
   };
 
   const filtered = faqs.filter(f =>

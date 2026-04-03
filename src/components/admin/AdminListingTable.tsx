@@ -38,6 +38,7 @@ export interface ListingItem {
   project_status?: string;
   project_type?: string;
   event_type?: string;
+  [key: string]: unknown;
 }
 
 interface AdminListingTableProps {

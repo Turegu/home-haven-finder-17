@@ -77,11 +77,11 @@ const AdminFeaturedManagementPage = () => {
 
     if (settingsRes.data) {
       const map: Record<string, string> = {};
-      (settingsRes.data as any[]).forEach((d: any) => { map[d.setting_key] = d.setting_value; });
+      settingsRes.data.forEach((d) => { map[d.setting_key] = d.setting_value; });
 
       setSettings(prev =>
         prev.map(s => {
-          const found = (settingsRes.data as any[]).find((d: any) => d.setting_key === s.key);
+          const found = settingsRes.data.find((d) => d.setting_key === s.key);
           return found ? { ...s, value: found.setting_value } : s;
         })
       );

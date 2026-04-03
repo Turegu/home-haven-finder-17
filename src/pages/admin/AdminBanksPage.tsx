@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -45,8 +46,7 @@ const emptyForm = {
 
 const AdminBanksPage = () => {
   const { t } = useTranslation();
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Bank | null>(null);
@@ -56,17 +56,19 @@ const AdminBanksPage = () => {
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const fetchBanks = async () => {
-    setLoading(true);
-    const { data } = await supabase
-      .from("banks")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setBanks((data as Bank[]) || []);
-    setLoading(false);
-  };
+  const { data: banks = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "banks"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("banks")
+        .select("*")
+        .order("created_at", { ascending: false });
+      return (data as Bank[]) || [];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchBanks(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "banks"] });
 
   const openCreate = () => {
     setEditing(null);
@@ -154,14 +156,14 @@ const AdminBanksPage = () => {
 
     setSaving(false);
     setDialogOpen(false);
-    fetchBanks();
+    refetch();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("admin.deleteThisBank"))) return;
     await supabase.from("banks").delete().eq("id", id);
     toast.success(t("admin.bankDeleted"));
-    fetchBanks();
+    refetch();
   };
 
   const filtered = banks.filter(

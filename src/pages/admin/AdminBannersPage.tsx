@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -14,7 +15,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, Pencil, Search, ImageIcon, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Pencil, Search, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useTestMode, getTestAwareEndDate, getTestAwareDurationLabel } from "@/hooks/useTestMode";
@@ -74,8 +75,7 @@ const emptyForm = {
 const AdminBannersPage = () => {
   const { isTestMode } = useTestMode();
   const { t } = useTranslation();
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Banner | null>(null);
@@ -85,17 +85,19 @@ const AdminBannersPage = () => {
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const fetchBanners = async () => {
-    setLoading(true);
-    const { data } = await supabase
-      .from("banners")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setBanners((data as Banner[]) || []);
-    setLoading(false);
-  };
+  const { data: banners = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "banners"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("banners")
+        .select("*")
+        .order("created_at", { ascending: false });
+      return (data as Banner[]) || [];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchBanners(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "banners"] });
 
   const openCreate = () => {
     setEditing(null);
@@ -187,14 +189,14 @@ const AdminBannersPage = () => {
 
     setSaving(false);
     setDialogOpen(false);
-    fetchBanners();
+    refetch();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("admin.deleteThisBanner"))) return;
     await supabase.from("banners").delete().eq("id", id);
     toast.success(t("admin.bannerDeleted"));
-    fetchBanners();
+    refetch();
   };
 
   const filtered = banners.filter(

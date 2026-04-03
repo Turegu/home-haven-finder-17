@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,12 +27,10 @@ interface Language {
 }
 
 const AdminLanguagesPage = () => {
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const { t } = useTranslation();
 
-  // Dialog states
   const [editDialog, setEditDialog] = useState(false);
   const [orderDialog, setOrderDialog] = useState(false);
   const [addDialog, setAddDialog] = useState(false);
@@ -42,87 +41,65 @@ const AdminLanguagesPage = () => {
   const [newName, setNewName] = useState("");
   const [newCode, setNewCode] = useState("");
 
-  const fetchLanguages = async () => {
-    const { data, error } = await supabase
-      .from("languages")
-      .select("*")
-      .order("sort_order", { ascending: true });
-    if (!error && data) setLanguages(data);
-    setLoading(false);
-  };
+  const { data: languages = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "languages"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("languages")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data as Language[];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchLanguages(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "languages"] });
 
   const toggleStatus = async (lang: Language) => {
     const newStatus = lang.status === "active" ? "inactive" : "active";
-    const { error } = await supabase
-      .from("languages")
-      .update({ status: newStatus })
-      .eq("id", lang.id);
+    const { error } = await supabase.from("languages").update({ status: newStatus }).eq("id", lang.id);
     if (error) {
       toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
       toast({ title: newStatus === "active" ? t("admin.languageActivated") : t("admin.languageDeactivated") });
-      fetchLanguages();
+      refetch();
     }
   };
 
   const openEdit = (lang: Language) => {
-    setSelected(lang);
-    setEditName(lang.name);
-    setEditCode(lang.code);
-    setEditDialog(true);
+    setSelected(lang); setEditName(lang.name); setEditCode(lang.code); setEditDialog(true);
   };
 
   const saveEdit = async () => {
     if (!selected) return;
-    const { error } = await supabase
-      .from("languages")
-      .update({ name: editName, code: editCode })
-      .eq("id", selected.id);
+    const { error } = await supabase.from("languages").update({ name: editName, code: editCode }).eq("id", selected.id);
     if (error) {
       toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("admin.languageUpdated") });
-      setEditDialog(false);
-      fetchLanguages();
+      toast({ title: t("admin.languageUpdated") }); setEditDialog(false); refetch();
     }
   };
 
-  const openOrder = (lang: Language) => {
-    setSelected(lang);
-    setEditOrder(String(lang.sort_order));
-    setOrderDialog(true);
-  };
+  const openOrder = (lang: Language) => { setSelected(lang); setEditOrder(String(lang.sort_order)); setOrderDialog(true); };
 
   const saveOrder = async () => {
     if (!selected) return;
-    const { error } = await supabase
-      .from("languages")
-      .update({ sort_order: Number(editOrder) })
-      .eq("id", selected.id);
+    const { error } = await supabase.from("languages").update({ sort_order: Number(editOrder) }).eq("id", selected.id);
     if (error) {
       toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("admin.orderUpdated") });
-      setOrderDialog(false);
-      fetchLanguages();
+      toast({ title: t("admin.orderUpdated") }); setOrderDialog(false); refetch();
     }
   };
 
   const addLanguage = async () => {
     const maxOrder = languages.length > 0 ? Math.max(...languages.map(l => l.sort_order)) : 0;
-    const { error } = await supabase
-      .from("languages")
-      .insert({ name: newName, code: newCode.toLowerCase(), sort_order: maxOrder + 1 });
+    const { error } = await supabase.from("languages").insert({ name: newName, code: newCode.toLowerCase(), sort_order: maxOrder + 1 });
     if (error) {
       toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("admin.languageAdded") });
-      setAddDialog(false);
-      setNewName("");
-      setNewCode("");
-      fetchLanguages();
+      toast({ title: t("admin.languageAdded") }); setAddDialog(false); setNewName(""); setNewCode(""); refetch();
     }
   };
 
@@ -149,13 +126,9 @@ const AdminLanguagesPage = () => {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : languages.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">{t("admin.noLanguagesFound")}</TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">{t("admin.noLanguagesFound")}</TableCell></TableRow>
               ) : (
                 languages.map((lang) => (
                   <TableRow key={lang.id}>
@@ -170,21 +143,12 @@ const AdminLanguagesPage = () => {
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4 text-primary" />
-                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4 text-primary" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => openEdit(lang)}>
-                            <Pencil className="h-4 w-4 mr-2" /> {t("admin.edit")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toggleStatus(lang)}>
-                            <Power className="h-4 w-4 mr-2" />
-                            {lang.status === "active" ? t("admin.deactivate") : t("admin.activate")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openOrder(lang)}>
-                            <ArrowUpDown className="h-4 w-4 mr-2" /> {t("admin.editOrder")}
-                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openEdit(lang)}><Pencil className="h-4 w-4 mr-2" /> {t("admin.edit")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toggleStatus(lang)}><Power className="h-4 w-4 mr-2" /> {lang.status === "active" ? t("admin.deactivate") : t("admin.activate")}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openOrder(lang)}><ArrowUpDown className="h-4 w-4 mr-2" /> {t("admin.editOrder")}</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -196,7 +160,6 @@ const AdminLanguagesPage = () => {
         </div>
       </div>
 
-      {/* Edit Dialog */}
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>{t("admin.editLanguage")}</DialogTitle></DialogHeader>
@@ -211,7 +174,6 @@ const AdminLanguagesPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Order Dialog */}
       <Dialog open={orderDialog} onOpenChange={setOrderDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>{t("admin.editOrder")}</DialogTitle></DialogHeader>
@@ -223,7 +185,6 @@ const AdminLanguagesPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add Dialog */}
       <Dialog open={addDialog} onOpenChange={setAddDialog}>
         <DialogContent>
           <DialogHeader><DialogTitle>{t("admin.addLanguage")}</DialogTitle></DialogHeader>

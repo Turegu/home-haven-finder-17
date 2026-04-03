@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { turkishIncludes } from "@/lib/utils";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -26,28 +27,23 @@ interface Blog {
 }
 
 const AdminBlogsPage = () => {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const { toast } = useToast();
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const fetchBlogs = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("blogs")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const { data: blogs = [], isLoading: loading } = useQuery({
+    queryKey: ["admin", "blogs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("blogs")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-      setLoading(false);
-      return;
-    }
+      if (error) throw error;
+      if (!data || data.length === 0) return [];
 
-    if (data && data.length > 0) {
-      // Fetch English titles for display
       const { data: translations } = await supabase
         .from("blog_translations")
         .select("blog_id, title, language_code")
@@ -56,30 +52,28 @@ const AdminBlogsPage = () => {
 
       const titleMap: Record<string, string> = {};
       if (translations) {
-        (translations as any[]).forEach((t: any) => { titleMap[t.blog_id] = t.title; });
+        translations.forEach((tr) => { titleMap[tr.blog_id] = tr.title; });
       }
 
-      setBlogs(data.map(b => ({ ...b, title: titleMap[b.id] || "(No English title)" })));
-    } else {
-      setBlogs([]);
-    }
-    setLoading(false);
-  };
+      return data.map(b => ({ ...b, title: titleMap[b.id] || "(No English title)" })) as Blog[];
+    },
+    staleTime: 30_000,
+  });
 
-  useEffect(() => { fetchBlogs(); }, []);
+  const refetch = () => queryClient.invalidateQueries({ queryKey: ["admin", "blogs"] });
 
   const toggleStatus = async (blog: Blog) => {
     const newStatus = blog.status === "published" ? "draft" : "published";
     const { error } = await supabase.from("blogs").update({ status: newStatus }).eq("id", blog.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: `Blog ${newStatus}` }); fetchBlogs(); }
+    else { toast({ title: `Blog ${newStatus}` }); refetch(); }
   };
 
   const deleteBlog = async (blog: Blog) => {
     if (!confirm(t("admin.deleteBlogConfirm"))) return;
     const { error } = await supabase.from("blogs").delete().eq("id", blog.id);
     if (error) toast({ title: t("admin.error"), description: error.message, variant: "destructive" });
-    else { toast({ title: t("admin.blogDeleted") }); fetchBlogs(); }
+    else { toast({ title: t("admin.blogDeleted") }); refetch(); }
   };
 
   const filtered = blogs.filter(b =>
