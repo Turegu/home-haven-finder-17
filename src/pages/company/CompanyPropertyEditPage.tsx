@@ -401,7 +401,7 @@ const CompanyPropertyEditPage = () => {
       if (isEdit && propertyId) {
         const { data: dbPlans } = await supabase.from("property_payment_plans").select("id").eq("property_id", propertyId);
         const keptIds = paymentPlans.filter(p => !p.id.startsWith("local-")).map(p => p.id);
-        const toDelete = (dbPlans || []).filter((p: any) => !keptIds.includes(p.id));
+        const toDelete = (dbPlans || []).filter((p) => !keptIds.includes(p.id));
         for (const d of toDelete) {
           await supabase.from("property_payment_plan_steps").delete().eq("plan_id", d.id);
           await supabase.from("property_payment_plans").delete().eq("id", d.id);
