@@ -189,14 +189,14 @@ const AdminBannersPage = () => {
 
     setSaving(false);
     setDialogOpen(false);
-    fetchBanners();
+    refetch();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("admin.deleteThisBanner"))) return;
     await supabase.from("banners").delete().eq("id", id);
     toast.success(t("admin.bannerDeleted"));
-    fetchBanners();
+    refetch();
   };
 
   const filtered = banners.filter(
