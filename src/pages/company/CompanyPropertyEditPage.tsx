@@ -110,7 +110,7 @@ const CompanyPropertyEditPage = () => {
   const commercialPropertyTypes = filterOpts["commercial_property_types"] || [];
   const availablePropertyTypes = isCommercial ? commercialPropertyTypes : residentialPropertyTypes;
 
-  const updateField = (field: string, value: any) => {
+  const updateField = (field: keyof typeof form, value: string | string[]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     clearError(field);
   };
