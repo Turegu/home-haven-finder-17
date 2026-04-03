@@ -43,67 +43,55 @@ const AdminCompaniesPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { isTestMode } = useTestMode();
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<SortOption>("newest");
   const [selected, setSelected] = useState<string[]>([]);
   const [membershipFilter, setMembershipFilter] = useState<string[]>([]);
 
-  // Counts
-  const [propertyCounts, setPropertyCounts] = useState<Record<string, number>>({});
-  const [agentCounts, setAgentCounts] = useState<Record<string, number>>({});
-  const [projectCounts, setProjectCounts] = useState<Record<string, number>>({});
-
   // Dialog state
   const [upgradeCompany, setUpgradeCompany] = useState<Company | null>(null);
   const [creditsCompany, setCreditsCompany] = useState<Company | null>(null);
 
-  const fetchCompanies = async () => {
-    setLoading(true);
-    await supabase.rpc("downgrade_expired_memberships");
+  const { data: queryData, isLoading: loading } = useQuery({
+    queryKey: ["admin-companies"],
+    queryFn: async () => {
+      await supabase.rpc("downgrade_expired_memberships");
 
-    const { data, error } = await supabase.from("companies").select("*").order("created_at", { ascending: false });
-    if (error) {
-      toast.error(t("admin.failedToFetchCompanies"));
-    } else {
-      setCompanies(data || []);
-
-      // Fetch counts for all companies
-      const companyIds = (data || []).map(c => c.id);
-      if (companyIds.length > 0) {
-        // Property counts
-        const { data: props } = await supabase
-          .from("properties")
-          .select("company_id")
-          .in("company_id", companyIds);
-        const pCounts: Record<string, number> = {};
-        (props || []).forEach(p => { pCounts[p.company_id!] = (pCounts[p.company_id!] || 0) + 1; });
-        setPropertyCounts(pCounts);
-
-        // Agent counts
-        const { data: agents } = await supabase
-          .from("agents")
-          .select("company_id")
-          .in("company_id", companyIds);
-        const aCounts: Record<string, number> = {};
-        (agents || []).forEach(a => { aCounts[a.company_id] = (aCounts[a.company_id] || 0) + 1; });
-        setAgentCounts(aCounts);
-
-        // Project counts
-        const { data: projects } = await supabase
-          .from("projects")
-          .select("company_id")
-          .in("company_id", companyIds);
-        const prCounts: Record<string, number> = {};
-        (projects || []).forEach(p => { prCounts[p.company_id!] = (prCounts[p.company_id!] || 0) + 1; });
-        setProjectCounts(prCounts);
+      const { data, error } = await supabase.from("companies").select("*").order("created_at", { ascending: false });
+      if (error) {
+        toast.error(t("admin.failedToFetchCompanies"));
+        return { companies: [] as Company[], propertyCounts: {} as Record<string, number>, agentCounts: {} as Record<string, number>, projectCounts: {} as Record<string, number> };
       }
-    }
-    setLoading(false);
-  };
 
-  useEffect(() => { fetchCompanies(); }, []);
+      const companies = data || [];
+      const companyIds = companies.map(c => c.id);
+      let pCounts: Record<string, number> = {};
+      let aCounts: Record<string, number> = {};
+      let prCounts: Record<string, number> = {};
+
+      if (companyIds.length > 0) {
+        const [{ data: props }, { data: agents }, { data: projects }] = await Promise.all([
+          supabase.from("properties").select("company_id").in("company_id", companyIds),
+          supabase.from("agents").select("company_id").in("company_id", companyIds),
+          supabase.from("projects").select("company_id").in("company_id", companyIds),
+        ]);
+        (props || []).forEach(p => { pCounts[p.company_id!] = (pCounts[p.company_id!] || 0) + 1; });
+        (agents || []).forEach(a => { aCounts[a.company_id] = (aCounts[a.company_id] || 0) + 1; });
+        (projects || []).forEach(p => { prCounts[p.company_id!] = (prCounts[p.company_id!] || 0) + 1; });
+      }
+
+      return { companies, propertyCounts: pCounts, agentCounts: aCounts, projectCounts: prCounts };
+    },
+    staleTime: 30_000,
+  });
+
+  const companies = queryData?.companies || [];
+  const propertyCounts = queryData?.propertyCounts || {};
+  const agentCounts = queryData?.agentCounts || {};
+  const projectCounts = queryData?.projectCounts || {};
+
+  const refetchCompanies = () => queryClient.invalidateQueries({ queryKey: ["admin-companies"] });
 
   const toggleMembership = (tier: string) => {
     setMembershipFilter(prev =>
