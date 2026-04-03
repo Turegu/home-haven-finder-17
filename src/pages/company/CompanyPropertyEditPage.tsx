@@ -313,7 +313,7 @@ const CompanyPropertyEditPage = () => {
     }
     setLoading(true);
 
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       title: form.title.trim(),
       title_ar: form.title_ar || null,
       title_fr: form.title_fr || null,
