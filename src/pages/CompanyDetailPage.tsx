@@ -412,7 +412,7 @@ const CompanyDetailPage = () => {
                       <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold ring-2 ring-border">{agent.name.charAt(0)}</div>
                     )}
                     <div>
-                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && (agent as any).name_ar ? (agent as any).name_ar : i18n.language === 'fr' && (agent as any).name_fr ? (agent as any).name_fr : agent.name}</h4>
+                      <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{i18n.language === 'ar' && agent.name_ar ? agent.name_ar : i18n.language === 'fr' && agent.name_fr ? agent.name_fr : agent.name}</h4>
                       <p className="text-sm text-muted-foreground">{getTranslatedLabel(dbDesignations, agent.designation, i18n.language)}</p>
                       {agent.languages && <p className="text-xs text-muted-foreground mt-1">{agent.languages.slice(0, 3).map(l => t(`languageNames.${l}`, l)).join(', ')}</p>}
                     </div>
