@@ -580,7 +580,8 @@ const CompanyProjectEditPage = () => {
       if (!form.title.trim()) { toast.error("Project name is required"); return; }
     }
 
-    const payload: any = {
+    type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
+    const payload: ProjectInsert = {
       title: form.title.trim(), title_ar: form.title_ar || null, title_fr: form.title_fr || null,
       description: form.description || null, description_ar: form.description_ar || null, description_fr: form.description_fr || null,
       tagline: form.tagline || null, developer: form.developer || null,
