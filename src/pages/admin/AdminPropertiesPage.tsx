@@ -64,7 +64,7 @@ const AdminPropertiesPage = () => {
     if (key === "property_type") {
       return (item.property_type || "—").charAt(0).toUpperCase() + (item.property_type || "").slice(1);
     }
-    return item[key] ?? "—";
+    return (item[key] as React.ReactNode) ?? "—";
   };
 
   return (

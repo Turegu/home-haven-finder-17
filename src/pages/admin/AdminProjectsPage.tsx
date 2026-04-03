@@ -60,7 +60,7 @@ const AdminProjectsPage = () => {
     if (key === "project_type") {
       return (item.project_type || "—").charAt(0).toUpperCase() + (item.project_type || "").slice(1);
     }
-    return item[key] ?? "—";
+    return (item[key] as React.ReactNode) ?? "—";
   };
 
   return (
