@@ -157,7 +157,7 @@ const CompanyPropertyEditPage = () => {
 
       // Derive contract_type from purpose + classification
       const purpose = data.property_purpose || "buy";
-      const classification = (data as any).property_classification || "residential";
+      const classification = data.property_classification || "residential";
       let contractType = "residential_sale";
       if (classification === "commercial" && purpose === "rent") contractType = "commercial_rent";
       else if (classification === "commercial") contractType = "commercial_sale";
@@ -165,45 +165,45 @@ const CompanyPropertyEditPage = () => {
 
       setForm({
         title: data.title || "",
-        title_ar: (data as any).title_ar || "",
-        title_fr: (data as any).title_fr || "",
+        title_ar: data.title_ar || "",
+        title_fr: data.title_fr || "",
         description: data.description || "",
-        description_ar: (data as any).description_ar || "",
-        description_fr: (data as any).description_fr || "",
+        description_ar: data.description_ar || "",
+        description_fr: data.description_fr || "",
         contract_type: contractType,
         property_purpose: purpose,
         property_classification: classification,
-        rent_duration: (data as any).rent_duration || "",
+        rent_duration: data.rent_duration || "",
         property_type: data.property_type || "Apartment",
         price: data.price?.toString() || "",
         area: data.area?.toString() || "",
         area_unit: data.area_unit || "m²",
         currency: data.currency || "USD",
-        rooms: (data as any).rooms || "",
+        rooms: data.rooms || "",
         bedrooms: data.bedrooms?.toString() || "",
         bathrooms: data.bathrooms?.toString() || "",
-        floor_level: (data as any).floor_level || "",
-        furniture: (data as any).furniture || "",
-        parking_spaces: (data as any).parking_spaces?.toString() || "0",
-        property_age: (data as any).property_age || "",
-        property_orientation: (data as any).property_orientation || "",
-        title_deed: (data as any).title_deed || "",
+        floor_level: data.floor_level || "",
+        furniture: data.furniture || "",
+        parking_spaces: data.parking_spaces?.toString() || "0",
+        property_age: data.property_age || "",
+        property_orientation: data.property_orientation || "",
+        title_deed: data.title_deed || "",
         property_status: data.property_status || "new",
-        interior_amenities: (data as any).interior_amenities || [],
-        exterior_amenities: (data as any).exterior_amenities || [],
-        advertising_tags: (data as any).advertising_tags || [],
-        province: (data as any).province || "",
-        town: (data as any).town || "",
-        neighbourhood: (data as any).neighbourhood || "",
-        pin_location: (data as any).pin_location || "",
+        interior_amenities: data.interior_amenities || [],
+        exterior_amenities: data.exterior_amenities || [],
+        advertising_tags: data.advertising_tags || [],
+        province: data.province || "",
+        town: data.town || "",
+        neighbourhood: data.neighbourhood || "",
+        pin_location: data.pin_location || "",
         location: data.location || "",
-        video_link: (data as any).video_link || "",
-        view_360_link: (data as any).view_360_link || "",
-        open_house_start: (data as any).open_house_start || "",
-        open_house_end: (data as any).open_house_end || "",
+        video_link: data.video_link || "",
+        view_360_link: data.view_360_link || "",
+        open_house_start: data.open_house_start || "",
+        open_house_end: data.open_house_end || "",
       });
       setImages(data.images || []);
-      setPlanFiles((data as any).plans || []);
+      setPlanFiles(data.plans || []);
 
       // Load payment plans
       const { data: plansData } = await supabase
