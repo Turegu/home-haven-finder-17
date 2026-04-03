@@ -299,33 +299,33 @@ const CompanyProjectEditPage = () => {
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error(t("companyDashboard.projectNotFound")); return; }
       setForm({
-        title: data.title || "", title_ar: (data as any).title_ar || "", title_fr: (data as any).title_fr || "",
-        tagline: (data as any).tagline || "",
-        description: data.description || "", description_ar: (data as any).description_ar || "", description_fr: (data as any).description_fr || "",
+        title: data.title || "", title_ar: data.title_ar || "", title_fr: data.title_fr || "",
+        tagline: data.tagline || "",
+        description: data.description || "", description_ar: data.description_ar || "", description_fr: data.description_fr || "",
         developer: data.developer || "",
         project_type: data.project_type || "residential",
         min_price: data.min_price?.toString() || "", max_price: data.max_price?.toString() || "",
         currency: data.currency || "USD",
         min_units: data.min_units?.toString() || "", max_units: data.max_units?.toString() || "",
-        min_area: (data as any).min_area?.toString() || "", max_area: (data as any).max_area?.toString() || "",
-        area_unit: (data as any).area_unit || "m²",
+        min_area: data.min_area?.toString() || "", max_area: data.max_area?.toString() || "",
+        area_unit: data.area_unit || "m²",
         project_status: data.project_status || "new",
-        interior_amenities: (data as any).interior_amenities || [],
-        exterior_amenities: (data as any).exterior_amenities || [],
-        advertising_tags: (data as any).advertising_tags || [],
-        property_classification: (data as any).property_classification || "",
-        province: (data as any).province || "", town: (data as any).town || "",
-        neighbourhood: (data as any).neighbourhood || "", pin_location: (data as any).pin_location || "",
+        interior_amenities: data.interior_amenities || [],
+        exterior_amenities: data.exterior_amenities || [],
+        advertising_tags: data.advertising_tags || [],
+        property_classification: data.property_classification || "",
+        province: data.province || "", town: data.town || "",
+        neighbourhood: data.neighbourhood || "", pin_location: data.pin_location || "",
         location: data.location || "",
-        video_link: (data as any).video_link || "", view_360_link: (data as any).view_360_link || "",
+        video_link: data.video_link || "", view_360_link: data.view_360_link || "",
       });
       setImages(data.images || []);
-      setPlanFiles((data as any).plans || []);
-      setLogoUrl((data as any).logo_url || "");
-      const devLogo = (data as any).developer_logo_url || "";
+      setPlanFiles(data.plans || []);
+      setLogoUrl(data.logo_url || "");
+      const devLogo = data.developer_logo_url || "";
       setDeveloperLogoUrl(devLogo);
       setIsDifferentDeveloper(!!devLogo);
-      setPdfUrl((data as any).pdf_catalogue_url || "");
+      setPdfUrl(data.pdf_catalogue_url || "");
       // Fetch units for existing project
       fetchUnits(id as string);
     };
