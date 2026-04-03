@@ -129,26 +129,26 @@ const AdminCrudsPage = () => {
 
     if (standaloneTab) {
       if (editItem) {
-        const { error } = await supabase.from(standaloneTab.table).update(payload).eq("id", editItem.id);
+        const { error } = await supabase.from(standaloneTab.table).update({ title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never> }).eq("id", editItem.id);
         if (error) toast.error(error.message);
         else { toast.success(t("admin.update")); setDialogOpen(false); invalidateItems(); }
       } else {
-        payload.sort_order = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
-        const { error } = await supabase.from(standaloneTab.table).insert(payload);
+        const sortOrder = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
+        const { error } = await supabase.from(standaloneTab.table).insert({ title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never>, sort_order: sortOrder });
         if (error) toast.error(error.message);
         else { toast.success(t("admin.create")); setDialogOpen(false); invalidateItems(); }
       }
     } else if (filterCategory) {
-      payload.category_id = filterCategory.id;
       if (editItem) {
-        const { error } = await supabase.from("filter_options").update(payload).eq("id", editItem.id);
+        const { error } = await supabase.from("filter_options").update({ title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never> }).eq("id", editItem.id);
         if (error) toast.error(error.message);
         else { toast.success(t("admin.update")); setDialogOpen(false); invalidateItems(); }
       } else {
-        payload.sort_order = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
-        const { error } = await supabase.from("filter_options").insert(payload);
+        const sortOrder = items.length > 0 ? Math.max(...items.map(i => i.sort_order || 0)) + 1 : 1;
+        const { error } = await supabase.from("filter_options").insert({ category_id: filterCategory.id, title: formTitle.trim(), status: formStatus, translations: formTranslations as unknown as Record<string, never>, sort_order: sortOrder });
         if (error) toast.error(error.message);
         else { toast.success(t("admin.create")); setDialogOpen(false); invalidateItems(); }
+      }
       }
     }
     setSaving(false);
