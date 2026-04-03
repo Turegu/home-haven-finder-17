@@ -41,7 +41,7 @@ const AdminReportsPage = () => {
         return [];
       }
 
-      const rows = (data as any[]) || [];
+      const rows = (data || []);
       const propertyIds = [...new Set(rows.map((r: any) => r.property_id))];
       const { data: properties } = await supabase
         .from("properties")
