@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { Database } from "@/integrations/supabase/types";
 import SEOHead from '@/components/SEOHead';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
