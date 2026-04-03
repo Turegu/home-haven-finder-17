@@ -314,7 +314,8 @@ const CompanyPropertyEditPage = () => {
     }
     setLoading(true);
 
-    const payload: Record<string, unknown> = {
+    type PropertyInsert = Database["public"]["Tables"]["properties"]["Insert"];
+    const payload: PropertyInsert = {
       title: form.title.trim(),
       title_ar: form.title_ar || null,
       title_fr: form.title_fr || null,
