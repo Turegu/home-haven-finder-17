@@ -50,7 +50,7 @@ const AdminReportsPage = () => {
 
       const propMap = new Map((properties || []).map((p) => [p.id, p]));
 
-      return rows.map((r: any) => ({
+      return rows.map((r) => ({
         ...r,
         property_title: propMap.get(r.property_id)?.title || "Unknown",
         property_listing_id: propMap.get(r.property_id)?.listing_id || "",
