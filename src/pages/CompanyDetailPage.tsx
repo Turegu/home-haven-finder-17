@@ -499,7 +499,7 @@ const CompanyPropertiesTab = ({ companyId }: { companyId: string }) => {
                 areaUnit: p.area_unit ?? 'm²',
                 bedrooms: p.bedrooms ?? 0,
                 bathrooms: p.bathrooms ?? 0,
-                images: p.images?.length > 0 ? p.images : ['/placeholder.svg'],
+                images: (p.images && p.images.length > 0) ? p.images : ['/placeholder.svg'],
                 agentLogo: p.companies?.logo_url ?? '',
                 agentName: p.agents?.name ?? '',
                 agentAvatar: p.agents?.avatar_url ?? '',
