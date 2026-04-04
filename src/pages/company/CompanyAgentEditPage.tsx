@@ -240,7 +240,7 @@ const CompanyAgentEditPage = () => {
     setFieldErrors({});
     setLoading(true);
 
-    const payload: any = {
+    const payload = {
       name: form.name.trim(),
       name_ar: form.name_ar || null,
       name_fr: form.name_fr || null,
