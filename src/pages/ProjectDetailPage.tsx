@@ -44,6 +44,11 @@ const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   useTrackPageView(id, 'project');
+  const [currentImage, setCurrentImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('photos');
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+
   const { data: fetchedData, isLoading: loading } = useQuery({
     queryKey: ['project-detail', id],
     queryFn: async () => {
