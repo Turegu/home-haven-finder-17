@@ -1,23 +1,29 @@
 import SEOHead from '@/components/SEOHead';
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 
 const TermsPage = () => {
   const { t } = useTranslation();
-  const [html, setHtml] = useState("");
 
-  useEffect(() => {
-    const fetch = async () => {
+  const { data: html = "" } = useQuery({
+    queryKey: ['cms-page', 'terms'],
+    queryFn: async () => {
       const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "terms").limit(1);
-      if (data?.[0]) setHtml(((data[0] as any).content?.content?.html) || "");
-    };
-    fetch();
-  }, []);
+      if (data?.[0]) {
+        const content = data[0].content as Record<string, Json>;
+        const inner = content?.content as Record<string, Json> | undefined;
+        return (inner?.html as string) || "";
+      }
+      return "";
+    },
+    staleTime: 5 * 60_000,
+  });
 
   return (
     <div className="min-h-screen bg-background">

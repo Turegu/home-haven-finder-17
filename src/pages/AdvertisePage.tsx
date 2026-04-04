@@ -100,7 +100,8 @@ const AdvertisePage = () => {
       setForm({ company_name: "", first_name: "", last_name: "", email: "", phone: "", message: "" });
       setAgreed(false);
       setTurnstileToken(null);
-      if ((window as any).turnstile) (window as any).turnstile.reset();
+      const win = window as Window & { turnstile?: { reset: () => void } };
+      if (win.turnstile) win.turnstile.reset();
     }
   };
 

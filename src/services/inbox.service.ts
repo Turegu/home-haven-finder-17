@@ -30,7 +30,7 @@ export const inboxService = {
     property_id?: string | null;
     project_id?: string | null;
   }) {
-    return (supabase as any).rpc('submit_company_inbox_message', {
+    return supabase.rpc('submit_company_inbox_message', {
       p_company_id: params.company_id,
       p_full_name: params.full_name,
       p_email: params.email,

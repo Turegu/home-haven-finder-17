@@ -148,7 +148,7 @@ const AgentPropertiesPage = () => {
             <SelectItem value="draft">{t("agentDashboard.draft")}</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
+        <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as typeof sortOrder)}>
           <SelectTrigger className="w-[190px] bg-secondary/50"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="newest">Newest First</SelectItem>

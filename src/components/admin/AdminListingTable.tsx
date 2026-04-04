@@ -301,7 +301,7 @@ const AdminListingTable = ({
           </Select>
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-foreground">Sort</span>
-            <Select value={sortOrder} onValueChange={(v) => { setSortOrder(v as any); setPage(1); }}>
+            <Select value={sortOrder} onValueChange={(v) => { setSortOrder(v as typeof sortOrder); setPage(1); }}>
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
