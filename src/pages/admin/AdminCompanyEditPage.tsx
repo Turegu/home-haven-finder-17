@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import LanguageContentTabs from "@/components/LanguageContentTabs";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
