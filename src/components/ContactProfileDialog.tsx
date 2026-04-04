@@ -127,19 +127,7 @@ const ContactProfileDialog = ({ open, onOpenChange, recipientName, recipientLogo
       toast.success('Message sent successfully');
       setSent(true);
 
-      // Send email notification (fire-and-forget)
-      void supabase.functions.invoke('send-inquiry-notification', {
-        body: {
-          sender_name: fullName.trim(),
-          sender_email: email.trim(),
-          sender_phone: phone.trim() || undefined,
-          preferred_contact: preferredContact,
-          message: `[${topic.trim()}]\n\n${message.trim()}`,
-          agent_id: agentId || undefined,
-          company_id: inboxCompanyId,
-          listing_type: 'profile',
-        },
-      }).catch(console.error);
+      // Email notification is now handled by inboxService.submitMessage()
     } catch (err) {
       console.error('ContactProfileDialog send error:', err);
       toast.error('Something went wrong. Please try again.');
