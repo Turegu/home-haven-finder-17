@@ -243,6 +243,7 @@ const Index = () => {
       )}
 
       {/* Featured Properties */}
+      {!propertiesError && (
       <section className="container mx-auto px-4 py-14">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -253,6 +254,28 @@ const Index = () => {
             {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
           </Link>
         </div>
+        {propertiesLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl border border-border overflow-hidden bg-card">
+                <div className="aspect-[4/3] w-full bg-muted animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-6 w-24 bg-muted animate-pulse rounded" />
+                    <div className="h-7 w-14 bg-muted animate-pulse rounded" />
+                  </div>
+                  <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
+                  <div className="h-3.5 w-1/2 bg-muted animate-pulse rounded" />
+                  <div className="flex items-center gap-3 pt-3 border-t border-border">
+                    <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-10 bg-muted animate-pulse rounded" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProperties.map((property) => (
             <Link key={property.id} to={`/property/${property.id}`}>
@@ -260,7 +283,9 @@ const Index = () => {
             </Link>
           ))}
         </div>
+        )}
       </section>
+      )}
 
       {/* Top Agents — before Featured Locations */}
       <TopAgentsSpotlight />
