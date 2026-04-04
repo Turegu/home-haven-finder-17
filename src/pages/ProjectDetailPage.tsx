@@ -26,12 +26,24 @@ import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import SEOHead from '@/components/SEOHead';
 
+interface ProjectDetail {
+  id: string; title: string; tagline: string; priceFrom: number; currency: string;
+  location: string; city: string; province: string; town: string; neighbourhood: string;
+  projectType: string; units: number; developer: string; areaRange: string;
+  status: string; completionDate: string; listingId: string; listingDate: string;
+  logoUrl: string | null; images: string[]; description: string;
+  interiorAmenities: string[]; exteriorAmenities: string[];
+  plans: string[]; videoLink: string; view360Link: string; pinLocation: string | null;
+  agentName: string; agentLogo: string; agentDesignation: string | null;
+  agentLanguages: string[]; agentCompany: string; companyLogo: string | null; hasAgent: boolean;
+}
+
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   useTrackPageView(id, 'project');
-  const [project, setProject] = useState<Record<string, unknown> | null>(null);
+  const [project, setProject] = useState<ProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
