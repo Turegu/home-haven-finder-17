@@ -85,61 +85,8 @@ const CompanyFollowersPage = () => {
   const followers = followersData?.followers ?? [];
   const events = followersData?.events ?? [];
 
-  const fetchFollowers = async (cId: string) => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("company_followers")
-      .select("id, user_id, created_at")
-      .eq("company_id", cId)
-      .order("created_at", { ascending: false });
 
-    if (error) {
-      toast.error("Failed to load followers");
-      setLoading(false);
-      return;
-    }
 
-    if (!data || data.length === 0) {
-      setFollowers([]);
-      setLoading(false);
-      return;
-    }
-
-    // Fetch profiles for all follower user_ids
-    const userIds = data.map((f) => f.user_id);
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, display_name, phone, show_phone")
-      .in("user_id", userIds);
-
-    const profileMap = new Map(
-      (profiles || []).map((p) => [p.user_id, p])
-    );
-
-    // Fetch emails via security definer function
-    const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
-    const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
-
-    const enriched: Follower[] = data.map((f) => ({
-      ...f,
-      profile: profileMap.get(f.user_id) || undefined,
-      email: emailMap.get(f.user_id) || undefined,
-    }));
-
-    setFollowers(enriched);
-    setLoading(false);
-  };
-
-  const fetchEvents = async (cId: string) => {
-    const { data } = await supabase
-      .from("events")
-      .select("id, title")
-      .eq("company_id", cId)
-      .eq("status", "active")
-      .order("event_date", { ascending: false })
-      .limit(50);
-    setEvents(data || []);
-  };
 
   const handleSendAnnouncement = async () => {
     if (!companyId || !announcementTitle.trim() || !announcementMessage.trim()) {
