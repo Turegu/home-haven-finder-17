@@ -35,6 +35,7 @@ interface Follower {
 }
 
 const CompanyFollowersPage = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [announcementOpen, setAnnouncementOpen] = useState(false);
