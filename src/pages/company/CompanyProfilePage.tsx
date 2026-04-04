@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
