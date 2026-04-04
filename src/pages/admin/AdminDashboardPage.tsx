@@ -4,7 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
 
 const AdminDashboardPage = () => {
-  const { data: stats = { totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0 } } = useQuery({
+  const { data: stats = { totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0 }, isLoading, isError } = useQuery({
     queryKey: ["admin-dashboard-stats"],
     queryFn: async () => {
       const { data: companies } = await supabase.from("companies").select("membership");
