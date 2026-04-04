@@ -91,7 +91,7 @@ const CompanyProjectUnitsPage = () => {
     setLoading(false);
   };
 
-  useQuery({
+  const { isLoading: queryLoading, isError: queryError } = useQuery({
     queryKey: ['company', 'project-units', projectId],
     queryFn: async () => {
       await fetchUnits();
