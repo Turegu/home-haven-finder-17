@@ -12,7 +12,7 @@ export const inboxService = {
   async markSeen(id: string) {
     await supabase.from('company_inbox').update({ is_seen: true }).eq('id', id);
     return supabase.from('company_inbox')
-      .update({ responded_at: new Date().toISOString() } as any)
+      .update({ responded_at: new Date().toISOString() })
       .eq('id', id)
       .is('responded_at', null);
   },
