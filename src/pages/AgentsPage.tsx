@@ -188,7 +188,7 @@ const AgentsPage = () => {
   });
 
   // Agents list with counts
-  const { data: agentsData } = useQuery({
+  const { data: agentsData, isLoading: agentsLoading, isError: agentsError } = useQuery({
     queryKey: ['agents', 'list'],
     queryFn: async () => {
       const [compRes, agentRes] = await Promise.all([
