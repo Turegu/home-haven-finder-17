@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import CompanyLayout from "@/components/company/CompanyLayout";
 import { Progress } from "@/components/ui/progress";
@@ -34,68 +35,62 @@ const MONTHS = [
 
 const CompanyCreditHistoryPage = () => {
   const { t } = useTranslation();
-  const [transactions, setTransactions] = useState<CreditTransaction[]>([]);
-  const [balance, setBalance] = useState(0);
-  const [totalTopups, setTotalTopups] = useState(0);
-  const [totalSpent, setTotalSpent] = useState(0);
-  const [thisMonthSpent, setThisMonthSpent] = useState(0);
-  const [thisYearSpent, setThisYearSpent] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [filterMonth, setFilterMonth] = useState<string>("all");
   const [filterYear, setFilterYear] = useState<string>("all");
   const { openSalesWhatsApp } = useSalesContact();
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { setLoading(false); return; }
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ["company-credit-history"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data: company } = await supabase
+        .from("companies")
+        .select("id, credit_balance")
+        .eq("owner_user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      if (!company) return null;
 
-        const { data: company } = await supabase
-          .from("companies")
-          .select("id, credit_balance")
-          .eq("owner_user_id", user.id)
-          .limit(1)
-          .maybeSingle();
-        if (!company) { setLoading(false); return; }
+      const { data: txData } = await supabase
+        .from("credit_transactions")
+        .select("id, amount, transaction_type, description, listing_type, created_at")
+        .eq("company_id", company.id)
+        .order("created_at", { ascending: false })
+        .limit(500);
 
-        setBalance(company.credit_balance || 0);
-
-        const { data: txData } = await supabase
-          .from("credit_transactions")
-          .select("id, amount, transaction_type, description, listing_type, created_at")
-          .eq("company_id", company.id)
-          .order("created_at", { ascending: false })
-          .limit(500);
-
-        const txs = (txData || []) as CreditTransaction[];
-        setTransactions(txs);
-
-        const now = new Date();
-        const mStart = startOfMonth(now).toISOString();
-        const yStart = startOfYear(now).toISOString();
-        let topups = 0, spent = 0, mSpent = 0, ySpent = 0;
-        for (const tx of txs) {
-          if (tx.amount > 0) { topups += tx.amount; }
-          else {
-            const s = Math.abs(tx.amount);
-            spent += s;
-            if (tx.created_at >= mStart) mSpent += s;
-            if (tx.created_at >= yStart) ySpent += s;
-          }
+      const txs = (txData || []) as CreditTransaction[];
+      const now = new Date();
+      const mStart = startOfMonth(now).toISOString();
+      const yStart = startOfYear(now).toISOString();
+      let topups = 0, spent = 0, mSpent = 0, ySpent = 0;
+      for (const tx of txs) {
+        if (tx.amount > 0) { topups += tx.amount; }
+        else {
+          const s = Math.abs(tx.amount);
+          spent += s;
+          if (tx.created_at >= mStart) mSpent += s;
+          if (tx.created_at >= yStart) ySpent += s;
         }
-        setTotalTopups(topups);
-        setTotalSpent(spent);
-        setThisMonthSpent(mSpent);
-        setThisYearSpent(ySpent);
-      } catch (err) {
-        console.error("Failed to load credit history:", err);
-      } finally {
-        setLoading(false);
       }
-    };
-    load();
-  }, []);
+      return {
+        transactions: txs,
+        balance: company.credit_balance || 0,
+        totalTopups: topups,
+        totalSpent: spent,
+        thisMonthSpent: mSpent,
+        thisYearSpent: ySpent,
+      };
+    },
+    staleTime: 60_000,
+  });
+
+  const transactions = data?.transactions ?? [];
+  const balance = data?.balance ?? 0;
+  const totalTopups = data?.totalTopups ?? 0;
+  const totalSpent = data?.totalSpent ?? 0;
+  const thisMonthSpent = data?.thisMonthSpent ?? 0;
+  const thisYearSpent = data?.thisYearSpent ?? 0;
 
   const availableYears = useMemo(() => {
     const years = new Set<number>();

@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
@@ -35,73 +36,52 @@ const EventDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [event, setEvent] = useState<EventDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [realAgentId, setRealAgentId] = useState<string | null>(null);
-  const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
-  const [contactPhone, setContactPhone] = useState<string | null>(null);
-  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchEvent = async () => {
-      setLoading(true);
+  const { data: fetchedData, isLoading: loading } = useQuery({
+    queryKey: ['event-detail', id],
+    queryFn: async () => {
       const { data } = await supabase
         .from('events')
         .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
-        .eq('id', id)
+        .eq('id', id!)
         .maybeSingle();
-      if (data) {
-        const e = data;
-        setEvent({
-          id: e.id,
-          title: e.title || '',
-          price: e.price || null,
-          currency: e.currency || 'USD',
-          location: e.location || [e.neighbourhood, e.town, e.province].filter(Boolean).join(', ') || '',
-          city: e.province || '',
-          province: e.province || '',
-          town: e.town || '',
-          neighbourhood: e.neighbourhood || '',
-          eventType: e.event_type || '',
-          entryType: e.entry_type || 'open_invitation',
-          date: e.event_date || '',
-          endDate: e.event_end_date || '',
-          organizer: e.organizer || e.companies?.name || '',
-          organizerLogo: e.logo_url || e.companies?.logo_url || '',
-          listingId: e.listing_id || '',
-          listingDate: e.created_at?.slice(0, 10) || '',
-          images: e.images && e.images.length > 0 ? e.images : ['/placeholder.svg'],
-          description: e.description || '',
-          agentName: e.agents?.name || '',
-          agentLogo: e.agents?.avatar_url || '',
-          agentDesignation: e.agents?.designation || null,
-          agentLanguages: e.agents?.languages || [],
-          agentCompany: e.companies?.name || e.agents?.companies?.name || '',
-          companyLogo: e.companies?.logo_url || e.agents?.companies?.logo_url || null,
-          hasAgent: !!e.agents,
-          pdfCatalogueUrl: e.pdf_catalogue_url || null,
-          videoLink: e.video_link || '',
-          pinLocation: e.pin_location || null,
-        });
-        setRealAgentId(e.agents?.id || null);
-        setRealCompanyId(e.companies?.id || e.agents?.companies?.id || null);
-        if (e.agents) {
-          setContactPhone(e.agents.phone || null);
-          setContactWhatsapp(e.agents.whatsapp || null);
-        } else {
-          setContactPhone(e.companies?.phone || null);
-          setContactWhatsapp(e.companies?.whatsapp || null);
-        }
-      }
-      setLoading(false);
-    };
-    fetchEvent();
-  }, [id]);
+      return data;
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
+
+  const event = useMemo(() => {
+    if (!fetchedData) return null;
+    const e = fetchedData;
+    return {
+      id: e.id, title: e.title || '', price: e.price || null, currency: e.currency || 'USD',
+      location: e.location || [e.neighbourhood, e.town, e.province].filter(Boolean).join(', ') || '',
+      city: e.province || '', province: e.province || '', town: e.town || '', neighbourhood: e.neighbourhood || '',
+      eventType: e.event_type || '', entryType: e.entry_type || 'open_invitation',
+      date: e.event_date || '', endDate: e.event_end_date || '',
+      organizer: e.organizer || e.companies?.name || '',
+      organizerLogo: e.logo_url || e.companies?.logo_url || '',
+      listingId: e.listing_id || '', listingDate: e.created_at?.slice(0, 10) || '',
+      images: e.images && e.images.length > 0 ? e.images : ['/placeholder.svg'],
+      description: e.description || '',
+      agentName: e.agents?.name || '', agentLogo: e.agents?.avatar_url || '',
+      agentDesignation: e.agents?.designation || null, agentLanguages: e.agents?.languages || [],
+      agentCompany: e.companies?.name || e.agents?.companies?.name || '',
+      companyLogo: e.companies?.logo_url || e.agents?.companies?.logo_url || null,
+      hasAgent: !!e.agents, pdfCatalogueUrl: e.pdf_catalogue_url || null,
+      videoLink: e.video_link || '', pinLocation: e.pin_location || null,
+    } as EventDetail;
+  }, [fetchedData]);
+
+  const realAgentId = fetchedData?.agents?.id || null;
+  const realCompanyId = fetchedData?.companies?.id || fetchedData?.agents?.companies?.id || null;
+  const contactPhone = fetchedData?.agents ? (fetchedData.agents.phone || null) : (fetchedData?.companies?.phone || null);
+  const contactWhatsapp = fetchedData?.agents ? (fetchedData.agents.whatsapp || null) : (fetchedData?.companies?.whatsapp || null);
 
   const pinLocation = useMemo(() => {
     if (event?.pinLocation) {

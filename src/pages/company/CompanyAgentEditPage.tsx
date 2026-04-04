@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useDesignations, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
@@ -107,8 +108,19 @@ const CompanyAgentEditPage = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
   const isEdit = id && id !== "new";
+  const { data: companyData } = useQuery({
+    queryKey: ["company-id-for-owner"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data: company } = await supabase
+        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
+      return company;
+    },
+    staleTime: 5 * 60_000,
+  });
+  const companyId = companyData?.id ?? null;
   const [loading, setLoading] = useState(false);
-  const [companyId, setCompanyId] = useState<string | null>(null);
   const membershipLimits = useMembershipLimits(companyId);
   const { data: dbDesignations = [] } = useDesignations();
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -132,7 +144,7 @@ const CompanyAgentEditPage = () => {
     registration_number: "",
   });
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: string | string[]) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const toggleLanguage = (lang: string) => {
     setForm((prev) => ({
@@ -143,45 +155,27 @@ const CompanyAgentEditPage = () => {
     }));
   };
 
-  useEffect(() => {
-    const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: company } = await supabase
-        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
-      if (company) setCompanyId(company.id);
-    };
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (!isEdit) return;
-    const fetchAgent = async () => {
+  useQuery({
+    queryKey: ["agent-edit", id],
+    queryFn: async () => {
+      if (!isEdit) return null;
       const { data, error } = await supabase.from("agents").select("*").eq("id", id).maybeSingle();
-      if (error || !data) { toast.error("Agent not found"); return; }
-      const d = data;
+      if (error || !data) { toast.error("Agent not found"); return null; }
       setForm({
-        name: d.name || "",
-        name_ar: d.name_ar || "",
-        name_fr: d.name_fr || "",
-        designation: d.designation || "",
-        designation_ar: d.designation_ar || "",
-        designation_fr: d.designation_fr || "",
-        email: d.email || "",
-        phone: d.phone || "",
-        whatsapp: d.whatsapp || "",
-        description: d.description || "",
-        description_ar: d.description_ar || "",
-        description_fr: d.description_fr || "",
-        service_areas: d.service_areas || [],
-        languages: d.languages || [],
-        registration_number: d.registration_number || "",
+        name: data.name || "", name_ar: data.name_ar || "", name_fr: data.name_fr || "",
+        designation: data.designation || "", designation_ar: data.designation_ar || "", designation_fr: data.designation_fr || "",
+        email: data.email || "", phone: data.phone || "", whatsapp: data.whatsapp || "",
+        description: data.description || "", description_ar: data.description_ar || "", description_fr: data.description_fr || "",
+        service_areas: data.service_areas || [], languages: data.languages || [],
+        registration_number: data.registration_number || "",
       });
-      setAvatarUrl(d.avatar_url || "");
-      setAgentHasUser(!!d.user_id);
-    };
-    fetchAgent();
-  }, [isEdit, id]);
+      setAvatarUrl(data.avatar_url || "");
+      setAgentHasUser(!!data.user_id);
+      return data;
+    },
+    enabled: !!isEdit,
+    staleTime: 60_000,
+  });
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0] || !companyId) return;
@@ -247,7 +241,7 @@ const CompanyAgentEditPage = () => {
     setFieldErrors({});
     setLoading(true);
 
-    const payload: any = {
+    const payload = {
       name: form.name.trim(),
       name_ar: form.name_ar || null,
       name_fr: form.name_fr || null,

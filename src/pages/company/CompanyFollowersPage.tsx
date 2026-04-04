@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AnnouncementHistory from "@/components/AnnouncementHistory";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
@@ -35,93 +36,53 @@ interface Follower {
 
 const CompanyFollowersPage = () => {
   const { t } = useTranslation();
-  const [followers, setFollowers] = useState<Follower[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
-  const [companyId, setCompanyId] = useState<string | null>(null);
   const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [announcementMessage, setAnnouncementMessage] = useState("");
   const [announcementType, setAnnouncementType] = useState("general");
   const [sending, setSending] = useState(false);
-  const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string>("");
 
-  useEffect(() => {
-    const init = async () => {
+  const { data: initData } = useQuery({
+    queryKey: ["company-followers-init"],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
       const { data: company } = await supabase
-        .from("companies")
-        .select("id")
-        .eq("owner_user_id", user.id)
-        .limit(1)
-        .maybeSingle();
-      if (company) {
-        setCompanyId(company.id);
-        fetchFollowers(company.id);
-        fetchEvents(company.id);
-      }
-    };
-    init();
-  }, []);
+        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
+      if (!company) return null;
+      return company.id;
+    },
+    staleTime: 5 * 60_000,
+  });
+  const companyId = initData ?? null;
 
-  const fetchFollowers = async (cId: string) => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from("company_followers")
-      .select("id, user_id, created_at")
-      .eq("company_id", cId)
-      .order("created_at", { ascending: false });
+  const { data: followersData, isLoading: loading } = useQuery({
+    queryKey: ["company-followers", companyId],
+    queryFn: async () => {
+      if (!companyId) return { followers: [] as Follower[], events: [] as { id: string; title: string }[] };
+      const { data } = await supabase.from("company_followers").select("id, user_id, created_at").eq("company_id", companyId).order("created_at", { ascending: false });
+      if (!data || data.length === 0) return { followers: [] as Follower[], events: [] as { id: string; title: string }[] };
+      const userIds = data.map((f) => f.user_id);
+      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, phone, show_phone").in("user_id", userIds);
+      const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
+      const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
+      const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
+      const enriched: Follower[] = data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined, email: emailMap.get(f.user_id) || undefined }));
+      const { data: evts } = await supabase.from("events").select("id, title").eq("company_id", companyId).eq("status", "active").order("event_date", { ascending: false }).limit(50);
+      return { followers: enriched, events: evts || [] };
+    },
+    enabled: !!companyId,
+    staleTime: 60_000,
+  });
 
-    if (error) {
-      toast.error("Failed to load followers");
-      setLoading(false);
-      return;
-    }
+  const followers = followersData?.followers ?? [];
+  const events = followersData?.events ?? [];
 
-    if (!data || data.length === 0) {
-      setFollowers([]);
-      setLoading(false);
-      return;
-    }
 
-    // Fetch profiles for all follower user_ids
-    const userIds = data.map((f) => f.user_id);
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("user_id, display_name, phone, show_phone")
-      .in("user_id", userIds);
 
-    const profileMap = new Map(
-      (profiles || []).map((p) => [p.user_id, p])
-    );
-
-    // Fetch emails via security definer function
-    const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
-    const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
-
-    const enriched: Follower[] = data.map((f) => ({
-      ...f,
-      profile: profileMap.get(f.user_id) || undefined,
-      email: emailMap.get(f.user_id) || undefined,
-    }));
-
-    setFollowers(enriched);
-    setLoading(false);
-  };
-
-  const fetchEvents = async (cId: string) => {
-    const { data } = await supabase
-      .from("events")
-      .select("id, title")
-      .eq("company_id", cId)
-      .eq("status", "active")
-      .order("event_date", { ascending: false })
-      .limit(50);
-    setEvents(data || []);
-  };
 
   const handleSendAnnouncement = async () => {
     if (!companyId || !announcementTitle.trim() || !announcementMessage.trim()) {
