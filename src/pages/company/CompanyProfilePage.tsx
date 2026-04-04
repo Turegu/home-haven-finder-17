@@ -155,7 +155,7 @@ const CompanyProfilePage = () => {
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
   const [patternActive, setPatternActive] = useState(false);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
-  useQuery({
+  const { isError: profileError } = useQuery({
     queryKey: ['company', 'profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
