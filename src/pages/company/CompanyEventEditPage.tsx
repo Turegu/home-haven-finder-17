@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
