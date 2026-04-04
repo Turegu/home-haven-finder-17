@@ -139,10 +139,11 @@ const AgentProfilePage = () => {
   const [_companyId, setCompanyId] = useState<string | null>(null);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
 
-  useEffect(() => {
-    const fetch = async () => {
+  useQuery({
+    queryKey: ['agent', 'profile'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
       const { data } = await supabase
         .from("agents")
         .select("*")
@@ -177,9 +178,10 @@ const AgentProfilePage = () => {
         }
       }
       setLoading(false);
-    };
-    fetch();
-  }, []);
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
 

@@ -55,7 +55,8 @@ const CompanyProjectUnitsPage = () => {
   const unitTypes = filterOpts["project_unit_types"] || [];
   const interiorAmenities = filterOpts["interior_amenities"] || [];
   const exteriorAmenities = filterOpts["exterior_amenities"] || [];
-  const [units, setUnits] = useState<any[]>([]);
+  const queryClient = useQueryClient();
+  const [units, setUnits] = useState<ReturnType<typeof useState<any[]>>[0]>([]);
   const [loading, setLoading] = useState(true);
   const [projectTitle, setProjectTitle] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -65,7 +66,7 @@ const CompanyProjectUnitsPage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadingFloorPlan, setUploadingFloorPlan] = useState(false);
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: string | string[]) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const toggleAmenity = (type: "interior_amenities" | "exterior_amenities", val: string) => {
     setForm((prev) => ({
@@ -90,7 +91,15 @@ const CompanyProjectUnitsPage = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchUnits(); }, [projectId]);
+  useQuery({
+    queryKey: ['company', 'project-units', projectId],
+    queryFn: async () => {
+      await fetchUnits();
+      return null;
+    },
+    enabled: !!projectId,
+    staleTime: 60_000,
+  });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;

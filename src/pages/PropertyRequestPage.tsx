@@ -67,18 +67,19 @@ const PropertyRequestPage = () => {
   });
 
   // Fetch CMS + provinces on mount
-  useEffect(() => {
-    const loadCms = async () => {
-      const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "property-request").limit(1);
-      if (data?.[0]) setCms(((data[0] as { content: { data?: Record<string, unknown> } }).content?.data) || {});
-    };
-    const loadProvinces = async () => {
-      const { data } = await supabase.rpc("get_distinct_provinces");
-      if (data) setProvinces(data.map((d: { name: string }) => d.name));
-    };
-    loadCms();
-    loadProvinces();
-  }, []);
+  useQuery({
+    queryKey: ['property-request', 'init'],
+    queryFn: async () => {
+      const [cmsRes, provRes] = await Promise.all([
+        supabase.from("cms_pages").select("content").eq("page_slug", "property-request").limit(1),
+        supabase.rpc("get_distinct_provinces"),
+      ]);
+      if (cmsRes.data?.[0]) setCms(((cmsRes.data[0] as { content: { data?: Record<string, unknown> } }).content?.data) || {});
+      if (provRes.data) setProvinces(provRes.data.map((d: { name: string }) => d.name));
+      return null;
+    },
+    staleTime: 5 * 60_000,
+  });
 
   // Cascade: province → districts
   useEffect(() => {
