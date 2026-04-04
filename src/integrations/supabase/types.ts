@@ -2697,6 +2697,10 @@ export type Database = {
       }
       check_admin_pattern_required: { Args: never; Returns: boolean }
       check_contact_rate_limit: { Args: { p_email: string }; Returns: boolean }
+      check_contact_rate_limit_per_company: {
+        Args: { p_company_id: string; p_email: string }
+        Returns: boolean
+      }
       check_property_request_rate_limit: {
         Args: { p_email: string }
         Returns: boolean
