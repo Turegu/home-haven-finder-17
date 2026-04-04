@@ -138,7 +138,7 @@ const CompanyEventEditPage = () => {
     clearError(field);
   };
 
-  useQuery({
+  const { isLoading: initLoading, isError: initError } = useQuery({
     queryKey: ['company', 'event-edit-init'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
