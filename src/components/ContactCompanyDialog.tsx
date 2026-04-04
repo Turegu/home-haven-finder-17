@@ -183,7 +183,7 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         throw new Error('No company recipient found');
       }
 
-      const inboxPayload = {
+      const { error: inboxError } = await inboxService.submitMessage({
         company_id: inboxCompanyId,
         agent_id: agentId || null,
         full_name: fullName.trim(),
@@ -193,38 +193,10 @@ const ContactCompanyDialog = ({ open, onOpenChange, property, companyId, agentId
         inbox_type: INBOX_TYPES.INQUIRY,
         ...(listingType === 'property' ? { property_id: property.id } : {}),
         ...(listingType === 'project' ? { project_id: property.id } : {}),
-      };
-
-      const { error: inboxError } = await supabase.from('company_inbox').insert(inboxPayload);
+        listing_title: property.title,
+        listing_location: property.location,
+      });
       if (inboxError) throw inboxError;
-
-      toast.success('Message sent successfully');
-      setSent(true);
-
-      void supabase.functions
-        .invoke('send-inquiry-notification', {
-          body: {
-            sender_name: fullName.trim(),
-            sender_email: email.trim(),
-            sender_phone: phone.trim() || undefined,
-            preferred_contact: preferredContact,
-            message: `${message}${unitSuffix}`,
-            agent_id: agentId || undefined,
-            company_id: inboxCompanyId,
-            listing_title: property.title,
-            listing_location: property.location,
-            listing_id: property.listingId || property.id,
-            listing_type: listingType,
-          },
-        })
-        .then(({ error }) => {
-          if (error) {
-            console.error('send-inquiry-notification failed:', error);
-          }
-        })
-        .catch((error) => {
-          console.error('send-inquiry-notification crashed:', error);
-        });
     } catch (err) {
       console.error('ContactCompanyDialog send error:', err);
       toast.error('Something went wrong. Please try again.');
