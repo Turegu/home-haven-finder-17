@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Database } from "@/integrations/supabase/types";
 import SEOHead from '@/components/SEOHead';
 import { useParams, Link } from 'react-router-dom';
