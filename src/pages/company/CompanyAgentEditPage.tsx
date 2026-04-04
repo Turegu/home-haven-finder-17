@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useDesignations, getTranslatedLabel } from "@/hooks/useTranslatableCruds";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
