@@ -174,8 +174,6 @@ const HeroIllustration = () => (
 const ContactUsPage = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [settings, setSettings] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
   const [form, setForm] = useState({
@@ -186,22 +184,22 @@ const ContactUsPage = () => {
     message: "",
   });
 
-  useEffect(() => {
-    const fetchSettings = async () => {
+  const { data: settings = {}, isLoading: loading } = useQuery({
+    queryKey: ['contact-settings'],
+    queryFn: async () => {
       const { data } = await supabase
         .from("admin_settings")
         .select("setting_key, setting_value");
+      const map: Record<string, string> = {};
       if (data) {
-        const map: Record<string, string> = {};
-        (data as any[]).forEach((d: any) => {
+        data.forEach(d => {
           map[d.setting_key] = d.setting_value;
         });
-        setSettings(map);
       }
-      setLoading(false);
-    };
-    fetchSettings();
-  }, []);
+      return map;
+    },
+    staleTime: 5 * 60_000,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
