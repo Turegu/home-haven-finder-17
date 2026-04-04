@@ -61,7 +61,7 @@ const AdvertisePage = () => {
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: packages } = useQuery({
+  const { data: packages, isLoading: packagesLoading, isError: packagesError } = useQuery({
     queryKey: ["membership-packages"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -304,7 +304,11 @@ const AdvertisePage = () => {
             {t('pages.advertise.flexiblePackages')}
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {packages?.map((pkg) => (
+            {packagesLoading ? (
+              <div className="col-span-full flex items-center justify-center min-h-[200px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+            ) : packagesError ? (
+              <div className="col-span-full p-4 text-center text-destructive">Failed to load packages. Please refresh.</div>
+            ) : packages?.map((pkg) => (
               <Card
                 key={pkg.id}
                 className={`relative overflow-hidden transition-all hover:shadow-xl ${

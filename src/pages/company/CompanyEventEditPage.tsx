@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useFieldValidation } from "@/hooks/useFieldValidation";
 import { useNavigate, useParams } from "react-router-dom";
@@ -137,10 +138,11 @@ const CompanyEventEditPage = () => {
     clearError(field);
   };
 
-  useEffect(() => {
-    const init = async () => {
+  useQuery({
+    queryKey: ['company', 'event-edit-init'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
       const { data: company } = await supabase
         .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
       if (company) {
@@ -149,15 +151,17 @@ const CompanyEventEditPage = () => {
           .from("agents").select("id, name").eq("company_id", company.id).eq("status", "active");
         setAgents(agentData || []);
       }
-    };
-    init();
-  }, []);
+      return null;
+    },
+    staleTime: 5 * 60_000,
+  });
 
-  useEffect(() => {
-    if (!isEdit) return;
-    const fetchEvent = async () => {
+  useQuery({
+    queryKey: ['company', 'event-edit-data', id],
+    queryFn: async () => {
+      if (!isEdit) return null;
       const { data, error } = await supabase.from("events").select("*").eq("id", id).maybeSingle();
-      if (error || !data) { toast.error(t("companyDashboard.eventNotFound")); return; }
+      if (error || !data) { toast.error(t("companyDashboard.eventNotFound")); return null; }
       const d = data;
       setForm({
         title: d.title || "",
@@ -184,9 +188,11 @@ const CompanyEventEditPage = () => {
       setPdfUrl(d.pdf_catalogue_url || "");
       setLogoUrl(d.logo_url || "");
       setSelectedAgentId(d.agent_id || "");
-    };
-    fetchEvent();
-  }, [isEdit, id]);
+      return null;
+    },
+    enabled: !!isEdit,
+    staleTime: 60_000,
+  });
 
   const uploadFiles = async (files: FileList, bucket: string) => {
     const urls: string[] = [];

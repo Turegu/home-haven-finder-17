@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { turkishIncludes } from "@/lib/utils";
@@ -21,8 +22,6 @@ const ITEMS_PER_PAGE = 10;
 const AgentEventsPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [filterType, setFilterType] = useState("all");
@@ -30,23 +29,23 @@ const AgentEventsPage = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const fetch = async () => {
+  const { data: events = [], isLoading: loading } = useQuery({
+    queryKey: ['agent', 'events', sortOrder],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return [];
       const { data: agent } = await supabase.from("agents").select("id, company_id").eq("user_id", user.id).limit(1).maybeSingle();
-      if (!agent) return;
+      if (!agent) return [];
       const { data, error } = await supabase
         .from("events")
         .select("id, listing_id, title, event_type, entry_type, status, event_date, created_at")
         .eq("agent_id", agent.id)
         .order("created_at", { ascending: sortOrder === "oldest" });
-      if (error) toast.error("Failed to load");
-      else setEvents(data || []);
-      setLoading(false);
-    };
-    fetch();
-  }, [sortOrder]);
+      if (error) { toast.error("Failed to load"); return []; }
+      return data || [];
+    },
+    staleTime: 60_000,
+  });
 
   const formatType = (t: string) => t.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 

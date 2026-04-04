@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
@@ -138,23 +139,26 @@ const CompanyPropertyEditPage = () => {
   };
 
   // Fetch company ID
-  useEffect(() => {
-    const init = async () => {
+  useQuery({
+    queryKey: ['company', 'property-edit-init'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
       const { data: company } = await supabase
         .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
       if (company) setCompanyId(company.id);
-    };
-    init();
-  }, []);
+      return null;
+    },
+    staleTime: 5 * 60_000,
+  });
 
   // Fetch existing property if editing
-  useEffect(() => {
-    if (!isEdit) return;
-    const fetchProperty = async () => {
+  useQuery({
+    queryKey: ['company', 'property-edit-data', id],
+    queryFn: async () => {
+      if (!isEdit) return null;
       const { data, error } = await supabase.from("properties").select("*").eq("id", id).maybeSingle();
-      if (error || !data) { toast.error("Property not found"); return; }
+      if (error || !data) { toast.error("Property not found"); return null; }
 
       // Derive contract_type from purpose + classification
       const purpose = data.property_purpose || "buy";
@@ -228,9 +232,11 @@ const CompanyPropertyEditPage = () => {
           })),
         })));
       }
-    };
-    fetchProperty();
-  }, [isEdit, id]);
+      return null;
+    },
+    enabled: !!isEdit,
+    staleTime: 60_000,
+  });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;

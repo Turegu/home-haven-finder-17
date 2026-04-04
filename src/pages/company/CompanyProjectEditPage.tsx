@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { Database } from "@/integrations/supabase/types";
 import { useTranslation } from "react-i18next";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
@@ -283,21 +284,24 @@ const CompanyProjectEditPage = () => {
     }));
   };
 
-  useEffect(() => {
-    const init = async () => {
+  useQuery({
+    queryKey: ['company', 'project-edit-init'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
       const { data: company } = await supabase.from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
       if (company) setCompanyId(company.id);
-    };
-    init();
-  }, []);
+      return null;
+    },
+    staleTime: 5 * 60_000,
+  });
 
-  useEffect(() => {
-    if (!isEdit) return;
-    const fetch = async () => {
+  useQuery({
+    queryKey: ['company', 'project-edit-data', id],
+    queryFn: async () => {
+      if (!isEdit) return null;
       const { data, error } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
-      if (error || !data) { toast.error(t("companyDashboard.projectNotFound")); return; }
+      if (error || !data) { toast.error(t("companyDashboard.projectNotFound")); return null; }
       setForm({
         title: data.title || "", title_ar: data.title_ar || "", title_fr: data.title_fr || "",
         tagline: data.tagline || "",
@@ -326,11 +330,12 @@ const CompanyProjectEditPage = () => {
       setDeveloperLogoUrl(devLogo);
       setIsDifferentDeveloper(!!devLogo);
       setPdfUrl(data.pdf_catalogue_url || "");
-      // Fetch units for existing project
       fetchUnits(id as string);
-    };
-    fetch();
-  }, [isEdit, id]);
+      return null;
+    },
+    enabled: !!isEdit,
+    staleTime: 60_000,
+  });
 
   const uploadFiles = async (files: FileList, bucket: string) => {
     const urls: string[] = [];

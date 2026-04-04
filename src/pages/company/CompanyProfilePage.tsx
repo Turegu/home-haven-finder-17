@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
@@ -154,10 +155,11 @@ const CompanyProfilePage = () => {
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
   const [patternActive, setPatternActive] = useState(false);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
-  useEffect(() => {
-    const fetchCompany = async () => {
+  useQuery({
+    queryKey: ['company', 'profile'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
 
       const { data } = await supabase
         .from("companies")
@@ -202,9 +204,10 @@ const CompanyProfilePage = () => {
         }
       }
       setLoading(false);
-    };
-    fetchCompany();
-  }, []);
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const updateField = (field: string, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));

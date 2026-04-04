@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AnnouncementHistory from "@/components/AnnouncementHistory";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
@@ -37,33 +38,33 @@ const AgentFollowersPage = () => {
   const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
   const [selectedEventId, setSelectedEventId] = useState("");
 
-  useEffect(() => {
-    const init = async () => {
+  useQuery({
+    queryKey: ['agent', 'followers-init'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return null;
       const { data: agent } = await supabase.from("agents").select("company_id").eq("user_id", user.id).limit(1).maybeSingle();
-      if (agent) {
-        setCompanyId(agent.company_id);
-        fetchFollowers(agent.company_id);
-        const { data: evts } = await supabase.from("events").select("id, title").eq("company_id", agent.company_id).eq("status", "active").limit(50);
-        setEvents(evts || []);
-      }
-    };
-    init();
-  }, []);
+      if (!agent) return null;
+      setCompanyId(agent.company_id);
 
-  const fetchFollowers = async (cId: string) => {
-    setLoading(true);
-    const { data } = await supabase.from("company_followers").select("id, user_id, created_at").eq("company_id", cId).order("created_at", { ascending: false });
-    if (!data || data.length === 0) { setFollowers([]); setLoading(false); return; }
-    const userIds = data.map((f) => f.user_id);
-    const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, phone, show_phone").in("user_id", userIds);
-    const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
-    const { data: emailData } = await supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds });
-    const emailMap = new Map((emailData || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
-    setFollowers(data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined, email: emailMap.get(f.user_id) || undefined })));
-    setLoading(false);
-  };
+      // Fetch followers
+      const { data } = await supabase.from("company_followers").select("id, user_id, created_at").eq("company_id", agent.company_id).order("created_at", { ascending: false });
+      if (!data || data.length === 0) { setFollowers([]); setLoading(false); return null; }
+      const userIds = data.map((f) => f.user_id);
+      const [profilesRes, emailRes, evtsRes] = await Promise.all([
+        supabase.from("profiles").select("user_id, display_name, phone, show_phone").in("user_id", userIds),
+        supabase.rpc("get_user_emails_for_company", { p_user_ids: userIds }),
+        supabase.from("events").select("id, title").eq("company_id", agent.company_id).eq("status", "active").limit(50),
+      ]);
+      const profileMap = new Map((profilesRes.data || []).map((p) => [p.user_id, p]));
+      const emailMap = new Map((emailRes.data || []).map((e: { user_id: string; email: string }) => [e.user_id, e.email]));
+      setFollowers(data.map((f) => ({ ...f, profile: profileMap.get(f.user_id) || undefined, email: emailMap.get(f.user_id) || undefined })));
+      setEvents(evtsRes.data || []);
+      setLoading(false);
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const handleSendAnnouncement = async () => {
     if (!companyId || !announcementTitle.trim() || !announcementMessage.trim()) { toast.error("Fill title and message"); return; }
