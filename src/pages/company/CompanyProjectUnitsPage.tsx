@@ -204,6 +204,9 @@ const CompanyProjectUnitsPage = () => {
     switch (s) { case "available": return "bg-emerald-100 text-emerald-800"; case "reserved": return "bg-orange-100 text-orange-800"; case "sold": return "bg-red-100 text-red-800"; default: return "bg-muted text-muted-foreground"; }
   };
 
+  if (queryLoading || loading) return <CompanyLayout><div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></CompanyLayout>;
+  if (queryError) return <CompanyLayout><div className="p-8 text-center text-destructive">Failed to load. Please refresh.</div></CompanyLayout>;
+
   return (
     <CompanyLayout>
       <div className="flex items-center gap-3 mb-6">
