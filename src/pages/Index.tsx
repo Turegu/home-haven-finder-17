@@ -206,6 +206,7 @@ const Index = () => {
       )}
 
       {/* Featured Projects */}
+      {!projectsError && (
       <section className="bg-muted/50">
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
@@ -217,13 +218,29 @@ const Index = () => {
               {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
           </div>
+          {projectsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="rounded-xl border border-border overflow-hidden bg-card">
+                  <div className="aspect-[16/10] w-full bg-muted animate-pulse" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-5 w-3/4 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-1/2 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredProjects.map((project) => (
               <FeaturedProjectCard key={project.id} project={project} />
             ))}
           </div>
+          )}
         </div>
       </section>
+      )}
 
       {/* Featured Properties */}
       <section className="container mx-auto px-4 py-14">
