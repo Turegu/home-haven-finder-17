@@ -44,88 +44,57 @@ const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   useTrackPageView(id, 'project');
-  const [project, setProject] = useState<ProjectDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [realAgentId, setRealAgentId] = useState<string | null>(null);
-  const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
-  const [contactPhone, setContactPhone] = useState<string | null>(null);
-  const [contactWhatsapp, setContactWhatsapp] = useState<string | null>(null);
-  const [currentImage, setCurrentImage] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('photos');
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [projectUnits, setProjectUnits] = useState<Array<{ id: string; unit_name: string; unit_type: string; price: number | null; currency: string | null; rooms: string | null; area: number | null; area_unit: string | null }>>([]);
-
-  useEffect(() => {
-    if (!id) return;
-    const fetchProject = async () => {
-      setLoading(true);
+  const { data: fetchedData, isLoading: loading } = useQuery({
+    queryKey: ['project-detail', id],
+    queryFn: async () => {
       const { data } = await supabase
         .from('projects')
         .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
-        .eq('id', id)
+        .eq('id', id!)
         .maybeSingle();
-      if (data) {
-        const p = data;
-        setProject({
-          id: p.id,
-          title: p.title || '',
-          tagline: p.tagline || '',
-          priceFrom: p.min_price || 0,
-          currency: p.currency || 'USD',
-          location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || '',
-          city: p.province || '',
-          province: p.province || '',
-          town: p.town || '',
-          neighbourhood: p.neighbourhood || '',
-          projectType: p.project_type || '',
-          units: p.max_units || 0,
-          developer: p.developer || '',
-          areaRange: p.min_area && p.max_area ? `${p.min_area} - ${p.max_area} ${p.area_unit || 'm²'}` : '—',
-          status: p.project_status || '',
-          completionDate: p.completion_date || '—',
-          listingId: p.listing_id || '',
-          listingDate: p.created_at?.slice(0, 10) || '',
-          logoUrl: p.logo_url || null,
-          images: p.images && p.images.length > 0 ? p.images : ['/placeholder.svg'],
-          description: p.description || '',
-          interiorAmenities: p.interior_amenities || [],
-          exteriorAmenities: p.exterior_amenities || [],
-          plans: p.plans || [],
-          videoLink: p.video_link || '',
-          view360Link: p.view_360_link || '',
-          pinLocation: p.pin_location || null,
-          agentName: p.agents?.name || '',
-          agentLogo: p.agents?.avatar_url || '',
-          agentDesignation: p.agents?.designation || null,
-          agentLanguages: p.agents?.languages || [],
-          agentCompany: p.companies?.name || p.agents?.companies?.name || '',
-          companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
-          hasAgent: !!p.agents,
-        });
-        setRealAgentId(p.agents?.id || null);
-        setRealCompanyId(p.companies?.id || p.agents?.companies?.id || null);
-        if (p.agents) {
-          setContactPhone(p.agents.phone || null);
-          setContactWhatsapp(p.agents.whatsapp || null);
-        } else {
-          setContactPhone(p.companies?.phone || null);
-          setContactWhatsapp(p.companies?.whatsapp || null);
-        }
+      if (!data) return null;
+      const { data: units } = await supabase
+        .from('project_units')
+        .select('id, unit_name, unit_type, price, currency, rooms, area, area_unit')
+        .eq('project_id', id!)
+        .eq('status', 'available')
+        .order('unit_name');
+      return { ...data, fetchedUnits: units || [] };
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
 
-        // Fetch project units for contact dialog
-        const { data: units } = await supabase
-          .from('project_units')
-          .select('id, unit_name, unit_type, price, currency, rooms, area, area_unit')
-          .eq('project_id', id)
-          .eq('status', 'available')
-          .order('unit_name');
-        setProjectUnits(units || []);
-      }
-      setLoading(false);
-    };
-    fetchProject();
-  }, [id]);
+  const project = useMemo(() => {
+    if (!fetchedData) return null;
+    const p = fetchedData;
+    return {
+      id: p.id, title: p.title || '', tagline: p.tagline || '', priceFrom: p.min_price || 0, currency: p.currency || 'USD',
+      location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', ') || '',
+      city: p.province || '', province: p.province || '', town: p.town || '', neighbourhood: p.neighbourhood || '',
+      projectType: p.project_type || '', units: p.max_units || 0, developer: p.developer || '',
+      areaRange: p.min_area && p.max_area ? `${p.min_area} - ${p.max_area} ${p.area_unit || 'm²'}` : '—',
+      status: p.project_status || '', completionDate: p.completion_date || '—',
+      listingId: p.listing_id || '', listingDate: p.created_at?.slice(0, 10) || '',
+      logoUrl: p.logo_url || null,
+      images: p.images && p.images.length > 0 ? p.images : ['/placeholder.svg'],
+      description: p.description || '',
+      interiorAmenities: p.interior_amenities || [], exteriorAmenities: p.exterior_amenities || [],
+      plans: p.plans || [], videoLink: p.video_link || '', view360Link: p.view_360_link || '',
+      pinLocation: p.pin_location || null,
+      agentName: p.agents?.name || '', agentLogo: p.agents?.avatar_url || '',
+      agentDesignation: p.agents?.designation || null, agentLanguages: p.agents?.languages || [],
+      agentCompany: p.companies?.name || p.agents?.companies?.name || '',
+      companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
+      hasAgent: !!p.agents,
+    } as ProjectDetail;
+  }, [fetchedData]);
+
+  const realAgentId = fetchedData?.agents?.id || null;
+  const realCompanyId = fetchedData?.companies?.id || fetchedData?.agents?.companies?.id || null;
+  const contactPhone = fetchedData?.agents ? (fetchedData.agents.phone || null) : (fetchedData?.companies?.phone || null);
+  const contactWhatsapp = fetchedData?.agents ? (fetchedData.agents.whatsapp || null) : (fetchedData?.companies?.whatsapp || null);
+  const projectUnits = fetchedData?.fetchedUnits ?? [];
 
   const pinLocation = useMemo(() => {
     if (project?.pinLocation) {
