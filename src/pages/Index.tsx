@@ -122,7 +122,7 @@ const Index = () => {
 
   const featuredProperties = displayedProperties.length > 0 ? displayedProperties : sampleProperties;
 
-  const { data: allFeaturedProjects = [] } = useQuery({
+  const { data: allFeaturedProjects = [], isLoading: projectsLoading, isError: projectsError } = useQuery({
     queryKey: ['featured-projects-home'],
     queryFn: async () => {
       const { data } = await supabase
