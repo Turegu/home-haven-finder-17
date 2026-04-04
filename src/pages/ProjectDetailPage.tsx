@@ -31,7 +31,7 @@ const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   useTrackPageView(id, 'project');
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
