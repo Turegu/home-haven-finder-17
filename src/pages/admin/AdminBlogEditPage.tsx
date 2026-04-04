@@ -39,9 +39,9 @@ const AdminBlogEditPage = () => {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    const init = async () => {
-      // Fetch active languages
+  useQuery({
+    queryKey: ['admin', 'blog-edit', id],
+    queryFn: async () => {
       const { data: langs } = await supabase
         .from("languages")
         .select("id, name, code")
@@ -51,13 +51,11 @@ const AdminBlogEditPage = () => {
       if (langs && langs.length > 0) {
         setLanguages(langs);
         setActiveLang(langs[0].code);
-        // Init empty translations for all languages
-        const init: Record<string, TranslationData> = {};
-        langs.forEach(l => { init[l.code] = { title: "", description: "" }; });
-        setTranslations(init);
+        const initTrans: Record<string, TranslationData> = {};
+        langs.forEach(l => { initTrans[l.code] = { title: "", description: "" }; });
+        setTranslations(initTrans);
       }
 
-      // If editing existing blog, load it
       if (!isNew && id) {
         const { data: blog } = await supabase.from("blogs").select("*").eq("id", id).single();
         if (blog) {
@@ -71,19 +69,19 @@ const AdminBlogEditPage = () => {
           .select("language_code, title, description")
           .eq("blog_id", id);
 
-        if (trans) {
+        if (trans && langs) {
           const map: Record<string, TranslationData> = {};
-          // Start with empty for all languages
-          if (langs) langs.forEach(l => { map[l.code] = { title: "", description: "" }; });
-          (trans as any[]).forEach((t: any) => {
+          langs.forEach(l => { map[l.code] = { title: "", description: "" }; });
+          trans.forEach(t => {
             map[t.language_code] = { title: t.title, description: t.description };
           });
           setTranslations(map);
         }
       }
-    };
-    init();
-  }, [id, isNew]);
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

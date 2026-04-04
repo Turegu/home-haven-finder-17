@@ -55,7 +55,7 @@ const AdminEmailPreviewPage = () => {
   });
 
   const current = useMemo(
-    () => templates.find((t) => t.template_key === activeKey),
+    () => templates.find((tmpl) => tmpl.template_key === activeKey),
     [templates, activeKey]
   );
 
