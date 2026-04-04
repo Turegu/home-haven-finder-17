@@ -31,7 +31,6 @@ const AdminCompanyEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: dbCompanyTypes = [] } = useCompanyTypes();
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
