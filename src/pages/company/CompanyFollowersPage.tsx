@@ -35,18 +35,13 @@ interface Follower {
 }
 
 const CompanyFollowersPage = () => {
-  const { t } = useTranslation();
-  const [followers, setFollowers] = useState<Follower[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
-  const [companyId, setCompanyId] = useState<string | null>(null);
   const [announcementOpen, setAnnouncementOpen] = useState(false);
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [announcementMessage, setAnnouncementMessage] = useState("");
   const [announcementType, setAnnouncementType] = useState("general");
   const [sending, setSending] = useState(false);
-  const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string>("");
 
   const { data: initData } = useQuery({
