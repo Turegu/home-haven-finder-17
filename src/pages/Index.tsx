@@ -52,7 +52,7 @@ const Index = () => {
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
 
-  const { data: allFeaturedProperties = [] } = useQuery({
+  const { data: allFeaturedProperties = [], isLoading: propertiesLoading, isError: propertiesError } = useQuery({
     queryKey: ['featured-properties'],
     queryFn: async () => {
       const { data } = await supabase
@@ -122,7 +122,7 @@ const Index = () => {
 
   const featuredProperties = displayedProperties.length > 0 ? displayedProperties : sampleProperties;
 
-  const { data: allFeaturedProjects = [] } = useQuery({
+  const { data: allFeaturedProjects = [], isLoading: projectsLoading, isError: projectsError } = useQuery({
     queryKey: ['featured-projects-home'],
     queryFn: async () => {
       const { data } = await supabase
@@ -206,6 +206,7 @@ const Index = () => {
       )}
 
       {/* Featured Projects */}
+      {!projectsError && (
       <section className="bg-muted/50">
         <div className="container mx-auto px-4 py-14">
           <div className="flex items-center justify-between mb-8">
@@ -217,15 +218,32 @@ const Index = () => {
               {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
           </div>
+          {projectsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="rounded-xl border border-border overflow-hidden bg-card">
+                  <div className="aspect-[16/10] w-full bg-muted animate-pulse" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-5 w-3/4 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-1/2 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredProjects.map((project) => (
               <FeaturedProjectCard key={project.id} project={project} />
             ))}
           </div>
+          )}
         </div>
       </section>
+      )}
 
       {/* Featured Properties */}
+      {!propertiesError && (
       <section className="container mx-auto px-4 py-14">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -236,6 +254,28 @@ const Index = () => {
             {t('home.viewAll')} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
           </Link>
         </div>
+        {propertiesLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl border border-border overflow-hidden bg-card">
+                <div className="aspect-[4/3] w-full bg-muted animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-6 w-24 bg-muted animate-pulse rounded" />
+                    <div className="h-7 w-14 bg-muted animate-pulse rounded" />
+                  </div>
+                  <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
+                  <div className="h-3.5 w-1/2 bg-muted animate-pulse rounded" />
+                  <div className="flex items-center gap-3 pt-3 border-t border-border">
+                    <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                    <div className="h-4 w-10 bg-muted animate-pulse rounded" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredProperties.map((property) => (
             <Link key={property.id} to={`/property/${property.id}`}>
@@ -243,7 +283,9 @@ const Index = () => {
             </Link>
           ))}
         </div>
+        )}
       </section>
+      )}
 
       {/* Top Agents — before Featured Locations */}
       <TopAgentsSpotlight />
