@@ -33,7 +33,7 @@ const AdminFaqEditPage = () => {
   const [translations, setTranslations] = useState<Record<string, TranslationData>>({});
   const [saving, setSaving] = useState(false);
 
-  useQuery({
+  const { isLoading: initialLoading, isError: initialError } = useQuery({
     queryKey: ['admin', 'faq-edit', id],
     queryFn: async () => {
       const { data: langs } = await supabase
