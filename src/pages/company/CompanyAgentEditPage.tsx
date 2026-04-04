@@ -108,8 +108,18 @@ const CompanyAgentEditPage = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
   const isEdit = id && id !== "new";
-  const [loading, setLoading] = useState(false);
-  const [companyId, setCompanyId] = useState<string | null>(null);
+  const { data: companyData } = useQuery({
+    queryKey: ["company-id-for-owner"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data: company } = await supabase
+        .from("companies").select("id").eq("owner_user_id", user.id).limit(1).maybeSingle();
+      return company;
+    },
+    staleTime: 5 * 60_000,
+  });
+  const companyId = companyData?.id ?? null;
   const membershipLimits = useMembershipLimits(companyId);
   const { data: dbDesignations = [] } = useDesignations();
   const [avatarUrl, setAvatarUrl] = useState("");
