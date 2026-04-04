@@ -52,7 +52,7 @@ const Index = () => {
   const { data: savedIds } = useSavedPropertyIds();
   const { data: comparedIds } = useComparedPropertyIds();
 
-  const { data: allFeaturedProperties = [] } = useQuery({
+  const { data: allFeaturedProperties = [], isLoading: propertiesLoading, isError: propertiesError } = useQuery({
     queryKey: ['featured-properties'],
     queryFn: async () => {
       const { data } = await supabase
