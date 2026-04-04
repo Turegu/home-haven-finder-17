@@ -20,11 +20,22 @@ import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import SEOHead from '@/components/SEOHead';
 
+interface EventDetail {
+  id: string; title: string; price: number | null; currency: string;
+  location: string; city: string; province: string; town: string; neighbourhood: string;
+  eventType: string; entryType: string; date: string; endDate: string;
+  organizer: string; organizerLogo: string; listingId: string; listingDate: string;
+  images: string[]; description: string; agentName: string; agentLogo: string;
+  agentDesignation: string | null; agentLanguages: string[];
+  agentCompany: string; companyLogo: string | null; hasAgent: boolean;
+  pdfCatalogueUrl: string | null; videoLink: string; pinLocation: string | null;
+}
+
 const EventDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
@@ -45,7 +56,7 @@ const EventDetailPage = () => {
         .eq('id', id)
         .maybeSingle();
       if (data) {
-        const e = data as any;
+        const e = data;
         setEvent({
           id: e.id,
           title: e.title || '',

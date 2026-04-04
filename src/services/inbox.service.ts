@@ -12,7 +12,7 @@ export const inboxService = {
   async markSeen(id: string) {
     await supabase.from('company_inbox').update({ is_seen: true }).eq('id', id);
     return supabase.from('company_inbox')
-      .update({ responded_at: new Date().toISOString() } as any)
+      .update({ responded_at: new Date().toISOString() })
       .eq('id', id)
       .is('responded_at', null);
   },
@@ -30,16 +30,16 @@ export const inboxService = {
     property_id?: string | null;
     project_id?: string | null;
   }) {
-    return (supabase as any).rpc('submit_company_inbox_message', {
+    return supabase.rpc('submit_company_inbox_message', {
       p_company_id: params.company_id,
       p_full_name: params.full_name,
       p_email: params.email,
-      p_agent_id: params.agent_id ?? null,
-      p_phone: params.phone ?? null,
+      p_agent_id: params.agent_id ?? undefined,
+      p_phone: params.phone ?? undefined,
       p_message: params.message,
       p_inbox_type: params.inbox_type,
-      p_property_id: params.property_id ?? null,
-      p_project_id: params.project_id ?? null,
+      p_property_id: params.property_id ?? undefined,
+      p_project_id: params.project_id ?? undefined,
     });
   },
 };

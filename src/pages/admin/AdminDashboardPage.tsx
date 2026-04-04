@@ -4,7 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { Home, FolderKanban, CalendarDays, Briefcase, Zap, Star, Crown } from "lucide-react";
 
 const AdminDashboardPage = () => {
-  const { data: stats = { totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0 } } = useQuery({
+  const { data: stats = { totalCompanies: 0, basicCompanies: 0, liteCompanies: 0, plusCompanies: 0, proCompanies: 0 }, isLoading, isError } = useQuery({
     queryKey: ["admin-dashboard-stats"],
     queryFn: async () => {
       const { data: companies } = await supabase.from("companies").select("membership");
@@ -37,6 +37,24 @@ const AdminDashboardPage = () => {
     <AdminLayout>
       <h1 className="text-2xl font-bold text-foreground mb-6">Dashboard</h1>
 
+      {isError && (
+        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 mb-6 text-sm text-destructive">
+          Failed to load dashboard data. Please try refreshing.
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="rounded-xl border bg-card p-6 animate-pulse">
+              <div className="h-10 w-20 bg-muted rounded mb-3" />
+              <div className="h-4 w-24 bg-muted rounded" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+      
       {/* Top summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {summaryCards.map((card) => (
@@ -83,6 +101,8 @@ const AdminDashboardPage = () => {
           </div>
         ))}
       </div>
+        </>
+      )}
     </AdminLayout>
   );
 };

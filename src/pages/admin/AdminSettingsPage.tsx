@@ -41,7 +41,7 @@ const AdminSettingsPage = () => {
       const { data } = await supabase.from("admin_settings").select("setting_key, setting_value");
       if (data) {
         const map: Record<string, string> = {};
-        (data as any[]).forEach((d: any) => { map[d.setting_key] = d.setting_value; });
+        data.forEach((d) => { map[d.setting_key] = d.setting_value; });
         setSalesPhone(map.sales_phone || "");
         setSalesWhatsapp(map.sales_whatsapp || "");
         setSalesEmail(map.sales_email || "");

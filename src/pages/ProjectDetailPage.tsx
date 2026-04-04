@@ -26,12 +26,24 @@ import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
 import SEOHead from '@/components/SEOHead';
 
+interface ProjectDetail {
+  id: string; title: string; tagline: string; priceFrom: number; currency: string;
+  location: string; city: string; province: string; town: string; neighbourhood: string;
+  projectType: string; units: number; developer: string; areaRange: string;
+  status: string; completionDate: string; listingId: string; listingDate: string;
+  logoUrl: string | null; images: string[]; description: string;
+  interiorAmenities: string[]; exteriorAmenities: string[];
+  plans: string[]; videoLink: string; view360Link: string; pinLocation: string | null;
+  agentName: string; agentLogo: string; agentDesignation: string | null;
+  agentLanguages: string[]; agentCompany: string; companyLogo: string | null; hasAgent: boolean;
+}
+
 const ProjectDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   useTrackPageView(id, 'project');
-  const [project, setProject] = useState<any>(null);
+  const [project, setProject] = useState<ProjectDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [realAgentId, setRealAgentId] = useState<string | null>(null);
   const [realCompanyId, setRealCompanyId] = useState<string | null>(null);
@@ -41,7 +53,7 @@ const ProjectDetailPage = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [projectUnits, setProjectUnits] = useState<any[]>([]);
+  const [projectUnits, setProjectUnits] = useState<Array<{ id: string; unit_name: string; unit_type: string; price: number | null; currency: string | null; rooms: string | null; area: number | null; area_unit: string | null }>>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -53,7 +65,7 @@ const ProjectDetailPage = () => {
         .eq('id', id)
         .maybeSingle();
       if (data) {
-        const p = data as any;
+        const p = data;
         setProject({
           id: p.id,
           title: p.title || '',

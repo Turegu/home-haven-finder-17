@@ -37,10 +37,11 @@ const AdvertisePage = () => {
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-    (window as any).onTurnstileSuccess = (token: string) => setTurnstileToken(token);
+    const win = window as Window & { onTurnstileSuccess?: (token: string) => void };
+    win.onTurnstileSuccess = (token: string) => setTurnstileToken(token);
     return () => {
       document.head.removeChild(script);
-      delete (window as any).onTurnstileSuccess;
+      delete win.onTurnstileSuccess;
     };
   }, []);
 
@@ -99,7 +100,8 @@ const AdvertisePage = () => {
       setForm({ company_name: "", first_name: "", last_name: "", email: "", phone: "", message: "" });
       setAgreed(false);
       setTurnstileToken(null);
-      if ((window as any).turnstile) (window as any).turnstile.reset();
+      const win = window as Window & { turnstile?: { reset: () => void } };
+      if (win.turnstile) win.turnstile.reset();
     }
   };
 

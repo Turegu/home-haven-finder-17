@@ -158,7 +158,7 @@ const CompanyEventEditPage = () => {
     const fetchEvent = async () => {
       const { data, error } = await supabase.from("events").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error(t("companyDashboard.eventNotFound")); return; }
-      const d = data as any;
+      const d = data;
       setForm({
         title: d.title || "",
         title_ar: d.title_ar || "",
@@ -169,7 +169,7 @@ const CompanyEventEditPage = () => {
         event_type: d.event_type || "open_house",
         event_date: d.event_date ? new Date(d.event_date).toISOString().slice(0, 16) : "",
         event_end_date: d.event_end_date ? new Date(d.event_end_date).toISOString().slice(0, 16) : "",
-        entry_type: d.entry_type || "open_invitation",
+        entry_type: (d.entry_type || "open_invitation") as "open_invitation" | "paid",
         price: d.price?.toString() || "",
         currency: d.currency || "USD",
         province: d.province || "",

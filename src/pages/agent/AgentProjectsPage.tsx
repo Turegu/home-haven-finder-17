@@ -100,7 +100,7 @@ const AgentProjectsPage = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder={t("agentDashboard.searchByTitleOrId")} value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9 bg-secondary/50" />
         </div>
-        <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as any)}>
+        <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as typeof sortOrder)}>
           <SelectTrigger className="w-[170px] bg-secondary/50"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="newest">Newest First</SelectItem>
