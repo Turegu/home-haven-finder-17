@@ -26,8 +26,7 @@ const AdminLoginPage = () => {
   // Force English for admin login
   useEffect(() => {
     document.title = 'Admin Login | Turegu';
-    if (i18n.language !== 'en') i18n.changeLanguage('en');
-  }, [i18n]);
+  }, []);
 
   // Load remembered email
   useEffect(() => {
