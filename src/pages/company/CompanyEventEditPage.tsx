@@ -138,7 +138,7 @@ const CompanyEventEditPage = () => {
     clearError(field);
   };
 
-  useQuery({
+  const { isLoading: initLoading, isError: initError } = useQuery({
     queryKey: ['company', 'event-edit-init'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -321,6 +321,9 @@ const CompanyEventEditPage = () => {
     updateField("description", newText);
     setTimeout(() => { el.focus(); el.setSelectionRange(start + wrapped.length, start + wrapped.length); }, 0);
   };
+
+  if (initLoading) return <CompanyLayout><div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></CompanyLayout>;
+  if (initError) return <CompanyLayout><div className="p-8 text-center text-destructive">Failed to load. Please refresh.</div></CompanyLayout>;
 
   return (
     <CompanyLayout>

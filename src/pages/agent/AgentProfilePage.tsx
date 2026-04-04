@@ -139,7 +139,7 @@ const AgentProfilePage = () => {
   const [_companyId, setCompanyId] = useState<string | null>(null);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
 
-  useQuery({
+  const { isError: profileError } = useQuery({
     queryKey: ['agent', 'profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -284,7 +284,11 @@ const AgentProfilePage = () => {
   };
 
   if (loading) {
-    return <AgentLayout><div className="flex items-center justify-center py-20 text-muted-foreground">{t("agentDashboard.loading")}</div></AgentLayout>;
+    return <AgentLayout><div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></AgentLayout>;
+  }
+
+  if (profileError) {
+    return <AgentLayout><div className="p-8 text-center text-destructive">Failed to load. Please refresh.</div></AgentLayout>;
   }
 
   return (

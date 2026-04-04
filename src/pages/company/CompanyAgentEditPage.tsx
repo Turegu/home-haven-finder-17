@@ -108,7 +108,7 @@ const CompanyAgentEditPage = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
   const isEdit = id && id !== "new";
-  const { data: companyData } = useQuery({
+  const { data: companyData, isLoading: companyLoading, isError: companyError } = useQuery({
     queryKey: ["company-id-for-owner"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -302,6 +302,9 @@ const CompanyAgentEditPage = () => {
       setFieldErrors(prev => { const n = { ...prev }; delete n[field]; return n; });
     }
   };
+
+  if (companyLoading) return <CompanyLayout><div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></CompanyLayout>;
+  if (companyError) return <CompanyLayout><div className="p-8 text-center text-destructive">Failed to load. Please refresh.</div></CompanyLayout>;
 
   return (
     <CompanyLayout>

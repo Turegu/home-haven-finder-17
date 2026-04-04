@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Database } from "@/integrations/supabase/types";
 import SEOHead from '@/components/SEOHead';
 import { useParams, Link } from 'react-router-dom';
@@ -53,68 +54,66 @@ const CompanyDetailPage = () => {
   const { t, i18n } = useTranslation();
   const { data: dbCompanyTypes = [] } = useCompanyTypes();
   const { data: dbDesignations = [] } = useDesignations();
-  const [company, setCompany] = useState<CompanyData | null>(null);
-  const [companyAgents, setCompanyAgents] = useState<AgentData[]>([]);
   const [activeTab, setActiveTab] = useState('properties');
-  const [loading, setLoading] = useState(true);
-  const [counts, setCounts] = useState({ agents: 0, buy: 0, rent: 0, projects: 0, events: 0 });
-  const [responseMetrics, setResponseMetrics] = useState<{ response_rate: number | null; avg_response_hours: number | null }>({ response_rate: null, avg_response_hours: null });
-  const [responseRateVisible, setResponseRateVisible] = useState(false);
   const [profileEmailOpen, setProfileEmailOpen] = useState(false);
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchCompany = async () => {
+  const { data: pageData, isLoading: loading, isError } = useQuery({
+    queryKey: ['company-detail', id],
+    queryFn: async () => {
       const { data } = await supabase
         .from("companies")
         .select("id, name, company_types, logo_url, cover_url, languages, service_areas, about, email, phone, whatsapp, pin_location, is_verified")
-        .eq("id", id)
+        .eq("id", id!)
         .maybeSingle();
-      setCompany(data as CompanyData | null);
+      if (!data) return null;
 
-      if (data) {
-        const { data: agts } = await supabase
-          .from("agents").select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages")
-          .eq("company_id", data.id).eq("status", "active");
-        setCompanyAgents((agts ?? []) as AgentData[]);
+      const [agtsRes, buyRes, rentRes, projRes, evtRes, rrRes] = await Promise.all([
+        supabase.from("agents").select("id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages").eq("company_id", data.id).eq("status", "active"),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active").eq("property_purpose", "buy"),
+        supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active").eq("property_purpose", "rent"),
+        supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active"),
+        supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active"),
+        supabase.from("admin_settings").select("setting_value").eq("setting_key", "response_rate_visible").maybeSingle(),
+      ]);
 
-        const { count: buyCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active").eq("property_purpose", "buy");
-        const { count: rentCount } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active").eq("property_purpose", "rent");
-        const { count: projCount } = await supabase.from("projects").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active");
-        const { count: evtCount } = await supabase.from("events").select("id", { count: "exact", head: true }).eq("company_id", data.id).eq("status", "active");
+      const agents = (agtsRes.data ?? []) as AgentData[];
+      const showRate = rrRes.data?.setting_value !== 'false';
 
-        setCounts({
-          agents: (agts ?? []).length,
-          buy: buyCount ?? 0,
-          rent: rentCount ?? 0,
-          projects: projCount ?? 0,
-          events: evtCount ?? 0,
-        });
-
-        // Check if response rate is visible
-        const { data: rrSetting } = await supabase
-          .from('admin_settings')
-          .select('setting_value')
-          .eq('setting_key', 'response_rate_visible')
+      let responseMetrics = { response_rate: null as number | null, avg_response_hours: null as number | null };
+      if (showRate) {
+        const { data: metrics } = await supabase
+          .from('company_response_metrics')
+          .select('response_rate, avg_response_hours')
+          .eq('company_id', data.id)
           .maybeSingle();
-        const showRate = rrSetting?.setting_value !== 'false';
-        setResponseRateVisible(showRate);
-
-        if (showRate) {
-          const { data: metrics } = await supabase
-            .from('company_response_metrics')
-            .select('response_rate, avg_response_hours')
-            .eq('company_id', data.id)
-            .maybeSingle();
-          if (metrics) {
-            setResponseMetrics(metrics as { response_rate: number | null; avg_response_hours: number | null });
-          }
+        if (metrics) {
+          responseMetrics = metrics as typeof responseMetrics;
         }
       }
-      setLoading(false);
-    };
-    fetchCompany();
-  }, [id]);
+
+      return {
+        company: data as CompanyData,
+        companyAgents: agents,
+        counts: {
+          agents: agents.length,
+          buy: buyRes.count ?? 0,
+          rent: rentRes.count ?? 0,
+          projects: projRes.count ?? 0,
+          events: evtRes.count ?? 0,
+        },
+        responseRateVisible: showRate,
+        responseMetrics,
+      };
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
+
+  const company = pageData?.company ?? null;
+  const companyAgents = pageData?.companyAgents ?? [];
+  const counts = pageData?.counts ?? { agents: 0, buy: 0, rent: 0, projects: 0, events: 0 };
+  const responseRateVisible = pageData?.responseRateVisible ?? false;
+  const responseMetrics = pageData?.responseMetrics ?? { response_rate: null, avg_response_hours: null };
 
   const typeLabel = (types: string[] | null) => {
     return formatCompanyTypesFromDb(dbCompanyTypes, types, i18n.language);
@@ -148,7 +147,17 @@ const CompanyDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">{t('companyDetail.loading')}</div>
+        <div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="p-8 text-center text-destructive">Failed to load company. Please refresh the page.</div>
         <Footer />
       </div>
     );

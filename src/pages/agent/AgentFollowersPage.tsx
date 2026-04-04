@@ -38,7 +38,7 @@ const AgentFollowersPage = () => {
   const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
   const [selectedEventId, setSelectedEventId] = useState("");
 
-  useQuery({
+  const { isLoading: queryLoading, isError: queryError } = useQuery({
     queryKey: ['agent', 'followers-init'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -95,6 +95,9 @@ const AgentFollowersPage = () => {
 
   const sorted = [...followers].sort((a, b) => sortOrder === "newest" ? new Date(b.created_at).getTime() - new Date(a.created_at).getTime() : new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
   const filtered = sorted.filter((f) => turkishIncludes(f.profile?.display_name || "", search));
+
+  if (queryLoading || loading) return <AgentLayout><div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></AgentLayout>;
+  if (queryError) return <AgentLayout><div className="p-8 text-center text-destructive">Failed to load. Please refresh.</div></AgentLayout>;
 
   return (
     <AgentLayout>

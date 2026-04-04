@@ -155,7 +155,7 @@ const CompanyProfilePage = () => {
   const [currentPatternCode, setCurrentPatternCode] = useState<string>("");
   const [patternActive, setPatternActive] = useState(false);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
-  useQuery({
+  const { isError: profileError } = useQuery({
     queryKey: ['company', 'profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -335,7 +335,15 @@ const CompanyProfilePage = () => {
   if (loading) {
     return (
       <CompanyLayout>
-        <div className="flex items-center justify-center py-20 text-muted-foreground">{t("companyDashboard.loadingProfile")}</div>
+        <div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+      </CompanyLayout>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <CompanyLayout>
+        <div className="p-8 text-center text-destructive">Failed to load. Please refresh.</div>
       </CompanyLayout>
     );
   }
