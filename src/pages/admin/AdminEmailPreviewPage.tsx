@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -26,34 +27,35 @@ interface EmailTemplate {
 }
 
 const AdminEmailPreviewPage = () => {
+  const queryClient = useQueryClient();
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [activeKey, setActiveKey] = useState("confirmation");
   const [mode, setMode] = useState<"preview" | "edit">("preview");
   const [editSubject, setEditSubject] = useState("");
   const [editFields, setEditFields] = useState<TemplateBodyFields>({});
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
-
-  async function fetchTemplates() {
-    const { data, error } = await supabase
-      .from("email_templates")
-      .select("*")
-      .order("created_at");
-    if (error) {
-      toast.error("Failed to load email templates");
-      console.error(error);
-    } else {
-      setTemplates((data || []) as unknown as EmailTemplate[]);
-    }
-    setLoading(false);
-  }
+  const { isLoading: loading } = useQuery({
+    queryKey: ['admin', 'email-templates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_templates")
+        .select("*")
+        .order("created_at");
+      if (error) {
+        toast.error("Failed to load email templates");
+        console.error(error);
+        return [];
+      }
+      const result = (data || []) as unknown as EmailTemplate[];
+      setTemplates(result);
+      return result;
+    },
+    staleTime: 5 * 60_000,
+  });
 
   const current = useMemo(
-    () => templates.find((t) => t.template_key === activeKey),
+    () => templates.find((tmpl) => tmpl.template_key === activeKey),
     [templates, activeKey]
   );
 
@@ -90,7 +92,7 @@ const AdminEmailPreviewPage = () => {
     } else {
       toast.success("Template saved successfully");
       setMode("preview");
-      fetchTemplates();
+      queryClient.invalidateQueries({ queryKey: ['admin', 'email-templates'] });
     }
     setSaving(false);
   }

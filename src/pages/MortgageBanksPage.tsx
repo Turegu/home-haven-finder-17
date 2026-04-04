@@ -1,5 +1,6 @@
 import SEOHead from '@/components/SEOHead';
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { turkishIncludes } from "@/lib/utils";
@@ -31,8 +32,6 @@ interface Bank {
 
 const MortgageBanksPage = () => {
   const { t } = useTranslation();
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   // Calculator state
@@ -41,19 +40,18 @@ const MortgageBanksPage = () => {
   const [loanDuration, setLoanDuration] = useState(10);
   const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
 
-  useEffect(() => {
-    document.title = "Mortgage & Bank Loans | Turegu";
-    const fetchBanks = async () => {
+  const { data: banks = [], isLoading: loading } = useQuery({
+    queryKey: ['mortgage-banks'],
+    queryFn: async () => {
       const { data } = await supabase
         .from("banks")
         .select("*")
         .eq("status", "active")
         .order("interest_rate", { ascending: true });
-      setBanks((data as Bank[]) || []);
-      setLoading(false);
-    };
-    fetchBanks();
-  }, []);
+      return (data as Bank[]) || [];
+    },
+    staleTime: 5 * 60_000,
+  });
 
   const filtered = banks.filter((b) =>
     turkishIncludes(b.name, search)

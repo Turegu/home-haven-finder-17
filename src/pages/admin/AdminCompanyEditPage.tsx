@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import LanguageContentTabs from "@/components/LanguageContentTabs";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +31,6 @@ const AdminCompanyEditPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: dbCompanyTypes = [] } = useCompanyTypes();
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
@@ -54,18 +54,18 @@ const AdminCompanyEditPage = () => {
     pin_location: "",
   });
 
-  useEffect(() => {
-    if (!id) return;
-    (async () => {
+  const { isLoading: loading } = useQuery({
+    queryKey: ['admin', 'company-edit', id],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("companies")
         .select("*")
-        .eq("id", id)
+        .eq("id", id!)
         .single();
       if (error || !data) {
         toast.error("Company not found");
         navigate("/admin/companies");
-        return;
+        return null;
       }
       setForm({
         name: data.name || "",
@@ -87,9 +87,11 @@ const AdminCompanyEditPage = () => {
         neighbourhood: data.neighbourhood || "",
         pin_location: data.pin_location || "",
       });
-      setLoading(false);
-    })();
-  }, [id]);
+      return data;
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
 
   const updateField = (field: keyof typeof form, value: string | string[] | MembershipType) => {
     setForm(prev => ({ ...prev, [field]: value }));

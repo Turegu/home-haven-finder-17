@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -38,9 +39,9 @@ const AdminCmsEditPage = () => {
   const navigate = useNavigate();
   const [pageId, setPageId] = useState("");
   const [pageTitle, setPageTitle] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [content, setContent] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   // Featured locations state (home page only)
   const [locations, setLocations] = useState<FeaturedLocation[]>([]);
@@ -60,24 +61,25 @@ const AdminCmsEditPage = () => {
   const [partnerImagePreview, setPartnerImagePreview] = useState<string | null>(null);
   const partnerFileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const fetchPage = async () => {
+  const { isLoading: loading } = useQuery({
+    queryKey: ['admin', 'cms-edit', slug],
+    queryFn: async () => {
       const { data } = await supabase
         .from("cms_pages")
         .select("*")
         .eq("page_slug", slug!)
         .limit(1);
       if (data && data.length > 0) {
-        const page = data[0] as any;
+        const page = data[0];
         setPageId(page.id);
         setPageTitle(page.page_title);
-        setContent(page.content as Record<string, any>);
+        setContent(page.content as Record<string, unknown>);
       }
-      setLoading(false);
-    };
-    fetchPage();
-    if (slug === "home") { fetchLocations(); fetchPartners(); }
-  }, [slug]);
+      if (slug === "home") { fetchLocations(); fetchPartners(); }
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const fetchLocations = async () => {
     const { data } = await supabase
@@ -182,7 +184,7 @@ const AdminCmsEditPage = () => {
   };
   const openLocEdit = (loc: FeaturedLocation) => {
     setEditingLoc(loc);
-    setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order, tagline: (loc as any).tagline || "", subtitle: (loc as any).subtitle || "" });
+    setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order, tagline: (loc as FeaturedLocation & { tagline?: string; subtitle?: string }).tagline || "", subtitle: (loc as FeaturedLocation & { tagline?: string; subtitle?: string }).subtitle || "" });
     setLocImageFile(null);
     setLocImagePreview(loc.image_url);
     setLocDialog(true);
