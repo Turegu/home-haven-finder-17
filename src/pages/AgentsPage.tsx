@@ -363,7 +363,11 @@ const AgentsPage = () => {
           </div>
         </div>
 
-        {activeTab === 'companies' ? (
+        {agentsLoading ? (
+          <div className="flex items-center justify-center min-h-[200px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+        ) : agentsError ? (
+          <div className="p-4 text-center text-destructive">Failed to load content. Please refresh the page.</div>
+        ) : activeTab === 'companies' ? (
           <PaginatedCardGrid
             items={filteredCompanies}
             renderCard={(company) => {

@@ -35,11 +35,16 @@ const PrivacyPage = () => {
           <span>/</span>
           <span className="text-foreground">{t('pages.privacy.title')}</span>
         </div>
-        <h1 className="text-3xl font-bold text-foreground mb-8">{t('pages.privacy.title')}</h1>
-        <div
-          className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
-        />
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[200px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+        ) : isError ? (
+          <div className="p-4 text-center text-destructive">Failed to load content. Please refresh the page.</div>
+        ) : (
+          <div
+            className="prose prose-sm max-w-none text-foreground prose-headings:text-foreground prose-p:text-muted-foreground prose-li:text-muted-foreground"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
+          />
+        )}
       </div>
       <Footer />
     </div>
