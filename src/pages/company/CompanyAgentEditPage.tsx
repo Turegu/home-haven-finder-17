@@ -108,7 +108,7 @@ const CompanyAgentEditPage = () => {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
   const isEdit = id && id !== "new";
-  const { data: companyData } = useQuery({
+  const { data: companyData, isLoading: companyLoading, isError: companyError } = useQuery({
     queryKey: ["company-id-for-owner"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
