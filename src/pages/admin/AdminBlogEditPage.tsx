@@ -39,7 +39,7 @@ const AdminBlogEditPage = () => {
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  useQuery({
+  const { isLoading: initialLoading, isError: initialError } = useQuery({
     queryKey: ['admin', 'blog-edit', id],
     queryFn: async () => {
       const { data: langs } = await supabase
