@@ -125,7 +125,7 @@ export function useCmsPage<T = Record<string, unknown>>(
     initialData: () => {
       // 1st priority: inline prefetch from index.html (fastest)
       if (slug === "home") {
-        const prefetch = (window as any).__CMS_HOME_PREFETCH__;
+        const prefetch = (window as Window & { __CMS_HOME_PREFETCH__?: Array<{ content: unknown }> }).__CMS_HOME_PREFETCH__;
         if (Array.isArray(prefetch) && prefetch[0]?.content) {
           return prefetch[0].content as T;
         }

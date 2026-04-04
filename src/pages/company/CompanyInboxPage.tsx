@@ -135,21 +135,21 @@ const CompanyInboxPage = () => {
       const [propertiesRes, projectsRes] = await Promise.all([
         propertyIds.length > 0
           ? supabase.from("properties").select("id, title, listing_id, images, price, currency, location").in("id", propertyIds)
-          : Promise.resolve({ data: [] as any[], error: null }),
+          : Promise.resolve({ data: [] as { id: string; title: string; listing_id: string; images: string[] | null; price: number | null; currency: string | null; location: string | null }[], error: null }),
         projectIds.length > 0
           ? supabase.from("projects").select("id, title, listing_id, images, min_price, currency, location").in("id", projectIds)
-          : Promise.resolve({ data: [] as any[], error: null }),
+          : Promise.resolve({ data: [] as { id: string; title: string; listing_id: string; images: string[] | null; min_price: number | null; currency: string | null; location: string | null }[], error: null }),
       ]);
 
       const propertyMap = new Map<string, ListingMeta>(
-        ((propertiesRes.data || []) as any[]).map((p) => [p.id, {
+        (propertiesRes.data || []).map((p) => [p.id, {
           title: p.title, listing_id: p.listing_id, images: p.images,
           price: p.price, currency: p.currency, location: p.location,
         }])
       );
 
       const projectMap = new Map<string, ListingMeta>(
-        ((projectsRes.data || []) as any[]).map((p) => [p.id, {
+        (projectsRes.data || []).map((p) => [p.id, {
           title: p.title, listing_id: p.listing_id, images: p.images,
           price: p.min_price, currency: p.currency, location: p.location,
         }])

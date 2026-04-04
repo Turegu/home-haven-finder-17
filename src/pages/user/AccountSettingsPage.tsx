@@ -79,7 +79,7 @@ const AccountSettingsPage = () => {
         preferred_language: profile.preferred_language,
         preferred_currency: profile.preferred_currency,
         preferred_area_unit: profile.preferred_area_unit,
-      } as any).eq("user_id", user.id);
+      }).eq("user_id", user.id);
       if (error) throw error;
       toast.success(t('accountSettings.profileUpdated'));
     } catch (err: any) {

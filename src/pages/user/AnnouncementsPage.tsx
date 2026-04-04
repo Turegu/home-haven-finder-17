@@ -60,9 +60,9 @@ const AnnouncementsPage = () => {
         .select("id, title, message, announcement_type, created_at, company_id, companies(name, logo_url)")
         .in("company_id", Array.from(companyIds))
         .order("created_at", { ascending: false })
-        .limit(100) as any;
+        .limit(100);
 
-      return (data || []).map((d: any) => ({ ...d, company: d.companies })) as Announcement[];
+      return (data || []).map((d) => ({ ...d, company: d.companies })) as Announcement[];
     },
     enabled: !!authUser?.id,
     staleTime: 2 * 60 * 1000,

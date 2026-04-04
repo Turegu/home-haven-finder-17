@@ -445,7 +445,7 @@ const HeroBannerContent = ({ hero, isMain }: { hero: CmsContent["hero"]; isMain?
           alt={`${slideTitle} ${idx + 1}`}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${idx === visibleIndex && heroLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading={idx === 0 || idx === currentIndex ? "eager" : "lazy"}
-          {...(idx === 0 || idx === currentIndex ? { fetchPriority: "high" as any } : {})}
+          {...(idx === 0 || idx === currentIndex ? { fetchPriority: "high" as const } : {})}
           onLoad={() => {
             setLoadedIndices((prev) => {
               if (prev.has(idx)) return prev;
