@@ -39,7 +39,8 @@ const AdminCmsEditPage = () => {
   const navigate = useNavigate();
   const [pageId, setPageId] = useState("");
   const [pageTitle, setPageTitle] = useState("");
-  const [content, setContent] = useState<Record<string, Record<string, unknown>>>({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [content, setContent] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
 
   // Featured locations state (home page only)
