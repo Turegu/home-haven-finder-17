@@ -35,23 +35,24 @@ const AdminEmailPreviewPage = () => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
-
-  async function fetchTemplates() {
-    const { data, error } = await supabase
-      .from("email_templates")
-      .select("*")
-      .order("created_at");
-    if (error) {
-      toast.error("Failed to load email templates");
-      console.error(error);
-    } else {
-      setTemplates((data || []) as unknown as EmailTemplate[]);
-    }
-    setLoading(false);
-  }
+  const { isLoading: loading } = useQuery({
+    queryKey: ['admin', 'email-templates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_templates")
+        .select("*")
+        .order("created_at");
+      if (error) {
+        toast.error("Failed to load email templates");
+        console.error(error);
+        return [];
+      }
+      const result = (data || []) as unknown as EmailTemplate[];
+      setTemplates(result);
+      return result;
+    },
+    staleTime: 5 * 60_000,
+  });
 
   const current = useMemo(
     () => templates.find((t) => t.template_key === activeKey),
