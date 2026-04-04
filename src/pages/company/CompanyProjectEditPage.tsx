@@ -284,7 +284,7 @@ const CompanyProjectEditPage = () => {
     }));
   };
 
-  useQuery({
+  const { isLoading: initLoading, isError: initError } = useQuery({
     queryKey: ['company', 'project-edit-init'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
