@@ -33,7 +33,6 @@ interface Bank {
 const MortgageBanksPage = () => {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
-  const [search, setSearch] = useState("");
 
   // Calculator state
   const [propertyPrice, setPropertyPrice] = useState(500000);

@@ -39,7 +39,7 @@ const AdminCmsEditPage = () => {
   const navigate = useNavigate();
   const [pageId, setPageId] = useState("");
   const [pageTitle, setPageTitle] = useState("");
-  const [content, setContent] = useState<Record<string, unknown>>({});
+  const [content, setContent] = useState<Record<string, Record<string, unknown>>>({});
   const [saving, setSaving] = useState(false);
 
   // Featured locations state (home page only)
