@@ -92,7 +92,7 @@ const AdminEmailPreviewPage = () => {
     } else {
       toast.success("Template saved successfully");
       setMode("preview");
-      fetchTemplates();
+      queryClient.invalidateQueries({ queryKey: ['admin', 'email-templates'] });
     }
     setSaving(false);
   }
