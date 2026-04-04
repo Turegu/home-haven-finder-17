@@ -61,7 +61,7 @@ const AdvertisePage = () => {
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: packages } = useQuery({
+  const { data: packages, isLoading: packagesLoading, isError: packagesError } = useQuery({
     queryKey: ["membership-packages"],
     queryFn: async () => {
       const { data, error } = await supabase

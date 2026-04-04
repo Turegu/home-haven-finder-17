@@ -130,6 +130,13 @@ const AdminFaqEditPage = () => {
 
   const currentTrans = translations[activeLang] || { question: "", answer: "" };
 
+  if (initialLoading) {
+    return <AdminLayout><div className="flex items-center justify-center min-h-[200px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></AdminLayout>;
+  }
+  if (initialError) {
+    return <AdminLayout><div className="p-4 text-center text-destructive">Failed to load content. Please refresh the page.</div></AdminLayout>;
+  }
+
   return (
     <AdminLayout>
       <div className="space-y-6 max-w-3xl">
