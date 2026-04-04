@@ -54,9 +54,9 @@ const AccountSettingsPage = () => {
           display_name: data.display_name || "",
           phone: data.phone || "",
           show_phone: data.show_phone ?? false,
-          preferred_language: (data as any).preferred_language || "en",
-          preferred_currency: (data as any).preferred_currency || "USD",
-          preferred_area_unit: (data as any).preferred_area_unit || "m²",
+          preferred_language: data.preferred_language || "en",
+          preferred_currency: data.preferred_currency || "USD",
+          preferred_area_unit: data.preferred_area_unit || "m²",
           avatar_url: data.avatar_url || "",
         });
       }
