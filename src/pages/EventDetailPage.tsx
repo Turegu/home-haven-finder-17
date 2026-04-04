@@ -45,7 +45,7 @@ const EventDetailPage = () => {
         .eq('id', id)
         .maybeSingle();
       if (data) {
-        const e = data as any;
+        const e = data;
         setEvent({
           id: e.id,
           title: e.title || '',

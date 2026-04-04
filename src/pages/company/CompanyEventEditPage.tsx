@@ -158,7 +158,7 @@ const CompanyEventEditPage = () => {
     const fetchEvent = async () => {
       const { data, error } = await supabase.from("events").select("*").eq("id", id).maybeSingle();
       if (error || !data) { toast.error(t("companyDashboard.eventNotFound")); return; }
-      const d = data as any;
+      const d = data;
       setForm({
         title: d.title || "",
         title_ar: d.title_ar || "",

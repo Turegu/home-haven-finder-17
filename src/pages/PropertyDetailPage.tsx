@@ -123,7 +123,7 @@ const PropertyDetailPage = () => {
         .maybeSingle();
       if (!data) return null;
 
-      const p = data as any;
+      const p = data;
 
       // Fetch payment plans in parallel with similar properties
       const [similarResult, plansResult] = await Promise.all([

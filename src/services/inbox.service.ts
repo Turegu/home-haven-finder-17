@@ -34,12 +34,12 @@ export const inboxService = {
       p_company_id: params.company_id,
       p_full_name: params.full_name,
       p_email: params.email,
-      p_agent_id: params.agent_id ?? null,
-      p_phone: params.phone ?? null,
+      p_agent_id: params.agent_id ?? undefined,
+      p_phone: params.phone ?? undefined,
       p_message: params.message,
       p_inbox_type: params.inbox_type,
-      p_property_id: params.property_id ?? null,
-      p_project_id: params.project_id ?? null,
+      p_property_id: params.property_id ?? undefined,
+      p_project_id: params.project_id ?? undefined,
     });
   },
 };

@@ -53,7 +53,7 @@ const ProjectDetailPage = () => {
         .eq('id', id)
         .maybeSingle();
       if (data) {
-        const p = data as any;
+        const p = data;
         setProject({
           id: p.id,
           title: p.title || '',
