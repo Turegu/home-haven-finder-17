@@ -38,7 +38,7 @@ const AgentFollowersPage = () => {
   const [events, setEvents] = useState<{ id: string; title: string }[]>([]);
   const [selectedEventId, setSelectedEventId] = useState("");
 
-  useQuery({
+  const { isLoading: queryLoading, isError: queryError } = useQuery({
     queryKey: ['agent', 'followers-init'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
