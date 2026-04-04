@@ -11,7 +11,7 @@ import type { Json } from '@/integrations/supabase/types';
 const PrivacyPage = () => {
   const { t } = useTranslation();
 
-  const { data: html = "" } = useQuery({
+  const { data: html = "", isLoading, isError } = useQuery({
     queryKey: ['cms-page', 'privacy'],
     queryFn: async () => {
       const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "privacy").limit(1);
