@@ -41,7 +41,7 @@ const ProjectDetailPage = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [projectUnits, setProjectUnits] = useState<any[]>([]);
+  const [projectUnits, setProjectUnits] = useState<Array<{ id: string; unit_name: string; unit_type: string; price: number | null; currency: string | null; rooms: string | null; area: number | null; area_unit: string | null }>>([]);
 
   useEffect(() => {
     if (!id) return;
