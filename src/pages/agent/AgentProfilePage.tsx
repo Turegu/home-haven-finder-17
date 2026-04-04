@@ -139,7 +139,7 @@ const AgentProfilePage = () => {
   const [_companyId, setCompanyId] = useState<string | null>(null);
   const [boostDialogOpen, setBoostDialogOpen] = useState(false);
 
-  useQuery({
+  const { isError: profileError } = useQuery({
     queryKey: ['agent', 'profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
