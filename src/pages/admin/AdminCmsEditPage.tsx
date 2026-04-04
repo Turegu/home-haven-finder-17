@@ -61,24 +61,25 @@ const AdminCmsEditPage = () => {
   const [partnerImagePreview, setPartnerImagePreview] = useState<string | null>(null);
   const partnerFileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const fetchPage = async () => {
+  const { isLoading: loading } = useQuery({
+    queryKey: ['admin', 'cms-edit', slug],
+    queryFn: async () => {
       const { data } = await supabase
         .from("cms_pages")
         .select("*")
         .eq("page_slug", slug!)
         .limit(1);
       if (data && data.length > 0) {
-        const page = data[0] as any;
+        const page = data[0];
         setPageId(page.id);
         setPageTitle(page.page_title);
-        setContent(page.content as Record<string, any>);
+        setContent(page.content as Record<string, unknown>);
       }
-      setLoading(false);
-    };
-    fetchPage();
-    if (slug === "home") { fetchLocations(); fetchPartners(); }
-  }, [slug]);
+      if (slug === "home") { fetchLocations(); fetchPartners(); }
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const fetchLocations = async () => {
     const { data } = await supabase
