@@ -138,8 +138,7 @@ const CompanyPropertyEditPage = () => {
     }));
   };
 
-  // Fetch company ID
-  useQuery({
+  const { isLoading: initLoading, isError: initError } = useQuery({
     queryKey: ['company', 'property-edit-init'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
