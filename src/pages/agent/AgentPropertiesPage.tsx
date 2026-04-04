@@ -44,8 +44,7 @@ const AgentPropertiesPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data: analyticsPhase } = useAnalyticsPhase();
-  const [properties, setProperties] = useState<AgentProperty[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "premium_first" | "featured_first">("newest");
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -54,21 +53,22 @@ const AgentPropertiesPage = () => {
   const [page, setPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState("all");
 
-  const fetchData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data: agent } = await supabase.from("agents").select("id, company_id").eq("user_id", user.id).limit(1).maybeSingle();
-    if (!agent) return;
-    setCompanyId(agent.company_id);
+  const { data: properties = [], isLoading: loading } = useQuery({
+    queryKey: ['agent', 'properties', sortOrder],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      const { data: agent } = await supabase.from("agents").select("id, company_id").eq("user_id", user.id).limit(1).maybeSingle();
+      if (!agent) return [];
+      setCompanyId(agent.company_id);
 
-    const { data, error } = await supabase
-      .from("properties")
-      .select("id, listing_id, title, property_type, property_purpose, status, price, currency, created_at, property_classification")
-      .eq("agent_id", agent.id)
-      .order("created_at", { ascending: sortOrder === "oldest" });
+      const { data, error } = await supabase
+        .from("properties")
+        .select("id, listing_id, title, property_type, property_purpose, status, price, currency, created_at, property_classification")
+        .eq("agent_id", agent.id)
+        .order("created_at", { ascending: sortOrder === "oldest" });
 
-    if (error) toast.error("Failed to load");
-    else {
+      if (error) { toast.error("Failed to load"); return []; }
       let results = data || [];
       if (sortOrder === "premium_first") {
         results = results.sort((a, b) => {
@@ -81,12 +81,12 @@ const AgentPropertiesPage = () => {
           return order(a.property_classification) - order(b.property_classification);
         });
       }
-      setProperties(results);
-    }
-    setLoading(false);
-  };
+      return results;
+    },
+    staleTime: 60_000,
+  });
 
-  useEffect(() => { fetchData(); }, [sortOrder]);
+  const fetchData = () => queryClient.invalidateQueries({ queryKey: ['agent', 'properties'] });
 
   const stats = useMemo(() => ({
     total: properties.length,
