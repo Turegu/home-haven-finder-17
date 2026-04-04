@@ -1,7 +1,7 @@
 import SEOHead from '@/components/SEOHead';
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -18,11 +18,10 @@ interface FaqItem {
 
 const FaqPage = () => {
   const { t, i18n } = useTranslation();
-  const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchFaqs = async () => {
+  const { data: faqs = [], isLoading: loading } = useQuery({
+    queryKey: ['faqs', i18n.language],
+    queryFn: async () => {
       const langCode = i18n.language === 'ar' ? 'ar' : 'en';
       const { data } = await supabase
         .from("faqs")
@@ -30,38 +29,34 @@ const FaqPage = () => {
         .eq("status", "active")
         .order("sort_order", { ascending: true });
 
-      if (data && data.length > 0) {
-        // Try current language first, fall back to English
-        const { data: trans } = await supabase
-          .from("faq_translations")
-          .select("faq_id, question, answer, language_code")
-          .in("language_code", [langCode, "en"])
-          .in("faq_id", data.map(f => f.id));
+      if (!data || data.length === 0) return [];
 
-        const transMap: Record<string, { question: string; answer: string }> = {};
-        if (trans) {
-          // First load English as fallback
-          (trans as any[]).filter((t: any) => t.language_code === 'en').forEach((t: any) => {
+      const { data: trans } = await supabase
+        .from("faq_translations")
+        .select("faq_id, question, answer, language_code")
+        .in("language_code", [langCode, "en"])
+        .in("faq_id", data.map(f => f.id));
+
+      const transMap: Record<string, { question: string; answer: string }> = {};
+      if (trans) {
+        trans.filter(t => t.language_code === 'en').forEach(t => {
+          transMap[t.faq_id] = { question: t.question, answer: t.answer };
+        });
+        if (langCode !== 'en') {
+          trans.filter(t => t.language_code === langCode).forEach(t => {
             transMap[t.faq_id] = { question: t.question, answer: t.answer };
           });
-          // Then override with current language
-          if (langCode !== 'en') {
-            (trans as any[]).filter((t: any) => t.language_code === langCode).forEach((t: any) => {
-              transMap[t.faq_id] = { question: t.question, answer: t.answer };
-            });
-          }
         }
-
-        setFaqs(data.map(f => ({
-          id: f.id,
-          question: transMap[f.id]?.question || "Untitled",
-          answer: transMap[f.id]?.answer || "",
-        })));
       }
-      setLoading(false);
-    };
-    fetchFaqs();
-  }, [i18n.language]);
+
+      return data.map((f): FaqItem => ({
+        id: f.id,
+        question: transMap[f.id]?.question || "Untitled",
+        answer: transMap[f.id]?.answer || "",
+      }));
+    },
+    staleTime: 5 * 60_000,
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,7 +77,7 @@ const FaqPage = () => {
           <div className="text-center py-16 text-muted-foreground">{t('pages.faq.noFaqsYet')}</div>
         ) : (
           <Accordion type="single" collapsible className="space-y-3">
-            {faqs.map((faq, idx) => (
+            {faqs.map((faq) => (
               <AccordionItem
                 key={faq.id}
                 value={faq.id}

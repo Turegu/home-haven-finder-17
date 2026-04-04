@@ -33,8 +33,9 @@ const AdminFaqEditPage = () => {
   const [translations, setTranslations] = useState<Record<string, TranslationData>>({});
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    const init = async () => {
+  useQuery({
+    queryKey: ['admin', 'faq-edit', id],
+    queryFn: async () => {
       const { data: langs } = await supabase
         .from("languages")
         .select("id, name, code")
@@ -44,9 +45,9 @@ const AdminFaqEditPage = () => {
       if (langs && langs.length > 0) {
         setLanguages(langs);
         setActiveLang(langs[0].code);
-        const init: Record<string, TranslationData> = {};
-        langs.forEach(l => { init[l.code] = { question: "", answer: "" }; });
-        setTranslations(init);
+        const initTrans: Record<string, TranslationData> = {};
+        langs.forEach(l => { initTrans[l.code] = { question: "", answer: "" }; });
+        setTranslations(initTrans);
 
         if (!isNew && id) {
           const { data: trans } = await supabase
@@ -57,16 +58,17 @@ const AdminFaqEditPage = () => {
           if (trans) {
             const map: Record<string, TranslationData> = {};
             langs.forEach(l => { map[l.code] = { question: "", answer: "" }; });
-            (trans as any[]).forEach((t: any) => {
+            trans.forEach(t => {
               map[t.language_code] = { question: t.question, answer: t.answer };
             });
             setTranslations(map);
           }
         }
       }
-    };
-    init();
-  }, [id, isNew]);
+      return null;
+    },
+    staleTime: 60_000,
+  });
 
   const updateTranslation = (langCode: string, field: keyof TranslationData, value: string) => {
     setTranslations(prev => ({

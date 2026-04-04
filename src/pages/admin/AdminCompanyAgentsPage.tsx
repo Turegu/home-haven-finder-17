@@ -28,26 +28,28 @@ interface Agent {
 const AdminCompanyAgentsPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [companyName, setCompanyName] = useState("");
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    if (!id) return;
-    (async () => {
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ['admin', 'company-agents', id],
+    queryFn: async () => {
       const [companyRes, agentsRes] = await Promise.all([
-        supabase.from("companies").select("name").eq("id", id).maybeSingle(),
+        supabase.from("companies").select("name").eq("id", id!).maybeSingle(),
         supabase.from("agents")
           .select("id, name, email, phone, status, credit_balance, created_at, profile_classification, downgraded_at")
-          .eq("company_id", id)
+          .eq("company_id", id!)
           .order("created_at", { ascending: false }),
       ]);
-      setCompanyName(companyRes.data?.name || "Unknown");
-      setAgents((agentsRes.data as Agent[]) || []);
-      setLoading(false);
-    })();
-  }, [id]);
+      return {
+        companyName: companyRes.data?.name || "Unknown",
+        agents: (agentsRes.data as Agent[]) || [],
+      };
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
+  const agents = data?.agents || [];
+  const companyName = data?.companyName || "";
 
   const filtered = agents.filter(
     (a) => turkishIncludes(a.name, search) || turkishIncludes(a.email, search)
