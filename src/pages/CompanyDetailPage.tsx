@@ -147,7 +147,17 @@ const CompanyDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="text-center py-20 text-muted-foreground">{t('companyDetail.loading')}</div>
+        <div className="flex items-center justify-center min-h-[300px]"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="p-8 text-center text-destructive">Failed to load company. Please refresh the page.</div>
         <Footer />
       </div>
     );
