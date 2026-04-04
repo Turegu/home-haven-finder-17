@@ -56,7 +56,7 @@ const CompanyProjectUnitsPage = () => {
   const interiorAmenities = filterOpts["interior_amenities"] || [];
   const exteriorAmenities = filterOpts["exterior_amenities"] || [];
   const queryClient = useQueryClient();
-  const [units, setUnits] = useState<ReturnType<typeof useState<any[]>>[0]>([]);
+  const [units, setUnits] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectTitle, setProjectTitle] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
