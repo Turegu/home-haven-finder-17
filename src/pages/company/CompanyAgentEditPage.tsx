@@ -120,6 +120,7 @@ const CompanyAgentEditPage = () => {
     staleTime: 5 * 60_000,
   });
   const companyId = companyData?.id ?? null;
+  const [loading, setLoading] = useState(false);
   const membershipLimits = useMembershipLimits(companyId);
   const { data: dbDesignations = [] } = useDesignations();
   const [avatarUrl, setAvatarUrl] = useState("");
