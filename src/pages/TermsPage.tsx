@@ -11,7 +11,7 @@ import type { Json } from '@/integrations/supabase/types';
 const TermsPage = () => {
   const { t } = useTranslation();
 
-  const { data: html = "" } = useQuery({
+  const { data: html = "", isLoading, isError } = useQuery({
     queryKey: ['cms-page', 'terms'],
     queryFn: async () => {
       const { data } = await supabase.from("cms_pages").select("content").eq("page_slug", "terms").limit(1);
