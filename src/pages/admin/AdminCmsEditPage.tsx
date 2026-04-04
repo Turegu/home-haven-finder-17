@@ -184,7 +184,7 @@ const AdminCmsEditPage = () => {
   };
   const openLocEdit = (loc: FeaturedLocation) => {
     setEditingLoc(loc);
-    setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order, tagline: (loc as any).tagline || "", subtitle: (loc as any).subtitle || "" });
+    setLocForm({ name: loc.name, link_url: loc.link_url || "", sort_order: loc.sort_order, tagline: (loc as FeaturedLocation & { tagline?: string; subtitle?: string }).tagline || "", subtitle: (loc as FeaturedLocation & { tagline?: string; subtitle?: string }).subtitle || "" });
     setLocImageFile(null);
     setLocImagePreview(loc.image_url);
     setLocDialog(true);

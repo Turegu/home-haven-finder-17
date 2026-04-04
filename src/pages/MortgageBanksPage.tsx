@@ -42,19 +42,18 @@ const MortgageBanksPage = () => {
   const [loanDuration, setLoanDuration] = useState(10);
   const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
 
-  useEffect(() => {
-    document.title = "Mortgage & Bank Loans | Turegu";
-    const fetchBanks = async () => {
+  const { data: banks = [], isLoading: loading } = useQuery({
+    queryKey: ['mortgage-banks'],
+    queryFn: async () => {
       const { data } = await supabase
         .from("banks")
         .select("*")
         .eq("status", "active")
         .order("interest_rate", { ascending: true });
-      setBanks((data as Bank[]) || []);
-      setLoading(false);
-    };
-    fetchBanks();
-  }, []);
+      return (data as Bank[]) || [];
+    },
+    staleTime: 5 * 60_000,
+  });
 
   const filtered = banks.filter((b) =>
     turkishIncludes(b.name, search)
