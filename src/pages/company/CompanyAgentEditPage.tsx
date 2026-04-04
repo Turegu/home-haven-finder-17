@@ -143,7 +143,7 @@ const CompanyAgentEditPage = () => {
     registration_number: "",
   });
 
-  const updateField = (field: string, value: any) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateField = (field: string, value: string | string[]) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const toggleLanguage = (lang: string) => {
     setForm((prev) => ({
