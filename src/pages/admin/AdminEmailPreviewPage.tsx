@@ -27,13 +27,13 @@ interface EmailTemplate {
 }
 
 const AdminEmailPreviewPage = () => {
+  const queryClient = useQueryClient();
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [activeKey, setActiveKey] = useState("confirmation");
   const [mode, setMode] = useState<"preview" | "edit">("preview");
   const [editSubject, setEditSubject] = useState("");
   const [editFields, setEditFields] = useState<TemplateBodyFields>({});
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const { isLoading: loading } = useQuery({
     queryKey: ['admin', 'email-templates'],
