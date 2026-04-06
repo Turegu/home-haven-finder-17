@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Building2, Home, FolderKanban, CalendarDays,
   Crown, ImageIcon, Landmark, BookOpen, HelpCircle, Languages,
-  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle, FlaskConical
+  BarChart3, Settings, LogOut, ChevronDown, Menu, X, FileText, Coins, ListChecks, Mail, SlidersHorizontal, MapPin, Flag, ArrowUpCircle, FlaskConical, ScrollText
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useTestMode } from "@/hooks/useTestMode";
@@ -31,6 +31,7 @@ const sidebarItems = [
   { label: "Filters", icon: SlidersHorizontal, path: "/admin/filters" },
   { label: "Locations", icon: MapPin, path: "/admin/locations" },
   { label: "Email Templates", icon: Mail, path: "/admin/email-templates" },
+  { label: "Audit Log", icon: ScrollText, path: "/admin/audit-log" },
   { label: "Settings", icon: Settings, path: "/admin/settings", hasSubmenu: true },
 ];
 
