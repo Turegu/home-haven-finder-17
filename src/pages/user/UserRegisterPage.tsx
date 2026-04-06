@@ -6,8 +6,9 @@ import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, X, Search, Heart, TrendingUp, Bot } from "lucide-react";
+import { Eye, EyeOff, X, Search, Heart, TrendingUp, Bot, MailCheck } from "lucide-react";
 import { toast } from "sonner";
+import { Sentry } from "@/lib/sentry";
 import Index from "@/pages/Index";
 
 const UserRegisterPage = () => {
@@ -16,6 +17,7 @@ const UserRegisterPage = () => {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
 
   const update = (key: string, val: string) => setForm(p => ({ ...p, [key]: val }));
 
@@ -37,10 +39,10 @@ const UserRegisterPage = () => {
         },
       });
       if (error) throw error;
-      toast.success("Account created! Please check your email to verify your account.");
-      navigate("/login");
+      setRegistrationComplete(true);
     } catch (err: any) {
       toast.error(err.message || "Registration failed");
+      Sentry.captureException(err);
     } finally {
       setLoading(false);
     }
@@ -71,6 +73,19 @@ const UserRegisterPage = () => {
 
       {/* Overlay */}
       <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={handleClose}>
+        {registrationComplete ? (
+          <div className="text-center space-y-4 py-6">
+            <MailCheck className="h-12 w-12 text-primary mx-auto" />
+            <h2 className="text-lg font-semibold text-foreground">Check Your Email</h2>
+            <p className="text-sm text-muted-foreground">
+              Please check your email to verify your account before logging in. We sent a confirmation link to <strong className="text-foreground">{form.email}</strong>.
+            </p>
+            <Button onClick={() => navigate("/login")} className="w-full h-9 text-sm">
+              Go to Login
+            </Button>
+          </div>
+        ) : (
+        <>
         <div
           className="relative bg-background rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4 animate-in fade-in-0 zoom-in-95 max-h-[90vh] overflow-y-auto"
           onClick={e => e.stopPropagation()}
