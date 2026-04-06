@@ -173,6 +173,8 @@ const App = () => {
             <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/contact" element={<Navigate to="/contact-us" replace />} />
             <Route path="/install" element={<InstallPage />} />
+            <Route path="/sitemap.xml" element={<SitemapRoute />} />
+            <Route path="/sitemap" element={<SitemapRoute />} />
 
             {/* User auth */}
             <Route path="/login" element={<UserLoginPage />} />
