@@ -157,15 +157,10 @@ const Header = () => {
   const selectLang = async (lang: typeof languages[0]) => {
     setSelectedLang(lang);
     localStorage.setItem('selectedLangCode', lang.code);
-    // Sync i18n language — fall back to English for unsupported UI languages
-    const supportedLangs = ['en', 'ar', 'fr'];
-    const targetLang = supportedLangs.includes(lang.code) ? lang.code : 'en';
     document.documentElement.dir = lang.code === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang.code;
     setOpenDropdown(null);
-    if (i18n.language !== targetLang) {
-      await i18n.changeLanguage(targetLang);
-    }
+    await i18n.changeLanguage(lang.code);
   };
   const selectCurrency = (currency: typeof currencies[0]) => { setSelectedCurrency(currency); localStorage.setItem('selectedCurrencyCode', currency.code); setOpenDropdown(null); };
   const selectArea = (unit: typeof AREA_UNITS[0]) => { setSelectedArea(unit); localStorage.setItem('selectedAreaUnit', unit.value); window.dispatchEvent(new Event('area-unit-changed')); setOpenDropdown(null); };
@@ -219,7 +214,7 @@ const Header = () => {
               </button>
               {openDropdown === 'lang' && languages.length > 0 && (
                 <div className="absolute top-full start-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[180px] py-1 z-[60]">
-                  {languages.map(lang => (
+                  {languages.filter(l => ['en', 'ar', 'fr'].includes(l.code)).map(lang => (
                     <button key={lang.id} onClick={() => selectLang(lang)} className={cn("w-full text-start px-4 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2", selectedLang?.id === lang.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
                       {lang.name}
                     </button>
