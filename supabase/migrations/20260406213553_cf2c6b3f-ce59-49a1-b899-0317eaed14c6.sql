@@ -1,0 +1,1 @@
+UPDATE locations SET province_ar = 'أديامان' WHERE province = 'Adıyaman' AND province_ar = 'أضنة';
