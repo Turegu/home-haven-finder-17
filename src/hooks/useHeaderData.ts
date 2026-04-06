@@ -8,7 +8,6 @@ export function useCurrentUser() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Use getSession (reads from memory/localStorage) instead of getUser (network call)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id ?? null);
     });
@@ -43,7 +42,6 @@ export function useCurrentUser() {
     gcTime: 15 * 60 * 1000,
   });
 
-  // Also get email from session (no extra network call)
   const [email, setEmail] = useState('');
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -59,21 +57,21 @@ export function useCurrentUser() {
   };
 }
 
+// Derive counts from data queries instead of separate HEAD requests
 export function useHeaderCounts(userId: string | undefined) {
   return useQuery({
     queryKey: ['header-counts', userId],
     queryFn: async () => {
       if (!userId) return { savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 };
-      const [sp, ss, cmp, fa] = await Promise.all([
-        supabase.from('saved_properties').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+      // Only 2 COUNT queries for data we don't fetch elsewhere
+      const [ss, fa] = await Promise.all([
         supabase.from('saved_searches').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('property_comparisons').select('*', { count: 'exact', head: true }).eq('user_id', userId),
         supabase.from('agent_followers').select('*', { count: 'exact', head: true }).eq('user_id', userId),
       ]);
       return {
-        savedProperties: sp.count ?? 0,
+        savedProperties: 0, // derived from useHeaderSavedItems
         savedSearches: ss.count ?? 0,
-        compare: cmp.count ?? 0,
+        compare: 0, // derived from useHeaderCompareItems
         followedAgents: fa.count ?? 0,
       };
     },
