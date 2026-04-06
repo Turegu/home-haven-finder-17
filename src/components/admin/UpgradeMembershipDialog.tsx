@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { logAdminAction } from "@/lib/auditLog";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
@@ -105,6 +106,10 @@ const UpgradeMembershipDialog = ({
         : getTestAwareDurationLabel(DURATIONS.find(d => d.key === selectedDuration)!.months, isTestMode);
 
       toast.success(`${companyName} changed to ${selectedPackage} — ${durationLabel}`);
+      logAdminAction("change_membership", "membership", companyId,
+        { membership: currentMembership, package_end_date: packageEndDate },
+        { membership: selectedPackage, package_end_date: newEndDate }
+      );
       onUpgraded();
       onOpenChange(false);
     } catch {
