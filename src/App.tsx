@@ -27,6 +27,7 @@ const EventDetailPage = lazy(() => import("./pages/EventDetailPage.tsx"));
 const PropertyRequestPage = lazy(() => import("./pages/PropertyRequestPage.tsx"));
 const AdvertisePage = lazy(() => import("./pages/AdvertisePage.tsx"));
 const MortgageBanksPage = lazy(() => import("./pages/MortgageBanksPage.tsx"));
+const SitemapRoute = lazy(() => import("./pages/SitemapRoute.tsx"));
 const TermsPage = lazy(() => import("./pages/TermsPage.tsx"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage.tsx"));
 const BlogsPage = lazy(() => import("./pages/BlogsPage.tsx"));
@@ -172,6 +173,8 @@ const App = () => {
             <Route path="/contact-us" element={<ContactUsPage />} />
             <Route path="/contact" element={<Navigate to="/contact-us" replace />} />
             <Route path="/install" element={<InstallPage />} />
+            <Route path="/sitemap.xml" element={<SitemapRoute />} />
+            <Route path="/sitemap" element={<SitemapRoute />} />
 
             {/* User auth */}
             <Route path="/login" element={<UserLoginPage />} />
