@@ -125,8 +125,8 @@ const PropertyDetailPage = () => {
 
       const p = data;
 
-      // Fetch payment plans in parallel with similar properties
-      const [similarResult, plansResult] = await Promise.all([
+      // Fetch similar properties, payment plans, and steps ALL in parallel
+      const [similarResult, plansResult, stepsResult] = await Promise.all([
         supabase
           .from('properties')
           .select('*, agents(name, avatar_url), companies(name, logo_url)')
@@ -140,24 +140,22 @@ const PropertyDetailPage = () => {
           .eq("property_id", id!)
           .eq("is_active", true)
           .order("sort_order"),
+        supabase
+          .from("property_payment_plan_steps")
+          .select("*, property_payment_plans!inner(property_id)")
+          .eq("property_payment_plans.property_id", id!)
+          .order("sort_order"),
       ]);
 
-      let paymentPlans: { id: string; plan_name: string; steps: { id: string; percentage: number; title: string; subtitle: string | null }[] }[] = [];
-      if (plansResult.data && plansResult.data.length > 0) {
-        const planIds = plansResult.data.map((pl: any) => pl.id);
-        const { data: steps } = await supabase
-          .from("property_payment_plan_steps")
-          .select("*")
-          .in("plan_id", planIds)
-          .order("sort_order");
-        paymentPlans = plansResult.data.map((pl: any) => ({
-          id: pl.id,
-          plan_name: pl.plan_name,
-          steps: (steps || []).filter((s: any) => s.plan_id === pl.id).map((s: any) => ({
+      const paymentPlans = (plansResult.data ?? []).map((pl: any) => ({
+        id: pl.id,
+        plan_name: pl.plan_name,
+        steps: (stepsResult.data ?? [])
+          .filter((s: any) => s.plan_id === pl.id)
+          .map((s: any) => ({
             id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
           })),
-        }));
-      }
+      }));
 
       const similar: Property[] = (similarResult.data ?? []).map((s: any) => ({
         id: s.id,
