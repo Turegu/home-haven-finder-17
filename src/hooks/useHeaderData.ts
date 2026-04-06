@@ -57,28 +57,11 @@ export function useCurrentUser() {
   };
 }
 
-// Derive counts from data queries instead of separate HEAD requests
-export function useHeaderCounts(userId: string | undefined) {
-  return useQuery({
-    queryKey: ['header-counts', userId],
-    queryFn: async () => {
-      if (!userId) return { savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 };
-      // Only 2 COUNT queries for data we don't fetch elsewhere
-      const [ss, fa] = await Promise.all([
-        supabase.from('saved_searches').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('agent_followers').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-      ]);
-      return {
-        savedProperties: 0, // derived from useHeaderSavedItems
-        savedSearches: ss.count ?? 0,
-        compare: 0, // derived from useHeaderCompareItems
-        followedAgents: fa.count ?? 0,
-      };
-    },
-    enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
+// No longer fires any DB queries — counts are derived from other hooks
+export function useHeaderCounts(_userId: string | undefined) {
+  return {
+    data: { savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 },
+  };
 }
 
 export function useHeaderNotifications(userId: string | undefined) {
