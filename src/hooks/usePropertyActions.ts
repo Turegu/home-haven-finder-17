@@ -40,7 +40,8 @@ export function useSavedPropertyIds() {
         .eq('user_id', uid);
       return new Set((data ?? []).map(d => d.property_id));
     },
-    staleTime: 30_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
@@ -56,7 +57,8 @@ export function useComparedPropertyIds() {
         .eq('user_id', uid);
       return new Set((data ?? []).map(d => d.property_id));
     },
-    staleTime: 30_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
