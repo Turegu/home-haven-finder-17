@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_properties_status_purpose ON public.properties USING btree (status, property_purpose);
