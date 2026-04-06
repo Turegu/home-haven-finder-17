@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { logAdminAction } from "@/lib/auditLog";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { turkishIncludes } from "@/lib/utils";
@@ -168,6 +169,13 @@ const AdminCompaniesPage = () => {
       toast.error(t("admin.failedToUpdateVerification"));
     } else {
       toast.success(`${company.name} ${newValue ? "verified" : "unverified"}`);
+      logAdminAction(
+        newValue ? "verify_company" : "unverify_company",
+        "company",
+        company.id,
+        { is_verified: company.is_verified },
+        { is_verified: newValue }
+      );
       refetchCompanies();
     }
   };
