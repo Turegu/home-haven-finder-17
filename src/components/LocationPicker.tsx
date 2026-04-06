@@ -38,7 +38,7 @@ type Step = "province" | "district" | "neighborhood";
 const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ value, onChange, compact = false }, ref) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [provinces, setProvinces] = useState<NamePair[]>([]);
+  const [provinces, setProvinces] = useState<NamePair[]>(provincesCache ?? []);
   const [districts, setDistricts] = useState<NamePair[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<NamePair[]>([]);
   const [filter, setFilter] = useState("");
@@ -65,9 +65,15 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 
   // Load provinces (cached)
   useEffect(() => {
-    if (provincesCache) { setProvinces(provincesCache); return; }
+    if (provincesCache) {
+      if (provinces.length === 0) setProvinces(provincesCache);
+      return;
+    }
     supabase.rpc("get_distinct_provinces").then(({ data }) => {
-      if (data) { provincesCache = data as NamePair[]; setProvinces(provincesCache); }
+      if (data) {
+        provincesCache = data as NamePair[];
+        setProvinces(provincesCache);
+      }
     });
   }, []);
 
