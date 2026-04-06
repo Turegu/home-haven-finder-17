@@ -12,9 +12,9 @@ export async function logAdminAction(
     await supabase.rpc("log_admin_action", {
       p_action: action,
       p_target_type: targetType,
-      p_target_id: targetId || null,
-      p_old_value: oldValue ? JSON.parse(JSON.stringify(oldValue)) : null,
-      p_new_value: newValue ? JSON.parse(JSON.stringify(newValue)) : null,
+      p_target_id: targetId ?? undefined,
+      p_old_value: oldValue ? JSON.parse(JSON.stringify(oldValue)) : undefined,
+      p_new_value: newValue ? JSON.parse(JSON.stringify(newValue)) : undefined,
     });
   } catch (err) {
     // Non-blocking — don't break admin flows if audit logging fails
