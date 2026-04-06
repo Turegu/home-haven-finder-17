@@ -192,7 +192,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[280px] p-0" align="start">
+      <PopoverContent className="w-[280px] p-0" align="start" dir={isRtl ? 'rtl' : 'ltr'}>
         {/* Breadcrumb nav */}
         <div className="flex items-center gap-1 px-3 pt-3 pb-2 text-xs">
           {breadcrumbs.map((bc, i) => (
