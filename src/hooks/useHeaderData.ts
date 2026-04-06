@@ -40,7 +40,7 @@ export function useCurrentUser() {
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 
   // Also get email from session (no extra network call)
@@ -78,8 +78,8 @@ export function useHeaderCounts(userId: string | undefined) {
       };
     },
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
@@ -130,8 +130,8 @@ export function useHeaderSavedItems(userId: string | undefined) {
       return mapItems(data);
     },
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 
@@ -149,8 +149,8 @@ export function useHeaderCompareItems(userId: string | undefined) {
       return mapItems(data);
     },
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 

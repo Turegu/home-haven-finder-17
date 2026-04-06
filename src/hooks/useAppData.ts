@@ -16,7 +16,7 @@ export function useLanguages() {
       if (error) throw error;
       return (data ?? []) as Language[];
     },
-    staleTime: 30 * 60 * 1000, // 30 min — rarely changes
+    staleTime: 24 * 60 * 60 * 1000, // 24h — languages never change at runtime
   });
 }
 
@@ -35,7 +35,7 @@ export function useCurrencies() {
       if (error) throw error;
       return (data ?? []) as Currency[];
     },
-    staleTime: 30 * 60 * 1000,
+    staleTime: 24 * 60 * 60 * 1000, // 24h — currencies never change at runtime
   });
 }
 
