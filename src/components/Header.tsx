@@ -43,12 +43,19 @@ const Header = () => {
 
   // Auth + data via cached React Query hooks (no re-fetch on every page navigation)
   const currentUser = useCurrentUser();
-  const { data: counts = { savedProperties: 0, savedSearches: 0, compare: 0, followedAgents: 0 } } = useHeaderCounts(currentUser?.id);
+  const { data: rawCounts } = useHeaderCounts(currentUser?.id);
   const { data: notifData } = useHeaderNotifications(currentUser?.id);
   const notifications = notifData?.items || [];
   const unreadCount = notifData?.unreadCount || 0;
   const { data: savedItems = [] } = useHeaderSavedItems(currentUser?.id);
   const { data: compareItems = [] } = useHeaderCompareItems(currentUser?.id);
+  // Derive saved/compare counts from fetched data to avoid redundant HEAD queries
+  const counts = {
+    savedProperties: savedItems.length,
+    savedSearches: rawCounts?.savedSearches ?? 0,
+    compare: compareItems.length,
+    followedAgents: rawCounts?.followedAgents ?? 0,
+  };
   const invalidateHeaderData = useInvalidateHeaderData();
 
   const langRef = useRef<HTMLDivElement>(null);
