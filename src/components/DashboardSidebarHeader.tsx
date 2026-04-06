@@ -23,8 +23,8 @@ const DashboardSidebarHeader = ({ brandPath }: DashboardSidebarHeaderProps) => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const switchLanguage = (code: string) => {
-    i18n.changeLanguage(code);
+  const switchLanguage = async (code: string) => {
+    await i18n.changeLanguage(code);
     document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = code;
     localStorage.setItem("selectedLangCode", code);

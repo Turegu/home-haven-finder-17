@@ -176,7 +176,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   if (draft.district) breadcrumbs.push({ label: stepLabelMap.neighborhood, step: "neighborhood", value: draft.neighborhood });
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover key={i18n.language} open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button ref={ref} className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-md hover:border-primary/50 transition-colors bg-background min-w-[160px] max-w-[240px]">
           <MapPin className="h-4 w-4 text-primary shrink-0" />
