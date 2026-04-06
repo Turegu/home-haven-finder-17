@@ -25,18 +25,12 @@ interface NamePair { name: string; ar: string }
 // Module-level cache
 let provincesCache: NamePair[] | null = null;
 
-function useIsRtl() {
-  const [rtl, setRtl] = useState(false);
-  useEffect(() => {
-    setRtl(document.documentElement.dir === "rtl" || document.documentElement.lang === "ar" || document.documentElement.lang === "fa");
-  }, []);
-  return rtl;
-}
 
 type Step = "province" | "district" | "neighborhood";
 
 const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ value, onChange, compact = false }, ref) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === "ar" || i18n.language === "fa";
   const [open, setOpen] = useState(false);
   const [provinces, setProvinces] = useState<NamePair[]>(provincesCache ?? []);
   const [districts, setDistricts] = useState<NamePair[]>([]);
@@ -44,7 +38,6 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
   const [filter, setFilter] = useState("");
   const [draft, setDraft] = useState<LocationSelection>({});
   const [step, setStep] = useState<Step>("province");
-  const isRtl = useIsRtl();
   const filterRef = useRef<HTMLInputElement>(null);
 
   // Sync draft & step when popover opens
