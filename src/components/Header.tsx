@@ -219,7 +219,7 @@ const Header = () => {
               </button>
               {openDropdown === 'lang' && languages.length > 0 && (
                 <div className="absolute top-full start-0 mt-1 bg-background border border-border rounded-md shadow-lg min-w-[180px] py-1 z-[60]">
-                  {languages.map(lang => (
+                  {languages.filter(l => ['en', 'ar', 'fr'].includes(l.code)).map(lang => (
                     <button key={lang.id} onClick={() => selectLang(lang)} className={cn("w-full text-start px-4 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2", selectedLang?.id === lang.id ? "bg-primary text-primary-foreground font-medium" : "text-foreground")}>
                       {lang.name}
                     </button>
