@@ -194,7 +194,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
       </PopoverTrigger>
       <PopoverContent className="w-[280px] p-0" align="start" dir={isRtl ? 'rtl' : 'ltr'}>
         {/* Breadcrumb nav */}
-        <div className="flex items-center gap-1 px-3 pt-3 pb-2 text-xs">
+        <div className="flex items-center gap-1 px-3 pt-3 pb-2 text-xs" dir={isRtl ? 'rtl' : 'ltr'}>
           {breadcrumbs.map((bc, i) => (
             <span key={bc.step} className="flex items-center gap-1">
               {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground rtl:rotate-180" />}
@@ -209,7 +209,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
         </div>
 
         {/* Search */}
-        <div className="px-3 pb-2">
+        <div className="px-3 pb-2" dir={isRtl ? 'rtl' : 'ltr'}>
           <Input
             ref={filterRef}
             placeholder={stepPlaceholderMap[step]}
@@ -221,7 +221,7 @@ const LocationPicker = forwardRef<HTMLButtonElement, LocationPickerProps>(({ val
 
         {/* List */}
         <ScrollArea className="h-[240px]">
-          <div className="px-2 pb-2 space-y-0.5">
+          <div className="px-2 pb-2 space-y-0.5" dir={isRtl ? 'rtl' : 'ltr'}>
             {filtered.map((item) => (
               <button
                 key={item.name}
