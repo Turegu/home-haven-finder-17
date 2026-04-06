@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
       admin_settings: {
         Row: {
           created_at: string
@@ -2763,6 +2796,16 @@ export type Database = {
       listing_exists: {
         Args: { p_listing_id: string; p_listing_type: string }
         Returns: boolean
+      }
+      log_admin_action: {
+        Args: {
+          p_action: string
+          p_new_value?: Json
+          p_old_value?: Json
+          p_target_id?: string
+          p_target_type: string
+        }
+        Returns: string
       }
       owns_company: { Args: { p_company_id: string }; Returns: boolean }
       search_event_ids_by_keyword: {
