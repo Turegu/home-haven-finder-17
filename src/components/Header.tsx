@@ -154,13 +154,13 @@ const Header = () => {
     return <Bell className="h-4 w-4 text-primary" />;
   };
 
-  const selectLang = (lang: typeof languages[0]) => {
+  const selectLang = async (lang: typeof languages[0]) => {
     setSelectedLang(lang);
     localStorage.setItem('selectedLangCode', lang.code);
     // Sync i18n language
     const supportedLangs = ['en', 'ar', 'fr'];
     if (supportedLangs.includes(lang.code)) {
-      i18n.changeLanguage(lang.code);
+      await i18n.changeLanguage(lang.code);
     }
     document.documentElement.dir = lang.code === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = lang.code;
