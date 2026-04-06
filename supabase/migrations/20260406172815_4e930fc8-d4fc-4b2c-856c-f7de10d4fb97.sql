@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Admins can manage all inbox" ON public.company_inbox;
