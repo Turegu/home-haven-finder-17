@@ -255,6 +255,16 @@ const PropertyDetailPage = () => {
     return parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null);
   }, [detailData]);
 
+  if (loading || !detailData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <PropertyDetailSkeleton />
+        <Footer />
+      </div>
+    );
+  }
+
   const [loanValues, setLoanValues] = useState({
     propertyValue: 0,
     loanPeriod: 20,
@@ -294,16 +304,6 @@ const PropertyDetailPage = () => {
   const handleMediaTabClick = (tabId: string) => {
     setActiveTab(tabId);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <PropertyDetailSkeleton />
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
