@@ -269,6 +269,16 @@ const PropertyDetailPage = () => {
     }
   }, [property.price]);
 
+  if (loading || !detailData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <PropertyDetailSkeleton />
+        <Footer />
+      </div>
+    );
+  }
+
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % property.images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + property.images.length) % property.images.length);
 
@@ -294,16 +304,6 @@ const PropertyDetailPage = () => {
   const handleMediaTabClick = (tabId: string) => {
     setActiveTab(tabId);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <PropertyDetailSkeleton />
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
