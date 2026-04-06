@@ -24,11 +24,15 @@ const DashboardSidebarHeader = ({ brandPath }: DashboardSidebarHeaderProps) => {
   }, []);
 
   const switchLanguage = async (code: string) => {
-    await i18n.changeLanguage(code);
+    localStorage.setItem("selectedLangCode", code);
+    const supportedLangs = ['en', 'ar', 'fr'];
+    const targetLang = supportedLangs.includes(code) ? code : 'en';
     document.documentElement.dir = code === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = code;
-    localStorage.setItem("selectedLangCode", code);
     setLangOpen(false);
+    if (i18n.language !== targetLang) {
+      await i18n.changeLanguage(targetLang);
+    }
   };
 
   const currentLangName = dbLanguages.find((l) => l.code === i18n.language)?.name
