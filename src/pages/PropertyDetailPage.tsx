@@ -255,16 +255,6 @@ const PropertyDetailPage = () => {
     return parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null);
   }, [detailData]);
 
-  if (loading || !detailData) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <PropertyDetailSkeleton />
-        <Footer />
-      </div>
-    );
-  }
-
   const [loanValues, setLoanValues] = useState({
     propertyValue: 0,
     loanPeriod: 20,
@@ -278,6 +268,16 @@ const PropertyDetailPage = () => {
       setLoanValues(prev => ({ ...prev, propertyValue: property.price }));
     }
   }, [property.price]);
+
+  if (loading || !detailData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <PropertyDetailSkeleton />
+        <Footer />
+      </div>
+    );
+  }
 
   const nextImage = () => setCurrentImage((prev) => (prev + 1) % property.images.length);
   const prevImage = () => setCurrentImage((prev) => (prev - 1 + property.images.length) % property.images.length);
