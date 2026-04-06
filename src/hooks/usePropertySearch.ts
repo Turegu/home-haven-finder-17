@@ -205,6 +205,7 @@ export function usePropertySearch(params: PropertySearchParams) {
         total: count ?? 0,
       };
     },
-    staleTime: 60 * 1000, // 1 min
+    staleTime: 2 * 60 * 1000, // 2 min — avoid refetching identical search results
+    gcTime: 5 * 60 * 1000,
   });
 }
