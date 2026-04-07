@@ -10,6 +10,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AreaUnitProvider } from "@/hooks/useAreaUnit";
 import BackToTop from "@/components/BackToTop";
+import { useLanguages, useCurrencies } from "@/hooks/useAppData";
+
+function AppDataPrefetcher() {
+  useLanguages();
+  useCurrencies();
+  return null;
+}
 
 // Eager-load the homepage for instant first paint
 import Index from "./pages/Index.tsx";
