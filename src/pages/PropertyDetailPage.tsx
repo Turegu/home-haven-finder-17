@@ -30,7 +30,7 @@ import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 import FollowButton from '@/components/FollowButton';
 import ShareDropdown from '@/components/ShareDropdown';
 import VerifiedBadge from '@/components/VerifiedBadge';
-import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import SEOHead from '@/components/SEOHead';
 
@@ -322,7 +322,9 @@ const PropertyDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <PropertyDetailSkeleton />
+        <div className="flex items-center justify-center py-32">
+          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
         <Footer />
       </div>
     );

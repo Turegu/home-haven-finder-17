@@ -19,7 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import ShareDropdown from '@/components/ShareDropdown';
-import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+
 import SEOHead from '@/components/SEOHead';
 
 interface EventDetail {
@@ -100,7 +100,9 @@ const EventDetailPage = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <PropertyDetailSkeleton />
+        <div className="flex items-center justify-center py-32">
+          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
         <Footer />
       </div>
     );
