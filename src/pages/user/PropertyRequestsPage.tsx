@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileText, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 interface RequestItem {
   id: string;
@@ -25,6 +30,7 @@ const PAGE_SIZE = 10;
 
 const PropertyRequestsPage = () => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
 
   const { data: items = [], isLoading: loading } = useQuery({
@@ -44,6 +50,25 @@ const PropertyRequestsPage = () => {
     gcTime: 5 * 60 * 1000,
   });
 
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("property_requests").delete().eq("id", id);
+    if (error) { toast.error(t('userPages.failedToDelete')); return; }
+    queryClient.setQueryData<RequestItem[]>(['user-property-requests'], old => (old ?? []).filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
+    toast.success(t('userPages.requestDeleted'));
+  };
+
+  const handleClearAll = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return;
+    const { error } = await supabase.from("property_requests").delete().eq("user_id", session.user.id);
+    if (error) { toast.error(t('userPages.failedToDelete')); return; }
+    queryClient.setQueryData<RequestItem[]>(['user-property-requests'], []);
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
+    toast.success(t('userPages.allCleared'));
+    setPage(1);
+  };
+
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
   const paginatedItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -57,7 +82,29 @@ const PropertyRequestsPage = () => {
   return (
     <UserLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">{t('userPages.propertyRequests')}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">{t('userPages.propertyRequests')}</h1>
+          {items.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-destructive border-destructive/30 hover:bg-destructive/10">
+                  <Trash2 className="h-4 w-4 mr-1.5" />
+                  {t('userPages.deleteAll')}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('userPages.deleteAll')}</AlertDialogTitle>
+                  <AlertDialogDescription>{t('userPages.clearAllConfirm')}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.delete')}</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
         {loading ? (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
@@ -87,6 +134,7 @@ const PropertyRequestsPage = () => {
                      <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.budget')}</th>
                      <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('property.status')}</th>
                      <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.date')}</th>
+                     <th className="text-left py-3 px-4 text-muted-foreground font-medium">{t('userPages.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -103,6 +151,25 @@ const PropertyRequestsPage = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-muted-foreground">{format(new Date(item.created_at), "MMM dd, yyyy")}</td>
+                      <td className="py-3 px-4">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>{t('userPages.deleteRequest')}</AlertDialogTitle>
+                              <AlertDialogDescription>{t('userPages.deleteRequestConfirm')}</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('common.delete')}</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
