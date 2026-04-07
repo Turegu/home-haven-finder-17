@@ -302,7 +302,7 @@ export default function KeywordAutocomplete({
         type="text"
         value={value}
         onChange={(e) => handleInputChange(e.target.value)}
-        onFocus={() => { if (suggestions.length > 0) setIsOpen(true); }}
+        onFocus={() => { setNeedsMaps(true); if (suggestions.length > 0) setIsOpen(true); }}
         onKeyDown={handleKeyDown}
         placeholder={placeholder || t('hero.searchPlaceholder')}
         className="w-full h-10 ps-3 pe-8 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
