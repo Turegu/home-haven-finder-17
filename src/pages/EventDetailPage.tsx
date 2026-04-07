@@ -96,7 +96,7 @@ const EventDetailPage = () => {
     return null;
   }, [event?.pinLocation, event?.location]);
 
-  if (loading) {
+  if (loading || !detailData) {
     return (
       <div className="min-h-screen bg-background">
         <Header />

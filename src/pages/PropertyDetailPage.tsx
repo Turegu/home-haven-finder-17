@@ -318,7 +318,7 @@ const PropertyDetailPage = () => {
     }
   }, [property.price]);
 
-  if (loading) {
+  if (loading || !detailData) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
