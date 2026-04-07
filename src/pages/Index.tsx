@@ -88,6 +88,8 @@ const Index = () => {
         agentId: p.agent_id ?? null,
       }));
     },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 
   const sampleProperties = [
