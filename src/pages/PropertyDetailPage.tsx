@@ -286,15 +286,15 @@ const PropertyDetailPage = () => {
       agentLogo: p.agents?.avatar_url || '',
       agentDesignation: getDesignationLabel(p.agents?.designation, i18n.language),
       agentLanguages: p.agents?.languages || [],
-      agentCompany: p.companies?.name || p.agents?.companies?.name || '',
-      companyLogo: p.companies?.logo_url || p.agents?.companies?.logo_url || null,
+      agentCompany: p.companies?.name || '',
+      companyLogo: p.companies?.logo_url || null,
       hasAgent: !!p.agents,
     };
   }, [detailData, i18n.language]);
 
   const realAgentId = detailData?.agents?.id || null;
-  const realCompanyId = detailData?.companies?.id || detailData?.agents?.companies?.id || null;
-  const companyVerified = detailData?.companies?.is_verified || detailData?.agents?.companies?.is_verified || false;
+  const realCompanyId = detailData?.companies?.id || null;
+  const companyVerified = detailData?.companies?.is_verified || false;
 
   const contactPhone = detailData?.agents?.phone || detailData?.companies?.phone || null;
   const contactWhatsapp = detailData?.agents?.whatsapp || detailData?.companies?.whatsapp || null;
