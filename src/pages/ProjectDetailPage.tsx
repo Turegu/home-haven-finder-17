@@ -116,7 +116,7 @@ const ProjectDetailPage = () => {
     return null;
   }, [project?.pinLocation, project?.location]);
 
-  if (loading) {
+  if (loading || !fetchedData) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
