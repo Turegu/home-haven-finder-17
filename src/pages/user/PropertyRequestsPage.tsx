@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -24,30 +25,24 @@ const PAGE_SIZE = 10;
 
 const PropertyRequestsPage = () => {
   const { t } = useTranslation();
-  const [items, setItems] = useState<RequestItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user;
-        if (!user) { setLoading(false); return; }
-        const { data } = await supabase
-          .from("property_requests")
-          .select("id, full_name, email, phone, enquiry_type, property_type, province, budget, status, created_at")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-        setItems((data || []) as RequestItem[]);
-      } catch (err) {
-        console.error("Failed to load property requests:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ['user-property-requests'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) return [];
+      const { data } = await supabase
+        .from("property_requests")
+        .select("id, full_name, email, phone, enquiry_type, property_type, province, budget, status, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      return (data || []) as RequestItem[];
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
   const paginatedItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

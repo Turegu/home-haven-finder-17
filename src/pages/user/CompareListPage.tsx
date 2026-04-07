@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,7 +49,7 @@ const CompareListPage = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [items, setItems] = useState<CompareItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading] = useState(false);
   const [aiResult, setAiResult] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [scores, setScores] = useState<PropertyScore[]>([]);
@@ -123,11 +123,12 @@ const CompareListPage = () => {
     setRentalRates(rates);
   };
 
-  const load = async () => {
-    try {
+  const { isLoading: queryLoading } = useQuery({
+    queryKey: ['user-compare-list'],
+    queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) { setLoading(false); return; }
+      if (!user) return [];
       const { data } = await supabase
         .from("property_comparisons")
         .select("id, property_id, properties(id, title, price, currency, property_type, area, area_unit, images, location, rooms, bedrooms, bathrooms, parking_spaces, province, town, neighbourhood, property_purpose)")
@@ -135,17 +136,14 @@ const CompareListPage = () => {
         .order("created_at", { ascending: false });
       const mappedItems: CompareItem[] = (data || []).map((d) => ({ ...d, property: (d as unknown as { properties: CompareItem['property'] }).properties }));
       setItems(mappedItems);
-
-      // Fetch real rental market data for each property's area
       await fetchRentalData(mappedItems);
-    } catch (err) {
-      console.error("Failed to load compare list:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return mappedItems;
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => { load(); }, []);
+  const isPageLoading = queryLoading || loading;
 
   const handleRemove = async (id: string) => {
     const { error } = await supabase.from("property_comparisons").delete().eq("id", id);
@@ -387,7 +385,7 @@ const CompareListPage = () => {
 
         <p className="text-xs text-muted-foreground">Maximum 3 properties allowed for comparison.</p>
 
-        {loading ? (
+        {isPageLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">

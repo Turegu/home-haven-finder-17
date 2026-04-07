@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -24,30 +25,24 @@ const PAGE_SIZE = 10;
 
 const ContactedPropertiesPage = () => {
   const { t } = useTranslation();
-  const [items, setItems] = useState<Inquiry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user;
-        if (!user) { setLoading(false); return; }
-        const { data } = await supabase
-          .from("user_inquiries")
-          .select("id, property_id, inquiry_type, message, email, phone, full_name, created_at, properties(title, location)")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-        setItems((data || []).map((d) => ({ ...d, property: (d as unknown as { properties: Inquiry['property'] }).properties })));
-      } catch (err) {
-        console.error("Failed to load inquiries:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ['user-contacted-properties'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) return [];
+      const { data } = await supabase
+        .from("user_inquiries")
+        .select("id, property_id, inquiry_type, message, email, phone, full_name, created_at, properties(title, location)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      return (data || []).map((d) => ({ ...d, property: (d as unknown as { properties: Inquiry['property'] }).properties })) as Inquiry[];
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
   const paginatedItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,34 +28,29 @@ const PAGE_SIZE = 10;
 const SavedPropertiesPage = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [items, setItems] = useState<SavedProperty[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  const load = async () => {
-    try {
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ['user-saved-properties'],
+    queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) { setLoading(false); return; }
+      if (!user) return [];
       const { data } = await supabase
         .from("saved_properties")
         .select("id, property_id, created_at, properties(title, price, currency, images, location, rooms, property_type, area, area_unit)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setItems((data ?? []).map((d: any) => ({ id: d.id, property_id: d.property_id, property: d.properties })));
-    } catch (err) {
-      console.error("Failed to load saved properties:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { load(); }, []);
+      return (data ?? []).map((d: any) => ({ id: d.id, property_id: d.property_id, property: d.properties })) as SavedProperty[];
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const handleRemove = async (id: string) => {
     const { error } = await supabase.from("saved_properties").delete().eq("id", id);
     if (error) { toast.error(t('userPages.failedToRemove')); return; }
-    setItems(p => p.filter(i => i.id !== id));
+    queryClient.setQueryData<SavedProperty[]>(['user-saved-properties'], old => (old ?? []).filter(i => i.id !== id));
     queryClient.invalidateQueries({ queryKey: ['saved-property-ids'] });
     queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     queryClient.invalidateQueries({ queryKey: ['header-counts'] });
