@@ -13,6 +13,7 @@ import BannerDisplay from '@/components/BannerDisplay';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
 import NearbyPlacesMap from '@/components/NearbyPlacesMap';
 import StreetView from '@/components/StreetView';
+import { Button } from '@/components/ui/button';
 import { getEventTypeIcon } from '@/data/eventTypes';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';

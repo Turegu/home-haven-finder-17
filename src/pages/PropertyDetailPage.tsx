@@ -260,8 +260,6 @@ const PropertyDetailPage = () => {
 
   const contactPhone = detailData?.raw?.agents?.phone || detailData?.raw?.companies?.phone || null;
   const contactWhatsapp = detailData?.raw?.agents?.whatsapp || detailData?.raw?.companies?.whatsapp || null;
-  const contactName = detailData?.raw?.agents?.name || detailData?.raw?.companies?.name || '';
-
   const pinLocation = useMemo(() => {
     if (!detailData) return null;
     const p = detailData.raw;

@@ -21,7 +21,7 @@ import StreetView from '@/components/StreetView';
 import defaultProjectLogo from '@/assets/default-project-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
-import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
+import { useTrackPageView } from '@/hooks/useListingAnalytics';
 import FollowButton from '@/components/FollowButton';
 import ShareDropdown from '@/components/ShareDropdown';
 import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
