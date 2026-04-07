@@ -27,9 +27,15 @@ const isPreviewHost =
   window.location.hostname.includes("lovableproject.com");
 
 if (isPreviewHost || isInIframe) {
-  navigator.serviceWorker?.getRegistrations().then((regs) =>
-    regs.forEach((r) => r.unregister())
-  );
+  const unregisterSW = () =>
+    navigator.serviceWorker?.getRegistrations().then((regs) =>
+      regs.forEach((r) => r.unregister())
+    );
+  if (document.readyState === 'complete') {
+    unregisterSW();
+  } else {
+    window.addEventListener('load', unregisterSW, { once: true });
+  }
 }
 
 import { createRoot } from "react-dom/client";

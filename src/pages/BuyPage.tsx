@@ -164,7 +164,12 @@ const BuyPage = () => {
       const key = allProperties.map((p) => p.id).join(',');
       if (key !== trackedPageRef.current) {
         trackedPageRef.current = key;
-        trackImpressions(allProperties.map((p) => p.id), 'property');
+        const fire = () => trackImpressions(allProperties.map((p) => p.id), 'property');
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(fire);
+        } else {
+          setTimeout(fire, 500);
+        }
       }
     }
   }, [allProperties]);
