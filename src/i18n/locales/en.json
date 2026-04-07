@@ -767,7 +767,21 @@
     "page": "Page",
     "deleteAll": "Delete All",
     "noPropertiesToCompare": "No properties to compare.",
-    "propertyCol": "Property"
+    "propertyCol": "Property",
+    "deleteInquiry": "Delete inquiry?",
+    "deleteInquiryConfirm": "This will permanently remove this inquiry record.",
+    "inquiryDeleted": "Inquiry deleted",
+    "deleteRequest": "Delete request?",
+    "deleteRequestConfirm": "This will permanently remove this property request.",
+    "requestDeleted": "Request deleted",
+    "deleteNotification": "Delete notification?",
+    "deleteNotificationConfirm": "This will permanently remove this notification.",
+    "notificationDeleted": "Notification deleted",
+    "clearAllConfirm": "This will permanently delete all items. Are you sure?",
+    "allCleared": "All items cleared",
+    "followedAgentsTab": "Followed Agents",
+    "followedCompaniesTab": "Followed Companies",
+    "actions": "Actions"
   },
   "saveSearch": {
     "title": "Save Search",

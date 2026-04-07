@@ -767,7 +767,21 @@
     "page": "صفحة",
     "deleteAll": "حذف الكل",
     "noPropertiesToCompare": "لا توجد عقارات للمقارنة.",
-    "propertyCol": "العقار"
+    "propertyCol": "العقار",
+    "deleteInquiry": "حذف الاستفسار؟",
+    "deleteInquiryConfirm": "سيتم حذف سجل الاستفسار هذا نهائياً.",
+    "inquiryDeleted": "تم حذف الاستفسار",
+    "deleteRequest": "حذف الطلب؟",
+    "deleteRequestConfirm": "سيتم حذف طلب العقار هذا نهائياً.",
+    "requestDeleted": "تم حذف الطلب",
+    "deleteNotification": "حذف الإشعار؟",
+    "deleteNotificationConfirm": "سيتم حذف هذا الإشعار نهائياً.",
+    "notificationDeleted": "تم حذف الإشعار",
+    "clearAllConfirm": "سيتم حذف جميع العناصر نهائياً. هل أنت متأكد؟",
+    "allCleared": "تم مسح جميع العناصر",
+    "followedAgentsTab": "الوكلاء المتابَعون",
+    "followedCompaniesTab": "الشركات المتابَعة",
+    "actions": "إجراءات"
   },
   "saveSearch": {
     "title": "حفظ البحث",

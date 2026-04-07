@@ -127,11 +127,11 @@ const FollowedAgentsPage = () => {
           <TabsList>
             <TabsTrigger value="agents" className="gap-1.5">
               <Users2 className="h-4 w-4" />
-              {t('common.agents')} ({agents.length})
+              {t('userPages.followedAgentsTab')} ({agents.length})
             </TabsTrigger>
             <TabsTrigger value="companies" className="gap-1.5">
               <Building2 className="h-4 w-4" />
-              {t('common.companies')} ({companies.length})
+              {t('userPages.followedCompaniesTab')} ({companies.length})
             </TabsTrigger>
           </TabsList>
 
