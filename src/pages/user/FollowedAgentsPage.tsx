@@ -5,8 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserMinus, Users2, ChevronLeft, ChevronRight } from "lucide-react";
+import { UserMinus, Users2, ChevronLeft, ChevronRight, Building2 } from "lucide-react";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
@@ -19,109 +20,210 @@ interface FollowedAgent {
   agent: { id: string; name: string; avatar_url: string | null; designation: string | null; company_id: string; };
 }
 
+interface FollowedCompany {
+  id: string;
+  company_id: string;
+  created_at: string;
+  company: { id: string; name: string; logo_url: string | null; };
+}
+
 const PAGE_SIZE = 12;
 
 const FollowedAgentsPage = () => {
   const { t } = useTranslation();
-  const [items, setItems] = useState<FollowedAgent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [agents, setAgents] = useState<FollowedAgent[]>([]);
+  const [companies, setCompanies] = useState<FollowedCompany[]>([]);
+  const [loadingAgents, setLoadingAgents] = useState(true);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
+  const [agentPage, setAgentPage] = useState(1);
+  const [companyPage, setCompanyPage] = useState(1);
 
-  const load = async () => {
+  const loadAgents = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) { setLoading(false); return; }
+      if (!user) { setLoadingAgents(false); return; }
       const { data } = await supabase
         .from("agent_followers")
         .select("id, agent_id, created_at, agents(id, name, avatar_url, designation, company_id)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setItems((data || []).map((d) => ({ ...d, agent: d.agents })).filter((d) => d.agent));
+      setAgents((data || []).map((d) => ({ ...d, agent: d.agents })).filter((d) => d.agent));
     } catch (err) {
       console.error("Failed to load followed agents:", err);
     } finally {
-      setLoading(false);
+      setLoadingAgents(false);
     }
   };
 
-  useEffect(() => { load(); }, []);
+  const loadCompanies = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) { setLoadingCompanies(false); return; }
+      const { data } = await supabase
+        .from("company_followers")
+        .select("id, company_id, created_at, companies(id, name, logo_url)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      setCompanies((data || []).map((d) => ({ ...d, company: d.companies })).filter((d) => d.company));
+    } catch (err) {
+      console.error("Failed to load followed companies:", err);
+    } finally {
+      setLoadingCompanies(false);
+    }
+  };
 
-  const handleUnfollow = async (id: string) => {
+  useEffect(() => { loadAgents(); loadCompanies(); }, []);
+
+  const handleUnfollowAgent = async (id: string) => {
     const { error } = await supabase.from("agent_followers").delete().eq("id", id);
     if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
-    setItems(p => p.filter(i => i.id !== id));
+    setAgents(p => p.filter(i => i.id !== id));
     toast.success(t('userPages.unfollowed'));
   };
 
-  const totalPages = Math.ceil(items.length / PAGE_SIZE);
-  const paginatedItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const handleUnfollowCompany = async (id: string) => {
+    const { error } = await supabase.from("company_followers").delete().eq("id", id);
+    if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
+    setCompanies(p => p.filter(i => i.id !== id));
+    toast.success(t('userPages.unfollowed'));
+  };
+
+  const agentTotalPages = Math.ceil(agents.length / PAGE_SIZE);
+  const paginatedAgents = agents.slice((agentPage - 1) * PAGE_SIZE, agentPage * PAGE_SIZE);
+  const companyTotalPages = Math.ceil(companies.length / PAGE_SIZE);
+  const paginatedCompanies = companies.slice((companyPage - 1) * PAGE_SIZE, companyPage * PAGE_SIZE);
+
+  const renderSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
+          <Skeleton className="h-12 w-14 rounded-lg shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderPagination = (currentPage: number, totalPages: number, setPage: (fn: (p: number) => number) => void) => (
+    totalPages > 1 ? (
+      <div className="flex items-center justify-center gap-2 pt-4">
+        <Button variant="outline" size="sm" disabled={currentPage <= 1} onClick={() => setPage(p => p - 1)}>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <span className="text-sm text-muted-foreground">{t('userPages.page')} {currentPage} {t('common.of')} {totalPages}</span>
+        <Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setPage(p => p + 1)}>
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
+    ) : null
+  );
 
   return (
     <UserLayout>
       <div className="space-y-6">
         <h1 className="text-2xl font-bold text-foreground">{t('userPages.followedAgents')}</h1>
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
-                <Skeleton className="h-12 w-14 rounded-lg shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-28" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
+
+        <Tabs defaultValue="agents">
+          <TabsList>
+            <TabsTrigger value="agents" className="gap-1.5">
+              <Users2 className="h-4 w-4" />
+              {t('common.agents')} ({agents.length})
+            </TabsTrigger>
+            <TabsTrigger value="companies" className="gap-1.5">
+              <Building2 className="h-4 w-4" />
+              {t('common.companies')} ({companies.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="agents" className="mt-4">
+            {loadingAgents ? renderSkeleton() : agents.length === 0 ? (
+              <div className="bg-card rounded-xl border border-border p-8 text-center">
+                <Users2 className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                <p className="text-muted-foreground">{t('userPages.noFollowedAgents')}</p>
+                <Link to="/agents"><Button variant="outline" className="mt-4">{t('userPages.browseAgents')}</Button></Link>
               </div>
-            ))}
-          </div>
-        ) : items.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center">
-            <Users2 className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-            <p className="text-muted-foreground">{t('userPages.noFollowedAgents')}</p>
-            <Link to="/agents"><Button variant="outline" className="mt-4">{t('userPages.browseAgents')}</Button></Link>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {paginatedItems.map(item => (
-                <div key={item.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
-                  <img src={item.agent?.avatar_url || "/placeholder.svg"} alt={item.agent?.name || "Agent"} className="h-12 w-14 rounded-lg object-cover border border-border" />
-                  <div className="flex-1 min-w-0">
-                    <Link to={`/agents/${item.agent_id}`} className="font-semibold text-foreground text-sm hover:text-primary truncate block">{item.agent?.name}</Link>
-                    <p className="text-xs text-muted-foreground truncate">{item.agent?.designation || "Agent"}</p>
-                  </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" title="Unfollow">
-                        <UserMinus className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>{t('userPages.unfollowAgent', { name: item.agent?.name })}</AlertDialogTitle>
-                        <AlertDialogDescription>{t('userPages.unfollowConfirm')}</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleUnfollow(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('userPages.unfollow')}</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {paginatedAgents.map(item => (
+                    <div key={item.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
+                      <img src={item.agent?.avatar_url || "/placeholder.svg"} alt={item.agent?.name || "Agent"} className="h-12 w-14 rounded-lg object-cover border border-border" />
+                      <div className="flex-1 min-w-0">
+                        <Link to={`/agents/${item.agent_id}`} className="font-semibold text-foreground text-sm hover:text-primary truncate block">{item.agent?.name}</Link>
+                        <p className="text-xs text-muted-foreground truncate">{item.agent?.designation || "Agent"}</p>
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" title="Unfollow">
+                            <UserMinus className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t('userPages.unfollowAgent', { name: item.agent?.name })}</AlertDialogTitle>
+                            <AlertDialogDescription>{t('userPages.unfollowConfirm')}</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleUnfollowAgent(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('userPages.unfollow')}</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 pt-4">
-                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-muted-foreground">{t('userPages.page')} {page} {t('common.of')} {totalPages}</span>
-                <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+                {renderPagination(agentPage, agentTotalPages, setAgentPage)}
+              </>
             )}
-          </>
-        )}
+          </TabsContent>
+
+          <TabsContent value="companies" className="mt-4">
+            {loadingCompanies ? renderSkeleton() : companies.length === 0 ? (
+              <div className="bg-card rounded-xl border border-border p-8 text-center">
+                <Building2 className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
+                <p className="text-muted-foreground">{t('userPages.noFollowedCompanies')}</p>
+                <Link to="/agents?tab=companies"><Button variant="outline" className="mt-4">{t('userPages.browseCompanies')}</Button></Link>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {paginatedCompanies.map(item => (
+                    <div key={item.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
+                      <img src={item.company?.logo_url || "/placeholder.svg"} alt={item.company?.name || "Company"} className="h-12 w-14 rounded-lg object-cover border border-border" />
+                      <div className="flex-1 min-w-0">
+                        <Link to={`/companies/${item.company_id}`} className="font-semibold text-foreground text-sm hover:text-primary truncate block">{item.company?.name}</Link>
+                        <p className="text-xs text-muted-foreground">{t('common.company')}</p>
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" title="Unfollow">
+                            <UserMinus className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t('userPages.unfollowCompany', { name: item.company?.name })}</AlertDialogTitle>
+                            <AlertDialogDescription>{t('userPages.unfollowConfirm')}</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleUnfollowCompany(item.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t('userPages.unfollow')}</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  ))}
+                </div>
+                {renderPagination(companyPage, companyTotalPages, setCompanyPage)}
+              </>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </UserLayout>
   );
