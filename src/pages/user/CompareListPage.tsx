@@ -49,7 +49,7 @@ const CompareListPage = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [items, setItems] = useState<CompareItem[]>([]);
-  const [_loading] = useState(false);
+  const [loading] = useState(false);
   const [aiResult, setAiResult] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [scores, setScores] = useState<PropertyScore[]>([]);
@@ -143,7 +143,7 @@ const CompareListPage = () => {
     gcTime: 5 * 60 * 1000,
   });
 
-  const isLoading = queryLoading || loading;
+  const isPageLoading = queryLoading || loading;
 
   const handleRemove = async (id: string) => {
     const { error } = await supabase.from("property_comparisons").delete().eq("id", id);
@@ -385,7 +385,7 @@ const CompareListPage = () => {
 
         <p className="text-xs text-muted-foreground">Maximum 3 properties allowed for comparison.</p>
 
-        {loading ? (
+        {isPageLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
