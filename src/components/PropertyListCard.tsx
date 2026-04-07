@@ -104,7 +104,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
             {/* Left image */}
             <div className="relative flex-1 overflow-hidden">
                 <img
-                  src={property.images[currentImage]}
+                  src={property.images[currentImage] || '/placeholder.svg'}
                   alt={property.title}
                   loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -184,7 +184,7 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
             {/* Right image — equal size */}
             <div className="relative hidden lg:block flex-1 overflow-hidden border-l-[2px] border-background">
                 <img
-                  src={secondaryImages[0] || property.images[currentImage]}
+                  src={secondaryImages[0] || property.images[currentImage] || '/placeholder.svg'}
                   alt={`${property.title} 2`}
                   loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -250,11 +250,13 @@ const PropertyListCard = memo(({ property, isSaved = false, isCompared = false, 
         <div className="flex-1 p-4 flex flex-col justify-between relative">
           {/* Company logo + name — upper right corner */}
           <div className="absolute top-3 right-3 flex flex-col items-center gap-1">
-            <img
-              src={property.agentLogo}
-              alt={property.companyName}
-              className="h-10 w-auto max-w-[80px] rounded object-contain"
-            />
+            {property.agentLogo ? (
+              <img
+                src={property.agentLogo}
+                alt={property.companyName || property.agentName || 'Company'}
+                className="h-10 w-auto max-w-[80px] rounded object-contain"
+              />
+            ) : null}
             <span className="text-[10px] text-muted-foreground text-center leading-tight max-w-[80px] line-clamp-1">{property.companyName}</span>
           </div>
 
