@@ -347,13 +347,6 @@ const EventDetailPage = () => {
               <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed">{event.description}</div>
             </div>
 
-            {/* Map placeholder */}
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <div className="px-6 py-4 border-b border-border">
-                <h2 className="text-lg font-bold text-foreground">{t('event.locationOnMap')}</h2>
-              </div>
-              <div className="h-[300px] bg-muted flex items-center justify-center text-muted-foreground">Map View — {event.location}</div>
-            </div>
           </div>
 
           {/* Sidebar */}
