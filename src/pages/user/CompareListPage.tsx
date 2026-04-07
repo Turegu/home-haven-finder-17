@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -49,7 +49,7 @@ const CompareListPage = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [items, setItems] = useState<CompareItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [_loading] = useState(false);
   const [aiResult, setAiResult] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [scores, setScores] = useState<PropertyScore[]>([]);
