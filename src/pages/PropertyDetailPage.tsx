@@ -23,7 +23,6 @@ import Footer from '@/components/Footer';
 import PropertyCard from '@/components/PropertyCard';
 import BannerDisplay from '@/components/BannerDisplay';
 import BankLoanBanner from '@/components/BankLoanBanner';
-import { mockPropertyDetail } from '@/data/mockDetails';
 import type { Property } from '@/data/mockProperties';
 import { supabase } from '@/integrations/supabase/client';
 import ContactCompanyDialog from '@/components/ContactCompanyDialog';
@@ -65,7 +64,31 @@ const getPaymentStepIcon = (title: string) => {
 };
 
 const emptyPropertyState = {
-  ...mockPropertyDetail,
+  id: '',
+  title: '',
+  price: 0,
+  currency: 'USD',
+  location: '',
+  city: '',
+  type: '',
+  area: 0,
+  areaUnit: 'm²',
+  bedrooms: 0,
+  bathrooms: 0,
+  parkingSpaces: 0,
+  floorLevel: '—',
+  propertyAge: '—',
+  titleDeed: '—',
+  propertyStatus: '—',
+  furniture: '—',
+  orientation: [] as string[],
+  listingId: '',
+  listingDate: '',
+  listingType: 'buy' as 'buy' | 'rent',
+  images: ['/placeholder.svg'],
+  description: '',
+  interiorAmenities: [] as string[],
+  exteriorAmenities: [] as string[],
   agentLogo: '',
   agentName: '',
   agentCompany: '',
@@ -81,6 +104,9 @@ const emptyPropertyState = {
   neighbourhood: '',
   propertyPurpose: 'buy',
   rentDuration: null as string | null,
+  openHouseStart: null as string | null,
+  openHouseEnd: null as string | null,
+  viewingHours: null as string | null,
 };
 
 const parsePinLocation = (value: unknown): { lat: number; lng: number } | null => {
@@ -123,54 +149,29 @@ const PropertyDetailPage = () => {
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
+      return data;
+    },
+    enabled: !!id,
+    staleTime: 60_000,
+  });
 
-      const p = data;
+  const { data: similarProperties = [] } = useQuery({
+    queryKey: ['property-similar', detailData?.id, detailData?.property_type],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*, agents(name, avatar_url), companies(name, logo_url)')
+        .eq('status', 'active')
+        .eq('property_type', detailData!.property_type)
+        .neq('id', detailData!.id)
+        .limit(3);
 
-      // Fetch similar properties, payment plans, and steps ALL in parallel
-      const [similarResult, plansResult, stepsResult] = await Promise.allSettled([
-        supabase
-          .from('properties')
-          .select('*, agents(name, avatar_url), companies(name, logo_url)')
-          .eq('status', 'active')
-          .eq('property_type', p.property_type)
-          .neq('id', p.id)
-          .limit(3),
-        supabase
-          .from("property_payment_plans")
-          .select("*")
-          .eq("property_id", id!)
-          .eq("is_active", true)
-          .order("sort_order"),
-        supabase
-          .from("property_payment_plan_steps")
-          .select("*, property_payment_plans!inner(property_id)")
-          .eq("property_payment_plans.property_id", id!)
-          .order("sort_order"),
-      ]);
+      if (error) {
+        console.error('Failed to load similar properties:', error);
+        return [] as Property[];
+      }
 
-      const similarData = similarResult.status === 'fulfilled'
-        ? ((similarResult.value.error ? (console.error('Failed to load similar properties:', similarResult.value.error), []) : (similarResult.value.data ?? [])) as any[])
-        : (console.error('Failed to load similar properties:', similarResult.reason), []);
-
-      const plansData = plansResult.status === 'fulfilled'
-        ? ((plansResult.value.error ? (console.error('Failed to load payment plans:', plansResult.value.error), []) : (plansResult.value.data ?? [])) as any[])
-        : (console.error('Failed to load payment plans:', plansResult.reason), []);
-
-      const stepsData = stepsResult.status === 'fulfilled'
-        ? ((stepsResult.value.error ? (console.error('Failed to load payment plan steps:', stepsResult.value.error), []) : (stepsResult.value.data ?? [])) as any[])
-        : (console.error('Failed to load payment plan steps:', stepsResult.reason), []);
-
-      const paymentPlans = plansData.map((pl: any) => ({
-        id: pl.id,
-        plan_name: pl.plan_name,
-        steps: stepsData
-          .filter((s: any) => s.plan_id === pl.id)
-          .map((s: any) => ({
-            id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
-          })),
-      }));
-
-      const similar: Property[] = similarData.map((s: any) => ({
+      return ((data ?? []) as any[]).map((s: any) => ({
         id: s.id,
         title: s.title,
         price: s.price ?? 0,
@@ -193,55 +194,94 @@ const PropertyDetailPage = () => {
         rentDuration: s.rent_duration ?? null,
         advertisingTags: s.advertising_tags ?? [],
       }));
-
-      return { raw: p, similar, paymentPlans };
     },
-    enabled: !!id,
+    enabled: !!detailData?.id && !!detailData?.property_type,
+    staleTime: 60_000,
+  });
+
+  const { data: propertyPaymentPlans = [] } = useQuery({
+    queryKey: ['property-payment-plans', detailData?.id],
+    queryFn: async () => {
+      const [plansResult, stepsResult] = await Promise.all([
+        supabase
+          .from("property_payment_plans")
+          .select("*")
+          .eq("property_id", detailData!.id)
+          .eq("is_active", true)
+          .order("sort_order"),
+        supabase
+          .from("property_payment_plan_steps")
+          .select("*, property_payment_plans!inner(property_id)")
+          .eq("property_payment_plans.property_id", detailData!.id)
+          .order("sort_order"),
+      ]);
+
+      if (plansResult.error) {
+        console.error('Failed to load payment plans:', plansResult.error);
+        return [];
+      }
+
+      if (stepsResult.error) {
+        console.error('Failed to load payment plan steps:', stepsResult.error);
+        return [];
+      }
+
+      return (plansResult.data ?? []).map((pl: any) => ({
+        id: pl.id,
+        plan_name: pl.plan_name,
+        steps: (stepsResult.data ?? [])
+          .filter((s: any) => s.plan_id === pl.id)
+          .map((s: any) => ({
+            id: s.id,
+            percentage: s.percentage,
+            title: s.title,
+            subtitle: s.subtitle,
+          })),
+      }));
+    },
+    enabled: !!detailData?.id,
     staleTime: 60_000,
   });
 
   // ─── Derive property state from query data ───
   const property = useMemo(() => {
     if (!detailData) return emptyPropertyState;
-    const p = detailData.raw;
+    const p = detailData;
     return {
       ...emptyPropertyState,
       id: p.id,
-      title: p.title || mockPropertyDetail.title,
-      price: p.price || mockPropertyDetail.price,
+      title: p.title || '',
+      price: p.price ?? 0,
       currency: p.currency || 'USD',
-      location: p.location || mockPropertyDetail.location,
-      city: p.province || mockPropertyDetail.city,
+      location: p.location || [p.neighbourhood, p.town, p.province].filter(Boolean).join(', '),
+      city: p.province || '',
       province: p.province || '',
       town: p.town || '',
       neighbourhood: p.neighbourhood || '',
       propertyPurpose: p.property_purpose || 'buy',
-      type: p.property_type || mockPropertyDetail.type,
-      area: p.area || mockPropertyDetail.area,
+      type: p.property_type || '',
+      area: p.area ?? 0,
       areaUnit: p.area_unit || 'm²',
-      bedrooms: p.bedrooms ?? mockPropertyDetail.bedrooms,
-      bathrooms: p.bathrooms ?? mockPropertyDetail.bathrooms,
+      bedrooms: p.bedrooms ?? 0,
+      bathrooms: p.bathrooms ?? 0,
       parkingSpaces: p.parking_spaces ?? 0,
       floorLevel: p.floor_level || '—',
       propertyAge: p.property_age || '—',
       titleDeed: p.title_deed || '—',
-      propertyStatus: p.property_status || 'New',
+      propertyStatus: p.property_status || '—',
       furniture: p.furniture || '—',
       orientation: p.property_orientation ? [p.property_orientation] : [],
       listingId: p.listing_id || '',
       listingDate: p.created_at?.slice(0, 10) || '',
       listingType: (p.property_purpose || 'buy') as 'buy' | 'rent',
       rentDuration: p.rent_duration || null,
-      images: p.images && p.images.length > 0 ? p.images : mockPropertyDetail.images,
-      description: p.description || mockPropertyDetail.description,
+      images: p.images && p.images.length > 0 ? p.images : ['/placeholder.svg'],
+      description: p.description || '',
       interiorAmenities: p.interior_amenities || [],
       exteriorAmenities: p.exterior_amenities || [],
-      plans: p.plans && p.plans.length > 0 ? p.plans : [
-        'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=1200&h=800&fit=crop',
-        'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&h=800&fit=crop',
-      ],
-      videoLink: p.video_link || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      view360Link: p.view_360_link || 'https://my.matterport.com/show/?m=SxQL3iGyvPk',
+      plans: p.plans && p.plans.length > 0 ? p.plans : [],
+      videoLink: p.video_link || '',
+      view360Link: p.view_360_link || '',
       agentName: i18n.language === 'ar' && p.agents?.name_ar ? p.agents.name_ar : i18n.language === 'fr' && p.agents?.name_fr ? p.agents.name_fr : p.agents?.name || '',
       agentLogo: p.agents?.avatar_url || '',
       agentDesignation: getDesignationLabel(p.agents?.designation, i18n.language),
@@ -252,17 +292,15 @@ const PropertyDetailPage = () => {
     };
   }, [detailData, i18n.language]);
 
-  const realAgentId = detailData?.raw?.agents?.id || null;
-  const realCompanyId = detailData?.raw?.companies?.id || detailData?.raw?.agents?.companies?.id || null;
-  const companyVerified = detailData?.raw?.companies?.is_verified || detailData?.raw?.agents?.companies?.is_verified || false;
-  const similarProperties = detailData?.similar ?? [];
-  const propertyPaymentPlans = detailData?.paymentPlans ?? [];
+  const realAgentId = detailData?.agents?.id || null;
+  const realCompanyId = detailData?.companies?.id || detailData?.agents?.companies?.id || null;
+  const companyVerified = detailData?.companies?.is_verified || detailData?.agents?.companies?.is_verified || false;
 
-  const contactPhone = detailData?.raw?.agents?.phone || detailData?.raw?.companies?.phone || null;
-  const contactWhatsapp = detailData?.raw?.agents?.whatsapp || detailData?.raw?.companies?.whatsapp || null;
+  const contactPhone = detailData?.agents?.phone || detailData?.companies?.phone || null;
+  const contactWhatsapp = detailData?.agents?.whatsapp || detailData?.companies?.whatsapp || null;
   const pinLocation = useMemo(() => {
     if (!detailData) return null;
-    const p = detailData.raw;
+    const p = detailData;
     return parsePinLocation(p.pin_location) || (p.location ? getCoordsFromLocation(p.location) : null);
   }, [detailData]);
 

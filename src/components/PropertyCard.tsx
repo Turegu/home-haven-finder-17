@@ -6,7 +6,6 @@ import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyAc
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import type { Property } from '@/data/mockProperties';
-import { useTranslation } from "react-i18next";
 
 interface PropertyCardProps {
   property: Property;
@@ -24,8 +23,6 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
   // Sync local state when prop changes (e.g. after query refetch)
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
   useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
-
-  const { t } = useTranslation();
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -124,7 +121,9 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
             {formatPrice(property.price, property.currency)}
             {property.listingType === 'rent' && <span className="text-sm font-normal text-muted-foreground">/{property.rentDuration === 'Daily' ? 'day' : property.rentDuration === 'Weekly' ? 'wk' : property.rentDuration === 'Yearly' ? 'yr' : 'mo'}</span>}
           </div>
-          <img src={property.agentLogo} alt={property.agentName} className="h-7 w-auto max-w-[60px] object-contain" />
+          {property.agentLogo ? (
+            <img src={property.agentLogo} alt={property.agentName || property.companyName || 'Company'} className="h-7 w-auto max-w-[60px] object-contain" />
+          ) : null}
         </div>
         <h3 className="text-lg font-medium text-foreground/90 mb-2 line-clamp-1">{property.title}</h3>
         <div className="flex items-center gap-1 text-muted-foreground text-xs mb-3">
