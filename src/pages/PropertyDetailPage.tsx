@@ -113,20 +113,21 @@ const PropertyDetailPage = () => {
   const [activeTab, setActiveTab] = useState('photos');
 
   // ─── Property detail query ───
-  const { data: detailData, isLoading: loading } = useQuery({
+  const { data: detailData, isLoading: loading, isError } = useQuery({
     queryKey: ['property-detail', id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("properties")
         .select("*, agents(id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
         .eq("id", id!)
         .maybeSingle();
+      if (error) throw error;
       if (!data) return null;
 
       const p = data;
 
       // Fetch similar properties, payment plans, and steps ALL in parallel
-      const [similarResult, plansResult, stepsResult] = await Promise.all([
+      const [similarResult, plansResult, stepsResult] = await Promise.allSettled([
         supabase
           .from('properties')
           .select('*, agents(name, avatar_url), companies(name, logo_url)')
@@ -147,17 +148,29 @@ const PropertyDetailPage = () => {
           .order("sort_order"),
       ]);
 
-      const paymentPlans = (plansResult.data ?? []).map((pl: any) => ({
+      const similarData = similarResult.status === 'fulfilled'
+        ? ((similarResult.value.error ? (console.error('Failed to load similar properties:', similarResult.value.error), []) : (similarResult.value.data ?? [])) as any[])
+        : (console.error('Failed to load similar properties:', similarResult.reason), []);
+
+      const plansData = plansResult.status === 'fulfilled'
+        ? ((plansResult.value.error ? (console.error('Failed to load payment plans:', plansResult.value.error), []) : (plansResult.value.data ?? [])) as any[])
+        : (console.error('Failed to load payment plans:', plansResult.reason), []);
+
+      const stepsData = stepsResult.status === 'fulfilled'
+        ? ((stepsResult.value.error ? (console.error('Failed to load payment plan steps:', stepsResult.value.error), []) : (stepsResult.value.data ?? [])) as any[])
+        : (console.error('Failed to load payment plan steps:', stepsResult.reason), []);
+
+      const paymentPlans = plansData.map((pl: any) => ({
         id: pl.id,
         plan_name: pl.plan_name,
-        steps: (stepsResult.data ?? [])
+        steps: stepsData
           .filter((s: any) => s.plan_id === pl.id)
           .map((s: any) => ({
             id: s.id, percentage: s.percentage, title: s.title, subtitle: s.subtitle,
           })),
       }));
 
-      const similar: Property[] = (similarResult.data ?? []).map((s: any) => ({
+      const similar: Property[] = similarData.map((s: any) => ({
         id: s.id,
         title: s.title,
         price: s.price ?? 0,
@@ -269,11 +282,38 @@ const PropertyDetailPage = () => {
     }
   }, [property.price]);
 
-  if (loading || !detailData) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <PropertyDetailSkeleton />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-destructive">Failed to load this property. Please refresh and try again.</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!detailData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center space-y-4">
+          <p className="text-muted-foreground">This property is no longer available.</p>
+          <Button variant="outline" asChild>
+            <Link to="/buy">Browse properties</Link>
+          </Button>
+        </div>
         <Footer />
       </div>
     );

@@ -41,14 +41,15 @@ const EventDetailPage = () => {
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
-  const { data: fetchedData, isLoading: loading } = useQuery({
+  const { data: fetchedData, isLoading: loading, isError } = useQuery({
     queryKey: ['event-detail', id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('events')
         .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
         .eq('id', id!)
         .maybeSingle();
+      if (error) throw error;
       return data;
     },
     enabled: !!id,
@@ -94,11 +95,38 @@ const EventDetailPage = () => {
     return null;
   }, [event?.pinLocation, event?.location]);
 
-  if (loading || !event) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <PropertyDetailSkeleton />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-destructive">Failed to load this event. Please refresh and try again.</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center space-y-4">
+          <p className="text-muted-foreground">This event is no longer available.</p>
+          <Button variant="outline" asChild>
+            <Link to="/events">Browse events</Link>
+          </Button>
+        </div>
         <Footer />
       </div>
     );

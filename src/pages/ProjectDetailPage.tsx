@@ -49,21 +49,25 @@ const ProjectDetailPage = () => {
   const [activeTab, setActiveTab] = useState('photos');
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
 
-  const { data: fetchedData, isLoading: loading } = useQuery({
+  const { data: fetchedData, isLoading: loading, isError } = useQuery({
     queryKey: ['project-detail', id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('projects')
         .select('*, agents(id, name, designation, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, phone, whatsapp)), companies(id, name, logo_url, phone, whatsapp)')
         .eq('id', id!)
         .maybeSingle();
+      if (error) throw error;
       if (!data) return null;
-      const { data: units } = await supabase
+      const { data: units, error: unitsError } = await supabase
         .from('project_units')
         .select('id, unit_name, unit_type, price, currency, rooms, area, area_unit')
         .eq('project_id', id!)
         .eq('status', 'available')
         .order('unit_name');
+      if (unitsError) {
+        console.error('Failed to load project units:', unitsError);
+      }
       return { ...data, fetchedUnits: units || [] };
     },
     enabled: !!id,
@@ -112,11 +116,38 @@ const ProjectDetailPage = () => {
     return null;
   }, [project?.pinLocation, project?.location]);
 
-  if (loading || !project) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <PropertyDetailSkeleton />
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-destructive">Failed to load this project. Please refresh and try again.</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center space-y-4">
+          <p className="text-muted-foreground">This project is no longer available.</p>
+          <Button variant="outline" asChild>
+            <Link to="/projects">Browse projects</Link>
+          </Button>
+        </div>
         <Footer />
       </div>
     );
