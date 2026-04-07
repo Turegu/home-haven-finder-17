@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { GOOGLE_MAPS_API_KEY } from '@/lib/mapConstants';
 import { useTranslation } from "react-i18next";
 
+const GOOGLE_MAP_LIBRARIES: ('places')[] = ['places'];
+
 interface NearbyPlace {
   id: string;
   name: string;
@@ -163,7 +165,7 @@ function mapElementToPlace(el: any, lat: number, lng: number, categoryKey: strin
 
 const GoogleNearbyPlacesMap = ({ lat, lng, propertyTitle, embedded }: GoogleNearbyPlacesMapProps) => {
   const { t } = useTranslation();
-  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: ['places'] });
+  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: GOOGLE_MAP_LIBRARIES });
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [places, setPlaces] = useState<Record<string, NearbyPlace[]>>({});
   const [loadingCategory, setLoadingCategory] = useState<string | null>(null);

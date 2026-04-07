@@ -508,7 +508,7 @@ const PropertyDetailPage = () => {
         </div>
 
         {/* Location — mounted once, stays alive */}
-        {pinLocation && (
+        {pinLocation && activeTab === 'location' && (
           <div className={activeTab === 'location' ? 'h-full' : 'hidden'}>
             <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={property.title} embedded />
           </div>
@@ -520,7 +520,7 @@ const PropertyDetailPage = () => {
         )}
 
         {/* Street View — mounted once, stays alive */}
-        {pinLocation && (
+        {pinLocation && activeTab === 'street' && (
           <div className={activeTab === 'street' ? 'h-full' : 'hidden'}>
             <StreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
           </div>
