@@ -10,6 +10,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AreaUnitProvider } from "@/hooks/useAreaUnit";
 import BackToTop from "@/components/BackToTop";
+import { useLanguages, useCurrencies } from "@/hooks/useAppData";
+
+function AppDataPrefetcher() {
+  useLanguages();
+  useCurrencies();
+  return null;
+}
 
 // Eager-load the homepage for instant first paint
 import Index from "./pages/Index.tsx";
@@ -141,6 +148,7 @@ const App = () => {
   return (
   <Sentry.ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Something went wrong. Please refresh the page.</p></div>}>
   <QueryClientProvider client={queryClient}>
+    <AppDataPrefetcher />
     <AreaUnitProvider>
     <TooltipProvider>
       <Toaster />
