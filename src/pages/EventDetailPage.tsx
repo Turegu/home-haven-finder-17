@@ -19,7 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getCoordsFromLocation } from '@/lib/mapConstants';
 import ShareDropdown from '@/components/ShareDropdown';
-import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+
 import SEOHead from '@/components/SEOHead';
 
 interface EventDetail {

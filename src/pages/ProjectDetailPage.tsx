@@ -24,7 +24,7 @@ import { getCoordsFromLocation } from '@/lib/mapConstants';
 import { useTrackPageView } from '@/hooks/useListingAnalytics';
 import FollowButton from '@/components/FollowButton';
 import ShareDropdown from '@/components/ShareDropdown';
-import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+
 import SEOHead from '@/components/SEOHead';
 
 interface ProjectDetail {

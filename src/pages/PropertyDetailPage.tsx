@@ -30,7 +30,7 @@ import ReportPropertyDialog from '@/components/ReportPropertyDialog';
 import FollowButton from '@/components/FollowButton';
 import ShareDropdown from '@/components/ShareDropdown';
 import VerifiedBadge from '@/components/VerifiedBadge';
-import PropertyDetailSkeleton from '@/components/PropertyDetailSkeleton';
+
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import SEOHead from '@/components/SEOHead';
 
