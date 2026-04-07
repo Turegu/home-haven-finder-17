@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,62 +32,56 @@ const PAGE_SIZE = 12;
 
 const FollowedAgentsPage = () => {
   const { t } = useTranslation();
-  const [agents, setAgents] = useState<FollowedAgent[]>([]);
-  const [companies, setCompanies] = useState<FollowedCompany[]>([]);
-  const [loadingAgents, setLoadingAgents] = useState(true);
-  const [loadingCompanies, setLoadingCompanies] = useState(true);
+  const queryClient = useQueryClient();
   const [agentPage, setAgentPage] = useState(1);
   const [companyPage, setCompanyPage] = useState(1);
 
-  const loadAgents = async () => {
-    try {
+  const { data: agents = [], isLoading: loadingAgents } = useQuery({
+    queryKey: ['user-followed-agents'],
+    queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) { setLoadingAgents(false); return; }
+      if (!user) return [];
       const { data } = await supabase
         .from("agent_followers")
         .select("id, agent_id, created_at, agents(id, name, avatar_url, designation, company_id)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setAgents((data || []).map((d) => ({ ...d, agent: d.agents })).filter((d) => d.agent));
-    } catch (err) {
-      console.error("Failed to load followed agents:", err);
-    } finally {
-      setLoadingAgents(false);
-    }
-  };
+      return (data || []).map((d) => ({ ...d, agent: d.agents })).filter((d) => d.agent) as FollowedAgent[];
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
-  const loadCompanies = async () => {
-    try {
+  const { data: companies = [], isLoading: loadingCompanies } = useQuery({
+    queryKey: ['user-followed-companies'],
+    queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) { setLoadingCompanies(false); return; }
+      if (!user) return [];
       const { data } = await supabase
         .from("company_followers")
         .select("id, company_id, created_at, companies(id, name, logo_url)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setCompanies((data || []).map((d) => ({ ...d, company: d.companies })).filter((d) => d.company));
-    } catch (err) {
-      console.error("Failed to load followed companies:", err);
-    } finally {
-      setLoadingCompanies(false);
-    }
-  };
-
-  useEffect(() => { loadAgents(); loadCompanies(); }, []);
+      return (data || []).map((d) => ({ ...d, company: d.companies })).filter((d) => d.company) as FollowedCompany[];
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const handleUnfollowAgent = async (id: string) => {
     const { error } = await supabase.from("agent_followers").delete().eq("id", id);
     if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
-    setAgents(p => p.filter(i => i.id !== id));
+    queryClient.setQueryData<FollowedAgent[]>(['user-followed-agents'], old => (old ?? []).filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     toast.success(t('userPages.unfollowed'));
   };
 
   const handleUnfollowCompany = async (id: string) => {
     const { error } = await supabase.from("company_followers").delete().eq("id", id);
     if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
-    setCompanies(p => p.filter(i => i.id !== id));
+    queryClient.setQueryData<FollowedCompany[]>(['user-followed-companies'], old => (old ?? []).filter(i => i.id !== id));
     toast.success(t('userPages.unfollowed'));
   };
 

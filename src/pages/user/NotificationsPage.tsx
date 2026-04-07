@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -20,38 +21,33 @@ const PAGE_SIZE = 15;
 
 const NotificationsPage = () => {
   const { t } = useTranslation();
-  const [items, setItems] = useState<UserNotification[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const user = session?.user;
-        if (!user) { setLoading(false); return; }
-        const { data } = await supabase
-          .from("user_notifications")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(200);
-        setItems((data || []) as UserNotification[]);
-        setLoading(false);
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ['user-notifications-page'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) return [];
+      const { data } = await supabase
+        .from("user_notifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(200);
+      const notifications = (data || []) as UserNotification[];
 
-        if (data && data.length > 0) {
-          const unread = data.filter((n: any) => !n.is_read).map((n: any) => n.id);
-          if (unread.length > 0) {
-            await supabase.from("user_notifications").update({ is_read: true }).in("id", unread);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load notifications:", err);
-        setLoading(false);
+      // Mark unread as read (fire-and-forget)
+      const unread = notifications.filter(n => !n.is_read).map(n => n.id);
+      if (unread.length > 0) {
+        supabase.from("user_notifications").update({ is_read: true }).in("id", unread).then(() => {});
       }
-    };
-    load();
-  }, []);
+
+      return notifications;
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const totalPages = Math.ceil(items.length / PAGE_SIZE);
   const paginatedItems = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

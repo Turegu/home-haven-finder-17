@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UserLayout from "@/components/user/UserLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,34 +28,29 @@ const SavedSearchesPage = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [items, setItems] = useState<SavedSearch[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  const load = async () => {
-    try {
+  const { data: items = [], isLoading: loading } = useQuery({
+    queryKey: ['user-saved-searches'],
+    queryFn: async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
-      if (!user) { setLoading(false); return; }
+      if (!user) return [];
       const { data } = await supabase
         .from("saved_searches")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setItems((data || []) as SavedSearch[]);
-    } catch (err) {
-      console.error("Failed to load saved searches:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { load(); }, []);
+      return (data || []) as SavedSearch[];
+    },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("saved_searches").delete().eq("id", id);
     if (error) { toast.error(t('userPages.failedToDelete')); return; }
-    setItems(p => p.filter(i => i.id !== id));
+    queryClient.setQueryData<SavedSearch[]>(['user-saved-searches'], old => (old ?? []).filter(i => i.id !== id));
     queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     toast.success(t('userPages.searchDeleted'));
   };
