@@ -88,6 +88,8 @@ const Index = () => {
         agentId: p.agent_id ?? null,
       }));
     },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 
   const sampleProperties = [
@@ -145,6 +147,8 @@ const Index = () => {
         advertisingTags: p.advertising_tags ?? [],
       }));
     },
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   });
 
   const displayedProjects = useMemo(() => {
