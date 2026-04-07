@@ -1036,6 +1036,8 @@ const PropertyDetailPage = () => {
         propertyId={property.id}
         propertyTitle={property.title}
       />
+
+      <Footer />
     </div>
   );
 };
