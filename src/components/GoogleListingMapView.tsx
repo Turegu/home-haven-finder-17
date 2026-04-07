@@ -7,6 +7,8 @@ import { GOOGLE_MAPS_API_KEY, getCoordsFromLocation, getCountryMapConfig } from 
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import { useAllowedCountry } from '@/hooks/useAllowedCountry';
 
+const GOOGLE_MAP_LIBRARIES: ('places')[] = ['places'];
+
 function getRentSuffix(rentDuration?: string | null): string {
   const normalized = rentDuration?.trim().toLowerCase();
   if (!normalized || normalized.includes('month')) return '/mo';
@@ -201,7 +203,7 @@ interface GoogleListingMapViewProps {
 }
 
 const GoogleListingMapView = ({ listings, className = '', focusListingId = null, selectedProvince, selectedDistrict }: GoogleListingMapViewProps) => {
-  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: ['places'] });
+  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: GOOGLE_MAP_LIBRARIES });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const boundaryRef = useRef<google.maps.Polygon[]>([]);

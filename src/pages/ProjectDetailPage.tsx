@@ -244,7 +244,7 @@ const ProjectDetailPage = () => {
         </div>
 
         {/* Location — mounted once */}
-        {pinLocation && (
+        {pinLocation && activeTab === 'location' && (
           <div className={activeTab === 'location' ? 'h-full' : 'hidden'}>
             <NearbyPlacesMap lat={pinLocation.lat} lng={pinLocation.lng} propertyTitle={project.title} embedded />
           </div>
@@ -254,7 +254,7 @@ const ProjectDetailPage = () => {
         )}
 
         {/* Street View — mounted once */}
-        {pinLocation && (
+        {pinLocation && activeTab === 'street' && (
           <div className={activeTab === 'street' ? 'h-full' : 'hidden'}>
             <StreetView lat={pinLocation.lat} lng={pinLocation.lng} className="h-full w-full" />
           </div>
