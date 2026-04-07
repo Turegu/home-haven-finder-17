@@ -12,7 +12,7 @@ import {
   Wallet, HardHat, KeyRound, Banknote, CalendarCheck,
   DollarSign, Ruler, Home, Car, Armchair, Layers, Compass, FileText, Activity, Hourglass
 } from 'lucide-react';
-import { useTrackPageView } from '@/hooks/useListingAnalytics';
+import { useTrackPageView, trackInquiryClick } from '@/hooks/useListingAnalytics';
 import { getIcon } from '@/components/AmenitiesViewAllDialog';
 import { getDesignationLabel } from '@/data/designations';
 import { toast } from 'sonner';

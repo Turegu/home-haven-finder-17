@@ -6,7 +6,6 @@ import { toggleSaveProperty, toggleCompareProperty } from '@/hooks/usePropertyAc
 import { useAreaUnit } from '@/hooks/useAreaUnit';
 import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import type { Property } from '@/data/mockProperties';
-import { useTranslation } from "react-i18next";
 
 interface PropertyCardProps {
   property: Property;
@@ -24,8 +23,6 @@ const PropertyCard = memo(({ property, isSaved = false, isCompared = false }: Pr
   // Sync local state when prop changes (e.g. after query refetch)
   useEffect(() => { setIsFavorited(isSaved); }, [isSaved]);
   useEffect(() => { setIsComparedLocal(isCompared); }, [isCompared]);
-
-  const { t } = useTranslation();
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
