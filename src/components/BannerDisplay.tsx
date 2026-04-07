@@ -52,17 +52,7 @@ const BannerDisplay = memo(({ pageName, bannerType, position, className = "" }: 
   });
 
   if (isLoading && !banner) {
-    return (
-      <div className={className}>
-        <div
-          className={`rounded-lg bg-muted animate-pulse ${
-            bannerType === "horizontal"
-              ? "h-[120px] sm:h-[160px] md:h-[206px]"
-              : "h-[300px] sm:h-[400px] md:h-[513px]"
-          }`}
-        />
-      </div>
-    );
+    return null;
   }
 
   if (!banner) return null;
