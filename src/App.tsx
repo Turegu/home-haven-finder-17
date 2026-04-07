@@ -148,6 +148,7 @@ const App = () => {
   return (
   <Sentry.ErrorBoundary fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-muted-foreground">Something went wrong. Please refresh the page.</p></div>}>
   <QueryClientProvider client={queryClient}>
+    <AppDataPrefetcher />
     <AreaUnitProvider>
     <TooltipProvider>
       <Toaster />
