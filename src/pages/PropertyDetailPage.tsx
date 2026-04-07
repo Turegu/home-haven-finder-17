@@ -144,7 +144,7 @@ const PropertyDetailPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("properties")
-        .select("*, agents(id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages, phone, whatsapp, companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
+        .select("*, agents(id, name, name_ar, name_fr, designation, designation_ar, designation_fr, avatar_url, languages, phone, whatsapp, company_id), companies(id, name, logo_url, company_type, is_verified, phone, whatsapp)")
         .eq("id", id!)
         .maybeSingle();
       if (error) throw error;
