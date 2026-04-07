@@ -9,6 +9,18 @@ import { cn } from '@/lib/utils';
 
 const LIBRARIES: ('places')[] = ['places'];
 
+// Only load the Google Maps script when the user actually needs it (starts typing)
+function useDeferredJsApiLoader(shouldLoad: boolean) {
+  const result = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: shouldLoad ? GOOGLE_MAPS_API_KEY : '',
+    libraries: LIBRARIES,
+  });
+  // If we haven't triggered loading yet, report as not loaded
+  if (!shouldLoad) return { isLoaded: false };
+  return result;
+}
+
 export interface AutocompleteSearchConfig {
   properties?: number;
   projects?: number;
@@ -56,7 +68,8 @@ export default function KeywordAutocomplete({
 }: KeywordAutocompleteProps) {
   const { t } = useTranslation();
   const config = { ...DEFAULT_CONFIG, ...searchConfig };
-  const { isLoaded } = useJsApiLoader({ id: 'google-map-script', googleMapsApiKey: GOOGLE_MAPS_API_KEY, libraries: LIBRARIES });
+  const [needsMaps, setNeedsMaps] = useState(false);
+  const { isLoaded } = useDeferredJsApiLoader(needsMaps);
   const { data: allowedCountry } = useAllowedCountry();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isOpen, setIsOpen] = useState(false);
