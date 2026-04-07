@@ -874,7 +874,7 @@ const PropertyDetailPage = () => {
             </div>
 
             {/* Bank Loan CTA Banner */}
-            <BankLoanBanner />
+            <BankLoanBanner className="mb-12" />
           </div>
 
           {/* Sidebar - Agent Card */}
