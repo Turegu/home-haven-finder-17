@@ -9,11 +9,11 @@ import { cn } from '@/lib/utils';
 
 const LIBRARIES: ('places')[] = ['places'];
 
-// Only load the Google Maps script when the user actually needs it (starts typing)
+// Always pass the real API key to avoid "Loader called with different options" crash
 function useDeferredJsApiLoader(shouldLoad: boolean) {
   const result = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: shouldLoad ? GOOGLE_MAPS_API_KEY : '',
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
     libraries: LIBRARIES,
   });
   // If we haven't triggered loading yet, report as not loaded
