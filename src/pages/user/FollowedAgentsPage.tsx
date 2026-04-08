@@ -82,6 +82,7 @@ const FollowedAgentsPage = () => {
     const { error } = await supabase.from("company_followers").delete().eq("id", id);
     if (error) { toast.error(t('userPages.failedToUnfollow')); return; }
     queryClient.setQueryData<FollowedCompany[]>(['user-followed-companies'], old => (old ?? []).filter(i => i.id !== id));
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
     toast.success(t('userPages.unfollowed'));
   };
 
