@@ -65,6 +65,7 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
     setToggling(true);
 
     try {
+      console.log('[FollowButton] toggle', { type, targetId, isFollowing, userId: user.id });
       if (isFollowing) {
         if (type === 'company') {
           const { error } = await supabase
@@ -72,14 +73,14 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
             .delete()
             .eq('company_id', targetId)
             .eq('user_id', user.id);
-          if (error) throw error;
+          if (error) { console.error('[FollowButton] delete error', error); throw error; }
         } else {
           const { error } = await supabase
             .from('agent_followers')
             .delete()
             .eq('agent_id', targetId)
             .eq('user_id', user.id);
-          if (error) throw error;
+          if (error) { console.error('[FollowButton] delete error', error); throw error; }
         }
         setIsFollowing(false);
         toast.success(t('detail.unfollowed'));
@@ -88,17 +89,18 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
           const { error } = await supabase
             .from('company_followers')
             .insert({ company_id: targetId, user_id: user.id });
-          if (error) throw error;
+          if (error) { console.error('[FollowButton] insert error', error); throw error; }
         } else {
           const { error } = await supabase
             .from('agent_followers')
             .insert({ agent_id: targetId, user_id: user.id });
-          if (error) throw error;
+          if (error) { console.error('[FollowButton] insert error', error); throw error; }
         }
         setIsFollowing(true);
         toast.success(t('detail.followingSuccess'));
       }
     } catch (err: any) {
+      console.error('[FollowButton] caught error', err);
       toast.error(err.message || 'Something went wrong');
     } finally {
       setToggling(false);
