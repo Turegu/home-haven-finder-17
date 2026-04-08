@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { UserPlus, UserCheck, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 
 interface FollowButtonProps {
   /** 'company' or 'agent' */
@@ -17,7 +16,7 @@ interface FollowButtonProps {
 
 const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toggling, setToggling] = useState(false);
@@ -55,6 +54,13 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
     checkFollowStatus();
   }, [type, targetId]);
 
+  const invalidateFollowQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ['user-followed-agents'] });
+    queryClient.invalidateQueries({ queryKey: ['user-followed-companies'] });
+    queryClient.invalidateQueries({ queryKey: ['user-layout-counts'] });
+    window.dispatchEvent(new Event('property-actions-changed'));
+  };
+
   const handleToggle = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -65,7 +71,6 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
     setToggling(true);
 
     try {
-      console.log('[FollowButton] toggle', { type, targetId, isFollowing, userId: user.id });
       if (isFollowing) {
         if (type === 'company') {
           const { error } = await supabase
@@ -73,34 +78,35 @@ const FollowButton = ({ type, targetId, size = 'sm' }: FollowButtonProps) => {
             .delete()
             .eq('company_id', targetId)
             .eq('user_id', user.id);
-          if (error) { console.error('[FollowButton] delete error', error); throw error; }
+          if (error) throw error;
         } else {
           const { error } = await supabase
             .from('agent_followers')
             .delete()
             .eq('agent_id', targetId)
             .eq('user_id', user.id);
-          if (error) { console.error('[FollowButton] delete error', error); throw error; }
+          if (error) throw error;
         }
         setIsFollowing(false);
+        invalidateFollowQueries();
         toast.success(t('detail.unfollowed'));
       } else {
         if (type === 'company') {
           const { error } = await supabase
             .from('company_followers')
             .insert({ company_id: targetId, user_id: user.id });
-          if (error) { console.error('[FollowButton] insert error', error); throw error; }
+          if (error) throw error;
         } else {
           const { error } = await supabase
             .from('agent_followers')
             .insert({ agent_id: targetId, user_id: user.id });
-          if (error) { console.error('[FollowButton] insert error', error); throw error; }
+          if (error) throw error;
         }
         setIsFollowing(true);
+        invalidateFollowQueries();
         toast.success(t('detail.followingSuccess'));
       }
     } catch (err: any) {
-      console.error('[FollowButton] caught error', err);
       toast.error(err.message || 'Something went wrong');
     } finally {
       setToggling(false);

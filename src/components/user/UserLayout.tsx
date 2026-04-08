@@ -69,11 +69,12 @@ const UserLayout = ({ children }: UserLayoutProps) => {
     queryKey: ['user-layout-counts', authUser?.id],
     queryFn: async () => {
       const uid = authUser!.id;
-      const [saved, searches, compare, followed, notifications, contacted, requests] = await Promise.all([
+      const [saved, searches, compare, followedAgents, followedCompanies, notifications, contacted, requests] = await Promise.all([
         supabase.from("saved_properties").select("id", { count: "exact", head: true }).eq("user_id", uid),
         supabase.from("saved_searches").select("id", { count: "exact", head: true }).eq("user_id", uid),
         supabase.from("property_comparisons").select("id", { count: "exact", head: true }).eq("user_id", uid),
         supabase.from("agent_followers").select("id", { count: "exact", head: true }).eq("user_id", uid),
+        supabase.from("company_followers").select("id", { count: "exact", head: true }).eq("user_id", uid),
         supabase.from("user_notifications").select("id", { count: "exact", head: true }).eq("user_id", uid).eq("is_read", false),
         supabase.from("user_inquiries").select("id", { count: "exact", head: true }).eq("user_id", uid),
         supabase.from("property_requests").select("id", { count: "exact", head: true }).eq("user_id", uid),
@@ -82,7 +83,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
         saved: saved.count || 0,
         searches: searches.count || 0,
         compare: compare.count || 0,
-        followed: followed.count || 0,
+        followed: (followedAgents.count || 0) + (followedCompanies.count || 0),
         notifications: notifications.count || 0,
         contacted: contacted.count || 0,
         requests: requests.count || 0,
