@@ -192,7 +192,7 @@ const FollowedAgentsPage = () => {
                     <div key={item.id} className="bg-card rounded-xl border border-border p-4 flex items-center gap-4">
                       <img src={item.company?.logo_url || "/placeholder.svg"} alt={item.company?.name || "Company"} className="h-12 w-14 rounded-lg object-cover border border-border" />
                       <div className="flex-1 min-w-0">
-                        <Link to={`/companies/${item.company_id}`} className="font-semibold text-foreground text-sm hover:text-primary truncate block">{item.company?.name}</Link>
+                        <Link to={`/company/${item.company_id}`} className="font-semibold text-foreground text-sm hover:text-primary truncate block">{item.company?.name}</Link>
                         <p className="text-xs text-muted-foreground">{t('common.company')}</p>
                       </div>
                       <AlertDialog>
