@@ -2728,6 +2728,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      can_access_company_listing: {
+        Args: { p_company_id: string }
+        Returns: boolean
+      }
       check_admin_pattern_required: { Args: never; Returns: boolean }
       check_contact_rate_limit: { Args: { p_email: string }; Returns: boolean }
       check_contact_rate_limit_per_company: {
