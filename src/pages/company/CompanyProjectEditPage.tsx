@@ -582,15 +582,17 @@ const CompanyProjectEditPage = () => {
     if (publishStatus === "active" && !validateProjectForm()) return;
     if (publishStatus === "draft") {
       if (!companyId) { toast.error(t("companyDashboard.companyNotFound")); return; }
-      if (!form.title.trim()) { toast.error("Project name is required"); return; }
     }
+
+    setLoading(true);
+    const draftTitle = form.title.trim() || form.title_ar.trim() || form.title_fr.trim() || "Untitled Project";
 
     type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"];
     const payload: ProjectInsert = {
-      title: form.title.trim(), title_ar: form.title_ar || null, title_fr: form.title_fr || null,
+      title: draftTitle, title_ar: form.title_ar || null, title_fr: form.title_fr || null,
       description: form.description || null, description_ar: form.description_ar || null, description_fr: form.description_fr || null,
       tagline: form.tagline || null, developer: form.developer || null,
-      project_type: form.project_type,
+      project_type: form.project_type || "residential",
       min_price: form.min_price ? parseFloat(form.min_price) : null,
       max_price: form.max_price ? parseFloat(form.max_price) : null,
       currency: form.currency,
@@ -599,7 +601,7 @@ const CompanyProjectEditPage = () => {
       min_area: form.min_area ? parseFloat(form.min_area) : null,
       max_area: form.max_area ? parseFloat(form.max_area) : null,
       area_unit: form.area_unit,
-      project_status: form.project_status,
+      project_status: form.project_status || "new",
       interior_amenities: form.interior_amenities,
       exterior_amenities: form.exterior_amenities,
       advertising_tags: form.advertising_tags,
@@ -627,7 +629,10 @@ const CompanyProjectEditPage = () => {
       }
       navigate("/company/projects");
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : t("companyDashboard.saveFailed"));
+      const message = typeof err === "object" && err && "message" in err && typeof err.message === "string"
+        ? err.message
+        : t("companyDashboard.saveFailed");
+      toast.error(message);
     } finally { setLoading(false); }
   };
 
