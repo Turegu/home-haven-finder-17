@@ -18,7 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff, Rocket } from "lucide-react";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { format, differenceInDays, differenceInSeconds } from "date-fns";
