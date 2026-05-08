@@ -54,6 +54,7 @@ const AdminCompaniesPage = () => {
   // Dialog state
   const [upgradeCompany, setUpgradeCompany] = useState<Company | null>(null);
   const [creditsCompany, setCreditsCompany] = useState<Company | null>(null);
+  const [boostCompany, setBoostCompany] = useState<Company | null>(null);
 
   const { data: queryData, isLoading: loading } = useQuery({
     queryKey: ["admin-companies"],
