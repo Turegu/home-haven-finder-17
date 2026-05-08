@@ -18,7 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff } from "lucide-react";
+import { Search, Plus, Trash2, MoreVertical, Eye, Pencil, ArrowUpCircle, Coins, Users, Home, FolderKanban, CalendarDays, BadgeCheck, ShieldOff, Rocket } from "lucide-react";
+import BoostProfileDialog from "@/components/BoostProfileDialog";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { format, differenceInDays, differenceInSeconds } from "date-fns";
@@ -53,6 +54,7 @@ const AdminCompaniesPage = () => {
   // Dialog state
   const [upgradeCompany, setUpgradeCompany] = useState<Company | null>(null);
   const [creditsCompany, setCreditsCompany] = useState<Company | null>(null);
+  const [boostCompany, setBoostCompany] = useState<Company | null>(null);
 
   const { data: queryData, isLoading: loading } = useQuery({
     queryKey: ["admin-companies"],
@@ -398,6 +400,9 @@ const AdminCompaniesPage = () => {
                               : <><BadgeCheck className="h-4 w-4 mr-2" /> Mark as Verified</>
                             }
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setBoostCompany(company)}>
+                            <Rocket className="h-4 w-4 mr-2" /> Boost Profile
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
                             <Coins className="h-4 w-4 mr-2" /> Add Points
                           </DropdownMenuItem>
@@ -447,6 +452,23 @@ const AdminCompaniesPage = () => {
           companyName={creditsCompany.name}
           currentBalance={creditsCompany.credit_balance}
           onUpdated={refetchCompanies}
+        />
+      )}
+
+      {/* Boost Profile Dialog */}
+      {boostCompany && (
+        <BoostProfileDialog
+          open={!!boostCompany}
+          onOpenChange={(open) => !open && setBoostCompany(null)}
+          profileId={boostCompany.id}
+          profileName={boostCompany.name}
+          profileType="company"
+          balanceSource="company"
+          balanceSourceId={boostCompany.id}
+          currentClassification={boostCompany.profile_classification || "standard"}
+          boostEndDate={boostCompany.boost_end_date}
+          onBoosted={refetchCompanies}
+          isAdminBoost
         />
       )}
 
