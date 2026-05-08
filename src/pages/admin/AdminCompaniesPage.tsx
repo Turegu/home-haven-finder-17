@@ -400,6 +400,9 @@ const AdminCompaniesPage = () => {
                               : <><BadgeCheck className="h-4 w-4 mr-2" /> Mark as Verified</>
                             }
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setBoostCompany(company)}>
+                            <Rocket className="h-4 w-4 mr-2" /> Boost Profile
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setCreditsCompany(company)}>
                             <Coins className="h-4 w-4 mr-2" /> Add Points
                           </DropdownMenuItem>
