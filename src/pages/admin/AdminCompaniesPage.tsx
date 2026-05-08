@@ -455,6 +455,23 @@ const AdminCompaniesPage = () => {
         />
       )}
 
+      {/* Boost Profile Dialog */}
+      {boostCompany && (
+        <BoostProfileDialog
+          open={!!boostCompany}
+          onOpenChange={(open) => !open && setBoostCompany(null)}
+          profileId={boostCompany.id}
+          profileName={boostCompany.name}
+          profileType="company"
+          balanceSource="company"
+          balanceSourceId={boostCompany.id}
+          currentClassification={boostCompany.profile_classification || "standard"}
+          boostEndDate={boostCompany.boost_end_date}
+          onBoosted={refetchCompanies}
+          isAdminBoost
+        />
+      )}
+
     </AdminLayout>
   );
 };
