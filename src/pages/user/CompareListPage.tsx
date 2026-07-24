@@ -201,13 +201,21 @@ const CompareListPage = () => {
     setWinner("");
 
     try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.access_token) {
+        toast.error("Please log in to run AI investment analysis.");
+        setAiLoading(false);
+        return;
+      }
+
       const resp = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/compare-properties-ai`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ properties: items.map(i => i.property) }),
         }
